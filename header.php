@@ -1,5 +1,45 @@
 <?php
-	
+	if (isset($_POST['quick-add']))
+	{
+		$item_description = $_POST['item-description'];
+
+		$q = "UPDATE items ";
+		$q.= "SET selected='1' ";
+		$q.= "WHERE description='$item_description'";
+
+		$r = mysqli_query($ptwin_shopDB, $q);
+	}
+
+	$q = "SELECT description ";
+	$q.= "FROM items ";
+
+	$r = mysqli_query($ptwin_shopDB, $q);
+
+	if ($r->num_rows > 0)
+	{
+		$num_rows = $r->num_rows;
+?>
+	<script type="text/javascript">
+		$(function()
+		{
+			var availableItems = [];
+<?php
+			for ($i=0; $i<$num_rows; $i++)
+			{
+				$row = mysqli_fetch_array($r, MYSQLI_ASSOC);
+?>
+				availableItems[<?php echo $i; ?>] = "<?php echo $row['description']; ?>";
+<?php
+			}
+?>
+			$("#quick-add").autocomplete(
+			{
+				source: availableItems
+			});
+		});
+	</script>
+<?php
+	}
 ?>
 
 <header class="wrapper">
@@ -7,6 +47,12 @@
 	<a href="index.php"><button>Home</button></a>
 	<a href="add-to-db.php"><button>Add Item To DB</button></a>
 	<hr/>
-	<p>Quick Add:</p>
+	<div class="ui-widget">
+		<label for="quick-add">Quick Add: </label>
+		<form method="POST">
+			<input id="quick-add" name="item-description" />
+			<input type="submit" name="quick-add" value="Add" />
+		</form>
+	</div>
 	<hr/>
 </header>
