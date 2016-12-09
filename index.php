@@ -1,7 +1,4 @@
 <?php
-	date_default_timezone_set('UTC');
-	// opens DB connexion
-	require ('../../init_ptwin_shop.php');
 ?>
 
 <!DOCTYPE html>
