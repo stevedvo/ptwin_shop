@@ -45,7 +45,11 @@
 			$item_list = $_POST['item-list'];
 			if ($_POST['item-comments'])
 			{
-				$item_comments = $_POST['item-comments'];				
+				$item_comments = $_POST['item-comments'];
+			}
+			else
+			{
+				$item_comments = "";
 			}
 
 			$q = "INSERT INTO items ";
