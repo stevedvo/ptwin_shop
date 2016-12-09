@@ -20,6 +20,24 @@
 <?php
 		include ('header.php');
 
+		// populate lists options
+		$options = [];
+
+		$q = "SELECT * ";
+		$q.= "FROM lists";
+
+		$r = mysqli_query($ptwin_shopDB, $q);
+
+		if ($r->num_rows > 0)
+		{
+			$num_rows = $r->num_rows;
+
+			for ($i=0; $i<$num_rows; $i++)
+			{
+				$options[$i] = mysqli_fetch_array($r, MYSQLI_ASSOC);
+			}
+		}
+
 		if ($_POST)
 		{
 			$item_description = $_POST['item-description'];
@@ -30,11 +48,15 @@
 				$item_comments = $_POST['item-comments'];				
 			}
 
-			$q = "INSERT INTO 'items' ";
-			$q.= "(			'description', 			'comments', 		'default_qty', 			'list_id') ";
-			$q.= "VALUES (	'$item_description', 	'$item_comments', 	'$item_default_qty', 	'$list_id')";
+			$q = "INSERT INTO items ";
+			$q.= "(description, comments, default_qty, list_id) ";
+			$q.= "VALUES ('$item_description', '$item_comments', '$item_default_qty', '$item_list')";
 
 			var_dump($q);
+			
+			$r = mysqli_query($ptwin_shopDB, $q);
+
+			var_dump($r);
 			die();
 
 		}
@@ -52,9 +74,17 @@
 					<p>Default Order Qty:</p>
 					<input name="item-default-qty" type="integer" value="1" required/><br/>
 					<select name="item-list">
-						<option value="usuals">Usuals</option>
-						<option value="regulars">Regulars</option>
-						<option value="extras">Extras</option>
+<?php
+						if (!empty($options))
+						{
+							for ($i=0; $i<sizeof($options); $i++)
+							{
+?>
+								<option value="<?php echo $options[$i]['list_id']; ?>"><?php echo ucfirst($options[$i]['name']); ?></option>
+<?php
+							}
+						}
+?>
 					</select>
 					<input type="submit" value="Add Item" />
 				</fieldset>
