@@ -52,13 +52,7 @@
 			$q.= "(description, comments, default_qty, list_id) ";
 			$q.= "VALUES ('$item_description', '$item_comments', '$item_default_qty', '$item_list')";
 
-			var_dump($q);
-			
 			$r = mysqli_query($ptwin_shopDB, $q);
-
-			var_dump($r);
-			die();
-
 		}
 
 ?>
@@ -72,7 +66,7 @@
 					<p>Comments:</p>
 					<input name="item-comments" type="text" placeholder="Optional" />
 					<p>Default Order Qty:</p>
-					<input name="item-default-qty" type="integer" value="1" required/><br/>
+					<input name="item-default-qty" type="number" min="1" value="1" required/><br/>
 					<select name="item-list">
 <?php
 						if (!empty($options))
