@@ -11,10 +11,5 @@
 <title><?php echo $page_title; ?></title>
 <script type="text/javascript" src="jQuery/jquery-1.12.3.min.js"></script>
 <script type="text/javascript" src="jQuery/jquery-ui-1.11.4/jquery-ui.min.js"></script>
-<link rel="stylesheet" href="jQuery/jquery-ui-1.11.4/jquery-ui.min.css"/>
-<style type="text/css">
-	.wrapper
-	{
-		width: 100%;
-	}
-</style>
+<link rel="stylesheet" type="text/css" href="jQuery/jquery-ui-1.11.4/jquery-ui.min.css"/>
+<link rel="stylesheet" type="text/css" href="style.css"/>

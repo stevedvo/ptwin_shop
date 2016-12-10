@@ -55,41 +55,47 @@
 			$q.= "WHERE selected=1";
 
 			$r = mysqli_query($ptwin_shopDB, $q);
-
-			if ($r->num_rows > 0)
-			{
-				$num_rows = $r->num_rows;
 ?>
-				<table>
-					<tr>
-						<td>Item</td>
-						<td>Comments</td>
-						<td>Quantity</td>
-						<td>Update</td>
-						<td>Remove</td>
-					</tr>
+			<div class="results-container">			
 <?php
+				if ($r->num_rows > 0)
+				{
+					$odd_row = true;
+					$num_rows = $r->num_rows;
 					for ($i=0; $i<$num_rows; $i++)
 					{
 						$row = mysqli_fetch_array($r, MYSQLI_ASSOC);
 ?>
-						<form action="index.php" method="POST">
-							<tr>
-								<td><input type="text" name="item-description" value="<?php echo $row['description']; ?>" required /></td>
-								<td><input type="text" name="item-comments" value="<?php echo $row['comments']; ?>" /></td>
-								<td><input type="number" name="item-default-qty" min="1" value="<?php echo $row['default_qty']; ?>" required /></td>
-								<td><input type=submit name="update" value="Update" /></td>
-								<td><input type=submit name="remove" value="Remove" /></td>
-							</tr>
-							<input type="hidden" name="item-id" value="<?php echo $row['item_id']; ?>" />
-						</form>
+						<div class="item-container <?php if ($odd_row) echo 'odd-row'; ?>">
+							<form action="index.php" method="POST">
+								<div class="text-blocks">
+									<input type="text" class="item-description" name="item-description" value="<?php echo $row['description']; ?>" required />
+									<input type="text" class="item-comments" name="item-comments" value="<?php echo $row['comments']; ?>" />
+								</div>
+								<div class="qty-container">
+									<input type="number" name="item-default-qty" min="1" value="<?php echo $row['default_qty']; ?>" required />
+								</div>
+								<div class="btns-container">
+									<div class="update-container">
+										<input class="update" type=submit name="update" value="Update" />
+									</div>
+									<div class="remove-container">
+										<input class="remove" type=submit name="remove" value="Remove" />
+									</div>
+								</div>
+								<input type="hidden" name="item-id" value="<?php echo $row['item_id']; ?>" />
+							</form>
+						</div>
 <?php
+						$odd_row = !$odd_row;
 					}
+				}
+				else
+				{
+					echo "Shopping list is empty.";
+				}
 ?>
-				</table>
-<?php
-			}
-?>
+			</div>
 		</main>
 	</body>
 

@@ -1,0 +1,90 @@
+*
+{
+	/*margin: 0px;*/
+	/*padding: 0px;*/
+}
+
+.wrapper
+{
+	float: left;
+	width: calc(100% - 30px);
+	padding: 0px 15px;
+}
+
+.results-container
+{
+	float: left;
+	width: 100%;
+}
+
+.item-container
+{
+	width: 100%;
+	float: left;
+	padding: 5px 0px;
+}
+
+.odd-row
+{
+	background: #ddd;
+}
+
+.text-blocks
+{
+	float: left;
+	width: calc(65% - 15px);
+	padding-right: 15px;
+}
+
+input.item-description, input.item-comments, input.update, input.remove
+{
+	width: 100%;
+	line-height: 15px;
+	margin-bottom: 5px;
+	background: transparent;
+}
+
+.qty-container
+{
+	float: left;
+	width: calc(15% - 15px);
+	padding-right: 15px;
+}
+
+.qty-container>input
+{
+	width: 100%;
+	text-align: center;
+	line-height: 40px;
+	background: transparent;
+}
+
+.btns-container
+{
+	width: 20%;
+	float: left;
+}
+
+.update-container
+{
+	float: left;
+	width: 100%;
+}
+
+.remove-container
+{
+	float: left;
+	width: 100%;
+}
+
+@media only screen and (min-width: 768px)
+{
+	input.item-description, input.item-comments, .update-container, .remove-container
+	{
+		width: calc(50% - 9px);
+	}
+	.qty-container>input
+	{
+		line-height: 15px;
+	}
+}
