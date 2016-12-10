@@ -34,7 +34,7 @@
 			}
 		}
 
-		if ($_POST)
+		if (isset($_POST['add-to-db']))
 		{
 			$item_description = $_POST['item-description'];
 			$item_default_qty = $_POST['item-default-qty'];
@@ -47,10 +47,15 @@
 			{
 				$item_comments = "";
 			}
+			$selected = 0;
+			if (isset($_POST['selected']))
+			{
+				$selected = 1;
+			}
 
 			$q = "INSERT INTO items ";
-			$q.= "(description, comments, default_qty, list_id) ";
-			$q.= "VALUES ('$item_description', '$item_comments', '$item_default_qty', '$item_list')";
+			$q.= "(description, comments, default_qty, selected, list_id) ";
+			$q.= "VALUES ('$item_description', '$item_comments', '$item_default_qty', '$selected', '$item_list')";
 
 			$r = mysqli_query($ptwin_shopDB, $q);
 		}
@@ -62,11 +67,11 @@
 				<fieldset>
 					<legend>Add Item</legend>
 					<p>Description:</p>
-					<input name="item-description" type="text" placeholder="Required" required/>
+					<input name="item-description" type="text" placeholder="Required" required <?php if (isset($_SESSION['item-description'])) echo "value='".$_SESSION['item-description']."'"; ?> />
 					<p>Comments:</p>
 					<input name="item-comments" type="text" placeholder="Optional" />
 					<p>Default Order Qty:</p>
-					<input name="item-default-qty" type="number" min="1" value="1" required/><br/>
+					<input name="item-default-qty" type="number" min="1" value="1" required/><br/><br/>
 					<select name="item-list">
 <?php
 						if (!empty($options))
@@ -79,12 +84,13 @@
 							}
 						}
 ?>
-					</select>
-					<input type="submit" value="Add Item" />
+					</select><br/><br/>
+					Add to Shopping List: <input type="checkbox" name="selected" <?php if (isset($_SESSION['item-description'])) echo "checked"; ?> /><br/><br/>
+					<input type="submit" name="add-to-db" value="Add Item" />
 				</fieldset>
 			</form>
 <?php
-
+			unset($_SESSION['item-description']);
 ?>
 		</main>
 	</body>
