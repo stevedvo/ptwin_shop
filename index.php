@@ -60,14 +60,56 @@
 
 			if (isset($_POST['order-list']))
 			{
-				echo "order list";
-				// $item_id = $_POST['item-id'];
+				$q = "SELECT item_id, description, default_qty, total_qty ";
+				$q.= "FROM items ";
+				$q.= "WHERE selected=1";
 
-				// $q = "UPDATE items ";
-				// $q.= "SET selected='0' ";
-				// $q.= "WHERE item_id='$item_id'";
+				$r = mysqli_query($ptwin_shopDB, $q);
 
-				// $r = mysqli_query($ptwin_shopDB, $q);
+				echo "<p><strong>On order:</strong></p>";
+				$ordered = [];
+
+				if ($r->num_rows > 0)
+				{
+					$num_rows = $r->num_rows;
+					for ($i=0; $i<$num_rows; $i++)
+					{
+						$row = mysqli_fetch_array($r, MYSQLI_ASSOC);
+
+						$item_id = $row['item_id'];
+						$item_description = $row['description'];
+						$new_total_qty = $row['total_qty'] + $row['default_qty'];
+						$order_date = date(DATE_W3C);
+
+						echo "$item_description<br/>";
+						$ordered[] = [$item_description => $row['default_qty']];
+
+						$q2 = "UPDATE items ";
+						$q2.= "SET total_qty = '$new_total_qty', last_ordered = '$order_date' ";
+						$q2.= "WHERE item_id = $item_id";
+
+						$r2 = mysqli_query($ptwin_shopDB, $q2);
+					}
+?>
+					<br/><p><strong>Summary:</strong></p>
+					<table>
+<?php
+						for ($i=0; $i<$num_rows; $i++)
+						{
+							foreach ($ordered[$i] as $key => $value)
+							{
+								echo "<tr><td>$key</td><td>$value</td></tr>";
+							}
+						}
+?>
+					</table>
+<?php
+				}
+
+				$q = "UPDATE items ";
+				$q.= "SET selected='0'";
+
+				$r = mysqli_query($ptwin_shopDB, $q);				
 			}
 
 			if (isset($_POST['add-usuals']))
