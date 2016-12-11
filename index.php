@@ -114,14 +114,11 @@
 
 			if (isset($_POST['add-usuals']))
 			{
-				echo "add usuals";
-				// $item_id = $_POST['item-id'];
+				$q = "UPDATE items ";
+				$q.= "SET selected='1' ";
+				$q.= "WHERE list_id='1'";
 
-				// $q = "UPDATE items ";
-				// $q.= "SET selected='0' ";
-				// $q.= "WHERE item_id='$item_id'";
-
-				// $r = mysqli_query($ptwin_shopDB, $q);
+				$r = mysqli_query($ptwin_shopDB, $q);
 			}
 
 			$q = "SELECT * ";
