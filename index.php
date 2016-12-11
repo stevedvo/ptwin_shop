@@ -50,6 +50,38 @@
 				$r = mysqli_query($ptwin_shopDB, $q);
 			}
 
+			if (isset($_POST['clear-list']))
+			{
+				$q = "UPDATE items ";
+				$q.= "SET selected='0'";
+
+				$r = mysqli_query($ptwin_shopDB, $q);
+			}
+
+			if (isset($_POST['order-list']))
+			{
+				echo "order list";
+				// $item_id = $_POST['item-id'];
+
+				// $q = "UPDATE items ";
+				// $q.= "SET selected='0' ";
+				// $q.= "WHERE item_id='$item_id'";
+
+				// $r = mysqli_query($ptwin_shopDB, $q);
+			}
+
+			if (isset($_POST['add-usuals']))
+			{
+				echo "add usuals";
+				// $item_id = $_POST['item-id'];
+
+				// $q = "UPDATE items ";
+				// $q.= "SET selected='0' ";
+				// $q.= "WHERE item_id='$item_id'";
+
+				// $r = mysqli_query($ptwin_shopDB, $q);
+			}
+
 			$q = "SELECT * ";
 			$q.= "FROM items ";
 			$q.= "WHERE selected=1";
@@ -95,6 +127,20 @@
 					echo "Shopping list is empty.";
 				}
 ?>
+			</div>
+
+			<div class="action-btns-container">
+				<form method="POST">
+					<div class="clear-btn-container">
+						<input type="submit" name="clear-list" value="Clear" />
+					</div>
+					<div class="order-btn-container">
+						<input type="submit" name="order-list" value="Order" />	
+					</div>
+					<div class="add-usuals-btn-container">
+						<input type="submit" name="add-usuals" value="Add Usuals" />	
+					</div>
+				</form>
 			</div>
 		</main>
 	</body>
