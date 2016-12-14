@@ -77,6 +77,37 @@ input.item-description, input.item-comments, input.update, input.remove
 	width: 100%;
 }
 
+.action-btns-container
+{
+	float: left;
+	width: 100%;
+	padding: 15px 0px;
+	text-align: center;
+}
+
+.clear-btn-container
+{
+	float: left;
+	width: 33.33333333%;
+}
+
+.order-btn-container
+{
+	float: left;
+	width: 33.33333333%;
+}
+
+.add-usuals-btn-container
+{
+	float: left;
+	width: 33.33333333%;
+}
+
+.action-btns-container input
+{
+	width: 90px;
+}
+
 @media only screen and (min-width: 768px)
 {
 	input.item-description, input.item-comments, .update-container, .remove-container
@@ -86,5 +117,9 @@ input.item-description, input.item-comments, input.update, input.remove
 	.qty-container>input
 	{
 		line-height: 15px;
+	}
+	.action-btns-container
+	{
+		width: 50%;
 	}
 }
