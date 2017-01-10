@@ -36,7 +36,7 @@
 						$q.= "WHEN $item_id THEN 1 ";
 					}
 
-				$q.= "END";
+				$q.= "ELSE selected END";
 
 				$r = mysqli_query($ptwin_shopDB, $q);
 
@@ -112,6 +112,7 @@
 						}
 					}
 ?>
+					<br/><br/>
 					<input type="submit" name="update" value="Update List" />
 					<input type="submit" name="clear-all" value="Clear List" />
 				</form>
