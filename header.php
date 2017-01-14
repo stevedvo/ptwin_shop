@@ -63,6 +63,7 @@
 	<a href="index.php"><button>Home</button></a>
 	<a href="add-to-db.php"><button>Add Item To DB</button></a>
 	<a href="view-all.php"><button>View All</button></a>
+	<a href="manage-dept.php"><button>Manage Dept</button></a>
 	<hr/>
 	<div class="ui-widget">
 		<label for="quick-add">Quick Add: </label>
