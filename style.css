@@ -124,18 +124,18 @@ input.item-description, input.item-comments, input.update, input.remove
 	}
 }
 
-.category-table
+.category-table, .dept-table
 {
 	width: 100%;
 	max-width: 280px;
 }
 
-.category-row.selected
+.category-row.selected, .dept-row.selected
 {
 	background: lightgreen;
 }
 
-.category-description
+.category-description, .dept-description
 {
 	width: 90%;
 }

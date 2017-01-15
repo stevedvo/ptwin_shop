@@ -7,7 +7,7 @@
 
 	<head>
 <?php
-		$page_title = "Add Items To DB";
+		$page_title = "Add/Manage Items";
 		include ('head-section.php');
 ?>
 	</head>
@@ -17,7 +17,7 @@
 		include ('header.php');
 
 		// populate lists options
-		$options = [];
+		$lists = [];
 
 		$q = "SELECT * ";
 		$q.= "FROM lists";
@@ -30,7 +30,25 @@
 
 			for ($i=0; $i<$num_rows; $i++)
 			{
-				$options[$i] = mysqli_fetch_array($r, MYSQLI_ASSOC);
+				$lists[$i] = mysqli_fetch_array($r, MYSQLI_ASSOC);
+			}
+		}
+
+		// populate department options
+		$depts = [];
+
+		$q = "SELECT * ";
+		$q.= "FROM departments";
+
+		$r = mysqli_query($ptwin_shopDB, $q);
+
+		if ($r->num_rows > 0)
+		{
+			$num_rows = $r->num_rows;
+
+			for ($i=0; $i<$num_rows; $i++)
+			{
+				$depts[$i] = mysqli_fetch_array($r, MYSQLI_ASSOC);
 			}
 		}
 
@@ -58,12 +76,25 @@
 			$q.= "VALUES ('$item_description', '$item_comments', '$item_default_qty', '$selected', '$item_list')";
 
 			$r = mysqli_query($ptwin_shopDB, $q);
+
+			$item_id = $ptwin_shopDB->insert_id;
+
+			if (isset($_POST['item-dept']))
+			{
+				$dept_id = $_POST['item-dept'];
+
+				$q = "INSERT INTO item_dept_link ";
+				$q.= "(dept_id, item_id) ";
+				$q.= "VALUES ('$dept_id', '$item_id')";
+
+				$r = mysqli_query($ptwin_shopDB, $q);
+			}
 		}
 
 ?>
 		<main class="wrapper">
 
-			<form method="POST" action="add-to-db.php">
+			<form method="POST">
 				<fieldset>
 					<legend>Add Item</legend>
 					<p>Description:</p>
@@ -74,12 +105,26 @@
 					<input name="item-default-qty" type="number" min="1" value="1" required/><br/><br/>
 					<select name="item-list">
 <?php
-						if (!empty($options))
+						if (!empty($lists))
 						{
-							for ($i=0; $i<sizeof($options); $i++)
+							for ($i=0; $i<sizeof($lists); $i++)
 							{
 ?>
-								<option value="<?php echo $options[$i]['list_id']; ?>"><?php echo ucfirst($options[$i]['name']); ?></option>
+								<option value="<?php echo $lists[$i]['list_id']; ?>"><?php echo ucfirst($lists[$i]['name']); ?></option>
+<?php
+							}
+						}
+?>
+					</select>
+					<select name="item-dept">
+						<option selected disabled>Choose Dept</option>
+<?php
+						if (!empty($depts))
+						{
+							for ($i=0; $i<sizeof($depts); $i++)
+							{
+?>
+								<option value="<?php echo $depts[$i]['dept_id']; ?>"><?php echo ucfirst($depts[$i]['dept_name']); ?></option>
 <?php
 							}
 						}
