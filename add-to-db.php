@@ -38,7 +38,8 @@
 		$depts = [];
 
 		$q = "SELECT * ";
-		$q.= "FROM departments";
+		$q.= "FROM departments ";
+		$q.= "ORDER BY dept_name";
 
 		$r = mysqli_query($ptwin_shopDB, $q);
 
