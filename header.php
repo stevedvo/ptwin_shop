@@ -26,10 +26,12 @@
 		}
 	}
 
-	$q = "SELECT description ";
+	$q = "SELECT * ";
 	$q.= "FROM items ";
 
 	$r = mysqli_query($ptwin_shopDB, $q);
+
+	$items = [];
 
 	if ($r->num_rows > 0)
 	{
@@ -43,6 +45,8 @@
 			for ($i=0; $i<$num_rows; $i++)
 			{
 				$row = mysqli_fetch_array($r, MYSQLI_ASSOC);
+
+				$items[$i] = $row;
 ?>
 				availableItems[<?php echo $i; ?>] = "<?php echo $row['description']; ?>";
 <?php
