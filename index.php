@@ -82,7 +82,7 @@
 						$order_date = date(DATE_W3C);
 						$link = $row['link'];
 
-						if (!is_null($link))
+						if (!is_null($link) && !empty($link))
 						{
 ?>
 							<a href="<?= $link; ?>" target="_blank">
@@ -90,7 +90,7 @@
 						}
 								echo "$item_description<br/>";
 
-						if (!is_null($link))
+						if (!is_null($link) && !empty($link))
 						{
 ?>
 							</a>

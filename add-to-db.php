@@ -352,7 +352,7 @@
 									<tr>
 										<td>
 <?php
-											if (!is_null($items[$i]['link']))
+											if (!is_null($items[$i]['link']) && !empty($items[$i]['link']))
 											{
 ?>
 												<a href="<?= $items[$i]['link']; ?>" target="_blank">
@@ -361,7 +361,7 @@
 
 													echo $items[$i]['description'];
 
-											if (!is_null($items[$i]['link']))
+											if (!is_null($items[$i]['link']) && !empty($items[$i]['link']))
 											{
 ?>
 												</a>
