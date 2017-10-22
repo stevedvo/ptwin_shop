@@ -56,7 +56,7 @@
 
 			$r = mysqli_query($ptwin_shopDB, $q);
 
-			if ($r->num_rows > 0)
+			if ($r && $r->num_rows > 0)
 			{
 				$num_rows = $r->num_rows;
 				for ($i=0; $i<$num_rows; $i++)
@@ -79,7 +79,7 @@
 
 						$r = mysqli_query($ptwin_shopDB, $q);
 
-						if ($r->num_rows > 0)
+						if ($r && $r->num_rows > 0)
 						{
 							$num_rows = $r->num_rows;
 ?>

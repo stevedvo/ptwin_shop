@@ -60,7 +60,7 @@
 
 			if (isset($_POST['order-list']))
 			{
-				$q = "SELECT item_id, description, default_qty, total_qty ";
+				$q = "SELECT item_id, description, default_qty, total_qty, link ";
 				$q.= "FROM items ";
 				$q.= "WHERE selected=1";
 
@@ -69,7 +69,7 @@
 				echo "<p><strong>On order:</strong></p>";
 				$ordered = [];
 
-				if ($r->num_rows > 0)
+				if ($r && $r->num_rows > 0)
 				{
 					$num_rows = $r->num_rows;
 					for ($i=0; $i<$num_rows; $i++)
@@ -80,8 +80,23 @@
 						$item_description = $row['description'];
 						$new_total_qty = $row['total_qty'] + $row['default_qty'];
 						$order_date = date(DATE_W3C);
+						$link = $row['link'];
 
-						echo "$item_description<br/>";
+						if (!is_null($link) && !empty($link))
+						{
+?>
+							<a href="<?= $link; ?>" target="_blank">
+<?php
+						}
+								echo "$item_description<br/>";
+
+						if (!is_null($link) && !empty($link))
+						{
+?>
+							</a>
+<?php
+						}
+
 						$ordered[] = [$item_description => $row['default_qty']];
 
 						$q2 = "UPDATE items ";
@@ -129,7 +144,7 @@
 ?>
 			<div class="results-container">			
 <?php
-				if ($r->num_rows > 0)
+				if ($r && $r->num_rows > 0)
 				{
 					$odd_row = true;
 					$num_rows = $r->num_rows;
