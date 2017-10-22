@@ -24,7 +24,7 @@
 
 		$r = mysqli_query($ptwin_shopDB, $q);
 
-		if ($r->num_rows > 0)
+		if ($r && $r->num_rows > 0)
 		{
 			$num_rows = $r->num_rows;
 
@@ -43,7 +43,7 @@
 
 		$r = mysqli_query($ptwin_shopDB, $q);
 
-		if ($r->num_rows > 0)
+		if ($r && $r->num_rows > 0)
 		{
 			$num_rows = $r->num_rows;
 
@@ -58,6 +58,7 @@
 			$item_description = $_POST['item-description'];
 			$item_default_qty = $_POST['item-default-qty'];
 			$item_list = $_POST['item-list'];
+
 			if ($_POST['item-comments'])
 			{
 				$item_comments = $_POST['item-comments'];
@@ -66,15 +67,26 @@
 			{
 				$item_comments = "";
 			}
+
+			if ($_POST['item-link'])
+			{
+				$item_link = $_POST['item-link'];
+			}
+			else
+			{
+				$item_link = null;
+			}
+
 			$selected = 0;
+
 			if (isset($_POST['selected']))
 			{
 				$selected = 1;
 			}
 
 			$q = "INSERT INTO items ";
-			$q.= "(description, comments, default_qty, selected, list_id) ";
-			$q.= "VALUES ('$item_description', '$item_comments', '$item_default_qty', '$selected', '$item_list')";
+			$q.= "(description, comments, default_qty, selected, list_id, link) ";
+			$q.= "VALUES ('$item_description', '$item_comments', '$item_default_qty', '$selected', '$item_list', '$item_link')";
 
 			$r = mysqli_query($ptwin_shopDB, $q);
 
@@ -112,6 +124,7 @@
 				$item_description = $_POST['item-description'];
 				$item_default_qty = $_POST['item-default-qty'];
 				$item_list = $_POST['item-list'];
+
 				if ($_POST['item-comments'])
 				{
 					$item_comments = $_POST['item-comments'];
@@ -121,8 +134,17 @@
 					$item_comments = "";
 				}
 
+				if ($_POST['item-link'] && !empty($_POST['item-link']))
+				{
+					$item_link = $_POST['item-link'];
+				}
+				else
+				{
+					$item_link = null;
+				}
+
 				$q = "UPDATE items ";
-				$q.= "SET description='$item_description', comments='$item_comments', default_qty='$item_default_qty', list_id='$item_list' ";
+				$q.= "SET description='$item_description', comments='$item_comments', default_qty='$item_default_qty', list_id='$item_list', link='$item_link' ";
 				$q.= "WHERE item_id='$item_id'";
 
 				$r = mysqli_query($ptwin_shopDB, $q);
@@ -156,7 +178,7 @@
 
 			$item_depts = [];
 
-			if ($r2->num_rows > 0)
+			if ($r2 && $r2->num_rows > 0)
 			{
 				$num_rows = $r2->num_rows;
 
@@ -166,7 +188,7 @@
 				}
 			}
 
-			if ($r1->num_rows > 0)
+			if ($r1 && $r1->num_rows > 0)
 			{
 				$num_rows = $r1->num_rows;
 
@@ -174,18 +196,20 @@
 				{
 					$row = mysqli_fetch_array($r1, MYSQLI_ASSOC);
 ?>
-					<h3><?php echo $row['description']; ?></h3>
+					<h3><?= $row['description']; ?></h3>
 					<form method="POST" id="item-update">
-						<input type="hidden" name="item-id" value="<?php echo $item_id; ?>">
+						<input type="hidden" name="item-id" value="<?= $item_id; ?>">
 						<fieldset>
 							Description:<br/>
-							<input type="text" name="item-description" value="<?php echo $row['description']; ?>" required /><br/><br/>
+							<input type="text" name="item-description" value="<?= $row['description']; ?>" required /><br/><br/>
 							Comments:<br/>
-							<input type="text" name="item-comments" value="<?php echo $row['comments']; ?>" /><br/><br/>
+							<input type="text" name="item-comments" value="<?= $row['comments']; ?>" /><br/><br/>
+							Link:<br/>
+							<input type="url" name="item-link" value="<?= $row['link']; ?>" /><br/><br/>
 							Order Qty:<br/>
-							<input type="number" name="item-default-qty" min="1" value="<?php echo $row['default_qty']; ?>" required /><br/><br/>
+							<input type="number" name="item-default-qty" min="1" value="<?= $row['default_qty']; ?>" required /><br/><br/>
 							Last Ordered:<br/>
-							<?php echo $row['last_ordered']; ?><br/><br/>
+							<?= $row['last_ordered']; ?><br/><br/>
 							List:<br/>
 							<select name="item-list">
 <?php
@@ -194,7 +218,7 @@
 									for ($j=0; $j<sizeof($lists); $j++)
 									{
 ?>
-										<option value="<?php echo $lists[$j]['list_id']; ?>" <?php if($lists[$j]['list_id']==$row['list_id']) echo "selected" ?>><?php echo ucfirst($lists[$j]['name']); ?></option>
+										<option value="<?= $lists[$j]['list_id']; ?>" <?php if($lists[$j]['list_id']==$row['list_id']) echo "selected" ?>><?= ucfirst($lists[$j]['name']); ?></option>
 <?php
 									}
 								}
@@ -212,10 +236,10 @@
 									{
 ?>
 										<form method="POST">
-											<input type="hidden" name="item-id" value="<?php echo $item_id;?>" />
-											<input type="hidden" name="dept-id" value="<?php echo $item_depts[$j]['dept_id'];?>" />
+											<input type="hidden" name="item-id" value="<?= $item_id;?>" />
+											<input type="hidden" name="dept-id" value="<?= $item_depts[$j]['dept_id'];?>" />
 											<tr>
-												<td><?php echo $item_depts[$j]['dept_name'];?></td>
+												<td><?= $item_depts[$j]['dept_name'];?></td>
 												<td><input type="submit" name="edit-item" value="Remove Dept" /></td>
 											</tr>
 										</form>
@@ -239,7 +263,7 @@
 									for ($j=0; $j<sizeof($depts); $j++)
 									{
 ?>
-										<option value="<?php echo $depts[$j]['dept_id']; ?>"><?php echo ucfirst($depts[$j]['dept_name']); ?></option>
+										<option value="<?= $depts[$j]['dept_id']; ?>"><?= ucfirst($depts[$j]['dept_name']); ?></option>
 <?php
 									}
 								}
@@ -267,6 +291,8 @@
 						<input name="item-description" type="text" placeholder="Required" required <?php if (isset($_SESSION['item-description'])) echo "value='".$_SESSION['item-description']."'"; ?> />
 						<p>Comments:</p>
 						<input name="item-comments" type="text" placeholder="Optional" />
+						<p>Link:</p>
+						<input name="item-link" type="url" placeholder="Optional" />
 						<p>Default Order Qty:</p>
 						<input name="item-default-qty" type="number" min="1" value="1" required/><br/><br/>
 						<select name="item-list">
@@ -276,7 +302,7 @@
 								for ($i=0; $i<sizeof($lists); $i++)
 								{
 ?>
-									<option value="<?php echo $lists[$i]['list_id']; ?>"><?php echo ucfirst($lists[$i]['name']); ?></option>
+									<option value="<?= $lists[$i]['list_id']; ?>"><?= ucfirst($lists[$i]['name']); ?></option>
 <?php
 								}
 							}
@@ -290,7 +316,7 @@
 								for ($i=0; $i<sizeof($depts); $i++)
 								{
 ?>
-									<option value="<?php echo $depts[$i]['dept_id']; ?>"><?php echo ucfirst($depts[$i]['dept_name']); ?></option>
+									<option value="<?= $depts[$i]['dept_id']; ?>"><?= ucfirst($depts[$i]['dept_name']); ?></option>
 <?php
 								}
 							}
@@ -322,11 +348,30 @@
 							{
 ?>
 								<form method="POST">
-									<input type="hidden" name="item-id" value="<?php echo $items[$i]['item_id']; ?>" />
+									<input type="hidden" name="item-id" value="<?= $items[$i]['item_id']; ?>" />
 									<tr>
-										<td><?php echo $items[$i]['description']; ?></td>
-										<td><?php echo $items[$i]['comments']; ?></td>
-										<td><?php echo $items[$i]['default_qty']; ?></td>
+										<td>
+<?php
+											if (!is_null($items[$i]['link']))
+											{
+?>
+												<a href="<?= $items[$i]['link']; ?>" target="_blank">
+<?php
+											}
+
+													echo $items[$i]['description'];
+
+											if (!is_null($items[$i]['link']))
+											{
+?>
+												</a>
+<?php
+											}
+?>
+												
+										</td>
+										<td><?= $items[$i]['comments']; ?></td>
+										<td><?= $items[$i]['default_qty']; ?></td>
 										<td><input type="submit" name="edit-item" value="Edit Item" /></td>
 									</tr>
 								</form>
