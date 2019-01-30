@@ -1,10 +1,5 @@
-<?php
-?>
-
 <!DOCTYPE html>
-
 <html lang="en">
-
 	<head>
 <?php
 		$page_title = "All Items";
@@ -58,7 +53,8 @@
 			if ($r && $r->num_rows > 0)
 			{
 				$num_rows = $r->num_rows;
-				for ($i=0; $i<$num_rows; $i++)
+
+				for ($i = 0; $i < $num_rows; $i++)
 				{
 					$row = mysqli_fetch_array($r, MYSQLI_ASSOC);
 					$lists[intval($row['list_id'])] = $row['name'];
@@ -69,7 +65,7 @@
 					foreach ($lists as $cat_id => $cat_name)
 					{
 ?>
-						<h3 class="category-name"><?php echo ucfirst($cat_name); ?></h3>
+						<h3 class="category-name"><?= ucfirst($cat_name); ?></h3>
 <?php
 						$q = "SELECT * ";
 						$q.= "FROM items ";
@@ -83,22 +79,15 @@
 ?>
 							<table class="category-table">
 <?php
-								for ($i=0; $i<$num_rows; $i++)
+								for ($i = 0; $i < $num_rows; $i++)
 								{
 									$row = mysqli_fetch_array($r, MYSQLI_ASSOC);
 
-									if ($row['selected'] == 1)
-									{
-										$selected = TRUE;
-									}
-									else
-									{
-										$selected = FALSE;
-									}
+									$selected = $row['selected'] == 1 ? true : false;
 ?>
-									<tr class="category-row <?php if($selected) echo "selected"; ?>">
-										<td class="category-description"><?php echo $row['description']; ?></td>
-										<td><input type="checkbox" name="<?php echo $row['item_id']; ?>" <?php if($selected) echo "checked"; ?> /></td>
+									<tr class="category-row <?= $selected ? 'selected' : ''; ?>">
+										<td class="category-description"><a href="/add-to-db.php?item=<?= $row['item_id']; ?>" target="_blank"><?= $row['description']; ?></a></td>
+										<td><input type="checkbox" name="<?= $row['item_id']; ?>" <?= $selected ? 'checked' : ''; ?> /></td>
 									</tr>
 <?php
 								}
@@ -122,9 +111,7 @@
 			{
 				echo "No categories in DB.";
 			}
-
 ?>
 		</main>
 	</body>
-
 </html>

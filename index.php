@@ -1,10 +1,5 @@
-<?php
-?>
-
 <!DOCTYPE html>
-
 <html lang="en">
-
 	<head>
 <?php
 		$page_title = "Peatwin Shopping";
@@ -62,7 +57,7 @@
 			{
 				$q = "SELECT item_id, description, default_qty, total_qty, link ";
 				$q.= "FROM items ";
-				$q.= "WHERE selected=1";
+				$q.= "WHERE selected = 1";
 
 				$r = mysqli_query($ptwin_shopDB, $q);
 
@@ -72,7 +67,8 @@
 				if ($r && $r->num_rows > 0)
 				{
 					$num_rows = $r->num_rows;
-					for ($i=0; $i<$num_rows; $i++)
+
+					for ($i = 0; $i < $num_rows; $i++)
 					{
 						$row = mysqli_fetch_array($r, MYSQLI_ASSOC);
 
@@ -109,7 +105,7 @@
 					<br/><p><strong>Summary:</strong></p>
 					<table>
 <?php
-						for ($i=0; $i<$num_rows; $i++)
+						for ($i = 0; $i < $num_rows; $i++)
 						{
 							foreach ($ordered[$i] as $key => $value)
 							{
@@ -155,11 +151,11 @@
 						<div class="item-container <?php if ($odd_row) echo 'odd-row'; ?>">
 							<form action="index.php" method="POST">
 								<div class="text-blocks">
-									<input type="text" class="item-description" name="item-description" value="<?php echo $row['description']; ?>" required />
-									<input type="text" class="item-comments" name="item-comments" value="<?php echo $row['comments']; ?>" />
+									<input type="text" class="item-description" name="item-description" value="<?= $row['description']; ?>" required />
+									<input type="text" class="item-comments" name="item-comments" value="<?= $row['comments']; ?>" />
 								</div>
 								<div class="qty-container">
-									<input type="number" name="item-default-qty" min="1" value="<?php echo $row['default_qty']; ?>" required />
+									<input type="number" name="item-default-qty" min="1" value="<?= $row['default_qty']; ?>" required />
 								</div>
 								<div class="btns-container">
 									<div class="update-container">
@@ -169,7 +165,7 @@
 										<input class="remove" type=submit name="remove" value="Remove" />
 									</div>
 								</div>
-								<input type="hidden" name="item-id" value="<?php echo $row['item_id']; ?>" />
+								<input type="hidden" name="item-id" value="<?= $row['item_id']; ?>" />
 							</form>
 						</div>
 <?php
@@ -198,5 +194,4 @@
 			</div>
 		</main>
 	</body>
-
 </html>

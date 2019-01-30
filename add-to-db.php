@@ -1,10 +1,5 @@
-<?php
-?>
-
 <!DOCTYPE html>
-
 <html lang="en">
-
 	<head>
 <?php
 		$page_title = "Add/Manage Items";
@@ -28,7 +23,7 @@
 		{
 			$num_rows = $r->num_rows;
 
-			for ($i=0; $i<$num_rows; $i++)
+			for ($i = 0; $i < $num_rows; $i++)
 			{
 				$lists[$i] = mysqli_fetch_array($r, MYSQLI_ASSOC);
 			}
@@ -47,7 +42,7 @@
 		{
 			$num_rows = $r->num_rows;
 
-			for ($i=0; $i<$num_rows; $i++)
+			for ($i = 0; $i < $num_rows; $i++)
 			{
 				$depts[$i] = mysqli_fetch_array($r, MYSQLI_ASSOC);
 			}
@@ -105,21 +100,18 @@
 			}
 		}
 
-		if (isset($_POST['edit-item']))
+		if (isset($_POST['edit-item']) || (isset($_GET['item']) && is_numeric($_GET['item'])))
 		{
-			$item_id = $_POST['item-id'];
-
-			if ($_POST['edit-item']=="Remove Dept")
+			if (isset($_POST['edit-item']))
 			{
-				$dept_id = $_POST['dept-id'];
-
-				$q = "DELETE FROM item_dept_link ";
-				$q.= "WHERE item_id='$item_id' AND dept_id='$dept_id'";
-
-				$r = mysqli_query($ptwin_shopDB, $q);
+				$item_id = $_POST['item-id'];
+			}
+			else
+			{
+				$item_id = $_GET['item'];
 			}
 
-			if ($_POST['edit-item']=="Apply Changes")
+			if (isset($_POST['edit-item']) && $_POST['edit-item'] == "Apply Changes")
 			{
 				$item_description = $_POST['item-description'];
 				$item_default_qty = $_POST['item-default-qty'];
@@ -182,7 +174,7 @@
 			{
 				$num_rows = $r2->num_rows;
 
-				for ($i=0; $i<$num_rows; $i++)
+				for ($i = 0; $i < $num_rows; $i++)
 				{
 					$item_depts[$i] = mysqli_fetch_array($r2, MYSQLI_ASSOC);
 				}
@@ -192,13 +184,13 @@
 			{
 				$num_rows = $r1->num_rows;
 
-				for ($i=0; $i<$num_rows; $i++)
+				for ($i = 0; $i < $num_rows; $i++)
 				{
 					$row = mysqli_fetch_array($r1, MYSQLI_ASSOC);
 ?>
 					<h3><?= $row['description']; ?></h3>
 					<form method="POST" id="item-update">
-						<input type="hidden" name="item-id" value="<?= $item_id; ?>">
+						<input type="hidden" name="item-id" value="<?= $item_id; ?>" />
 						<fieldset>
 							Description:<br/>
 							<input type="text" name="item-description" value="<?= $row['description']; ?>" required /><br/><br/>
@@ -215,38 +207,36 @@
 <?php
 								if (!empty($lists))
 								{
-									for ($j=0; $j<sizeof($lists); $j++)
+									for ($j = 0; $j < sizeof($lists); $j++)
 									{
 ?>
-										<option value="<?= $lists[$j]['list_id']; ?>" <?php if($lists[$j]['list_id']==$row['list_id']) echo "selected" ?>><?= ucfirst($lists[$j]['name']); ?></option>
+										<option value="<?= $lists[$j]['list_id']; ?>" <?= $lists[$j]['list_id'] == $row['list_id'] ? "selected" : ""; ?>><?= ucfirst($lists[$j]['name']); ?></option>
 <?php
 									}
 								}
 ?>
-							</select><br/><br/>
-					</form>
+							</select>
+							<br/><br/>
+
 							Department(s):<br/>
 <?php
-							if (sizeof($item_depts)>0)
+							if (sizeof($item_depts) > 0)
 							{
 ?>
 								<table>
 <?php
-									for ($j=0; $j<sizeof($item_depts); $j++)
+									for ($j = 0; $j < sizeof($item_depts); $j++)
 									{
 ?>
-										<form method="POST">
-											<input type="hidden" name="item-id" value="<?= $item_id;?>" />
-											<input type="hidden" name="dept-id" value="<?= $item_depts[$j]['dept_id'];?>" />
-											<tr>
-												<td><?= $item_depts[$j]['dept_name'];?></td>
-												<td><input type="submit" name="edit-item" value="Remove Dept" /></td>
-											</tr>
-										</form>
+										<tr data-item="<?= $item_id; ?>" data-dept="<?= $item_depts[$j]['dept_id']; ?>">
+											<td><?= $item_depts[$j]['dept_name'];?></td>
+											<td><input type="submit" name="edit-item" value="Remove Dept" /></td>
+										</tr>
 <?php
 									}
 ?>
-								</table><br/><br/>
+								</table>
+								<br/><br/>
 <?php
 							}
 							else
@@ -260,7 +250,7 @@
 <?php
 								if (!empty($depts))
 								{
-									for ($j=0; $j<sizeof($depts); $j++)
+									for ($j = 0; $j < sizeof($depts); $j++)
 									{
 ?>
 										<option value="<?= $depts[$j]['dept_id']; ?>"><?= ucfirst($depts[$j]['dept_name']); ?></option>
@@ -268,7 +258,8 @@
 									}
 								}
 ?>
-							</select><br/><br/>
+							</select>
+							<br/><br/>
 
 							<input type="submit" name="edit-item" value="Apply Changes" />
 						</fieldset>
@@ -344,7 +335,7 @@
 								<td></td>
 							</tr>
 <?php
-							for ($i=0; $i<sizeof($items); $i++)
+							for ($i = 0; $i < sizeof($items); $i++)
 							{
 ?>
 								<form method="POST">

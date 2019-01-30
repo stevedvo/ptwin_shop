@@ -1,20 +1,15 @@
-<?php
-?>
-
 <!DOCTYPE html>
-
 <html lang="en">
-
 	<head>
 <?php
 		$page_title = "All Items";
-		include ('head-section.php');
+		include('head-section.php');
 ?>
 	</head>
 
 	<body>
 <?php
-		include ('header.php');
+		include('header.php');
 ?>
 		<main class="wrapper">
 <?php
@@ -39,7 +34,6 @@
 				$q.= "ELSE selected END";
 
 				$r = mysqli_query($ptwin_shopDB, $q);
-
 			}
 
 			if (isset($_POST['clear-all']))
@@ -70,7 +64,7 @@
 					foreach ($depts as $dept_id => $dept_name)
 					{
 ?>
-						<h3 class="dept-name"><?php echo ucfirst($dept_name); ?></h3>
+						<h3 class="dept-name"><?= ucfirst($dept_name); ?></h3>
 <?php
 						$q = "SELECT * ";
 						$q.= "FROM item_dept_link ";
@@ -85,22 +79,15 @@
 ?>
 							<table class="dept-table">
 <?php
-								for ($i=0; $i<$num_rows; $i++)
+								for ($i = 0; $i < $num_rows; $i++)
 								{
 									$row = mysqli_fetch_array($r, MYSQLI_ASSOC);
 
-									if ($row['selected'] == 1)
-									{
-										$selected = TRUE;
-									}
-									else
-									{
-										$selected = FALSE;
-									}
+									$selected = $row['selected'] == 1 ? true : false;
 ?>
-									<tr class="dept-row <?php if($selected) echo "selected"; ?>">
-										<td class="dept-description"><?php echo $row['description']; ?></td>
-										<td><input type="checkbox" name="<?php echo $row['item_id']; ?>" <?php if($selected) echo "checked"; ?> /></td>
+									<tr class="dept-row <?= $selected ? 'selected' : ''; ?>">
+										<td class="dept-description"><a href="/add-to-db.php?item=<?= $row['item_id']; ?>" target="_blank"><?= $row['description']; ?></a></td>
+										<td><input type="checkbox" name="<?= $row['item_id']; ?>" <?= $selected ? 'checked' : ''; ?> /></td>
 									</tr>
 <?php
 								}
@@ -128,5 +115,4 @@
 ?>
 		</main>
 	</body>
-
 </html>
