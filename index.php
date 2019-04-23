@@ -130,8 +130,9 @@
 			if (isset($_POST['add-usuals']))
 			{
 				$q = "UPDATE items ";
-				$q.= "SET selected='1' ";
-				$q.= "WHERE list_id='1'";
+				$q.= "LEFT JOIN lists ON items.list_id = lists.list_id ";
+				$q.= "SET items.selected='1' ";
+				$q.= "WHERE lists.name='Usuals'";
 
 				$r = mysqli_query($ptwin_shopDB, $q);
 			}
