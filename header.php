@@ -37,45 +37,54 @@
 	{
 		$num_rows = $r->num_rows;
 ?>
-	<script type="text/javascript">
-		$(function()
-		{
-			var availableItems = [];
-<?php
-			for ($i=0; $i<$num_rows; $i++)
+		<script type="text/javascript">
+			$(function()
 			{
-				$row = mysqli_fetch_array($r, MYSQLI_ASSOC);
+				var availableItems = [];
+<?php
+				for ($i = 0; $i < $num_rows; $i++)
+				{
+					$row = mysqli_fetch_array($r, MYSQLI_ASSOC);
 
-				$items[$i] = $row;
+					$items[$i] = $row;
 ?>
-				availableItems[<?php echo $i; ?>] = "<?php echo $row['description']; ?>";
+					availableItems[<?= $i; ?>] = "<?= $row['description']; ?>";
 <?php
-			}
+				}
 ?>
-			$("#quick-add").autocomplete(
-			{
-				source: availableItems
+				$("#quick-add").autocomplete(
+				{
+					source: availableItems
+				});
 			});
-		});
-	</script>
+		</script>
 <?php
 	}
 ?>
 
-<header class="wrapper">
-	<h1><?php echo $page_title; ?></h1>
-	<a href="index.php"><button>Home</button></a>
-	<a href="add-to-db.php"><button>Add/Manage Items</button></a>
-	<a href="view-by-freq.php"><button>View By Freq</button></a>
-	<a href="view-by-dept.php"><button>View By Dept</button></a>
-	<a href="manage-dept.php"><button>Manage Dept</button></a>
-	<hr/>
-	<div class="ui-widget">
-		<label for="quick-add">Quick Add: </label>
-		<form method="POST">
-			<input id="quick-add" name="item-description" />
-			<input type="submit" name="quick-add" value="Add" />
-		</form>
+<header class="wrapper page-header">
+	<div class="container">
+		<div class="row">
+			<h1><?= $page_title; ?></h1>
+		</div>
+
+		<div class="row">
+			<a href="index.php"><button>Home</button></a>
+			<a href="add-to-db.php"><button>Add/Manage Items</button></a>
+			<a href="view-by-freq.php"><button>View By Freq</button></a>
+			<a href="manage-lists.php"><button>Manage Lists</button></a>
+			<a href="view-by-dept.php"><button>View By Dept</button></a>
+			<a href="manage-dept.php"><button>Manage Dept</button></a>
+			<hr/>
+		</div>
+		<div class="row">
+			<div class="ui-widget">
+				<label for="quick-add">Quick Add: </label>
+				<form method="POST">
+					<input id="quick-add" name="item-description" />
+					<input type="submit" name="quick-add" value="Add" />
+				</form>
+			</div>
+		</div>
 	</div>
-	<hr/>
 </header>

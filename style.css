@@ -1,14 +1,6 @@
-*
-{
-	/*margin: 0px;*/
-	/*padding: 0px;*/
-}
-
 .wrapper
 {
-	float: left;
-	width: calc(100% - 30px);
-	padding: 0px 15px;
+
 }
 
 .results-container
@@ -36,7 +28,10 @@
 	padding-right: 15px;
 }
 
-input.item-description, input.item-comments, input.update, input.remove
+input.item-description,
+input.item-comments,
+input.update,
+input.remove
 {
 	width: 100%;
 	line-height: 15px;
@@ -110,32 +105,40 @@ input.item-description, input.item-comments, input.update, input.remove
 
 @media only screen and (min-width: 768px)
 {
-	input.item-description, input.item-comments, .update-container, .remove-container
+	input.item-description,
+	input.item-comments,
+	.update-container,
+	.remove-container
 	{
 		width: calc(50% - 9px);
 	}
+
 	.qty-container>input
 	{
 		line-height: 15px;
 	}
+
 	.action-btns-container
 	{
 		width: 50%;
 	}
 }
 
-.category-table, .dept-table
+.category-table,
+.dept-table
 {
 	width: 100%;
 	max-width: 280px;
 }
 
-.category-row.selected, .dept-row.selected
+.category-row.selected,
+.dept-row.selected
 {
 	background: lightgreen;
 }
 
-.category-description, .dept-description
+.category-description,
+.dept-description
 {
 	width: 90%;
 }
