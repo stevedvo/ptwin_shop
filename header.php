@@ -65,25 +65,32 @@
 <header class="wrapper page-header">
 	<div class="container">
 		<div class="row">
-			<h1><?= $page_title; ?></h1>
+			<div class="col-xs-12">
+				<h1><?= $page_title; ?></h1>
+			</div>
 		</div>
 
 		<div class="row">
-			<a href="index.php"><button>Home</button></a>
-			<a href="add-to-db.php"><button>Add/Manage Items</button></a>
-			<a href="view-by-freq.php"><button>View By Freq</button></a>
-			<a href="manage-lists.php"><button>Manage Lists</button></a>
-			<a href="view-by-dept.php"><button>View By Dept</button></a>
-			<a href="manage-dept.php"><button>Manage Dept</button></a>
+			<div class="col-xs-12">
+				<a class="btn btn-primary" href="index.php">Home</a>
+				<a class="btn btn-primary" href="add-to-db.php">Add/Manage Items</a>
+				<a class="btn btn-primary" href="view-by-freq.php">View By Freq</a>
+				<a class="btn btn-primary" href="manage-lists.php">Manage Lists</a>
+				<a class="btn btn-primary" href="view-by-dept.php">View By Dept</a>
+				<a class="btn btn-primary" href="manage-dept.php">Manage Dept</a>
+			</div>
 			<hr/>
 		</div>
+
 		<div class="row">
-			<div class="ui-widget">
-				<label for="quick-add">Quick Add: </label>
-				<form method="POST">
-					<input id="quick-add" name="item-description" />
-					<input type="submit" name="quick-add" value="Add" />
-				</form>
+			<div class="col-xs-12">
+				<div class="ui-widget">
+					<label for="quick-add">Quick Add: </label>
+					<form method="POST">
+						<input id="quick-add" name="item-description" />
+						<input type="submit" name="quick-add" value="Add" />
+					</form>
+				</div>
 			</div>
 		</div>
 	</div>
