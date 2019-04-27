@@ -20,7 +20,7 @@
 							<fieldset>
 								<legend>Add List</legend>
 								<p>List Name:</p>
-								<input type="text" name="list-name" placeholder="Required" required />
+								<input type="text" name="list-name" placeholder="Required" data-validation="required_string" />
 								<br/><br/>
 								<input type="submit" class="btn btn-primary js-add-list" value="Add List" />
 							</fieldset><br/>

@@ -1,9 +1,5 @@
 <?php
-	date_default_timezone_set('UTC');
-	// opens DB connexion
-	require_once('../../init_ptwin_shop.php');
-	require_once('models.php');
-	require_once('functions.php');
+	require_once('load.php');
 ?>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1">
