@@ -16,22 +16,22 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-xs-12">
-						<form method="POST">
+						<div id="add-list" class="form">
 							<fieldset>
 								<legend>Add List</legend>
 								<p>List Name:</p>
-								<input name="list-name" type="text" placeholder="Required" required />
+								<input type="text" name="list-name" placeholder="Required" required />
 								<br/><br/>
-								<input type="submit" name="add-list" value="Add List" />
+								<input type="submit" class="btn btn-primary js-add-list" value="Add List" />
 							</fieldset><br/>
-						</form>
+						</div>
 					</div>
 				</div>
 
 				<div class="row">
 					<div class="col-xs-12">
 <?php
-						if (sizeof($lists) > 0)
+						if (is_array($lists))
 						{
 ?>
 							<table>
