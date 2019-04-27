@@ -29,10 +29,18 @@ function mamnageLists()
 				}
 			}).done(function(data)
 			{
-				console.log("done");
-				console.log(data);
+				if (data)
+				{
+					toastr.success("Test success");
+
+				}
+				else
+				{
+					toastr.error("An error occurred");
+				}
 			}).fail(function(data)
 			{
+				toastr.error("Test error");
 				console.log("fail");
 				console.log(data);
 			});

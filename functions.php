@@ -50,6 +50,8 @@
 		$query->bind_param("s", $list_name);
 		$query->execute();
 
+		$list_id = $query->insert_id;
+
 		return $list_id;
 	}
 
