@@ -34,7 +34,7 @@
 						if (is_array($lists))
 						{
 ?>
-							<table>
+							<table class="results-table">
 								<tr>
 									<th></th>
 									<th>List Name</th>
@@ -44,14 +44,12 @@
 								foreach ($lists as $list_id => $list)
 								{
 ?>
-									<form method="POST">
-										<tr>
-											<input type="hidden" name="list-id" value="<?= $list->getId(); ?>" />
-											<td><input type="submit" name="view-list" value="View" /></td>
-											<td><input type="text" name="list-name" value="<?= $list->getName(); ?>" /></td>
-											<td><input type="submit" name="update-list" value="Update" /></td>
-										</tr>
-									</form>
+									<tr>
+										<input type="hidden" name="list-id" value="<?= $list->getId(); ?>" />
+										<td><input type="submit" name="view-list" value="View" /></td>
+										<td><input type="text" name="list-name" value="<?= $list->getName(); ?>" /></td>
+										<td><input type="submit" name="update-list" value="Update" /></td>
+									</tr>
 <?php
 								}
 ?>

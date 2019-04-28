@@ -31,7 +31,17 @@ function mamnageLists()
 			{
 				if (data)
 				{
-					toastr.success("Test success");
+					var html =
+					'<tr>'+
+						'<input type="hidden" name="list-id" value="'+parseInt(data)+'" />'+
+						'<td><input type="submit" name="view-list" value="View" /></td>'+
+						'<td><input type="text" name="list-name" value="'+listName+'" /></td>'+
+						'<td><input type="submit" name="update-list" value="Update" /></td>'+
+					'</tr>';
+
+					$(".results-table").append(html);
+
+					toastr.success("New List successfully added");
 
 				}
 				else
@@ -40,8 +50,7 @@ function mamnageLists()
 				}
 			}).fail(function(data)
 			{
-				toastr.error("Test error");
-				console.log("fail");
+				toastr.error("Could not perform request");
 				console.log(data);
 			});
 		}
