@@ -10,6 +10,7 @@
 	<body>
 <?php
 		include_once('header.php');
+		$listPrototype = new ShopList();
 		$lists = getAllLists();
 ?>
 		<main class="wrapper">
@@ -20,7 +21,7 @@
 							<fieldset>
 								<legend>Add List</legend>
 								<p>List Name:</p>
-								<input type="text" name="list-name" placeholder="Required" data-validation="required_string" />
+								<input type="text" name="list-name" placeholder="Required" data-validation="<?= $listPrototype->getValidation("name"); ?>" />
 								<br/><br/>
 								<input type="submit" class="btn btn-primary js-add-list" value="Add List" />
 							</fieldset><br/>

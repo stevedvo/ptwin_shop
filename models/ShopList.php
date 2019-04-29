@@ -3,11 +3,19 @@
 	{
 		private $id;
 		private $name;
+		private $validation;
 
 		public function __construct($id = null, $name = null)
 		{
 			$this->id = $id;
 			$this->name = $name;
+			$this->validation =
+			[
+				'name' =>
+				[
+					'required' => true
+				]
+			];
 		}
 
 		public function getId()
@@ -28,5 +36,24 @@
 		public function setName($name)
 		{
 			$this->name = $name;
+		}
+
+		public function getValidation($property = null)
+		{
+			if (is_null($property) || !isset($this->validation[$property]))
+			{
+				return false;
+			}
+
+			$validation = "";
+
+			foreach ($this->validation[$property] as $key => $value)
+			{
+				$validation.= $key.":".$value."_";
+			}
+
+			$validation = rtrim($validation, "_");
+
+			return $validation;
 		}
 	}
