@@ -20,8 +20,8 @@
 						<div id="add-list" class="form">
 							<fieldset>
 								<legend>Add List</legend>
-								<p>List Name:</p>
-								<input type="text" name="list-name" placeholder="Required" data-validation="<?= $listPrototype->getValidation("Name"); ?>" />
+								<label for="list-name">List Name:</label>
+								<input id="list-name" type="text" name="list-name" placeholder="Required" data-validation="<?= $listPrototype->getValidation("Name"); ?>" />
 								<br/><br/>
 								<input type="submit" class="btn btn-primary js-add-list" value="Add List" />
 							</fieldset><br/>

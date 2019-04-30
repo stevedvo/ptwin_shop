@@ -51,6 +51,8 @@ function manageLists()
 					'</tr>';
 
 					$(".results-table").append(html);
+					form.find(".input-error").removeClass("input-error");
+					form.find("[name='list-name']").val("");
 
 					toastr.success("New List successfully added");
 
