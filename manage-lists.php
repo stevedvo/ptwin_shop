@@ -31,33 +31,26 @@
 
 				<div class="row">
 					<div class="col-xs-12">
+						<h3>Current Lists</h3>
+						<div class="results-container">
 <?php
-						if (is_array($lists))
-						{
+							if (!is_array($lists))
+							{
 ?>
-							<table class="results-table">
-								<tr>
-									<th></th>
-									<th>List Name</th>
-									<th></th>
-								</tr>
+								<p class="no-results">No Lists can be found</p>
 <?php
+							}
+							else
+							{
 								foreach ($lists as $list_id => $list)
 								{
 ?>
-									<tr>
-										<input type="hidden" name="list-id" value="<?= $list->getId(); ?>" />
-										<td><input type="submit" name="view-list" value="View" /></td>
-										<td><input type="text" name="list-name" value="<?= $list->getName(); ?>" /></td>
-										<td><input type="submit" name="update-list" value="Update" /></td>
-									</tr>
+									<p><a href="/edit-list.php?id=<?= $list->getId(); ?>"><?= $list->getName(); ?></a></p>
 <?php
 								}
+							}
 ?>
-							</table>
-<?php
-						}
-?>
+						</div>
 					</div>
 				</div>
 			</div>

@@ -42,15 +42,10 @@ function manageLists()
 			{
 				if (data)
 				{
-					var html =
-					'<tr>'+
-						'<input type="hidden" name="list-id" value="'+parseInt(data)+'" />'+
-						'<td><input type="submit" name="view-list" value="View" /></td>'+
-						'<td><input type="text" name="list-name" value="'+listName+'" /></td>'+
-						'<td><input type="submit" name="update-list" value="Update" /></td>'+
-					'</tr>';
+					var html = '<p><a href="/edit-list/?id='+parseInt(data)+'">'+listName+'</a></p>';
 
-					$(".results-table").append(html);
+					$(".results-container").append(html);
+					$(".results-container").find("p.no-results").remove();
 					form.find(".input-error").removeClass("input-error");
 					form.find("[name='list-name']").val("");
 

@@ -87,6 +87,31 @@
 		return $list;
 	}
 
+	function getListById($list_id)
+	{
+		global $ptwin_shopDB;
+
+		$list = false;
+		$query = $ptwin_shopDB->prepare("SELECT list_id, name FROM lists WHERE list_id = ?");
+		$query->bind_param("s", $list_id);
+		$query->execute();
+		$result = $query->get_result();
+
+		if ($result->num_rows)
+		{
+			while ($row = $result->fetch_assoc())
+			{
+				if (!$list)
+				{
+					$list = new ShopList($row['list_id']);
+					$list->setName($row['name']);
+				}
+			}
+		}
+
+		return $list;
+	}
+
 	function entityIsValid($entity)
 	{
 		if (is_array($entity->getValidation()))
