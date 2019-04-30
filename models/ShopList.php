@@ -11,11 +11,9 @@
 			$this->name = $name;
 			$this->validation =
 			[
-				'name' =>
+				'Name' =>
 				[
-					'required' => true,
-					'min-length' => 5,
-					'max-length' => 10
+					'required' => true
 				]
 			];
 		}
@@ -42,7 +40,12 @@
 
 		public function getValidation($property = null)
 		{
-			if (is_null($property) || !isset($this->validation[$property]))
+			if (is_null($property))
+			{
+				return $this->validation;
+			}
+
+			if (!isset($this->validation[$property]))
 			{
 				return false;
 			}

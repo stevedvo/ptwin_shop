@@ -21,7 +21,7 @@
 							<fieldset>
 								<legend>Add List</legend>
 								<p>List Name:</p>
-								<input type="text" name="list-name" placeholder="Required" data-validation="<?= $listPrototype->getValidation("name"); ?>" />
+								<input type="text" name="list-name" placeholder="Required" data-validation="<?= $listPrototype->getValidation("Name"); ?>" />
 								<br/><br/>
 								<input type="submit" class="btn btn-primary js-add-list" value="Add List" />
 							</fieldset><br/>
