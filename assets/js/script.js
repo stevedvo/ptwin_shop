@@ -2,22 +2,27 @@ $ = jQuery;
 
 $(function()
 {
-	mamnageLists();
+	manageLists();
 });
 
-function mamnageLists()
+function manageLists()
 {
 	$(document).on("click", ".js-add-list", function()
 	{
 		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+
 		var validation = validateForm(form);
 
 		if (Object.keys(validation).length > 0)
 		{
 			$.each(validation, function(field, errMsg)
 			{
-				form.find("[name='"+field+"']").after("<p>"+errMsg+"</p>");
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
 			});
+
+			toastr.error("There were validation failures");
 		}
 		else
 		{
@@ -93,7 +98,29 @@ function validateForm(form)
 							{
 								if ($thisInput.val().length == 0)
 								{
-									result[$thisInput.attr("name")] = "This field is required";
+									if (result[$thisInput.attr("name")] == undefined)
+									{
+										result[$thisInput.attr("name")] = "This field is required. ";
+									}
+									else
+									{
+										result[$thisInput.attr("name")]+= "This field is required. ";
+									}
+								}
+							}
+							break;
+							case 'min-length':
+							{
+								if ($thisInput.val().length < criterion[1])
+								{
+									if (result[$thisInput.attr("name")] == undefined)
+									{
+										result[$thisInput.attr("name")] = "Must be "+criterion[1]+" characters or more. ";
+									}
+									else
+									{
+										result[$thisInput.attr("name")]+= "Must be "+criterion[1]+" characters or more. ";
+									}
 								}
 							}
 							break;
@@ -101,7 +128,14 @@ function validateForm(form)
 							{
 								if ($thisInput.val().length > criterion[1])
 								{
-									result[$thisInput.attr("name")] = "Must be "+criterion[1]+" characters or less";
+									if (result[$thisInput.attr("name")] == undefined)
+									{
+										result[$thisInput.attr("name")] = "Must be "+criterion[1]+" characters or less. ";
+									}
+									else
+									{
+										result[$thisInput.attr("name")]+= "Must be "+criterion[1]+" characters or less. ";
+									}
 								}
 							}
 							break;

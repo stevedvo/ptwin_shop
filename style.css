@@ -142,3 +142,13 @@ input.remove
 {
 	width: 90%;
 }
+
+.form .input-error
+{
+	border: red solid 2px;
+}
+
+.form .error-message
+{
+	color: red;
+}

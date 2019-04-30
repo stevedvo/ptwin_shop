@@ -13,7 +13,9 @@
 			[
 				'name' =>
 				[
-					'required' => true
+					'required' => true,
+					'min-length' => 5,
+					'max-length' => 10
 				]
 			];
 		}
