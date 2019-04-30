@@ -18,6 +18,7 @@
 		else
 		{
 			$list = getListById($_GET['id']);
+			$all_items = getAllItems();
 		}
 ?>
 		<main class="wrapper">
@@ -49,15 +50,47 @@
 
 					<div class="row">
 						<div class="col-xs-12">
-							// show current items in list [update SQL to include items, add items array property to list object]
-							// option to remove [AJAX - which updates select below]
+							<h3>Current Items in List</h3>
+<?php
+							if (is_array($list->getItems()) && sizeof($list->getItems()) > 0)
+							{
+								foreach ($list->getItems() as $item_id => $item)
+								{
+?>
+									<p><?= $item->getDescription(); ?><span class="btn btn-danger btn-sm js-remove-item-from-list" data-item_id="<?= $item->getId(); ?>">Move to another list</span></p>
+<?php
+								}
+							}
+							else
+							{
+?>
+								<p class="no-results">No Items in this List</p>
+<?php
+							}
+?>
 						</div>
 					</div>
 
 					<div class="row">
 						<div class="col-xs-12">
-							// select input to choose available items [not including items already in list]
-							// AJAX update
+							<h3>Add Item to List</h3>
+							<select>
+<?php
+								if (is_array($all_items))
+								{
+									foreach ($all_items as $item_id => $item)
+									{
+										if (is_array($list->getItems()) && !array_key_exists($item_id, $list->getItems()))
+										{
+?>
+											<option data-item_id="<?= $item->getId(); ?>"><?= $item->getDescription(); ?></option>
+<?php
+										}
+									}
+								}
+?>
+							</select>
+							<button class="btn btn-primary btn-sm js-add-item-to-list">Add to List</button>
 						</div>
 					</div>
 <?php

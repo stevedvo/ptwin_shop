@@ -137,6 +137,29 @@
 		return $list;
 	}
 
+	function getAllItems()
+	{
+		global $ptwin_shopDB;
+
+		$items = false;
+		$query = $ptwin_shopDB->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM items AS i");
+		$query->execute();
+		$result = $query->get_result();
+
+		if ($result->num_rows)
+		{
+			$items = [];
+
+			while ($row = $result->fetch_assoc())
+			{
+				$item = createItem($row);
+				$items[$item->getId()] = $item;
+			}
+		}
+
+		return $items;
+	}
+
 	function entityIsValid($entity)
 	{
 		if (is_array($entity->getValidation()))
