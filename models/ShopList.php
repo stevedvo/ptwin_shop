@@ -4,8 +4,9 @@
 		private $id;
 		private $name;
 		private $validation;
+		private $items;
 
-		public function __construct($id = null, $name = null)
+		public function __construct($id = null, $name = null, $items = [])
 		{
 			$this->id = $id;
 			$this->name = $name;
@@ -16,6 +17,7 @@
 					'required' => true
 				]
 			];
+			$this->items = $items;
 		}
 
 		public function getId()
@@ -60,5 +62,25 @@
 			$validation = rtrim($validation, "_");
 
 			return $validation;
+		}
+
+		public function getItems()
+		{
+			return $this->items;
+		}
+
+		public function setItems($items)
+		{
+			$this->items = $items;
+		}
+
+		public function addItem($item)
+		{
+			if (!is_array($this->items))
+			{
+				$this->items = [];
+			}
+
+			$this->items[$item->getId()] = $item;
 		}
 	}

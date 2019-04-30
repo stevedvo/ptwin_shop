@@ -1,4 +1,11 @@
 <?php
+	function var_debug($variable)
+	{
+		echo "<pre>";
+		var_dump($variable);
+		echo "</pre>";
+	}
+
 	function getAllLists()
 	{
 		global $ptwin_shopDB;
@@ -62,12 +69,29 @@
 		return $list;
 	}
 
+	function createItem($request)
+	{
+		$id = isset($request['item_id']) ? $request['item_id'] : null;
+		$description = isset($request['description']) ? $request['description'] : null;
+		$comments = isset($request['comments']) ? $request['comments'] : null;
+		$default_qty = isset($request['default_qty']) ? $request['default_qty'] : null;
+		$total_qty = isset($request['total_qty']) ? $request['total_qty'] : null;
+		$last_ordered = isset($request['last_ordered']) ? $request['last_ordered'] : null;
+		$selected = isset($request['selected']) ? $request['selected'] : null;
+		$list_id = isset($request['list_id']) ? $request['list_id'] : null;
+		$link = isset($request['link']) ? $request['link'] : null;
+
+		$item = new Item($id, $description, $comments, $default_qty, $total_qty, $last_ordered, $selected, $list_id, $link);
+
+		return $item;
+	}
+
 	function getListByName($list_name)
 	{
 		global $ptwin_shopDB;
 
 		$list = false;
-		$query = $ptwin_shopDB->prepare("SELECT list_id, name FROM lists WHERE name = ?");
+		$query = $ptwin_shopDB->prepare("SELECT list_id, name AS list_name FROM lists WHERE name = ?");
 		$query->bind_param("s", $list_name);
 		$query->execute();
 		$result = $query->get_result();
@@ -78,8 +102,7 @@
 			{
 				if (!$list)
 				{
-					$list = new ShopList($row['list_id']);
-					$list->setName($row['name']);
+					$list = createList($row);
 				}
 			}
 		}
@@ -92,7 +115,7 @@
 		global $ptwin_shopDB;
 
 		$list = false;
-		$query = $ptwin_shopDB->prepare("SELECT list_id, name FROM lists WHERE list_id = ?");
+		$query = $ptwin_shopDB->prepare("SELECT l.list_id, l.name AS list_name, i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.link FROM lists AS l LEFT JOIN items AS i ON (l.list_id = i.list_id) WHERE l.list_id = ?");
 		$query->bind_param("s", $list_id);
 		$query->execute();
 		$result = $query->get_result();
@@ -103,9 +126,11 @@
 			{
 				if (!$list)
 				{
-					$list = new ShopList($row['list_id']);
-					$list->setName($row['name']);
+					$list = createList($row);
 				}
+
+				$item = createItem($row);
+				$list->addItem($item);
 			}
 		}
 
