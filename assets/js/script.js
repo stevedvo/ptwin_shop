@@ -35,8 +35,8 @@ function manageLists()
 				dataType : "json",
 				data     :
 				{
-					action : "addList",
-					request : {list_name : listName}
+					action  : "addList",
+					request : {'list_name' : listName}
 				}
 			}).done(function(data)
 			{
@@ -62,6 +62,53 @@ function manageLists()
 				console.log(data);
 			});
 		}
+	});
+
+	$(document).on("click", ".js-add-item-to-list", function()
+	{
+		var form = $(this).closest(".form");
+		var itemID = parseInt(form.find("select option:selected").data("item_id"));
+		var listID = parseInt(form.find("[name='list-id']").val());
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : "/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				action  : "addItemToList",
+				request :
+				{
+					'item_id' : itemID,
+					'list_id' : listID
+				}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				// var html = '<p><a href="/edit-list/?id='+parseInt(data)+'">'+listName+'</a></p>';
+
+				// $(".results-container").append(html);
+				// $(".results-container").find("p.no-results").remove();
+				// form.find(".input-error").removeClass("input-error");
+				// form.find("[name='list-name']").val("");
+
+				toastr.success("New List successfully added");
+
+			}
+			else
+			{
+				toastr.error("Could not save List");
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+
+
 	});
 }
 

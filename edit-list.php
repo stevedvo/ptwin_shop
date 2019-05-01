@@ -74,23 +74,26 @@
 					<div class="row">
 						<div class="col-xs-12">
 							<h3>Add Item to List</h3>
-							<select>
+							<div class="form">
+								<input type="hidden" name="list-id" value="<?= $list->getId(); ?>" />
+								<select>
 <?php
-								if (is_array($all_items))
-								{
-									foreach ($all_items as $item_id => $item)
+									if (is_array($all_items))
 									{
-										if (is_array($list->getItems()) && !array_key_exists($item_id, $list->getItems()))
+										foreach ($all_items as $item_id => $item)
 										{
+											if (is_array($list->getItems()) && !array_key_exists($item_id, $list->getItems()))
+											{
 ?>
-											<option data-item_id="<?= $item->getId(); ?>"><?= $item->getDescription(); ?></option>
+												<option data-item_id="<?= $item->getId(); ?>"><?= $item->getDescription(); ?></option>
 <?php
+											}
 										}
 									}
-								}
 ?>
-							</select>
-							<button class="btn btn-primary btn-sm js-add-item-to-list">Add to List</button>
+								</select>
+								<button class="btn btn-primary btn-sm js-add-item-to-list">Add to List</button>
+							</div>
 						</div>
 					</div>
 <?php

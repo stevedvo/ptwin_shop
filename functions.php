@@ -69,16 +69,45 @@
 		return $list;
 	}
 
+	function addItemToList($request)
+	{
+		$item_id = (isset($request['item_id']) && is_numeric($request['item_id'])) ? intval($request['item_id']) : null;
+		$list_id = (isset($request['list_id']) && is_numeric($request['list_id'])) ? intval($request['list_id']) : null;
+
+		if (is_null($item_id) || is_null($list_id))
+		{
+			return false;
+		}
+
+		$item = getItemById($item_id);
+
+		if (!$item)
+		{
+			return false;
+		}
+
+		$list = getListById($list_id);
+
+		if (!$list)
+		{
+			return false;
+		}
+
+		$item->setListId($list->getId());
+
+		return updateItem($item);
+	}
+
 	function createItem($request)
 	{
 		$id = isset($request['item_id']) ? $request['item_id'] : null;
 		$description = isset($request['description']) ? $request['description'] : null;
 		$comments = isset($request['comments']) ? $request['comments'] : null;
-		$default_qty = isset($request['default_qty']) ? $request['default_qty'] : null;
-		$total_qty = isset($request['total_qty']) ? $request['total_qty'] : null;
-		$last_ordered = isset($request['last_ordered']) ? $request['last_ordered'] : null;
+		$default_qty = isset($request['default_qty']) ? intval($request['default_qty']) : null;
+		$total_qty = isset($request['total_qty']) ? intval($request['total_qty']) : null;
+		$last_ordered = isset($request['last_ordered']) ? sanitiseDate($request['last_ordered']) : null;
 		$selected = isset($request['selected']) ? $request['selected'] : null;
-		$list_id = isset($request['list_id']) ? $request['list_id'] : null;
+		$list_id = isset($request['list_id']) ? intval($request['list_id']) : null;
 		$link = isset($request['link']) ? $request['link'] : null;
 
 		$item = new Item($id, $description, $comments, $default_qty, $total_qty, $last_ordered, $selected, $list_id, $link);
@@ -160,6 +189,53 @@
 		return $items;
 	}
 
+	function getItemById($item_id)
+	{
+		global $ptwin_shopDB;
+
+		$item = false;
+		$query = $ptwin_shopDB->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM items AS i WHERE i.item_id = ?");
+		$query->bind_param("s", $item_id);
+		$query->execute();
+		$result = $query->get_result();
+
+		if ($result->num_rows)
+		{
+			while ($row = $result->fetch_assoc())
+			{
+				if (!$item)
+				{
+					$item = createItem($row);
+				}
+			}
+		}
+
+		return $item;
+	}
+
+	function updateItem($item)
+	{
+		global $ptwin_shopDB;
+
+		$result = false;
+
+		$description = $item->getDescription();
+		$comments = $item->getComments();
+		$default_qty = $item->getDefaultQty();
+		$total_qty = $item->getTotalQty();
+		$last_ordered = $item->getLastOrdered() ? $item->getLastOrdered()->format('Y-m-d') : null;
+		$selected = $item->getSelected();
+		$list_id = $item->getListId();
+		$link = $item->getLink();
+
+		$query = $ptwin_shopDB->prepare("UPDATE items SET description = ?, comments = ?, default_qty = ?, total_qty = ?, last_ordered = ?, selected = ?, list_id = ?, link = ? WHERE item_id = ?");
+		$query->bind_param("ssiisbisi", $description, $comments, $default_qty, $total_qty, $last_ordered, $selected, $list_id, $link, $item_id);
+		$query->execute();
+		$result = $query->affected_rows;
+
+		return $result;
+	}
+
 	function entityIsValid($entity)
 	{
 		if (is_array($entity->getValidation()))
@@ -197,4 +273,16 @@
 		}
 
 		return true;
+	}
+
+	function sanitiseDate($date_string)
+	{
+		$date = DateTime::createFromFormat('Y-m-d', $date_string);
+
+		if (!$date)
+		{
+			$date = DateTime::createFromFormat('d-m-Y', $date_string);
+		}
+
+		return $date;
 	}

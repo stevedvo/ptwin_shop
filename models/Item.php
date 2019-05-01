@@ -10,6 +10,7 @@
 		private $selected;
 		private $list_id;
 		private $link;
+		private $validation;
 
 		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $total_qty = null, $last_ordered = null, $selected = null, $list_id = null, $link = null)
 		{
