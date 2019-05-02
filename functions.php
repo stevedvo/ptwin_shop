@@ -8,27 +8,9 @@
 
 	function getAllLists()
 	{
-		global $ptwin_shopDB;
+		$ShopDAL = new ShopDAL();
 
-		$lists = false;
-		$query = $ptwin_shopDB->prepare("SELECT list_id, name FROM lists");
-		$query->execute();
-		$result = $query->get_result();
-
-		if ($result->num_rows)
-		{
-			$lists = [];
-
-			while ($row = $result->fetch_assoc())
-			{
-				$list = new ShopList($row['list_id']);
-				$list->setName($row['name']);
-
-				$lists[$list->getId()] = $list;
-			}
-		}
-
-		return $lists;
+		return $ShopDAL->getAllLists();
 	}
 
 	function addList($request)
@@ -45,18 +27,9 @@
 			return false;
 		}
 
-		global $ptwin_shopDB;
+		$ShopDAL = new ShopDAL();
 
-		$list_id = false;
-		$name = $list->getName();
-
-		$query = $ptwin_shopDB->prepare("INSERT INTO lists (name) VALUES (?)");
-		$query->bind_param("s", $name);
-		$query->execute();
-
-		$list_id = $query->insert_id;
-
-		return $list_id;
+		return $ShopDAL->addList($list);
 	}
 
 	function createList($request)
@@ -117,26 +90,9 @@
 
 	function getListByName($list_name)
 	{
-		global $ptwin_shopDB;
+		$ShopDAL = new ShopDAL();
 
-		$list = false;
-		$query = $ptwin_shopDB->prepare("SELECT list_id, name AS list_name FROM lists WHERE name = ?");
-		$query->bind_param("s", $list_name);
-		$query->execute();
-		$result = $query->get_result();
-
-		if ($result->num_rows)
-		{
-			while ($row = $result->fetch_assoc())
-			{
-				if (!$list)
-				{
-					$list = createList($row);
-				}
-			}
-		}
-
-		return $list;
+		return $ShopDAL->getListByName($list_name);
 	}
 
 	function getListById($list_id)

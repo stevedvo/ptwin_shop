@@ -10,6 +10,9 @@
 	<body>
 <?php
 		include_once('header.php');
+		$dal = new ShopDAL();
+		$test = $dal->testQuery();
+		var_dump($test);
 
 		if (!isset($_GET['id']) || !is_numeric($_GET['id']))
 		{
