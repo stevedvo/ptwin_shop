@@ -25,6 +25,10 @@
 			$this->link = $link;
 			$this->validation =
 			[
+				'Description' =>
+				[
+					'required' => true
+				]
 			];
 		}
 

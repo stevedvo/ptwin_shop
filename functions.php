@@ -97,99 +97,31 @@
 
 	function getListById($list_id)
 	{
-		global $ptwin_shopDB;
+		$ShopDAL = new ShopDAL();
+		$list = $ShopDAL->getListById($list_id);
 
-		$list = false;
-		$query = $ptwin_shopDB->prepare("SELECT l.list_id, l.name AS list_name, i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.link FROM lists AS l LEFT JOIN items AS i ON (l.list_id = i.list_id) WHERE l.list_id = ?");
-		$query->bind_param("s", $list_id);
-		$query->execute();
-		$result = $query->get_result();
-
-		if ($result->num_rows)
-		{
-			while ($row = $result->fetch_assoc())
-			{
-				if (!$list)
-				{
-					$list = createList($row);
-				}
-
-				$item = createItem($row);
-				$list->addItem($item);
-			}
-		}
-
-		return $list;
+		return ($list && entityIsValid($list) ? $list : false);
 	}
 
 	function getAllItems()
 	{
-		global $ptwin_shopDB;
+		$ShopDAL = new ShopDAL();
 
-		$items = false;
-		$query = $ptwin_shopDB->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM items AS i");
-		$query->execute();
-		$result = $query->get_result();
-
-		if ($result->num_rows)
-		{
-			$items = [];
-
-			while ($row = $result->fetch_assoc())
-			{
-				$item = createItem($row);
-				$items[$item->getId()] = $item;
-			}
-		}
-
-		return $items;
+		return $ShopDAL->getAllItems();
 	}
 
 	function getItemById($item_id)
 	{
-		global $ptwin_shopDB;
+		$ShopDAL = new ShopDAL();
 
-		$item = false;
-		$query = $ptwin_shopDB->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM items AS i WHERE i.item_id = ?");
-		$query->bind_param("s", $item_id);
-		$query->execute();
-		$result = $query->get_result();
-
-		if ($result->num_rows)
-		{
-			while ($row = $result->fetch_assoc())
-			{
-				if (!$item)
-				{
-					$item = createItem($row);
-				}
-			}
-		}
-
-		return $item;
+		return $ShopDAL->getItemById($item_id);
 	}
 
 	function updateItem($item)
 	{
-		global $ptwin_shopDB;
+		$ShopDAL = new ShopDAL();
 
-		$result = false;
-
-		$description = $item->getDescription();
-		$comments = $item->getComments();
-		$default_qty = $item->getDefaultQty();
-		$total_qty = $item->getTotalQty();
-		$last_ordered = $item->getLastOrdered() ? $item->getLastOrdered()->format('Y-m-d') : null;
-		$selected = $item->getSelected();
-		$list_id = $item->getListId();
-		$link = $item->getLink();
-
-		$query = $ptwin_shopDB->prepare("UPDATE items SET description = ?, comments = ?, default_qty = ?, total_qty = ?, last_ordered = ?, selected = ?, list_id = ?, link = ? WHERE item_id = ?");
-		$query->bind_param("ssiisbisi", $description, $comments, $default_qty, $total_qty, $last_ordered, $selected, $list_id, $link, $item_id);
-		$query->execute();
-		$result = $query->affected_rows;
-
-		return $result;
+		return $ShopDAL->updateItem($item);
 	}
 
 	function entityIsValid($entity)

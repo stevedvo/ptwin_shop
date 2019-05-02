@@ -10,9 +10,6 @@
 	<body>
 <?php
 		include_once('header.php');
-		$dal = new ShopDAL();
-		$test = $dal->testQuery();
-		var_dump($test);
 
 		if (!isset($_GET['id']) || !is_numeric($_GET['id']))
 		{
@@ -54,23 +51,25 @@
 					<div class="row">
 						<div class="col-xs-12">
 							<h3>Current Items in List</h3>
+							<div class="list-items-container">
 <?php
-							if (is_array($list->getItems()) && sizeof($list->getItems()) > 0)
-							{
-								foreach ($list->getItems() as $item_id => $item)
+								if (is_array($list->getItems()) && sizeof($list->getItems()) > 0)
+								{
+									foreach ($list->getItems() as $item_id => $item)
+									{
+?>
+										<p><?= $item->getDescription(); ?><span class="btn btn-danger btn-sm js-remove-item-from-list" data-item_id="<?= $item->getId(); ?>">Move to another list</span></p>
+<?php
+									}
+								}
+								else
 								{
 ?>
-									<p><?= $item->getDescription(); ?><span class="btn btn-danger btn-sm js-remove-item-from-list" data-item_id="<?= $item->getId(); ?>">Move to another list</span></p>
+									<p class="no-results">No Items in this List</p>
 <?php
 								}
-							}
-							else
-							{
 ?>
-								<p class="no-results">No Items in this List</p>
-<?php
-							}
-?>
+							</div>
 						</div>
 					</div>
 

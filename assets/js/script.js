@@ -42,7 +42,7 @@ function manageLists()
 			{
 				if (data)
 				{
-					var html = '<p><a href="/edit-list/?id='+parseInt(data)+'">'+listName+'</a></p>';
+					var html = '<p><a href="/edit-list.php?id='+parseInt(data)+'">'+listName+'</a></p>';
 
 					$(".results-container").append(html);
 					$(".results-container").find("p.no-results").remove();
@@ -67,7 +67,8 @@ function manageLists()
 	$(document).on("click", ".js-add-item-to-list", function()
 	{
 		var form = $(this).closest(".form");
-		var itemID = parseInt(form.find("select option:selected").data("item_id"));
+		var selectedOption = form.find("select option:selected");
+		var itemID = parseInt(selectedOption.data("item_id"));
 		var listID = parseInt(form.find("[name='list-id']").val());
 
 		$.ajax(
@@ -88,27 +89,23 @@ function manageLists()
 		{
 			if (data)
 			{
-				// var html = '<p><a href="/edit-list/?id='+parseInt(data)+'">'+listName+'</a></p>';
+				var html = '<p>'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-remove-item-from-list" data-item_id="'+itemID+'">Move to another list</span></p>';
 
-				// $(".results-container").append(html);
-				// $(".results-container").find("p.no-results").remove();
-				// form.find(".input-error").removeClass("input-error");
-				// form.find("[name='list-name']").val("");
+				$(".list-items-container").append(html);
+				$(".list-items-container").find("p.no-results").remove();
+				selectedOption.remove();
 
-				toastr.success("New List successfully added");
-
+				toastr.success("Item successfully added to List");
 			}
 			else
 			{
-				toastr.error("Could not save List");
+				toastr.error("Could not add Item to List");
 			}
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
 			console.log(data);
 		});
-
-
 	});
 }
 
