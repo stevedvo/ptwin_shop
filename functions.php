@@ -109,13 +109,9 @@
 			return false;
 		}
 
-		foreach ($items as $item_id => $item)
-		{
-			$item->setListId($list->getId());
-		}
+		$ShopDAL = new ShopDAL();
 
-		// return updateItem($item);
-		return false;
+		return $ShopDAL->moveItemsToList($items, $list);
 	}
 
 	function getItemsById($item_ids)

@@ -59,7 +59,7 @@
 									foreach ($list->getItems() as $item_id => $item)
 									{
 ?>
-										<p data-item_id="<?= $item->getId(); ?>"><?= $item->getDescription(); ?><span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>
+										<p data-item_id="<?= $item->getId(); ?>" data-description="<?= $item->getDescription(); ?>"><?= $item->getDescription(); ?><span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>
 <?php
 									}
 								}
@@ -104,7 +104,7 @@
 							<h3>Add Item to List</h3>
 							<div class="form">
 								<input type="hidden" name="list-id" value="<?= $list->getId(); ?>" />
-								<select>
+								<select class="item-selection">
 <?php
 									if (is_array($all_items))
 									{

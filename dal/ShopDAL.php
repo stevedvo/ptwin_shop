@@ -243,4 +243,33 @@
 			$this->ShopDb = null;
 			return $result;
 		}
+
+		public function moveItemsToList($items, $list)
+		{
+			$result = false;
+
+			$query_string = "";
+			$query_values = [':list_id' => $list->getId()];
+
+			foreach ($items as $key => $item)
+			{
+				$query_string.= ":id_".$key.", ";
+				$query_values[":id_".$key] = $item->getId();
+			}
+
+			$query_string = rtrim($query_string, ", ");
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE items SET list_id = :list_id WHERE item_id IN (".$query_string.")");
+				$result = $query->execute($query_values);
+			}
+			catch(PDOException $e)
+			{
+				var_dump($e);
+			}
+
+			$this->ShopDb = null;
+			return $result;
+		}
 	}

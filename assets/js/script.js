@@ -103,7 +103,7 @@ function manageLists()
 		{
 			if (data)
 			{
-				var html = '<p>'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-remove-item-from-list" data-item_id="'+itemID+'">Move to another list</span></p>';
+				var html = '<p data-item_id="'+itemID+'">'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>';
 
 				$(".list-items-container").append(html);
 				$(".list-items-container").find("p.no-results").remove();
@@ -156,11 +156,15 @@ function manageLists()
 			{
 				if (data)
 				{
-					// var html = '<p>'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-remove-item-from-list" data-item_id="'+itemID+'">Move to another list</span></p>';
+					var options = "";
 
-					// $(".list-items-container").append(html);
-					// $(".list-items-container").find("p.no-results").remove();
-					// selectedOption.remove();
+					$.each(selectedItems, function()
+					{
+						options+= '<option data-item_id="'+$(this).data("item_id")+'">'+$(this).data("description")+'</option>'
+					});
+
+					$("select.item-selection").append(options);
+					selectedItems.remove();
 
 					toastr.success("Items successfully added to List");
 				}
