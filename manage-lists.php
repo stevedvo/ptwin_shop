@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 <?php
-		$page_title = "Lists";
+		$page_title = "Manage Lists";
 		include_once('head-section.php');
 ?>
 	</head>
