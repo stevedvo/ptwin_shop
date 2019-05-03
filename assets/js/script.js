@@ -2,8 +2,22 @@ $ = jQuery;
 
 $(function()
 {
+	globalFuncs();
 	manageLists();
 });
+
+function globalFuncs()
+{
+	$(document).on("click", ".js-select-item", function()
+	{
+		$(this).parent().addClass("selected");
+	});
+
+	$(document).on("click", ".js-unselect-item", function()
+	{
+		$(this).parent().removeClass("selected");
+	});
+}
 
 function manageLists()
 {
@@ -106,6 +120,60 @@ function manageLists()
 			toastr.error("Could not perform request");
 			console.log(data);
 		});
+	});
+
+	$(document).on("click", ".js-move-items-to-list", function()
+	{
+		var listItemsContainer = $(".list-items-container");
+		var selectedItems = listItemsContainer.find(".selected");
+		var form = $(this).closest(".form");
+		var selectedOption = form.find("select option:selected");
+		var listID = parseInt(selectedOption.data("list_id"));
+		var itemIDs = [];
+
+		if (selectedItems.length > 0)
+		{
+			$.each(selectedItems, function()
+			{
+				itemIDs.push(parseInt($(this).data("item_id")));
+			});
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : "/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					action  : "moveItemsToList",
+					request :
+					{
+						'item_ids' : itemIDs,
+						'list_id'  : listID
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					// var html = '<p>'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-remove-item-from-list" data-item_id="'+itemID+'">Move to another list</span></p>';
+
+					// $(".list-items-container").append(html);
+					// $(".list-items-container").find("p.no-results").remove();
+					// selectedOption.remove();
+
+					toastr.success("Items successfully added to List");
+				}
+				else
+				{
+					toastr.error("Could not add Items to List");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
 	});
 }
 

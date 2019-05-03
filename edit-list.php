@@ -18,6 +18,7 @@
 		else
 		{
 			$list = getListById($_GET['id']);
+			$all_lists = getAllLists();
 			$all_items = getAllItems();
 		}
 ?>
@@ -58,7 +59,7 @@
 									foreach ($list->getItems() as $item_id => $item)
 									{
 ?>
-										<p><?= $item->getDescription(); ?><span class="btn btn-danger btn-sm js-remove-item-from-list" data-item_id="<?= $item->getId(); ?>">Move to another list</span></p>
+										<p data-item_id="<?= $item->getId(); ?>"><?= $item->getDescription(); ?><span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>
 <?php
 									}
 								}
@@ -69,6 +70,31 @@
 <?php
 								}
 ?>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-xs-12">
+							<h3>Move Selected Item(s) to List</h3>
+							<div class="form">
+								<select>
+<?php
+									if (is_array($all_lists))
+									{
+										foreach ($all_lists as $newlist_id => $newlist)
+										{
+											if ($list->getId() != $newlist_id)
+											{
+?>
+												<option data-list_id="<?= $newlist->getId(); ?>"><?= $newlist->getName(); ?></option>
+<?php
+											}
+										}
+									}
+?>
+								</select>
+								<button class="btn btn-primary btn-sm js-move-items-to-list">Confirm</button>
 							</div>
 						</div>
 					</div>

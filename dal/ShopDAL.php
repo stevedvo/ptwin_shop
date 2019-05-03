@@ -173,6 +173,48 @@
 			return $item;
 		}
 
+		public function getItemsById($item_ids)
+		{
+			$items = false;
+
+			$query_string = "";
+			$query_values = [];
+
+			foreach ($item_ids as $key => $item_id)
+			{
+				$query_string.= ":id_".$key.", ";
+				$query_values[":id_".$key] = $item_id;
+			}
+
+			$query_string = rtrim($query_string, ", ");
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM items AS i WHERE i.item_id IN (".$query_string.")");
+				$query->execute($query_values);
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					$items = [];
+
+					foreach ($rows as $row)
+					{
+						$item = createItem($row);
+
+						$items[$item->getId()] = $item;
+					}
+				}
+			}
+			catch(PDOException $e)
+			{
+				var_dump($e);
+			}
+
+			$this->ShopDb = null;
+			return $items;
+		}
+
 		public function updateItem($item)
 		{
 			$result = false;
