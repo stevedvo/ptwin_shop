@@ -215,6 +215,37 @@
 			return $items;
 		}
 
+		public function getItemsByListId($list_id)
+		{
+			$items = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM items AS i WHERE i.list_id = :list_id");
+				$query->execute([':list_id' => $list_id]);
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					$items = [];
+
+					foreach ($rows as $row)
+					{
+						$item = createItem($row);
+
+						$items[$item->getId()] = $item;
+					}
+				}
+			}
+			catch(PDOException $e)
+			{
+				var_dump($e);
+			}
+
+			$this->ShopDb = null;
+			return $items;
+		}
+
 		public function updateItem($item)
 		{
 			$result = false;
@@ -234,6 +265,24 @@
 					':link'         => $item->getLink(),
 					':item_id'      => $item->getId()
 				]);
+			}
+			catch(PDOException $e)
+			{
+				var_dump($e);
+			}
+
+			$this->ShopDb = null;
+			return $result;
+		}
+
+		public function removeList($list)
+		{
+			$result = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("DELETE FROM lists WHERE list_id = :list_id");
+				$result = $query->execute([':list_id' => $list->getId()]);
 			}
 			catch(PDOException $e)
 			{

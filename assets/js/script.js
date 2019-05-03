@@ -59,7 +59,7 @@ function manageLists()
 					var html = '<p><a href="/edit-list.php?id='+parseInt(data)+'">'+listName+'</a></p>';
 
 					$(".results-container").append(html);
-					$(".results-container").find("p.no-results").remove();
+					$(".results-container").find(".no-results").remove();
 					form.find(".input-error").removeClass("input-error");
 					form.find("[name='list-name']").val("");
 
@@ -106,7 +106,7 @@ function manageLists()
 				var html = '<p data-item_id="'+itemID+'">'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>';
 
 				$(".list-items-container").append(html);
-				$(".list-items-container").find("p.no-results").remove();
+				$(".list-items-container").find(".no-results").remove();
 				selectedOption.remove();
 
 				toastr.success("Item successfully added to List");
@@ -128,7 +128,7 @@ function manageLists()
 		var selectedItems = listItemsContainer.find(".selected");
 		var form = $(this).closest(".form");
 		var selectedOption = form.find("select option:selected");
-		var listID = parseInt(selectedOption.data("list_id"));
+		var targetListID = parseInt(selectedOption.data("list_id"));
 		var itemIDs = [];
 
 		if (selectedItems.length > 0)
@@ -149,7 +149,7 @@ function manageLists()
 					request :
 					{
 						'item_ids' : itemIDs,
-						'list_id'  : listID
+						'list_id'  : targetListID
 					}
 				}
 			}).done(function(data)
@@ -166,6 +166,11 @@ function manageLists()
 					$("select.item-selection").append(options);
 					selectedItems.remove();
 
+					if (listItemsContainer.find("p").length == 0)
+					{
+						listItemsContainer.append('<button class="btn btn-danger btn-sm no-results js-remove-list">Remove List</button>');
+					}
+
 					toastr.success("Items successfully added to List");
 				}
 				else
@@ -178,6 +183,41 @@ function manageLists()
 				console.log(data);
 			});
 		}
+	});
+
+	$(document).on("click", ".js-remove-list", function()
+	{
+		var listID = parseInt($(this).closest(".list-items-container").data("list_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : "/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				action  : "removeList",
+				request : {'list_id' : listID}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				toastr.success("List successfully removed");
+				var timer = setTimeout(function()
+				{
+					location.href = "/manage-lists.php";
+				}, 750);
+			}
+			else
+			{
+				toastr.error("Could not remove List");
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
 	});
 }
 

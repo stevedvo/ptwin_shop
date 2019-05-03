@@ -52,7 +52,7 @@
 					<div class="row">
 						<div class="col-xs-12">
 							<h3>Current Items in List</h3>
-							<div class="list-items-container">
+							<div class="list-items-container" data-list_id="<?= $list->getId(); ?>">
 <?php
 								if (is_array($list->getItems()) && sizeof($list->getItems()) > 0)
 								{
@@ -67,6 +67,7 @@
 								{
 ?>
 									<p class="no-results">No Items in this List</p>
+									<button class="btn btn-danger btn-sm no-results js-remove-list">Remove List</button>
 <?php
 								}
 ?>

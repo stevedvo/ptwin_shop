@@ -163,6 +163,46 @@
 		return ($list && entityIsValid($list) ? $list : false);
 	}
 
+	function removeList($request)
+	{
+		$list_id = (isset($request['list_id']) && is_numeric($request['list_id'])) ? intval($request['list_id']) : null;
+
+		if (is_null($list_id))
+		{
+			return false;
+		}
+
+		$items = getItemsByListId($list_id);
+
+		if (is_array($items) && sizeof($items) > 0)
+		{
+			return false;
+		}
+
+		$list = getListById($list_id);
+
+		if (!$list)
+		{
+			return false;
+		}
+
+		$ShopDAL = new ShopDAL();
+
+		return $ShopDAL->removeList($list);
+	}
+
+	function getItemsByListId($list_id)
+	{
+		if (!is_numeric($list_id))
+		{
+			return false;
+		}
+
+		$ShopDAL = new ShopDAL();
+
+		return $ShopDAL->getItemsByListId($list_id);
+	}
+
 	function getAllItems()
 	{
 		$ShopDAL = new ShopDAL();
