@@ -39,6 +39,38 @@
 			return $lists;
 		}
 
+		public function getAllDepartments()
+		{
+			$result = new DalResult();
+			$departments = [];
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT dept_id, dept_name FROM departments");
+				$query->execute();
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					foreach ($rows as $row)
+					{
+						$department = createDepartment($row);
+
+						$departments[$department->getId()] = $department;
+					}
+				}
+
+				$result->setResult($departments);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			$this->ShopDb = null;
+			return $result;
+		}
+
 		public function addList($list)
 		{
 			$list_id = false;
@@ -80,6 +112,33 @@
 
 			$this->ShopDb = null;
 			return $list;
+		}
+
+		public function getDepartmentByName($dept_name)
+		{
+			$result = new DalResult();
+			$department = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT dept_id, dept_name FROM departments WHERE dept_name = :name");
+				$query->execute([':name' => $dept_name]);
+				$row = $query->fetch(PDO::FETCH_ASSOC);
+
+				if ($row)
+				{
+					$department = createDepartment($row);
+				}
+
+				$result->setResult($department);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			$this->ShopDb = null;
+			return $result;
 		}
 
 		public function getListById($list_id)

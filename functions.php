@@ -13,6 +13,13 @@
 		return $ShopDAL->getAllLists();
 	}
 
+	function getAllDepartments()
+	{
+		$ShopDAL = new ShopDAL();
+
+		return $ShopDAL->getAllDepartments();
+	}
+
 	function addList($request)
 	{
 		$list = createList($request);
@@ -32,6 +39,25 @@
 		return $ShopDAL->addList($list);
 	}
 
+	function addDepartment($request)
+	{
+		$department = createDepartment($request);
+
+		if (!entityIsValid($department))
+		{
+			return false;
+		}
+
+		if (getDepartmentByName($department->getName()))
+		{
+			return false;
+		}
+
+		$ShopDAL = new ShopDAL();
+
+		return $ShopDAL->addDepartment($department);
+	}
+
 	function createList($request)
 	{
 		$id = isset($request['list_id']) ? $request['list_id'] : null;
@@ -40,6 +66,16 @@
 		$list = new ShopList($id, $name);
 
 		return $list;
+	}
+
+	function createDepartment($request)
+	{
+		$id = isset($request['dept_id']) ? $request['dept_id'] : null;
+		$name = isset($request['dept_name']) ? $request['dept_name'] : null;
+
+		$department = new Department($id, $name);
+
+		return $department;
 	}
 
 	function addItemToList($request)
@@ -153,6 +189,13 @@
 		$ShopDAL = new ShopDAL();
 
 		return $ShopDAL->getListByName($list_name);
+	}
+
+	function getDepartmentByName($dept_name)
+	{
+		$ShopDAL = new ShopDAL();
+
+		return $ShopDAL->getDepartmentByName($dept_name);
 	}
 
 	function getListById($list_id)

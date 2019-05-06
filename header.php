@@ -77,7 +77,7 @@
 				<a class="btn btn-primary" href="view-by-freq.php">View By Freq</a>
 				<a class="btn btn-primary" href="manage-lists.php">Manage Lists</a>
 				<a class="btn btn-primary" href="view-by-dept.php">View By Dept</a>
-				<a class="btn btn-primary" href="manage-dept.php">Manage Dept</a>
+				<a class="btn btn-primary" href="manage-depts.php">Manage Depts</a>
 			</div>
 			<hr/>
 		</div>

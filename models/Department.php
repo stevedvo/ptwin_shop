@@ -1,5 +1,5 @@
 <?php
-	class ShopList
+	class Department
 	{
 		private $id;
 		private $name;
