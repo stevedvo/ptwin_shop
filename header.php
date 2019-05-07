@@ -1,4 +1,5 @@
 <?php
+	global $ptwin_shopDB;
 	session_start();
 	if (isset($_POST['quick-add']))
 	{
@@ -72,12 +73,12 @@
 
 		<div class="row">
 			<div class="col-xs-12">
-				<a class="btn btn-primary" href="index.php">Home</a>
+				<a class="btn btn-primary" href="/">Home</a>
 				<a class="btn btn-primary" href="add-to-db.php">Add/Manage Items</a>
 				<a class="btn btn-primary" href="view-by-freq.php">View By Freq</a>
-				<a class="btn btn-primary" href="manage-lists.php">Manage Lists</a>
+				<a class="btn btn-primary" href="/lists/">Manage Lists</a>
 				<a class="btn btn-primary" href="view-by-dept.php">View By Dept</a>
-				<a class="btn btn-primary" href="manage-depts.php">Manage Depts</a>
+				<a class="btn btn-primary" href="/departments/">Manage Depts</a>
 			</div>
 			<hr/>
 		</div>

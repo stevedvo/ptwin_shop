@@ -1,3 +1,7 @@
+<?php
+	require_once('load.php');
+	include_once('router.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
