@@ -46,7 +46,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT dept_id, dept_name FROM departments");
+				$query = $this->ShopDb->conn->prepare("SELECT dept_id, dept_name FROM departments ORDER BY dept_name");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -88,6 +88,26 @@
 
 			$this->ShopDb = null;
 			return $list_id;
+		}
+
+		public function addDepartment($department)
+		{
+			$result = new DalResult();
+			$dept_id = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("INSERT INTO departments (dept_name) VALUES (:name)");
+				$query->execute([':name' => $department->getName()]);
+				$result->setResult($this->ShopDb->conn->lastInsertId());
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			$this->ShopDb = null;
+			return $result;
 		}
 
 		public function getListByName($list_name)

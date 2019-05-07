@@ -253,21 +253,23 @@ function manageDepts()
 				data     :
 				{
 					action  : "addDepartment",
-					request : {'department_name' : departmentName}
+					request : {'dept_name' : departmentName}
 				}
 			}).done(function(data)
 			{
 				if (data)
 				{
-					var html = '<p><a href="/edit-department.php?id='+parseInt(data)+'">'+departmentName+'</a></p>';
+					if (data.exception == null)
+					{
+						var html = '<p><a href="/edit-department.php?id='+parseInt(data.result)+'">'+departmentName+'</a></p>';
 
-					$(".results-container").append(html);
-					$(".results-container").find(".no-results").remove();
-					form.find(".input-error").removeClass("input-error");
-					form.find("[name='department-name']").val("");
+						$(".results-container").append(html);
+						$(".results-container").find(".no-results").remove();
+						form.find(".input-error").removeClass("input-error");
+						form.find("[name='department-name']").val("");
+					}
 
 					toastr.success("New Department successfully added");
-
 				}
 				else
 				{

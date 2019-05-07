@@ -48,14 +48,23 @@
 			return false;
 		}
 
-		if (getDepartmentByName($department->getName()))
+		$dal_result = getDepartmentByName($department->getName());
+
+		if (!is_null($dal_result->getException()))
+		{
+			return false;
+		}
+
+		if ($dal_result->getResult() instanceof Department)
 		{
 			return false;
 		}
 
 		$ShopDAL = new ShopDAL();
 
-		return $ShopDAL->addDepartment($department);
+		$dal_result = $ShopDAL->addDepartment($department);
+
+		return $dal_result->jsonSerialize();
 	}
 
 	function createList($request)

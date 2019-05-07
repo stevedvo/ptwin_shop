@@ -11,5 +11,6 @@
 			$result = $action($request);
 
 			echo json_encode($result);
+			exit;
 		}
 	}
