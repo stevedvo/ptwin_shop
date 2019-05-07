@@ -13,13 +13,6 @@
 		return $ShopDAL->getAllLists();
 	}
 
-	function getAllDepartments()
-	{
-		$ShopDAL = new ShopDAL();
-
-		return $ShopDAL->getAllDepartments();
-	}
-
 	function addList($request)
 	{
 		$list = createList($request);
@@ -253,13 +246,6 @@
 		$ShopDAL = new ShopDAL();
 
 		return $ShopDAL->getItemsByListId($list_id);
-	}
-
-	function getAllItems()
-	{
-		$ShopDAL = new ShopDAL();
-
-		return $ShopDAL->getAllItems();
 	}
 
 	function getItemById($item_id)

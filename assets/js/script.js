@@ -261,7 +261,7 @@ function manageDepts()
 				{
 					if (data.exception == null)
 					{
-						var html = '<p><a href="/edit-department.php?id='+parseInt(data.result)+'">'+departmentName+'</a></p>';
+						var html = '<p><a href="/departments/edit/'+parseInt(data.result)+'/">'+departmentName+'</a></p>';
 
 						$(".results-container").append(html);
 						$(".results-container").find(".no-results").remove();

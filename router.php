@@ -22,14 +22,16 @@
 			break;
 	}
 
-	try
+	$controller = $controller."Controller";
+
+	if (class_exists($controller))
 	{
-		$controller = $controller."Controller";
 		$object = new $controller;
 		$object->{$action}($request);
-		exit;
 	}
-	catch(Exception $e)
+	else
 	{
-		var_dump($e);
+		include_once('404.php');
 	}
+
+	exit;

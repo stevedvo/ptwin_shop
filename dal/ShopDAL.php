@@ -8,6 +8,11 @@
 			$this->ShopDb = new ShopDb();
 		}
 
+		public function closeConnexion()
+		{
+			$this->ShopDb = null;
+		}
+
 		public function getAllLists()
 		{
 			$lists = false;
@@ -35,7 +40,6 @@
 				var_dump($e);
 			}
 
-			$this->ShopDb = null;
 			return $lists;
 		}
 
@@ -67,7 +71,6 @@
 				$result->setException($e);
 			}
 
-			$this->ShopDb = null;
 			return $result;
 		}
 
@@ -86,7 +89,6 @@
 				var_dump($e);
 			}
 
-			$this->ShopDb = null;
 			return $list_id;
 		}
 
@@ -106,7 +108,6 @@
 				$result->setException($e);
 			}
 
-			$this->ShopDb = null;
 			return $result;
 		}
 
@@ -130,8 +131,46 @@
 				var_dump($e);
 			}
 
-			$this->ShopDb = null;
 			return $list;
+		}
+
+		public function getDepartmentById($dept_id)
+		{
+			$result = new DalResult();
+			$department = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.link FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE d.dept_id = :dept_id");
+				$query->execute([':dept_id' => $dept_id]);
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					foreach ($rows as $row)
+					{
+						if (!$department)
+						{
+							$department = createDepartment($row);
+						}
+
+						$item = createItem($row);
+
+						if (entityIsValid($item))
+						{
+							$list->addItem($item);
+						}
+					}
+				}
+
+				$result->setResult($department);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
 		}
 
 		public function getDepartmentByName($dept_name)
@@ -157,7 +196,6 @@
 				$result->setException($e);
 			}
 
-			$this->ShopDb = null;
 			return $result;
 		}
 
@@ -194,12 +232,12 @@
 				var_dump($e);
 			}
 
-			$this->ShopDb = null;
 			return $list;
 		}
 
 		public function getAllItems()
 		{
+			$result = new DalResult();
 			$items = false;
 
 			try
@@ -221,11 +259,10 @@
 			}
 			catch(PDOException $e)
 			{
-				var_dump($e);
+				$result->setException($e);
 			}
 
-			$this->ShopDb = null;
-			return $items;
+			return $result;
 		}
 
 		public function getItemById($item_id)
@@ -248,7 +285,6 @@
 				var_dump($e);
 			}
 
-			$this->ShopDb = null;
 			return $item;
 		}
 
@@ -290,7 +326,6 @@
 				var_dump($e);
 			}
 
-			$this->ShopDb = null;
 			return $items;
 		}
 
@@ -321,7 +356,6 @@
 				var_dump($e);
 			}
 
-			$this->ShopDb = null;
 			return $items;
 		}
 
@@ -350,7 +384,6 @@
 				var_dump($e);
 			}
 
-			$this->ShopDb = null;
 			return $result;
 		}
 
@@ -368,7 +401,6 @@
 				var_dump($e);
 			}
 
-			$this->ShopDb = null;
 			return $result;
 		}
 
@@ -397,7 +429,6 @@
 				var_dump($e);
 			}
 
-			$this->ShopDb = null;
 			return $result;
 		}
 	}

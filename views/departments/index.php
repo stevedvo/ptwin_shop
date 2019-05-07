@@ -10,14 +10,6 @@
 	<body>
 <?php
 		include_once('header.php');
-		$deptPrototype = new Department();
-		$dalResult = getAllDepartments();
-		$departments = false;
-
-		if (!is_null($dalResult->getResult()))
-		{
-			$departments = $dalResult->getResult();
-		}
 ?>
 		<main class="wrapper">
 			<div class="container">
@@ -51,7 +43,7 @@
 								foreach ($departments as $department_id => $department)
 								{
 ?>
-									<p><a href="/edit-department.php?id=<?= $department->getId(); ?>"><?= $department->getName(); ?></a></p>
+									<p><a href="/departments/edit/<?= $department->getId(); ?>/"><?= $department->getName(); ?></a></p>
 <?php
 								}
 							}

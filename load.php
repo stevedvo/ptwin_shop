@@ -6,3 +6,4 @@
 	require_once('dal.php');
 	require_once('models.php');
 	require_once('functions.php');
+	require_once('services.php');
