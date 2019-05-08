@@ -92,25 +92,9 @@
 
 					<div class="row">
 						<div class="col-xs-12">
-							<h3>Remove Selected Item(s) from Department</h3>
+							<h3>Remove</h3>
 							<div class="form">
-								<select>
-<?php
-									if (is_array($all_departments))
-									{
-										foreach ($all_departments as $newdepartment_id => $newdepartment)
-										{
-											if ($department->getId() != $newdepartment_id)
-											{
-?>
-												<option data-department_id="<?= $newdepartment->getId(); ?>"><?= $newdepartment->getName(); ?></option>
-<?php
-											}
-										}
-									}
-?>
-								</select>
-								<button class="btn btn-primary btn-sm js-remove-items-from-department">Confirm</button>
+								<button class="btn btn-danger btn-sm js-remove-items-from-department">Remove Selected Item(s) from Department</button>
 							</div>
 						</div>
 					</div>

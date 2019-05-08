@@ -102,4 +102,29 @@
 
 			return $dalResult;
 		}
+
+		public function removeItemsFromDepartment($request)
+		{
+			$item_ids = [];
+
+			if (!is_array($request['item_ids']) || !is_numeric($request['dept_id']))
+			{
+				return false;
+			}
+
+			foreach ($request['item_ids'] as $item_id)
+			{
+				if (!is_numeric($item_id))
+				{
+					return false;
+				}
+
+				$item_ids[] = intval($item_id);
+			}
+
+			$dalResult = $this->departments_service->removeItemsFromDepartment($item_ids, intval($request['dept_id']));
+			$this->departments_service->closeConnexion();
+
+			return $dalResult;
+		}
 	}

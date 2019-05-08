@@ -27,4 +27,9 @@
 		{
 			return $this->dal->addItemToDepartment($item, $department);
 		}
+
+		public function removeItemsFromDepartment($item_ids, $dept_id)
+		{
+			return $this->dal->removeItemsFromDepartment($item_ids, $dept_id);
+		}
 	}

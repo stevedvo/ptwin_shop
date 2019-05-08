@@ -328,13 +328,11 @@ function manageDepts()
 		});
 	});
 
-	$(document).on("click", ".js-move-items-to-department", function()
+	$(document).on("click", ".js-remove-items-from-department", function()
 	{
 		var departmentItemsContainer = $(".department-items-container");
+		var departmentID = parseInt(departmentItemsContainer.data("department_id"));
 		var selectedItems = departmentItemsContainer.find(".selected");
-		var form = $(this).closest(".form");
-		var selectedOption = form.find("select option:selected");
-		var targetDepartmentID = parseInt(selectedOption.data("department_id"));
 		var itemIDs = [];
 
 		if (selectedItems.length > 0)
@@ -351,37 +349,38 @@ function manageDepts()
 				dataType : "json",
 				data     :
 				{
-					action  : "moveItemsToDepartment",
-					request :
+					controller : "Department",
+					action     : "removeItemsFromDepartment",
+					request    :
 					{
 						'item_ids' : itemIDs,
-						'department_id'  : targetDepartmentID
+						'dept_id'  : departmentID
 					}
 				}
 			}).done(function(data)
 			{
 				if (data)
 				{
-					var options = "";
+					// var options = "";
 
-					$.each(selectedItems, function()
-					{
-						options+= '<option data-item_id="'+$(this).data("item_id")+'">'+$(this).data("description")+'</option>'
-					});
+					// $.each(selectedItems, function()
+					// {
+					// 	options+= '<option data-item_id="'+$(this).data("item_id")+'">'+$(this).data("description")+'</option>'
+					// });
 
-					$("select.item-selection").append(options);
-					selectedItems.remove();
+					// $("select.item-selection").append(options);
+					// selectedItems.remove();
 
-					if (departmentItemsContainer.find("p").length == 0)
-					{
-						departmentItemsContainer.append('<button class="btn btn-danger btn-sm no-results js-remove-department">Remove Department</button>');
-					}
+					// if (departmentItemsContainer.find("p").length == 0)
+					// {
+					// 	departmentItemsContainer.append('<button class="btn btn-danger btn-sm no-results js-remove-department">Remove Department</button>');
+					// }
 
-					toastr.success("Items successfully added to Department");
+					toastr.success("Items successfully removed from Department");
 				}
 				else
 				{
-					toastr.error("Could not add Items to Department");
+					toastr.error("Could not rmeove Item(s) from Department");
 				}
 			}).fail(function(data)
 			{

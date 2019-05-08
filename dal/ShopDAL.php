@@ -317,6 +317,30 @@
 			return $result;
 		}
 
+		public function removeItemsFromDepartment($item_ids, $dept_id)
+		{
+			$result = new DalResult();
+			// $idl_result = false;
+
+			// try
+			// {
+			// 	$query = $this->ShopDb->conn->prepare("INSERT INTO item_dept_link (dept_id, item_id) VALUES (:dept_id, :item_id)");
+			// 	$idl_result = $query->execute(
+			// 	[
+			// 		':dept_id' => $department->getId(),
+			// 		':item_id' => $item->getId()
+			// 	]);
+
+			// 	$result->setResult($idl_result);
+			// }
+			// catch(PDOException $e)
+			// {
+			// 	$result->setException($e);
+			// }
+
+			return $result;
+		}
+
 		public function getItemsById($item_ids)
 		{
 			$items = false;
