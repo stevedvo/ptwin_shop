@@ -13,8 +13,13 @@
 			$this->dal->closeConnexion();
 		}
 
-		function getAllItems()
+		public function getAllItems()
 		{
 			return $this->dal->getAllItems();
+		}
+
+		public function getItemById($item_id)
+		{
+			return $this->dal->getItemById($item_id);
 		}
 	}

@@ -22,4 +22,9 @@
 		{
 			return $this->dal->getDepartmentById($dept_id);
 		}
+
+		public function addItemToDepartment($item, $department)
+		{
+			return $this->dal->addItemToDepartment($item, $department);
+		}
 	}

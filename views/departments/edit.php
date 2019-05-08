@@ -66,31 +66,6 @@
 
 					<div class="row">
 						<div class="col-xs-12">
-							<h3>Move Selected Item(s) to Department</h3>
-							<div class="form">
-								<select>
-<?php
-									if (is_array($all_departments))
-									{
-										foreach ($all_departments as $newdepartment_id => $newdepartment)
-										{
-											if ($department->getId() != $newdepartment_id)
-											{
-?>
-												<option data-department_id="<?= $newdepartment->getId(); ?>"><?= $newdepartment->getName(); ?></option>
-<?php
-											}
-										}
-									}
-?>
-								</select>
-								<button class="btn btn-primary btn-sm js-move-items-to-department">Confirm</button>
-							</div>
-						</div>
-					</div>
-
-					<div class="row">
-						<div class="col-xs-12">
 							<h3>Add Item to Department</h3>
 							<div class="form">
 								<input type="hidden" name="department-id" value="<?= $department->getId(); ?>" />
@@ -111,6 +86,31 @@
 ?>
 								</select>
 								<button class="btn btn-primary btn-sm js-add-item-to-department">Add to Department</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-xs-12">
+							<h3>Remove Selected Item(s) from Department</h3>
+							<div class="form">
+								<select>
+<?php
+									if (is_array($all_departments))
+									{
+										foreach ($all_departments as $newdepartment_id => $newdepartment)
+										{
+											if ($department->getId() != $newdepartment_id)
+											{
+?>
+												<option data-department_id="<?= $newdepartment->getId(); ?>"><?= $newdepartment->getName(); ?></option>
+<?php
+											}
+										}
+									}
+?>
+								</select>
+								<button class="btn btn-primary btn-sm js-remove-items-from-department">Confirm</button>
 							</div>
 						</div>
 					</div>

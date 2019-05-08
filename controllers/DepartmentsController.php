@@ -62,4 +62,44 @@
 
 			include_once('views/departments/edit.php');
 		}
+
+		public function addItemToDepartment($request)
+		{
+			$item = $department = false;
+
+			if (!is_numeric($request['item_id']) || !is_numeric($request['dept_id']))
+			{
+				return false;
+			}
+
+			$dalResult = $this->items_service->getItemById(intval($request['item_id']));
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$item = $dalResult->getResult();
+			}
+
+			if (!$item)
+			{
+				return false;
+			}
+
+			$dalResult = $this->departments_service->getDepartmentById(intval($request['dept_id']));
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$department = $dalResult->getResult();
+			}
+
+			if (!$department)
+			{
+				return false;
+			}
+
+			$dalResult = $this->departments_service->addItemToDepartment($item, $department);
+			$this->departments_service->closeConnexion();
+			$this->items_service->closeConnexion();
+
+			return $dalResult;
+		}
 	}

@@ -297,18 +297,19 @@ function manageDepts()
 			dataType : "json",
 			data     :
 			{
-				action  : "addItemToDepartment",
-				request :
+				controller : "Departments",
+				action     : "addItemToDepartment",
+				request    :
 				{
 					'item_id' : itemID,
-					'department_id' : departmentID
+					'dept_id' : departmentID
 				}
 			}
 		}).done(function(data)
 		{
 			if (data)
 			{
-				var html = '<p data-item_id="'+itemID+'">'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>';
+				var html = '<p data-item_id="'+itemID+'" data-description="'+selectedOption.text()+'">'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>';
 
 				$(".department-items-container").append(html);
 				$(".department-items-container").find(".no-results").remove();

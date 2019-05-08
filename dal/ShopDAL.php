@@ -158,7 +158,7 @@
 
 						if (entityIsValid($item))
 						{
-							$list->addItem($item);
+							$department->addItem($item);
 						}
 					}
 				}
@@ -256,6 +256,8 @@
 						$items[$item->getId()] = $item;
 					}
 				}
+
+				$result->setResult($items);
 			}
 			catch(PDOException $e)
 			{
@@ -267,6 +269,7 @@
 
 		public function getItemById($item_id)
 		{
+			$result = new DalResult();
 			$item = false;
 
 			try
@@ -279,13 +282,39 @@
 				{
 					$item = createItem($row);
 				}
+
+				$result->setResult($item);
 			}
 			catch(PDOException $e)
 			{
-				var_dump($e);
+				$result->setException($e);
 			}
 
-			return $item;
+			return $result;
+		}
+
+		public function addItemToDepartment($item, $department)
+		{
+			$result = new DalResult();
+			$idl_result = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("INSERT INTO item_dept_link (dept_id, item_id) VALUES (:dept_id, :item_id)");
+				$idl_result = $query->execute(
+				[
+					':dept_id' => $department->getId(),
+					':item_id' => $item->getId()
+				]);
+
+				$result->setResult($idl_result);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
 		}
 
 		public function getItemsById($item_ids)

@@ -6,11 +6,21 @@
 		$action = $_POST['action'];
 		$request = $_POST['request'];
 
-		if (function_exists($action))
+		if (isset($_POST['controller']))
+		{
+			$controller = $_POST['controller']."Controller";
+
+			if (class_exists($controller))
+			{
+				$object = new $controller;
+				$result = $object->{$action}($request);
+			}
+		}
+		elseif (function_exists($action))
 		{
 			$result = $action($request);
-
-			echo json_encode($result);
-			exit;
 		}
+
+		echo json_encode($result);
+		exit;
 	}
