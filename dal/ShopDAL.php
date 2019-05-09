@@ -296,18 +296,15 @@
 		public function addItemToDepartment($item, $department)
 		{
 			$result = new DalResult();
-			$idl_result = false;
 
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("INSERT INTO item_dept_link (dept_id, item_id) VALUES (:dept_id, :item_id)");
-				$idl_result = $query->execute(
+				$result->setResult($query->execute(
 				[
 					':dept_id' => $department->getId(),
 					':item_id' => $item->getId()
-				]);
-
-				$result->setResult($idl_result);
+				]));
 			}
 			catch(PDOException $e)
 			{
@@ -320,23 +317,27 @@
 		public function removeItemsFromDepartment($item_ids, $dept_id)
 		{
 			$result = new DalResult();
-			// $idl_result = false;
 
-			// try
-			// {
-			// 	$query = $this->ShopDb->conn->prepare("INSERT INTO item_dept_link (dept_id, item_id) VALUES (:dept_id, :item_id)");
-			// 	$idl_result = $query->execute(
-			// 	[
-			// 		':dept_id' => $department->getId(),
-			// 		':item_id' => $item->getId()
-			// 	]);
+			$query_string = "";
+			$query_values = [':dept_id' => $dept_id];
 
-			// 	$result->setResult($idl_result);
-			// }
-			// catch(PDOException $e)
-			// {
-			// 	$result->setException($e);
-			// }
+			foreach ($item_ids as $key => $item_id)
+			{
+				$query_string.= ":item_id_".$key.", ";
+				$query_values[":item_id_".$key] = $item_id;
+			}
+
+			$query_string = rtrim($query_string, ", ");
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("DELETE FROM item_dept_link WHERE item_id IN (".$query_string.") AND dept_id = :dept_id");
+				$result->setResult($query->execute($query_values));
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
 
 			return $result;
 		}

@@ -309,13 +309,29 @@ function manageDepts()
 		{
 			if (data)
 			{
-				var html = '<p data-item_id="'+itemID+'" data-description="'+selectedOption.text()+'">'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>';
+				if (data.result == true)
+				{
+					var html = '<p data-item_id="'+itemID+'" data-description="'+selectedOption.text()+'">'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>';
 
-				$(".department-items-container").append(html);
-				$(".department-items-container").find(".no-results").remove();
-				selectedOption.remove();
+					$(".department-items-container").append(html);
+					$(".department-items-container").find(".no-results").remove();
+					selectedOption.remove();
 
-				toastr.success("Item successfully added to Department");
+					toastr.success("Item successfully added to Department");
+				}
+				else
+				{
+					if (data.exception != null)
+					{
+						toastr.error("PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						toastr.error("Unspecified error");
+						console.log(data);
+					}
+				}
 			}
 			else
 			{
@@ -349,7 +365,7 @@ function manageDepts()
 				dataType : "json",
 				data     :
 				{
-					controller : "Department",
+					controller : "Departments",
 					action     : "removeItemsFromDepartment",
 					request    :
 					{
@@ -361,26 +377,37 @@ function manageDepts()
 			{
 				if (data)
 				{
-					// var options = "";
+					if (data.result == true)
+					{
+						$.each(selectedItems, function()
+						{
+							$(this).remove();
+						});
 
-					// $.each(selectedItems, function()
-					// {
-					// 	options+= '<option data-item_id="'+$(this).data("item_id")+'">'+$(this).data("description")+'</option>'
-					// });
+						if (departmentItemsContainer.find("p").length == 0)
+						{
+							departmentItemsContainer.html('<p class="no-results">No Items in this Department</p><button class="btn btn-danger btn-sm no-results js-remove-department">Remove Department</button>');
+						}
 
-					// $("select.item-selection").append(options);
-					// selectedItems.remove();
-
-					// if (departmentItemsContainer.find("p").length == 0)
-					// {
-					// 	departmentItemsContainer.append('<button class="btn btn-danger btn-sm no-results js-remove-department">Remove Department</button>');
-					// }
-
-					toastr.success("Items successfully removed from Department");
+						toastr.success("Item(s) successfully removed from Department");
+					}
+					else
+					{
+						if (data.exception != null)
+						{
+							toastr.error("PDOException");
+							console.log(data.exception);
+						}
+						else
+						{
+							toastr.error("Unspecified error");
+							console.log(data);
+						}
+					}
 				}
 				else
 				{
-					toastr.error("Could not rmeove Item(s) from Department");
+					toastr.error("Could not remove Item(s) from Department");
 				}
 			}).fail(function(data)
 			{

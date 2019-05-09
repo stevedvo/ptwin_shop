@@ -100,7 +100,7 @@
 			$this->departments_service->closeConnexion();
 			$this->items_service->closeConnexion();
 
-			return $dalResult;
+			return $dalResult->jsonSerialize();
 		}
 
 		public function removeItemsFromDepartment($request)
@@ -125,6 +125,6 @@
 			$dalResult = $this->departments_service->removeItemsFromDepartment($item_ids, intval($request['dept_id']));
 			$this->departments_service->closeConnexion();
 
-			return $dalResult;
+			return $dalResult->jsonSerialize();
 		}
 	}
