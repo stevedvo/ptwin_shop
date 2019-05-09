@@ -32,4 +32,9 @@
 		{
 			return $this->dal->removeItemsFromDepartment($item_ids, $dept_id);
 		}
+
+		public function removeDepartment($department)
+		{
+			return $this->dal->removeDepartment($department);
+		}
 	}

@@ -22,4 +22,9 @@
 		{
 			return $this->dal->getItemById($item_id);
 		}
+
+		public function getItemsByDepartmentId($dept_id)
+		{
+			return $this->dal->getItemsByDepartmentId($dept_id);
+		}
 	}

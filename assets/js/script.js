@@ -428,18 +428,35 @@ function manageDepts()
 			dataType : "json",
 			data     :
 			{
-				action  : "removeDepartment",
-				request : {'department_id' : departmentID}
+				controller : "Departments",
+				action     : "removeDepartment",
+				request    : {'dept_id' : departmentID}
 			}
 		}).done(function(data)
 		{
 			if (data)
 			{
-				toastr.success("Department successfully removed");
-				var timer = setTimeout(function()
+				if (data.result == true)
 				{
-					location.href = "/manage-departments.php";
-				}, 750);
+					toastr.success("Department successfully removed");
+					var timer = setTimeout(function()
+					{
+						location.href = "/departments/";
+					}, 750);
+				}
+				else
+				{
+					if (data.exception != null)
+					{
+						toastr.error("PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						toastr.error("Unspecified error");
+						console.log(data);
+					}
+				}
 			}
 			else
 			{

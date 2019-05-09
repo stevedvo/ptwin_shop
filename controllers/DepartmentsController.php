@@ -127,4 +127,44 @@
 
 			return $dalResult->jsonSerialize();
 		}
+
+		public function removeDepartment($request)
+		{
+			if (!isset($request['dept_id']) || !is_numeric($request['dept_id']))
+			{
+				return false;
+			}
+
+			$dalResult = $this->items_service->getItemsByDepartmentId(intval($request['dept_id']));
+
+			if (!is_null($dalResult->getException()))
+			{
+				return false;
+			}
+
+			$items = $dalResult->getResult();
+
+			if (is_array($items) && sizeof($items) > 0)
+			{
+				return false;
+			}
+
+			$dalResult = $this->departments_service->getDepartmentById(intval($request['dept_id']));
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$department = $dalResult->getResult();
+			}
+
+			if (!$department)
+			{
+				return false;
+			}
+
+			$dalResult = $this->departments_service->removeDepartment($department);
+			$this->departments_service->closeConnexion();
+			$this->items_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
 	}

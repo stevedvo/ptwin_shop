@@ -485,4 +485,53 @@
 
 			return $result;
 		}
+
+		public function getItemsByDepartmentId($dept_id)
+		{
+			$result = new DalResult();
+			$items = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT idl.dept_id, idl.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM item_dept_link AS idl LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE idl.dept_id = :dept_id");
+				$query->execute([':dept_id' => $dept_id]);
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					$items = [];
+
+					foreach ($rows as $row)
+					{
+						$item = createItem($row);
+						$items[$item->getId()] = $item;
+					}
+				}
+
+				$result->setResult($items);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
+		public function removeDepartment($department)
+		{
+			$result = new DalResult();
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("DELETE FROM departments WHERE dept_id = :dept_id");
+				$result->setResult($query->execute([':dept_id' => $department->getId()]));
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
 	}
