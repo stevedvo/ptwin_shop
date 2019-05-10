@@ -13,6 +13,11 @@
 			$this->dal->closeConnexion();
 		}
 
+		public function addDepartment($department)
+		{
+			return $this->dal->addDepartment($department);
+		}
+
 		public function getAllDepartments()
 		{
 			return $this->dal->getAllDepartments();
@@ -21,6 +26,11 @@
 		public function getDepartmentById($dept_id)
 		{
 			return $this->dal->getDepartmentById($dept_id);
+		}
+
+		public function getDepartmentByName($dept_name)
+		{
+			return $this->dal->getDepartmentByName($dept_name);
 		}
 
 		public function addItemToDepartment($item, $department)

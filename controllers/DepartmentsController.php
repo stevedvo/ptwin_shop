@@ -29,6 +29,33 @@
 			include_once('views/departments/index.php');
 		}
 
+		public function addDepartment($request)
+		{
+			$department = createDepartment($request);
+
+			if (!entityIsValid($department))
+			{
+				return false;
+			}
+
+			$dalResult = $this->departments_service->getDepartmentByName($department->getName());
+
+			if (!is_null($dalResult->getException()))
+			{
+				return false;
+			}
+
+			if ($dalResult->getResult() instanceof Department)
+			{
+				return false;
+			}
+
+			$dalResult = $this->departments_service->addDepartment($department);
+			$this->departments_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
+
 		public function Edit($request = null)
 		{
 			$department = $all_departments = $all_items = false;

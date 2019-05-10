@@ -32,34 +32,6 @@
 		return $ShopDAL->addList($list);
 	}
 
-	function addDepartment($request)
-	{
-		$department = createDepartment($request);
-
-		if (!entityIsValid($department))
-		{
-			return false;
-		}
-
-		$dal_result = getDepartmentByName($department->getName());
-
-		if (!is_null($dal_result->getException()))
-		{
-			return false;
-		}
-
-		if ($dal_result->getResult() instanceof Department)
-		{
-			return false;
-		}
-
-		$ShopDAL = new ShopDAL();
-
-		$dal_result = $ShopDAL->addDepartment($department);
-
-		return $dal_result->jsonSerialize();
-	}
-
 	function createList($request)
 	{
 		$id = isset($request['list_id']) ? $request['list_id'] : null;
@@ -191,13 +163,6 @@
 		$ShopDAL = new ShopDAL();
 
 		return $ShopDAL->getListByName($list_name);
-	}
-
-	function getDepartmentByName($dept_name)
-	{
-		$ShopDAL = new ShopDAL();
-
-		return $ShopDAL->getDepartmentByName($dept_name);
 	}
 
 	function getListById($list_id)

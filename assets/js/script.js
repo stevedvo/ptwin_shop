@@ -252,8 +252,9 @@ function manageDepts()
 				dataType : "json",
 				data     :
 				{
-					action  : "addDepartment",
-					request : {'dept_name' : departmentName}
+					controller : "Departments",
+					action     : "addDepartment",
+					request    : {'dept_name' : departmentName}
 				}
 			}).done(function(data)
 			{
