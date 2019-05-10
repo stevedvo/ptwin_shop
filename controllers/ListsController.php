@@ -90,108 +90,108 @@
 			include_once('views/lists/edit.php');
 		}
 
-		// public function addItemToList($request)
-		// {
-		// 	$item = $list = false;
+		public function addItemToList($request)
+		{
+			$item = $list = false;
 
-		// 	if (!is_numeric($request['item_id']) || !is_numeric($request['list_id']))
-		// 	{
-		// 		return false;
-		// 	}
+			if (!is_numeric($request['item_id']) || !is_numeric($request['list_id']))
+			{
+				return false;
+			}
 
-		// 	$dalResult = $this->items_service->getItemById(intval($request['item_id']));
+			$dalResult = $this->items_service->getItemById(intval($request['item_id']));
 
-		// 	if (!is_null($dalResult->getResult()))
-		// 	{
-		// 		$item = $dalResult->getResult();
-		// 	}
+			if (!is_null($dalResult->getResult()))
+			{
+				$item = $dalResult->getResult();
+			}
 
-		// 	if (!$item)
-		// 	{
-		// 		return false;
-		// 	}
+			if (!$item)
+			{
+				return false;
+			}
 
-		// 	$dalResult = $this->lists_service->getListById(intval($request['list_id']));
+			$dalResult = $this->lists_service->getListById(intval($request['list_id']));
 
-		// 	if (!is_null($dalResult->getResult()))
-		// 	{
-		// 		$list = $dalResult->getResult();
-		// 	}
+			if (!is_null($dalResult->getResult()))
+			{
+				$list = $dalResult->getResult();
+			}
 
-		// 	if (!$list)
-		// 	{
-		// 		return false;
-		// 	}
+			if (!$list)
+			{
+				return false;
+			}
 
-		// 	$dalResult = $this->lists_service->addItemToList($item, $list);
-		// 	$this->lists_service->closeConnexion();
-		// 	$this->items_service->closeConnexion();
+			$dalResult = $this->lists_service->addItemToList($item, $list);
+			$this->lists_service->closeConnexion();
+			$this->items_service->closeConnexion();
 
-		// 	return $dalResult->jsonSerialize();
-		// }
+			return $dalResult->jsonSerialize();
+		}
 
-		// public function removeItemsFromList($request)
-		// {
-		// 	$item_ids = [];
+		public function removeItemsFromList($request)
+		{
+			$item_ids = [];
 
-		// 	if (!is_array($request['item_ids']) || !is_numeric($request['list_id']))
-		// 	{
-		// 		return false;
-		// 	}
+			if (!is_array($request['item_ids']) || !is_numeric($request['list_id']))
+			{
+				return false;
+			}
 
-		// 	foreach ($request['item_ids'] as $item_id)
-		// 	{
-		// 		if (!is_numeric($item_id))
-		// 		{
-		// 			return false;
-		// 		}
+			foreach ($request['item_ids'] as $item_id)
+			{
+				if (!is_numeric($item_id))
+				{
+					return false;
+				}
 
-		// 		$item_ids[] = intval($item_id);
-		// 	}
+				$item_ids[] = intval($item_id);
+			}
 
-		// 	$dalResult = $this->lists_service->removeItemsFromList($item_ids, intval($request['list_id']));
-		// 	$this->lists_service->closeConnexion();
+			$dalResult = $this->lists_service->removeItemsFromList($item_ids, intval($request['list_id']));
+			$this->lists_service->closeConnexion();
 
-		// 	return $dalResult->jsonSerialize();
-		// }
+			return $dalResult->jsonSerialize();
+		}
 
-		// public function removeList($request)
-		// {
-		// 	if (!isset($request['list_id']) || !is_numeric($request['list_id']))
-		// 	{
-		// 		return false;
-		// 	}
+		public function removeList($request)
+		{
+			if (!isset($request['list_id']) || !is_numeric($request['list_id']))
+			{
+				return false;
+			}
 
-		// 	$dalResult = $this->items_service->getItemsByListId(intval($request['list_id']));
+			$dalResult = $this->items_service->getItemsByListId(intval($request['list_id']));
 
-		// 	if (!is_null($dalResult->getException()))
-		// 	{
-		// 		return false;
-		// 	}
+			if (!is_null($dalResult->getException()))
+			{
+				return false;
+			}
 
-		// 	$items = $dalResult->getResult();
+			$items = $dalResult->getResult();
 
-		// 	if (is_array($items) && sizeof($items) > 0)
-		// 	{
-		// 		return false;
-		// 	}
+			if (is_array($items) && sizeof($items) > 0)
+			{
+				return false;
+			}
 
-		// 	$dalResult = $this->lists_service->getListById(intval($request['list_id']));
+			$dalResult = $this->lists_service->getListById(intval($request['list_id']));
 
-		// 	if (!is_null($dalResult->getResult()))
-		// 	{
-		// 		$list = $dalResult->getResult();
-		// 	}
+			if (!is_null($dalResult->getResult()))
+			{
+				$list = $dalResult->getResult();
+			}
 
-		// 	if (!$list)
-		// 	{
-		// 		return false;
-		// 	}
+			if (!$list)
+			{
+				return false;
+			}
 
-		// 	$dalResult = $this->lists_service->removeList($list);
-		// 	$this->lists_service->closeConnexion();
-		// 	$this->items_service->closeConnexion();
+			$dalResult = $this->lists_service->removeList($list);
+			$this->lists_service->closeConnexion();
+			$this->items_service->closeConnexion();
 
-		// 	return $dalResult->jsonSerialize();
-		// }
+			return $dalResult->jsonSerialize();
+		}
 	}

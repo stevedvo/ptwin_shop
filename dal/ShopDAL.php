@@ -395,6 +395,7 @@
 
 		public function getItemsByListId($list_id)
 		{
+			$result = new DalResult();
 			$items = false;
 
 			try
@@ -414,13 +415,15 @@
 						$items[$item->getId()] = $item;
 					}
 				}
+
+				$result->setResult($items);
 			}
 			catch(PDOException $e)
 			{
-				var_dump($e);
+				$result->setException($e);
 			}
 
-			return $items;
+			return $result;
 		}
 
 		public function updateItem($item)
@@ -453,16 +456,16 @@
 
 		public function removeList($list)
 		{
-			$result = false;
+			$result = new DalResult();
 
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("DELETE FROM lists WHERE list_id = :list_id");
-				$result = $query->execute([':list_id' => $list->getId()]);
+				$result->setResult($query->execute([':list_id' => $list->getId()]));
 			}
 			catch(PDOException $e)
 			{
-				var_dump($e);
+				$result->setException($e);
 			}
 
 			return $result;

@@ -6,32 +6,6 @@
 		echo "</pre>";
 	}
 
-	function getAllLists()
-	{
-		$ShopDAL = new ShopDAL();
-
-		return $ShopDAL->getAllLists();
-	}
-
-	function addList($request)
-	{
-		$list = createList($request);
-
-		if (!entityIsValid($list))
-		{
-			return false;
-		}
-
-		if (getListByName($list->getName()))
-		{
-			return false;
-		}
-
-		$ShopDAL = new ShopDAL();
-
-		return $ShopDAL->addList($list);
-	}
-
 	function createList($request)
 	{
 		$id = isset($request['list_id']) ? $request['list_id'] : null;
@@ -50,35 +24,6 @@
 		$department = new Department($id, $name);
 
 		return $department;
-	}
-
-	function addItemToList($request)
-	{
-		$item_id = (isset($request['item_id']) && is_numeric($request['item_id'])) ? intval($request['item_id']) : null;
-		$list_id = (isset($request['list_id']) && is_numeric($request['list_id'])) ? intval($request['list_id']) : null;
-
-		if (is_null($item_id) || is_null($list_id))
-		{
-			return false;
-		}
-
-		$item = getItemById($item_id);
-
-		if (!$item)
-		{
-			return false;
-		}
-
-		$list = getListById($list_id);
-
-		if (!$list)
-		{
-			return false;
-		}
-
-		$item->setListId($list->getId());
-
-		return updateItem($item);
 	}
 
 	function moveItemsToList($request)
@@ -156,68 +101,6 @@
 		$item = new Item($id, $description, $comments, $default_qty, $total_qty, $last_ordered, $selected, $list_id, $link);
 
 		return $item;
-	}
-
-	function getListByName($list_name)
-	{
-		$ShopDAL = new ShopDAL();
-
-		return $ShopDAL->getListByName($list_name);
-	}
-
-	function getListById($list_id)
-	{
-		$ShopDAL = new ShopDAL();
-		$list = $ShopDAL->getListById($list_id);
-
-		return ($list && entityIsValid($list) ? $list : false);
-	}
-
-	function removeList($request)
-	{
-		$list_id = (isset($request['list_id']) && is_numeric($request['list_id'])) ? intval($request['list_id']) : null;
-
-		if (is_null($list_id))
-		{
-			return false;
-		}
-
-		$items = getItemsByListId($list_id);
-
-		if (is_array($items) && sizeof($items) > 0)
-		{
-			return false;
-		}
-
-		$list = getListById($list_id);
-
-		if (!$list)
-		{
-			return false;
-		}
-
-		$ShopDAL = new ShopDAL();
-
-		return $ShopDAL->removeList($list);
-	}
-
-	function getItemsByListId($list_id)
-	{
-		if (!is_numeric($list_id))
-		{
-			return false;
-		}
-
-		$ShopDAL = new ShopDAL();
-
-		return $ShopDAL->getItemsByListId($list_id);
-	}
-
-	function getItemById($item_id)
-	{
-		$ShopDAL = new ShopDAL();
-
-		return $ShopDAL->getItemById($item_id);
 	}
 
 	function updateItem($item)

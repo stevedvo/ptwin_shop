@@ -27,4 +27,9 @@
 		{
 			return $this->dal->getItemsByDepartmentId($dept_id);
 		}
+
+		public function getItemsByListId($list_id)
+		{
+			return $this->dal->getItemsByListId($list_id);
+		}
 	}

@@ -200,18 +200,22 @@ function manageLists()
 			dataType : "json",
 			data     :
 			{
-				action  : "removeList",
-				request : {'list_id' : listID}
+				controller : "Lists",
+				action     : "removeList",
+				request    : {'list_id' : listID}
 			}
 		}).done(function(data)
 		{
 			if (data)
 			{
-				toastr.success("List successfully removed");
-				var timer = setTimeout(function()
+				if (data.exception == null)
 				{
-					location.href = "/manage-lists.php";
-				}, 750);
+					toastr.success("List successfully removed");
+					var timer = setTimeout(function()
+					{
+						location.href = "/lists/";
+					}, 750);
+				}
 			}
 			else
 			{

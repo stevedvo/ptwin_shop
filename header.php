@@ -74,7 +74,7 @@
 		<div class="row">
 			<div class="col-xs-12">
 				<a class="btn btn-primary" href="/">Home</a>
-				<a class="btn btn-primary" href="add-to-db.php">Add/Manage Items</a>
+				<a class="btn btn-primary" href="/items/">Manage Items</a>
 				<a class="btn btn-primary" href="view-by-freq.php">View By Freq</a>
 				<a class="btn btn-primary" href="/lists/">Manage Lists</a>
 				<a class="btn btn-primary" href="view-by-dept.php">View By Dept</a>

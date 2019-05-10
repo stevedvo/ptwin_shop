@@ -10,17 +10,6 @@
 	<body>
 <?php
 		include_once('header.php');
-
-		if (!isset($_GET['id']) || !is_numeric($_GET['id']))
-		{
-			$list = false;
-		}
-		else
-		{
-			$list = getListById($_GET['id']);
-			$all_lists = getAllLists();
-			$all_items = getAllItems();
-		}
 ?>
 		<main class="wrapper">
 			<div class="container">
