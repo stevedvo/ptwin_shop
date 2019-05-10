@@ -208,6 +208,7 @@
 
 		public function getListById($list_id)
 		{
+			$dalResult = new DalResult();
 			$list = false;
 
 			try
@@ -233,13 +234,15 @@
 						}
 					}
 				}
+
+				$dalResult->setResult($list);
 			}
 			catch(PDOException $e)
 			{
-				var_dump($e);
+				$result->setException($e);
 			}
 
-			return $list;
+			return $dalResult;
 		}
 
 		public function getAllItems()

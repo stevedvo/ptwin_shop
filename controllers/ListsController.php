@@ -56,39 +56,39 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		// public function Edit($request = null)
-		// {
-		// 	$list = $all_lists = $all_items = false;
+		public function Edit($request = null)
+		{
+			$list = $all_lists = $all_items = false;
 
-		// 	if (is_numeric($request))
-		// 	{
-		// 		$dalResult = $this->lists_service->getListById(intval($request));
+			if (is_numeric($request))
+			{
+				$dalResult = $this->lists_service->getListById(intval($request));
 
-		// 		if (!is_null($dalResult->getResult()))
-		// 		{
-		// 			$list = $dalResult->getResult();
-		// 		}
+				if (!is_null($dalResult->getResult()))
+				{
+					$list = $dalResult->getResult();
+				}
 
-		// 		$dalResult = $this->lists_service->getAllLists();
+				$dalResult = $this->lists_service->getAllLists();
 
-		// 		if (!is_null($dalResult->getResult()))
-		// 		{
-		// 			$all_lists = $dalResult->getResult();
-		// 		}
+				if (!is_null($dalResult->getResult()))
+				{
+					$all_lists = $dalResult->getResult();
+				}
 
-		// 		$dalResult = $this->items_service->getAllItems();
+				$dalResult = $this->items_service->getAllItems();
 
-		// 		if (!is_null($dalResult->getResult()))
-		// 		{
-		// 			$all_items = $dalResult->getResult();
-		// 		}
+				if (!is_null($dalResult->getResult()))
+				{
+					$all_items = $dalResult->getResult();
+				}
 
-		// 		$this->lists_service->closeConnexion();
-		// 		$this->items_service->closeConnexion();
-		// 	}
+				$this->lists_service->closeConnexion();
+				$this->items_service->closeConnexion();
+			}
 
-		// 	include_once('views/lists/edit.php');
-		// }
+			include_once('views/lists/edit.php');
+		}
 
 		// public function addItemToList($request)
 		// {

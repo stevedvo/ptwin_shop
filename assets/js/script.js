@@ -60,7 +60,7 @@ function manageLists()
 				{
 					if (data.exception == null)
 					{
-						var html = '<p><a href="/lists/edit/'+parseInt(data)+'/">'+listName+'</a></p>';
+						var html = '<p><a href="/lists/edit/'+parseInt(data.result)+'/">'+listName+'</a></p>';
 
 						$(".results-container").append(html);
 						$(".results-container").find(".no-results").remove();
