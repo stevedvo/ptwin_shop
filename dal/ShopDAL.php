@@ -15,6 +15,7 @@
 
 		public function getAllLists()
 		{
+			$result = new DalResult();
 			$lists = false;
 
 			try
@@ -34,19 +35,21 @@
 						$lists[$list->getId()] = $list;
 					}
 				}
+
+				$result->setResult($lists);
 			}
 			catch(PDOException $e)
 			{
-				var_dump($e);
+				$result->setException($e);
 			}
 
-			return $lists;
+			return $result;
 		}
 
 		public function getAllDepartments()
 		{
 			$result = new DalResult();
-			$departments = [];
+			$departments = false;
 
 			try
 			{
@@ -56,6 +59,8 @@
 
 				if ($rows)
 				{
+					$departments = [];
+
 					foreach ($rows as $row)
 					{
 						$department = createDepartment($row);
@@ -76,26 +81,25 @@
 
 		public function addList($list)
 		{
-			$list_id = false;
+			$result = new DalResult();
 
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("INSERT INTO lists (name) VALUES (:name)");
 				$query->execute([':name' => $list->getName()]);
-				$list_id = $this->ShopDb->conn->lastInsertId();
+				$result->setResult($this->ShopDb->conn->lastInsertId());
 			}
 			catch(PDOException $e)
 			{
-				var_dump($e);
+				$result->setException($e);
 			}
 
-			return $list_id;
+			return $result;
 		}
 
 		public function addDepartment($department)
 		{
 			$result = new DalResult();
-			$dept_id = false;
 
 			try
 			{
@@ -113,6 +117,7 @@
 
 		public function getListByName($list_name)
 		{
+			$result = new DalResult();
 			$list = false;
 
 			try
@@ -125,13 +130,15 @@
 				{
 					$list = createList($row);
 				}
+
+				$result->setResult($list);
 			}
 			catch(PDOException $e)
 			{
-				var_dump($e);
+				$result->setException($e);
 			}
 
-			return $list;
+			return $result;
 		}
 
 		public function getDepartmentById($dept_id)

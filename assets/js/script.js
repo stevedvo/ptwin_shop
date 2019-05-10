@@ -50,22 +50,25 @@ function manageLists()
 				dataType : "json",
 				data     :
 				{
-					action  : "addList",
-					request : {'list_name' : listName}
+					controller : "Lists",
+					action     : "addList",
+					request    : {'list_name' : listName}
 				}
 			}).done(function(data)
 			{
 				if (data)
 				{
-					var html = '<p><a href="/edit-list.php?id='+parseInt(data)+'">'+listName+'</a></p>';
+					if (data.exception == null)
+					{
+						var html = '<p><a href="/lists/edit/'+parseInt(data)+'/">'+listName+'</a></p>';
 
-					$(".results-container").append(html);
-					$(".results-container").find(".no-results").remove();
-					form.find(".input-error").removeClass("input-error");
-					form.find("[name='list-name']").val("");
+						$(".results-container").append(html);
+						$(".results-container").find(".no-results").remove();
+						form.find(".input-error").removeClass("input-error");
+						form.find("[name='list-name']").val("");
 
-					toastr.success("New List successfully added");
-
+						toastr.success("New List successfully added");
+					}
 				}
 				else
 				{
@@ -268,9 +271,9 @@ function manageDepts()
 						$(".results-container").find(".no-results").remove();
 						form.find(".input-error").removeClass("input-error");
 						form.find("[name='department-name']").val("");
-					}
 
-					toastr.success("New Department successfully added");
+						toastr.success("New Department successfully added");
+					}
 				}
 				else
 				{
