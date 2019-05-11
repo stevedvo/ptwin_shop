@@ -70,7 +70,7 @@
 
 		public function Edit($request = null)
 		{
-			$item = $all_items = $all_items = false;
+			$item = $lists = false;
 
 			if (is_numeric($request))
 			{
@@ -80,24 +80,20 @@
 				{
 					$item = $dalResult->getResult();
 				}
-
-				$dalResult = $this->items_service->getAllItems();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$all_items = $dalResult->getResult();
-				}
-
-				$dalResult = $this->items_service->getAllItems();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$all_items = $dalResult->getResult();
-				}
-
-				$this->items_service->closeConnexion();
-				$this->items_service->closeConnexion();
 			}
+
+			if ($item)
+			{
+				$dalResult = $this->lists_service->getAllLists();
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$lists = $dalResult->getResult();
+				}
+			}
+
+			$this->items_service->closeConnexion();
+			$this->lists_service->closeConnexion();
 
 			include_once('views/items/edit.php');
 		}
