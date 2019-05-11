@@ -24,7 +24,7 @@
 						<h3>Current Items</h3>
 						<div class="results-container">
 <?php
-							if (!is_array($items) || sizeof($items) == 0)
+							if (!is_array($all_items) || sizeof($all_items) == 0)
 							{
 ?>
 								<p class="no-results">No Items can be found</p>
@@ -32,7 +32,7 @@
 							}
 							else
 							{
-								foreach ($items as $item_id => $item)
+								foreach ($all_items as $item_id => $item)
 								{
 ?>
 									<p><a href="/items/edit/<?= $item->getId(); ?>/"><?= $item->getDescription(); ?></a></p>

@@ -4,22 +4,24 @@
 		private $result;
 		private $exception;
 		private $items_service;
+		private $lists_service;
 
 		public function __construct($result = null, $exception = null)
 		{
 			$this->result = $result;
 			$this->exception = $exception;
 			$this->items_service = new ItemsService();
+			$this->lists_service = new ListsService();
 		}
 
 		public function Index()
 		{
 			$dalResult = $this->items_service->getAllItems();
-			$items = false;
+			$all_items = false;
 
 			if (!is_null($dalResult->getResult()))
 			{
-				$items = $dalResult->getResult();
+				$all_items = $dalResult->getResult();
 			}
 
 			$this->items_service->closeConnexion();
@@ -29,6 +31,13 @@
 		public function Create()
 		{
 			$itemPrototype = new Item();
+			$dalResult = $this->lists_service->getAllLists();
+
+			if (is_null($dalResult->getException()))
+			{
+				$lists = $dalResult->getResult();
+			}
+
 			include_once('views/items/create.php');
 		}
 
@@ -41,14 +50,14 @@
 				return false;
 			}
 
-			$dalResult = $this->items_service->getItemByName($item->getName());
+			$dalResult = $this->items_service->getItemByDescription($item->getDescription());
 
 			if (!is_null($dalResult->getException()))
 			{
 				return false;
 			}
 
-			if ($dalResult->getResult() instanceof ShopItem)
+			if ($dalResult->getResult() instanceof Item)
 			{
 				return false;
 			}

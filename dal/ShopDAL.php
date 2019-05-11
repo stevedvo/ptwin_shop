@@ -141,6 +141,61 @@
 			return $result;
 		}
 
+		public function addItem($item)
+		{
+			$result = new DalResult();
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("INSERT INTO items (description, comments, default_qty, total_qty, last_ordered, selected, list_id, link) VALUES (:description, :comments, :default_qty, :total_qty, :last_ordered, :selected, :list_id, :link)");
+				$query->execute(
+				[
+					':description'  => $item->getDescription(),
+					':comments'     => $item->getComments(),
+					':default_qty'  => !is_null($item->getDefaultQty()) ? $item->getDefaultQty() : 1,
+					':total_qty'    => !is_null($item->getTotalQty()) ? $item->getTotalQty() : 0,
+					':last_ordered' => !is_null($item->getLastOrdered()) ? $item->getLastOrdered()->format('Y-m-d') : null,
+					':selected'     => !is_null($item->getSelected()) ? $item->getSelected() : 0,
+					':list_id'      => $item->getListId(),
+					':link'         => $item->getLink(),
+				]);
+
+				$result->setResult($this->ShopDb->conn->lastInsertId());
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
+		public function getItemByDescription($description)
+		{
+			$result = new DalResult();
+			$item = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM items AS i WHERE i.description = :description");
+				$query->execute([':description' => $description]);
+				$row = $query->fetch(PDO::FETCH_ASSOC);
+
+				if ($row)
+				{
+					$item = createItem($row);
+				}
+
+				$result->setResult($item);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
 		public function getDepartmentById($dept_id)
 		{
 			$result = new DalResult();

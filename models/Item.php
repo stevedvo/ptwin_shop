@@ -25,10 +25,13 @@
 			$this->link = $link;
 			$this->validation =
 			[
-				'Description' =>
+				'Description' => ['required' => true],
+				'DefaultQty' =>
 				[
-					'required' => true
-				]
+					'required' => true,
+					'min-value' => 1
+				],
+				'ListId' => ['required' => true]
 			];
 		}
 

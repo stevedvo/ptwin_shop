@@ -25,9 +25,28 @@
 								<input id="comments" type="text" name="comments" data-validation="<?= $itemPrototype->getValidation("Comments"); ?>" />
 								<br/><br/>
 								<label for="default_qty">Default Qty:</label>
-								<input id="default_qty" type="text" name="default_qty" data-validation="<?= $itemPrototype->getValidation("DefaultQty"); ?>" />
+								<input id="default_qty" type="number" name="default-qty" min="1" value="1" data-validation="<?= $itemPrototype->getValidation("DefaultQty"); ?>" />
 								<br/><br/>
-								<input type="submit" class="btn btn-primary js-add-list" value="Add Item" />
+								<label for="link">Link:</label>
+								<input id="link" type="text" name="link" data-validation="<?= $itemPrototype->getValidation("Link"); ?>" />
+								<br/><br/>
+								<label for="list">List:</label>
+								<select id="list" name="list-id" data-validation="<?= $itemPrototype->getValidation("ListId"); ?>">
+									<option value="" selected disabled>Please select...</option>
+<?php
+									if (is_array($lists))
+									{
+										foreach ($lists as $list_id => $list)
+										{
+?>
+											<option value="<?= $list->getId(); ?>"><?= $list->getName(); ?></option>
+<?php
+										}
+									}
+?>
+								</select>
+								<br/><br/>
+								<input type="submit" class="btn btn-primary js-add-item" value="Add Item" />
 							</fieldset>
 						</div>
 					</div>

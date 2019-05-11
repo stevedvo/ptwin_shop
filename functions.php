@@ -141,6 +141,12 @@
 								return false;
 							}
 							break;
+						case 'min-value':
+							if (intval($property_value) < intval($value))
+							{
+								return false;
+							}
+							break;
 					}
 				}
 			}

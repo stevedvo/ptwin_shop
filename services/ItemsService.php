@@ -13,6 +13,11 @@
 			$this->dal->closeConnexion();
 		}
 
+		public function addItem($item)
+		{
+			return $this->dal->addItem($item);
+		}
+
 		public function getAllItems()
 		{
 			return $this->dal->getAllItems();
@@ -21,6 +26,11 @@
 		public function getItemById($item_id)
 		{
 			return $this->dal->getItemById($item_id);
+		}
+
+		public function getItemByDescription($description)
+		{
+			return $this->dal->getItemByDescription($description);
 		}
 
 		public function getItemsByDepartmentId($dept_id)

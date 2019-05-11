@@ -3,6 +3,7 @@ $ = jQuery;
 $(function()
 {
 	globalFuncs();
+	manageItems();
 	manageLists();
 	manageDepts();
 });
@@ -20,6 +21,83 @@ function globalFuncs()
 	});
 }
 
+function manageItems()
+{
+	$(document).on("click", ".js-add-item", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			var description = form.find("[name='description']").val();
+			var comments = form.find("[name='comments']").val();
+			var defaultQty = form.find("[name='default-qty']").val();
+			var link = form.find("[name='link']").val();
+			var listID = form.find("[name='list-id'] option:selected").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : "/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Items",
+					action     : "addItem",
+					request    :
+					{
+						'description' : description,
+						'comments'    : comments,
+						'default_qty' : defaultQty,
+						'link'        : link,
+						'list_id'     : listID
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					if (data.exception == null)
+					{
+						toastr.success("New Item successfully added");
+						var timer = setTimeout(function()
+						{
+							location.href = "/items/edit/"+data.result+"/";
+						}, 750);
+					}
+					else
+					{
+						toastr.error("PDOException");
+						console.log(data);
+					}
+				}
+				else
+				{
+					toastr.error("Could not save Item");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+}
+
 function manageLists()
 {
 	$(document).on("click", ".js-add-list", function()
@@ -27,6 +105,7 @@ function manageLists()
 		var form = $(this).closest(".form");
 
 		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
 
 		var validation = validateForm(form);
 
@@ -236,6 +315,7 @@ function manageDepts()
 		var form = $(this).closest(".form");
 
 		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
 
 		var validation = validateForm(form);
 
@@ -506,7 +586,7 @@ function validateForm(form)
 						{
 							case 'required':
 							{
-								if ($thisInput.val().length == 0)
+								if ($thisInput.val() == null || $thisInput.val().length == 0)
 								{
 									if (result[$thisInput.attr("name")] == undefined)
 									{
@@ -545,6 +625,21 @@ function validateForm(form)
 									else
 									{
 										result[$thisInput.attr("name")]+= "Must be "+criterion[1]+" characters or less. ";
+									}
+								}
+							}
+							break;
+							case 'min-value':
+							{
+								if (parseInt($thisInput.val()) < parseInt(criterion[1]))
+								{
+									if (result[$thisInput.attr("name")] == undefined)
+									{
+										result[$thisInput.attr("name")] = "Must be "+criterion[1]+" or higher. ";
+									}
+									else
+									{
+										result[$thisInput.attr("name")]+= "Must be "+criterion[1]+" or higher. ";
 									}
 								}
 							}
