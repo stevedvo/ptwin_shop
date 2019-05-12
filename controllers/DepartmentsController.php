@@ -26,7 +26,19 @@
 			}
 
 			$this->departments_service->closeConnexion();
-			include_once('views/departments/index.php');
+
+			$pageData =
+			[
+				'page_title' => 'Manage Departments',
+				'template'   => 'views/departments/index.php',
+				'page_data'  =>
+				[
+					'deptPrototype' => $deptPrototype,
+					'departments'   => $departments
+				]
+			];
+
+			renderPage($pageData);
 		}
 
 		public function addDepartment($request)
@@ -82,12 +94,24 @@
 				{
 					$all_items = $dalResult->getResult();
 				}
-
-				$this->departments_service->closeConnexion();
-				$this->items_service->closeConnexion();
 			}
 
-			include_once('views/departments/edit.php');
+			$this->departments_service->closeConnexion();
+			$this->items_service->closeConnexion();
+
+			$pageData =
+			[
+				'page_title' => 'Edit Department',
+				'template'   => 'views/departments/edit.php',
+				'page_data'  =>
+				[
+					'department'      => $department,
+					'all_departments' => $all_departments,
+					'all_items'       => $all_items
+				]
+			];
+
+			renderPage($pageData);
 		}
 
 		public function addItemToDepartment($request)

@@ -26,7 +26,19 @@
 			}
 
 			$this->lists_service->closeConnexion();
-			include_once('views/lists/index.php');
+
+			$pageData =
+			[
+				'page_title' => 'Manage Lists',
+				'template'   => 'views/lists/index.php',
+				'page_data'  =>
+				[
+					'list_prototype' => $listPrototype,
+					'lists'          => $lists
+				]
+			];
+
+			renderPage($pageData);
 		}
 
 		public function addList($request)
@@ -82,11 +94,24 @@
 				{
 					$all_items = $dalResult->getResult();
 				}
-
-				$this->lists_service->closeConnexion();
-				$this->items_service->closeConnexion();
 			}
 
+			$this->lists_service->closeConnexion();
+			$this->items_service->closeConnexion();
+
+			$pageData =
+			[
+				'page_title' => 'Edit List',
+				'template'   => 'views/lists/edit.php',
+				'page_data'  =>
+				[
+					'list'      => $list,
+					'all_lists' => $all_lists,
+					'all_items' => $all_items
+				]
+			];
+
+			renderPage($pageData);
 			include_once('views/lists/edit.php');
 		}
 
@@ -189,6 +214,60 @@
 			}
 
 			$dalResult = $this->lists_service->removeList($list);
+			$this->lists_service->closeConnexion();
+			$this->items_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
+
+		public function moveItemsToList($request)
+		{
+			$item_ids = (isset($request['item_ids']) && is_array($request['item_ids'])) ? $request['item_ids'] : null;
+			$list_id = (isset($request['list_id']) && is_numeric($request['list_id'])) ? intval($request['list_id']) : null;
+
+			if (is_null($item_ids) || is_null($list_id))
+			{
+				return false;
+			}
+
+			if (sizeof($item_ids) == 0)
+			{
+				return false;
+			}
+
+			$sanitised_ids = [];
+
+			foreach ($item_ids as $item_id)
+			{
+				$sanitised_ids[] = intval($item_id);
+			}
+
+			sort($sanitised_ids);
+
+			$dalResult = $this->items_service->getItemsById($sanitised_ids);
+
+			if (is_null($dalResult->getResult()))
+			{
+				return false;
+			}
+
+			$items = $dalResult->getResult();
+
+			if ($sanitised_ids !== array_keys($items))
+			{
+				return false;
+			}
+
+			$dalResult = $this->lists_service->getListById($list_id);
+
+			if (is_null($dalResult->getResult()))
+			{
+				return false;
+			}
+
+			$list = $dalResult->getResult();
+
+			$dalResult = $this->lists_service->moveItemsToList($items, $list);
 			$this->lists_service->closeConnexion();
 			$this->items_service->closeConnexion();
 

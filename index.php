@@ -6,6 +6,7 @@
 <html lang="en">
 	<head>
 <?php
+/*
 		$page_title = "Peatwin Shopping";
 		include_once('head-section.php');
 ?>
@@ -222,3 +223,4 @@
 ?>
 	</body>
 </html>
+*/

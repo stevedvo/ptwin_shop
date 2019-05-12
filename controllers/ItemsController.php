@@ -25,7 +25,15 @@
 			}
 
 			$this->items_service->closeConnexion();
-			include_once('views/items/index.php');
+
+			$pageData =
+			[
+				'page_title' => 'Manage Items',
+				'template'   => 'views/items/index.php',
+				'page_data'  => ['all_items' => $all_items]
+			];
+
+			renderPage($pageData);
 		}
 
 		public function Create()
@@ -38,7 +46,20 @@
 				$lists = $dalResult->getResult();
 			}
 
-			include_once('views/items/create.php');
+			$this->lists_service->closeConnexion();
+
+			$pageData =
+			[
+				'page_title' => 'Add New Item',
+				'template'   => 'views/items/create.php',
+				'page_data'  =>
+				[
+					'item_prototype' => $itemPrototype,
+					'lists'          => $lists
+				]
+			];
+
+			renderPage($pageData);
 		}
 
 		public function addItem($request)
@@ -95,7 +116,18 @@
 			$this->items_service->closeConnexion();
 			$this->lists_service->closeConnexion();
 
-			include_once('views/items/edit.php');
+			$pageData =
+			[
+				'page_title' => 'Edit Item',
+				'template'   => 'views/items/edit.php',
+				'page_data'  =>
+				[
+					'item'  => $item,
+					'lists' => $lists
+				]
+			];
+
+			renderPage($pageData);
 		}
 
 		public function editItem($request)

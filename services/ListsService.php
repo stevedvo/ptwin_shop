@@ -47,4 +47,9 @@
 		{
 			return $this->dal->removeList($list);
 		}
+
+		public function moveItemsToList($items, $list)
+		{
+			return $this->dal->moveItemsToList($items, $list);
+		}
 	}

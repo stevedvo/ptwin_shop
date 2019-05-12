@@ -26,66 +26,6 @@
 		return $department;
 	}
 
-	function moveItemsToList($request)
-	{
-		$item_ids = (isset($request['item_ids']) && is_array($request['item_ids'])) ? $request['item_ids'] : null;
-		$list_id = (isset($request['list_id']) && is_numeric($request['list_id'])) ? intval($request['list_id']) : null;
-
-		if (is_null($item_ids) || is_null($list_id))
-		{
-			return false;
-		}
-
-		if (sizeof($item_ids) == 0)
-		{
-			return false;
-		}
-
-		$sanitised_ids = [];
-
-		foreach ($item_ids as $item_id)
-		{
-			$sanitised_ids[] = intval($item_id);
-		}
-
-		sort($sanitised_ids);
-
-		$items = getItemsById($item_ids);
-
-		if ($sanitised_ids !== array_keys($items))
-		{
-			return false;
-		}
-
-		$list = getListById($list_id);
-
-		if (!$list)
-		{
-			return false;
-		}
-
-		$ShopDAL = new ShopDAL();
-
-		return $ShopDAL->moveItemsToList($items, $list);
-	}
-
-	function getItemsById($item_ids)
-	{
-		if (!is_array($item_ids))
-		{
-			return false;
-		}
-
-		if (sizeof($item_ids) == 0)
-		{
-			return false;
-		}
-
-		$ShopDAL = new ShopDAL();
-
-		return $ShopDAL->getItemsById($item_ids);
-	}
-
 	function createItem($request)
 	{
 		$id = isset($request['item_id']) ? intval($request['item_id']) : null;
@@ -158,4 +98,14 @@
 		}
 
 		return $date;
+	}
+
+	function renderPage($pageData)
+	{
+		$page_title = $pageData['page_title'];
+		$template = $pageData['template'];
+		$response = $pageData['page_data'];
+		include_once('views/shared/header.php');
+		include_once($template);
+		include_once('views/shared/footer.php');
 	}

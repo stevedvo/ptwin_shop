@@ -247,8 +247,9 @@ function manageLists()
 			dataType : "json",
 			data     :
 			{
-				action  : "addItemToList",
-				request :
+				controller : "Lists",
+				action     : "addItemToList",
+				request    :
 				{
 					'item_id' : itemID,
 					'list_id' : listID
@@ -300,8 +301,9 @@ function manageLists()
 				dataType : "json",
 				data     :
 				{
-					action  : "moveItemsToList",
-					request :
+					controller : "Lists",
+					action     : "moveItemsToList",
+					request    :
 					{
 						'item_ids' : itemIDs,
 						'list_id'  : targetListID

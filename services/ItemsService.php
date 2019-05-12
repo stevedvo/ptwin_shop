@@ -28,6 +28,11 @@
 			return $this->dal->getItemById($item_id);
 		}
 
+		public function getItemsById($item_ids)
+		{
+			return $this->dal->getItemsById($item_ids);
+		}
+
 		public function getItemByDescription($description)
 		{
 			return $this->dal->getItemByDescription($description);

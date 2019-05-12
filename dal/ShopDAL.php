@@ -203,7 +203,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.link FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE d.dept_id = :dept_id");
+				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE d.dept_id = :dept_id");
 				$query->execute([':dept_id' => $dept_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -379,6 +379,27 @@
 			return $result;
 		}
 
+		public function addItemToList($item, $list)
+		{
+			$result = new DalResult();
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE items SET list_id = :list_id WHERE item_id = :item_id");
+				$result->setResult($query->execute(
+				[
+					':list_id' => $list->getId(),
+					':item_id' => $item->getId()
+				]));
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
 		public function removeItemsFromDepartment($item_ids, $dept_id)
 		{
 			$result = new DalResult();
@@ -409,6 +430,7 @@
 
 		public function getItemsById($item_ids)
 		{
+			$result = new DalResult();
 			$items = false;
 
 			$query_string = "";
@@ -439,13 +461,15 @@
 						$items[$item->getId()] = $item;
 					}
 				}
+
+				$result->setResult($items);
 			}
 			catch(PDOException $e)
 			{
-				var_dump($e);
+				$result->setException($e);
 			}
 
-			return $items;
+			return $result;
 		}
 
 		public function getItemsByListId($list_id)
@@ -525,7 +549,7 @@
 
 		public function moveItemsToList($items, $list)
 		{
-			$result = false;
+			$result = new DalResult();
 
 			$query_string = "";
 			$query_values = [':list_id' => $list->getId()];
@@ -541,11 +565,11 @@
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("UPDATE items SET list_id = :list_id WHERE item_id IN (".$query_string.")");
-				$result = $query->execute($query_values);
+				$result->setResult($query->execute($query_values));
 			}
 			catch(PDOException $e)
 			{
-				var_dump($e);
+				$result->setException($e);
 			}
 
 			return $result;
