@@ -32,6 +32,7 @@
 							<div id="edit-item" class="form">
 								<fieldset>
 									<legend>Edit Item</legend>
+									<input type="hidden" name="item-id" value="<?= $item->getId(); ?>" />
 									<label for="description">Description:</label>
 									<input id="description" type="text" name="description" placeholder="Required" value="<?= $item->getDescription(); ?>" data-validation="<?= $item->getValidation("Description"); ?>" />
 									<br/><br/>
@@ -42,10 +43,10 @@
 									<input id="default_qty" type="number" name="default-qty" min="1" value="<?= $item->getDefaultQty(); ?>" data-validation="<?= $item->getValidation("DefaultQty"); ?>" />
 									<br/><br/>
 									<label for="total_qty">Total Qty:</label>
-									<input id="total_qty" class="inactive" type="number" value="<?= $item->getTotalQty(); ?>" />
+									<span id="total_qty"><?= $item->getTotalQty(); ?></span>
 									<br/><br/>
 									<label for="last_ordered">Last Ordered:</label>
-									<input id="last_ordered" class="inactive" type="text" value="<?= !is_null($item->getLastOrdered()) ? $item->getLastOrdered()->format('d-m-Y') : ''; ?>" />
+									<span id="last_ordered"><?= !is_null($item->getLastOrdered()) ? $item->getLastOrdered()->format('d-m-Y') : ''; ?></span>
 									<br/><br/>
 									<label for="link">Link:</label>
 									<input id="link" type="text" name="link" value="<?= $item->getLink(); ?>" data-validation="<?= $item->getValidation("Link"); ?>" />

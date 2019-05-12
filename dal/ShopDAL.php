@@ -483,27 +483,24 @@
 
 		public function updateItem($item)
 		{
-			$result = false;
+			$result = new DalResult();
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("UPDATE items SET description = :description, comments = :comments, default_qty = :default_qty, total_qty = :total_qty, last_ordered = :last_ordered, selected = :selected, list_id = :list_id, link = :link WHERE item_id = :item_id");
-				$result = $query->execute(
+				$query = $this->ShopDb->conn->prepare("UPDATE items SET description = :description, comments = :comments, default_qty = :default_qty, list_id = :list_id, link = :link WHERE item_id = :item_id");
+				$result->setResult($query->execute(
 				[
-					':description'  => $item->getDescription(),
-					':comments'     => $item->getComments(),
-					':default_qty'  => $item->getDefaultQty(),
-					':total_qty'    => $item->getTotalQty(),
-					':last_ordered' => $item->getLastOrdered() ? $item->getLastOrdered()->format('Y-m-d') : null,
-					':selected'     => $item->getSelected(),
-					':list_id'      => $item->getListId(),
-					':link'         => $item->getLink(),
-					':item_id'      => $item->getId()
-				]);
+					':description' => $item->getDescription(),
+					':comments'    => $item->getComments(),
+					':default_qty' => $item->getDefaultQty(),
+					':list_id'     => $item->getListId(),
+					':link'        => $item->getLink(),
+					':item_id'     => $item->getId()
+				]));
 			}
 			catch(PDOException $e)
 			{
-				var_dump($e);
+				$result->setException($e);
 			}
 
 			return $result;

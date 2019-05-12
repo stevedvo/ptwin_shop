@@ -42,4 +42,9 @@
 		{
 			return $this->dal->getItemsByListId($list_id);
 		}
+
+		public function updateItem($item)
+		{
+			return $this->dal->updateItem($item);
+		}
 	}

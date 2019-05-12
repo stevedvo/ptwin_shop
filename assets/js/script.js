@@ -96,6 +96,78 @@ function manageItems()
 			});
 		}
 	});
+
+	$(document).on("click", ".js-edit-item", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			var itemID = form.find("[name='item-id']").val();
+			var description = form.find("[name='description']").val();
+			var comments = form.find("[name='comments']").val();
+			var defaultQty = form.find("[name='default-qty']").val();
+			var link = form.find("[name='link']").val();
+			var listID = form.find("[name='list-id'] option:selected").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : "/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Items",
+					action     : "editItem",
+					request    :
+					{
+						'item_id'     : itemID,
+						'description' : description,
+						'comments'    : comments,
+						'default_qty' : defaultQty,
+						'link'        : link,
+						'list_id'     : listID
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					if (data.exception == null)
+					{
+						toastr.success("Item successfully updated");
+					}
+					else
+					{
+						toastr.error("PDOException");
+						console.log(data);
+					}
+				}
+				else
+				{
+					toastr.error("Could not save Item");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
 }
 
 function manageLists()

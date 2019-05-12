@@ -88,7 +88,7 @@
 
 	function createItem($request)
 	{
-		$id = isset($request['item_id']) ? $request['item_id'] : null;
+		$id = isset($request['item_id']) ? intval($request['item_id']) : null;
 		$description = isset($request['description']) ? $request['description'] : null;
 		$comments = isset($request['comments']) ? $request['comments'] : null;
 		$default_qty = isset($request['default_qty']) ? intval($request['default_qty']) : null;
@@ -101,13 +101,6 @@
 		$item = new Item($id, $description, $comments, $default_qty, $total_qty, $last_ordered, $selected, $list_id, $link);
 
 		return $item;
-	}
-
-	function updateItem($item)
-	{
-		$ShopDAL = new ShopDAL();
-
-		return $ShopDAL->updateItem($item);
 	}
 
 	function entityIsValid($entity)

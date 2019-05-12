@@ -98,6 +98,41 @@
 			include_once('views/items/edit.php');
 		}
 
+		public function editItem($request)
+		{
+			$item = createItem($request);
+
+			if (!entityIsValid($item))
+			{
+				return false;
+			}
+
+			if (is_null($item->getId()))
+			{
+				return false;
+			}
+
+			$dalResult = $this->items_service->getItemById($item->getId());
+
+			if (!$dalResult->getResult() instanceof Item)
+			{
+				return false;
+			}
+
+			$item_update = $dalResult->getResult();
+
+			$item_update->setDescription($item->getDescription());
+			$item_update->setComments($item->getComments());
+			$item_update->setDefaultQty($item->getDefaultQty());
+			$item_update->setListId($item->getListId());
+			$item_update->setLink($item->getLink());
+
+			$dalResult = $this->items_service->updateItem($item);
+			$this->items_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
+
 		public function removeItem($request)
 		{
 			if (!isset($request['item_id']) || !is_numeric($request['item_id']))
