@@ -342,6 +342,65 @@ function manageLists()
 		}
 	});
 
+	$(document).on("click", ".js-update-list", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			var listID = parseInt(form.find("[name='list-id']").val());
+			var listName = form.find("[name='list-name']").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : "/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Lists",
+					action     : "editList",
+					request    :
+					{
+						'list_id'   : listID,
+						'list_name' : listName
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					if (data.exception == null)
+					{
+						toastr.success("List successfully updated");
+					}
+				}
+				else
+				{
+					toastr.error("Could not update List");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+
 	$(document).on("click", ".js-remove-list", function()
 	{
 		var listID = parseInt($(this).closest(".list-items-container").data("list_id"));

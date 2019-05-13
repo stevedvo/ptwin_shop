@@ -43,6 +43,11 @@
 			return $this->dal->removeItemsFromList($item_ids, $list_id);
 		}
 
+		public function updateList($list)
+		{
+			return $this->dal->updateList($list);
+		}
+
 		public function removeList($list)
 		{
 			return $this->dal->removeList($list);

@@ -530,6 +530,27 @@
 			return $result;
 		}
 
+		public function updateList($list)
+		{
+			$result = new DalResult();
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE lists SET name = :name WHERE list_id = :list_id");
+				$result->setResult($query->execute(
+				[
+					':name'    => $list->getName(),
+					':list_id' => $list->getId()
+				]));
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
 		public function removeList($list)
 		{
 			$result = new DalResult();

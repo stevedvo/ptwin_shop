@@ -180,6 +180,37 @@
 			return $dalResult->jsonSerialize();
 		}
 
+		public function editList($request)
+		{
+			$list = createList($request);
+
+			if (!entityIsValid($list))
+			{
+				return false;
+			}
+
+			if (is_null($list->getId()))
+			{
+				return false;
+			}
+
+			$dalResult = $this->lists_service->getListById($list->getId());
+
+			if (!$dalResult->getResult() instanceof ShopList)
+			{
+				return false;
+			}
+
+			$list_update = $dalResult->getResult();
+
+			$list_update->setName($list->getName());
+
+			$dalResult = $this->lists_service->updateList($list_update);
+			$this->lists_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
+
 		public function removeList($request)
 		{
 			if (!isset($request['list_id']) || !is_numeric($request['list_id']))

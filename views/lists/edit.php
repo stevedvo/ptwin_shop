@@ -21,7 +21,7 @@
 ?>
 			<div class="row">
 				<div class="col-xs-12">
-					<div class="list-container">
+					<div class="form list-container">
 						<label>List Name:</label>
 						<input type="hidden" name="list-id" value="<?= $list->getId(); ?>" />
 						<input type="text" name="list-name" placeholder="Required" data-validation="<?= $list->getValidation("Name"); ?>" value="<?= $list->getName(); ?>" />

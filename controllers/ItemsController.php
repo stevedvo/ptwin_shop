@@ -159,7 +159,7 @@
 			$item_update->setListId($item->getListId());
 			$item_update->setLink($item->getLink());
 
-			$dalResult = $this->items_service->updateItem($item);
+			$dalResult = $this->items_service->updateItem($item_update);
 			$this->items_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();
