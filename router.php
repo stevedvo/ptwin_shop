@@ -4,12 +4,12 @@
 	$controller = "Home";
 	$action = "Index";
 	$request = null;
+	$found = false;
 
 	switch (sizeof($matches[0]))
 	{
 		case 1:
 			$controller = ucwords($matches[0][0]);
-			$action = "Index";
 			break;
 		case 2:
 			$controller = ucwords($matches[0][0]);
@@ -27,11 +27,24 @@
 	if (class_exists($controller))
 	{
 		$object = new $controller;
-		$object->{$action}($request);
+
+		if (method_exists($object, $action))
+		{
+			$found = true;
+			$object->{$action}($request);
+		}
 	}
-	else
+
+	if (!$found)
 	{
-		include_once('404.php');
+		$pageData =
+		[
+			'page_title' => 'Not Found',
+			'template'   => 'views/404.php',
+			'page_data'  => []
+		];
+
+		renderPage($pageData);
 	}
 
 	exit;
