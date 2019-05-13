@@ -21,7 +21,7 @@
 ?>
 			<div class="row">
 				<div class="col-xs-12">
-					<div class="department-container">
+					<div class="form department-container">
 						<label>Department Name:</label>
 						<input type="hidden" name="department-id" value="<?= $department->getId(); ?>" />
 						<input type="text" name="department-name" placeholder="Required" data-validation="<?= $department->getValidation("Name"); ?>" value="<?= $department->getName(); ?>" />

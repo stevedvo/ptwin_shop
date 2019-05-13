@@ -638,6 +638,65 @@ function manageDepts()
 		}
 	});
 
+	$(document).on("click", ".js-update-department", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			var deptID = parseInt(form.find("[name='department-id']").val());
+			var deptName = form.find("[name='department-name']").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : "/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Departments",
+					action     : "editDepartment",
+					request    :
+					{
+						'dept_id'   : deptID,
+						'dept_name' : deptName
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					if (data.exception == null)
+					{
+						toastr.success("Department successfully updated");
+					}
+				}
+				else
+				{
+					toastr.error("Could not update Department");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+
 	$(document).on("click", ".js-remove-department", function()
 	{
 		var departmentID = parseInt($(this).closest(".department-items-container").data("department_id"));

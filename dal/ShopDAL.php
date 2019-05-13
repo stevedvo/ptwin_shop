@@ -551,6 +551,27 @@
 			return $result;
 		}
 
+		public function updateDepartment($department)
+		{
+			$result = new DalResult();
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE departments SET dept_name = :dept_name WHERE dept_id = :dept_id");
+				$result->setResult($query->execute(
+				[
+					':dept_name' => $department->getName(),
+					':dept_id'   => $department->getId()
+				]));
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
 		public function removeList($list)
 		{
 			$result = new DalResult();

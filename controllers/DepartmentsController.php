@@ -179,6 +179,37 @@
 			return $dalResult->jsonSerialize();
 		}
 
+		public function editDepartment($request)
+		{
+			$department = createDepartment($request);
+
+			if (!entityIsValid($department))
+			{
+				return false;
+			}
+
+			if (is_null($department->getId()))
+			{
+				return false;
+			}
+
+			$dalResult = $this->departments_service->getDepartmentById($department->getId());
+
+			if (!$dalResult->getResult() instanceof Department)
+			{
+				return false;
+			}
+
+			$dept_update = $dalResult->getResult();
+
+			$dept_update->setName($department->getName());
+
+			$dalResult = $this->departments_service->updateDepartment($dept_update);
+			$this->departments_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
+
 		public function removeDepartment($request)
 		{
 			if (!isset($request['dept_id']) || !is_numeric($request['dept_id']))
