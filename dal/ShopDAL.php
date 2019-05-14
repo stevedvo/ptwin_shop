@@ -339,13 +339,28 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM items AS i WHERE i.item_id = :item_id");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link, idl.dept_id, d.dept_name FROM items AS i LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) WHERE i.item_id = :item_id ORDER BY d.dept_name");
 				$query->execute([':item_id' => $item_id]);
-				$row = $query->fetch(PDO::FETCH_ASSOC);
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($row)
+				if ($rows)
 				{
-					$item = createItem($row);
+					$departments = [];
+
+					foreach ($rows as $row)
+					{
+						if (!$item)
+						{
+							$item = createItem($row);
+						}
+
+						$department = createDepartment($row);
+
+						if (entityIsValid($department))
+						{
+							$item->addDepartment($department);
+						}
+					}
 				}
 
 				$result->setResult($item);

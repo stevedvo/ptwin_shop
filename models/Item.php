@@ -11,8 +11,9 @@
 		private $list_id;
 		private $link;
 		private $validation;
+		private $departments;
 
-		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $total_qty = null, $last_ordered = null, $selected = null, $list_id = null, $link = null)
+		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $total_qty = null, $last_ordered = null, $selected = null, $list_id = null, $link = null, $departments = null)
 		{
 			$this->id = $id;
 			$this->description = $description;
@@ -33,6 +34,7 @@
 				],
 				'ListId' => ['required' => true]
 			];
+			$this->departments = $departments;
 		}
 
 		public function getId()
@@ -147,5 +149,25 @@
 			$validation = rtrim($validation, "_");
 
 			return $validation;
+		}
+
+		public function getDepartments()
+		{
+			return $this->departments;
+		}
+
+		public function setDepartments($departments)
+		{
+			$this->departments = $departments;
+		}
+
+		public function addDepartment($department)
+		{
+			if (!is_array($this->departments))
+			{
+				$this->departments = [];
+			}
+
+			$this->departments[$department->getId()] = $department;
 		}
 	}
