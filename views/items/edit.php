@@ -67,24 +67,26 @@
 
 			<div class="row">
 				<div class="col-xs-12">
-					<label for="departments">Departments:</label>
+					<h3>Current Departments</h3>
+					<div class="department-items-container" data-item_id="<?= $item->getId(); ?>">
 <?php
-					if (!is_array($item->getDepartments()))
-					{
-?>
-						<p class="no-result">Not added to any Departments.</p>
-<?php
-					}
-					else
-					{
-						foreach ($item->getDepartments() as $dept_id => $department)
+						if (!is_array($item->getDepartments()))
 						{
 ?>
-							<p data-dept_id="<?= $department->getId(); ?>" data-description="<?= $department->getName(); ?>"><?= $department->getName(); ?><span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>
+							<p class="no-results">Not added to any Departments.</p>
 <?php
 						}
-					}
+						else
+						{
+							foreach ($item->getDepartments() as $dept_id => $department)
+							{
 ?>
+								<p data-dept_id="<?= $department->getId(); ?>" data-description="<?= $department->getName(); ?>"><?= $department->getName(); ?><span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>
+<?php
+							}
+						}
+?>
+					</div>
 				</div>
 			</div>
 
@@ -109,7 +111,7 @@
 							}
 ?>
 						</select>
-						<button class="btn btn-primary btn-sm js-add-item-to-department">Add to Department</button>
+						<button class="btn btn-primary btn-sm js-add-department-to-item">Add to Item</button>
 					</div>
 				</div>
 			</div>

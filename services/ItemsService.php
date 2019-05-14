@@ -52,4 +52,9 @@
 		{
 			return $this->dal->updateItem($item);
 		}
+
+		public function addDepartmentToItem($department, $item)
+		{
+			return $this->dal->addDepartmentToItem($department, $item);
+		}
 	}

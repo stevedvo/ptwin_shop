@@ -394,6 +394,27 @@
 			return $result;
 		}
 
+		public function addDepartmentToItem($department, $item)
+		{
+			$result = new DalResult();
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("INSERT INTO item_dept_link (dept_id, item_id) VALUES (:dept_id, :item_id)");
+				$result->setResult($query->execute(
+				[
+					':dept_id' => $department->getId(),
+					':item_id' => $item->getId()
+				]));
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
 		public function addItemToList($item, $list)
 		{
 			$result = new DalResult();

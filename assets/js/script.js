@@ -168,6 +168,67 @@ function manageItems()
 			});
 		}
 	});
+
+	$(document).on("click", ".js-add-department-to-item", function()
+	{
+		var form = $(this).closest(".form");
+		var selectedOption = form.find("select option:selected");
+		var departmentID = parseInt(selectedOption.data("dept_id"));
+		var itemID = parseInt(form.find("[name='item-id']").val());
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : "/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Items",
+				action     : "addDepartmentToItem",
+				request    :
+				{
+					'item_id' : itemID,
+					'dept_id' : departmentID
+				}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				if (data.result == true)
+				{
+					var html = '<p data-dept_id="'+departmentID+'" data-description="'+selectedOption.text()+'">'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>';
+
+					$(".department-items-container").append(html);
+					$(".department-items-container").find(".no-results").remove();
+					selectedOption.remove();
+
+					toastr.success("Department successfully added to Item");
+				}
+				else
+				{
+					if (data.exception != null)
+					{
+						toastr.error("PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						toastr.error("Unspecified error");
+						console.log(data);
+					}
+				}
+			}
+			else
+			{
+				toastr.error("Could not add Department to Item");
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
 }
 
 function manageLists()
