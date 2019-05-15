@@ -464,6 +464,34 @@
 			return $result;
 		}
 
+		public function removeDepartmentsFromItem($dept_ids, $item_id)
+		{
+			$result = new DalResult();
+
+			$query_string = "";
+			$query_values = [':item_id' => $item_id];
+
+			foreach ($dept_ids as $key => $dept_id)
+			{
+				$query_string.= ":dept_id".$key.", ";
+				$query_values[":dept_id".$key] = $dept_id;
+			}
+
+			$query_string = rtrim($query_string, ", ");
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("DELETE FROM item_dept_link WHERE dept_id IN (".$query_string.") AND item_id = :item_id");
+				$result->setResult($query->execute($query_values));
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
 		public function getItemsById($item_ids)
 		{
 			$result = new DalResult();

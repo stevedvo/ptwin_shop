@@ -229,6 +229,79 @@ function manageItems()
 			console.log(data);
 		});
 	});
+
+	$(document).on("click", ".js-remove-departments-from-item", function()
+	{
+		var departmentItemsContainer = $(".department-items-container");
+		var itemID = parseInt(departmentItemsContainer.data("item_id"));
+		var selectedItems = departmentItemsContainer.find(".selected");
+		var deptIDs = [];
+
+		if (selectedItems.length > 0)
+		{
+			$.each(selectedItems, function()
+			{
+				deptIDs.push(parseInt($(this).data("dept_id")));
+			});
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : "/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Items",
+					action     : "removeDepartmentsFromItem",
+					request    :
+					{
+						'dept_ids' : deptIDs,
+						'item_id'  : itemID
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					if (data.result == true)
+					{
+						$.each(selectedItems, function()
+						{
+							$(this).remove();
+						});
+
+						if (departmentItemsContainer.find("p").length == 0)
+						{
+							departmentItemsContainer.html('<p class="no-results">Not added to any Departments.</p>');
+						}
+
+						toastr.success("Department(s) successfully detached from Item");
+					}
+					else
+					{
+						if (data.exception != null)
+						{
+							toastr.error("PDOException");
+							console.log(data.exception);
+						}
+						else
+						{
+							toastr.error("Unspecified error");
+							console.log(data);
+						}
+					}
+				}
+				else
+				{
+					toastr.error("Could not remove Department(s) from Item");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
 }
 
 function manageLists()

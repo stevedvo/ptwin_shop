@@ -57,4 +57,9 @@
 		{
 			return $this->dal->addDepartmentToItem($department, $item);
 		}
+
+		public function removeDepartmentsFromItem($dept_ids, $item_id)
+		{
+			return $this->dal->removeDepartmentsFromItem($dept_ids, $item_id);
+		}
 	}

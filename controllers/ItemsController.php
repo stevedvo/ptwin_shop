@@ -255,4 +255,29 @@
 
 			return $dalResult->jsonSerialize();
 		}
+
+		public function removeDepartmentsFromItem($request)
+		{
+			$dept_ids = [];
+
+			if (!is_array($request['dept_ids']) || !is_numeric($request['item_id']))
+			{
+				return false;
+			}
+
+			foreach ($request['dept_ids'] as $dept_id)
+			{
+				if (!is_numeric($dept_id))
+				{
+					return false;
+				}
+
+				$dept_ids[] = intval($dept_id);
+			}
+
+			$dalResult = $this->items_service->removeDepartmentsFromItem($dept_ids, intval($request['item_id']));
+			$this->items_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
 	}
