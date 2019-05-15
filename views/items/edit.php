@@ -101,7 +101,7 @@
 							{
 								foreach ($all_departments as $dept_id => $department)
 								{
-									if (is_array($item->getDepartments()) && !array_key_exists($dept_id, $item->getDepartments()))
+									if ((!is_array($item->getDepartments())) || (is_array($item->getDepartments()) && !array_key_exists($dept_id, $item->getDepartments())))
 									{
 ?>
 										<option data-dept_id="<?= $department->getId(); ?>"><?= $department->getName(); ?></option>
