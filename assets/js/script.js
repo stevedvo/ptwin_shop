@@ -6,6 +6,7 @@ $(function()
 	manageItems();
 	manageLists();
 	manageDepts();
+	quickAdd();
 });
 
 function globalFuncs()
@@ -978,4 +979,54 @@ function validateForm(form)
 	}
 
 	return result;
+}
+
+function quickAdd()
+{
+	var target = $("#quick-add");
+
+	$.ajax(
+	{
+		type     : "POST",
+		url      : "/ajax.php",
+		dataType : "json",
+		data     :
+		{
+			controller : "Items",
+			action     : "getAllItems",
+			request    : {'all_items' : true}
+		}
+	}).done(function(data)
+	{
+		if (data)
+		{
+			if (data.exception != null)
+			{
+				toastr.error("QuickAdd: PDOException");
+				console.log(data.exception);
+			}
+			else
+			{
+				if (data.result == null)
+				{
+					toastr.error("QuickAdd: Unspecified error");
+					console.log(data);
+				}
+				else
+				{
+					toastr.success("got the things");
+					console.log(data);
+				// target.autocomplete({source: availableItems});
+				}
+			}
+		}
+		else
+		{
+			toastr.error("Could not get Items for QuickAdd");
+		}
+	}).fail(function(data)
+	{
+		toastr.error("QuickAdd: Could not perform request");
+		console.log(data);
+	});
 }

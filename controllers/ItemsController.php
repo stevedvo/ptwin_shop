@@ -280,4 +280,25 @@
 
 			return $dalResult->jsonSerialize();
 		}
+
+		public function getAllItems($request)
+		{
+			$dalResult = $this->items_service->getAllItems();
+
+			if (is_array($dalResult->getResult()))
+			{
+				$items = [];
+
+				foreach ($dalResult->getResult() as $item_id => $item)
+				{
+					$items[$item->getId()] = $item->jsonSerialize();
+				}
+
+				$dalResult->setResult($items);
+			}
+
+			$this->items_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
 	}
