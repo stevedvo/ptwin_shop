@@ -983,8 +983,6 @@ function validateForm(form)
 
 function quickAdd()
 {
-	var target = $("#quick-add");
-
 	$.ajax(
 	{
 		type     : "POST",
@@ -1014,9 +1012,14 @@ function quickAdd()
 				}
 				else
 				{
-					toastr.success("got the things");
-					console.log(data);
-				// target.autocomplete({source: availableItems});
+					var availableItems = [];
+
+					$.each(data.result, function()
+					{
+						availableItems.push(this.description);
+					});
+
+					$("#quick-add").autocomplete({source : availableItems});
 				}
 			}
 		}
@@ -1028,5 +1031,50 @@ function quickAdd()
 	{
 		toastr.error("QuickAdd: Could not perform request");
 		console.log(data);
+	});
+
+	$(document).on("click", ".js-quick-add-item", function()
+	{
+		var input = $(this).closest(".form").find("[name='item-description']");
+		var itemDescription = input.val();
+
+		if (itemDescription != "")
+		{
+			$.ajax(
+			{
+				type     : "POST",
+				url      : "/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Items",
+					action     : "quickAddItem",
+					request    : {'description' : itemDescription}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					if (data.exception != null)
+					{
+						toastr.error("QuickAdd: PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						input.val("");
+						toastr.success("Item added to Current Order");
+					}
+				}
+				else
+				{
+					toastr.error("Could not get Item for QuickAdd");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("QuickAdd: Could not perform request");
+				console.log(data);
+			});
+		}
 	});
 }

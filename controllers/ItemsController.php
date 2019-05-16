@@ -301,4 +301,30 @@
 
 			return $dalResult->jsonSerialize();
 		}
+
+		public function quickAddItem($request)
+		{
+			if (!isset($request['description']) || empty($request['description']))
+			{
+				return false;
+			}
+
+			$dalResult = $this->items_service->getItemByDescription($request['description']);
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$item = $dalResult->getResult();
+			}
+
+			if (!$item)
+			{
+				return false;
+			}
+
+			$item->setSelected(1);
+			$dalResult = $this->items_service->updateItem($item);
+			$this->items_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
 	}

@@ -41,7 +41,7 @@
 							<label for="quick-add">Quick Add: </label>
 							<div class="form">
 								<input type="text" id="quick-add" name="item-description" />
-								<button class="btn btn-primary btn-sm">Add</button>
+								<button class="btn btn-primary btn-sm js-quick-add-item">Add</button>
 							</div>
 						</div>
 					</div>

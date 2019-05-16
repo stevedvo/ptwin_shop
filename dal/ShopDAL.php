@@ -575,12 +575,13 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("UPDATE items SET description = :description, comments = :comments, default_qty = :default_qty, list_id = :list_id, link = :link WHERE item_id = :item_id");
+				$query = $this->ShopDb->conn->prepare("UPDATE items SET description = :description, comments = :comments, default_qty = :default_qty, selected = :selected, list_id = :list_id, link = :link WHERE item_id = :item_id");
 				$result->setResult($query->execute(
 				[
 					':description' => $item->getDescription(),
 					':comments'    => $item->getComments(),
 					':default_qty' => $item->getDefaultQty(),
+					':selected'    => $item->getSelected(),
 					':list_id'     => $item->getListId(),
 					':link'        => $item->getLink(),
 					':item_id'     => $item->getId()
