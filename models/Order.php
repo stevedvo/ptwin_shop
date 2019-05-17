@@ -9,7 +9,7 @@
 		{
 			$this->id = $id;
 			$this->date_ordered = $date_ordered;
-			$this->order_items = [];
+			$this->order_items = null;
 		}
 
 		public function jsonSerialize()

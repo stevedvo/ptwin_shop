@@ -722,22 +722,43 @@
 			{
 				$query = $this->ShopDb->conn->prepare("DELETE FROM departments WHERE dept_id = :dept_id");
 				$result->setResult($query->execute([':dept_id' => $department->getId()]));
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
+		public function getCurrentOrder()
+		{
+			$result = new DalResult();
+			$order = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT o.id AS order_id, o.date_ordered AS date_ordered, oi.id AS order_item_id, oi.item_id, oi.quantity FROM orders AS o LEFT JOIN order_items AS oi ON (o.id = oi.order_id) WHERE o.date_ordered IS NULL");
+				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
 				if ($rows)
 				{
-					$order = false;
 					$order_items = [];
 
 					foreach ($rows as $row)
 					{
 						if (!$order)
 						{
-
+							$order = createOrder($row);
 						}
 
 						$order_item = createOrderItem($row);
-						$orders[$item->getId()] = $item;
+
+						if (entityIsValid($order_item))
+						{
+							$orders->addOrderItemn($order_item);
+						}
 					}
 				}
 
@@ -751,19 +772,39 @@
 			return $result;
 		}
 
-		public function getCurrentOrder()
+		public function addOrder($order)
 		{
 			$result = new DalResult();
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT o.id AS order_id, o.date_ordered AS date_ordered, oi.id AS order_item_id, oi.item_id, oi.quantity FROM orders AS o LEFT JOIN order_items AS oi ON (o.id = oi.order_id) WHERE o.date_ordered IS NULL");
-				$query->execute();
-				$rows = 
+				$query = $this->ShopDb->conn->prepare("INSERT INTO orders (date_ordered) VALUES (:date_ordered)");
+				$query->execute(
+				[
+					':date_ordered' => !is_null($order->getDateOrdered()) ? $order->getDateOrdered()->format('Y-m-d') : null
+				]);
+
+				$result->setResult($this->ShopDb->conn->lastInsertId());
 			}
 			catch(PDOException $e)
 			{
 				$result->setException($e);
+			}
+
+			return $result;
+		}
+
+		public function getOrderItemByOrderAndItem($order_id, $item_id)
+		{
+			$result = new DalResult();
+
+			try
+			{
+
+			}
+			catch
+			{
+				
 			}
 
 			return $result;

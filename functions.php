@@ -43,6 +43,28 @@
 		return $item;
 	}
 
+	function createOrder($request)
+	{
+		$id = isset($request['order_id']) ? intval($request['order_id']) : null;
+		$date_ordered = isset($request['date_ordered']) ? sanitiseDate($request['date_ordered']) : null;
+
+		$order = new Order($id, $date_ordered);
+
+		return $order;
+	}
+
+	function createOrderItem($request)
+	{
+		$id = isset($request['order_item_id']) ? intval($request['order_item_id']) : null;
+		$order_id = isset($request['order_id']) ? $request['order_id'] : null;
+		$item_id = isset($request['item_id']) ? $request['item_id'] : null;
+		$quantity = isset($request['quantity']) ? intval($request['quantity']) : null;
+
+		$order_item = new OrderItem($id, $order_id, $item_id, $quantity);
+
+		return $order_item;
+	}
+
 	function entityIsValid($entity)
 	{
 		if (is_array($entity->getValidation()))

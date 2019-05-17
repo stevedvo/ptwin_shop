@@ -14,6 +14,7 @@
 
 		public function Index()
 		{
+			$order = $this->orders_service->getCurrentOrder();
 
 			$this->orders_service->closeConnexion();
 
@@ -21,11 +22,7 @@
 			[
 				'page_title' => 'Current Order',
 				'template'   => 'views/home/index.php',
-				'page_data'  =>
-				[
-					'deptPrototype' => $deptPrototype,
-					'departments'   => $departments
-				]
+				'page_data'  => ['current_order' => $order]
 			];
 
 			renderPage($pageData);

@@ -4,12 +4,14 @@
 		private $items_service;
 		private $lists_service;
 		private $departments_service;
+		private $orders_service;
 
 		public function __construct()
 		{
 			$this->items_service = new ItemsService();
 			$this->lists_service = new ListsService();
 			$this->departments_service = new DepartmentsService();
+			$this->orders_service = new OrdersService();
 		}
 
 		public function Index()
@@ -317,10 +319,30 @@
 				return false;
 			}
 
-			$item->setSelected(1);
-			$dalResult = $this->items_service->updateItem($item);
-			$this->items_service->closeConnexion();
+			$order = $this->orders_service->getCurrentOrder();
 
-			return $dalResult->jsonSerialize();
+			if (!$order)
+			{
+				return false;
+			}
+
+			$order_item = new OrderItem();
+			$order_item->setOrderId($order->getId());
+			$order_item->setItemId($item->getId());
+			$order_item->setQuantity($item->getDefaultQty());
+
+			$order_item_id = $this->orders_service->addOrderItem($order_item);
+
+			if (!$order_item_id)
+			{
+				return false;
+			}
+
+			$order_item->setId($order_item_id);
+
+			$this->items_service->closeConnexion();
+			$this->orders_service->closeConnexion();
+
+			return $order_item->jsonSerialize();
 		}
 	}
