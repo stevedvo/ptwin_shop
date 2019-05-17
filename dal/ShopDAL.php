@@ -722,6 +722,44 @@
 			{
 				$query = $this->ShopDb->conn->prepare("DELETE FROM departments WHERE dept_id = :dept_id");
 				$result->setResult($query->execute([':dept_id' => $department->getId()]));
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					$order = false;
+					$order_items = [];
+
+					foreach ($rows as $row)
+					{
+						if (!$order)
+						{
+
+						}
+
+						$order_item = createOrderItem($row);
+						$orders[$item->getId()] = $item;
+					}
+				}
+
+				$result->setResult($order);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
+		public function getCurrentOrder()
+		{
+			$result = new DalResult();
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT o.id AS order_id, o.date_ordered AS date_ordered, oi.id AS order_item_id, oi.item_id, oi.quantity FROM orders AS o LEFT JOIN order_items AS oi ON (o.id = oi.order_id) WHERE o.date_ordered IS NULL");
+				$query->execute();
+				$rows = 
 			}
 			catch(PDOException $e)
 			{

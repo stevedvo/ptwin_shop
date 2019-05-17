@@ -1,15 +1,11 @@
 <?php
 	class ListsController
 	{
-		private $result;
-		private $exception;
 		private $lists_service;
 		private $items_service;
 
-		public function __construct($result = null, $exception = null)
+		public function __construct()
 		{
-			$this->result = $result;
-			$this->exception = $exception;
 			$this->lists_service = new ListsService();
 			$this->items_service = new ItemsService();
 		}

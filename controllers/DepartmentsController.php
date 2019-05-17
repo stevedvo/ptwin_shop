@@ -1,15 +1,11 @@
 <?php
 	class DepartmentsController
 	{
-		private $result;
-		private $exception;
 		private $departments_service;
 		private $items_service;
 
-		public function __construct($result = null, $exception = null)
+		public function __construct()
 		{
-			$this->result = $result;
-			$this->exception = $exception;
 			$this->departments_service = new DepartmentsService();
 			$this->items_service = new ItemsService();
 		}
