@@ -263,7 +263,7 @@
 
 		public function getListById($list_id)
 		{
-			$dalResult = new DalResult();
+			$result = new DalResult();
 			$list = false;
 
 			try
@@ -290,14 +290,14 @@
 					}
 				}
 
-				$dalResult->setResult($list);
+				$result->setResult($list);
 			}
 			catch(PDOException $e)
 			{
 				$result->setException($e);
 			}
 
-			return $dalResult;
+			return $result;
 		}
 
 		public function getAllItems()
@@ -744,8 +744,6 @@
 
 				if ($rows)
 				{
-					$order_items = [];
-
 					foreach ($rows as $row)
 					{
 						if (!$order)
@@ -757,7 +755,7 @@
 
 						if (entityIsValid($order_item))
 						{
-							$orders->addOrderItemn($order_item);
+							$order->addOrderItem($order_item);
 						}
 					}
 				}
@@ -797,14 +795,53 @@
 		public function getOrderItemByOrderAndItem($order_id, $item_id)
 		{
 			$result = new DalResult();
+			$order_item = false;
 
 			try
 			{
+				$query = $this->ShopDb->conn->prepare("SELECT oi.id AS order_item_id, oi.order_id, oi.item_id, oi.quantity FROM order_items AS oi WHERE oi.order_id = :order_id AND oi.item_id = :item_id");
+				$query->execute(
+				[
+					':order_id' => $order_id,
+					':item_id'  => $item_id
+				]);
 
+				$row = $query->fetch(PDO::FETCH_ASSOC);
+
+				if ($row)
+				{
+					$order_item = createOrderItem($row);
+				}
+
+				$result->setResult($order_item->getId());
 			}
-			catch
+			catch(PDOException $e)
 			{
-				
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
+		public function addOrderItem($order_item)
+		{
+			$result = new DalResult();
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("INSERT INTO order_items (order_id, item_id, quantity) VALUES (:order_id, :item_id, :quantity)");
+				$query->execute(
+				[
+					':order_id' => $order_item->getOrderId(),
+					':item_id'  => $order_item->getItemId(),
+					':quantity' => $order_item->getQuantity()
+				]);
+
+				$result->setResult($this->ShopDb->conn->lastInsertId());
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
 			}
 
 			return $result;

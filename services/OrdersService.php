@@ -51,6 +51,18 @@
 				return $dalResult->getResult();
 			}
 
-			return $this->dal->addOrderItem($order_item);
+			if (!is_null($dalResult->getException()))
+			{
+				return false;
+			}
+
+			$dalResult = $this->dal->addOrderItem($order_item);
+
+			if ($dalResult->getResult())
+			{
+				return $dalResult->getResult();
+			}
+
+			return false;
 		}
 	}

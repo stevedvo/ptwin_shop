@@ -1055,20 +1055,14 @@ function quickAdd()
 			{
 				if (data)
 				{
-					if (data.exception != null)
-					{
-						toastr.error("QuickAdd: PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						input.val("");
-						toastr.success("Item added to Current Order");
-					}
+					input.val("");
+					console.log(data);
+					toastr.success("Item added to Current Order");
 				}
 				else
 				{
-					toastr.error("Could not get Item for QuickAdd");
+					toastr.error("QuickAdd: Could not add Item");
+					console.log(data);
 				}
 			}).fail(function(data)
 			{
