@@ -6,6 +6,7 @@
 		private $item_id;
 		private $quantity;
 		private $validation;
+		private $item;
 
 		public function __construct($id = null, $order_id = null, $item_id = null, $quantity = null)
 		{
@@ -21,6 +22,7 @@
 					'min-value' => 1
 				]
 			];
+			$this->item = null;
 		}
 
 		public function jsonSerialize()
@@ -90,5 +92,15 @@
 			$validation = rtrim($validation, "_");
 
 			return $validation;
+		}
+
+		public function getItem()
+		{
+			return $this->item;
+		}
+
+		public function setItem($item)
+		{
+			$this->item = $item;
 		}
 	}

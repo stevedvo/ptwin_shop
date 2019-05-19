@@ -20,7 +20,7 @@
 ?>
 							<div class="row form">
 								<div class="col-xs-5">
-									<p><a href="/items/edit/<?= $order_item->getItemId(); ?>/"><?= $order_item->getItemId(); ?></a></p>
+									<p><a href="/items/edit/<?= $order_item->getItemId(); ?>/"><?= $order_item->getItem()->getDescription(); ?></a></p>
 								</div>
 
 								<div class="col-xs-1">

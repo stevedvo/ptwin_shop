@@ -738,7 +738,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT o.id AS order_id, o.date_ordered AS date_ordered, oi.id AS order_item_id, oi.item_id, oi.quantity FROM orders AS o LEFT JOIN order_items AS oi ON (o.id = oi.order_id) WHERE o.date_ordered IS NULL");
+				$query = $this->ShopDb->conn->prepare("SELECT o.id AS order_id, o.date_ordered AS date_ordered, oi.id AS order_item_id, oi.item_id, oi.quantity, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM orders AS o LEFT JOIN order_items AS oi ON (o.id = oi.order_id) LEFT JOIN items AS i ON (i.item_id = oi.item_id) WHERE o.date_ordered IS NULL");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -752,6 +752,8 @@
 						}
 
 						$order_item = createOrderItem($row);
+						$item = createItem($row);
+						$order_item->setItem($item);
 
 						if (entityIsValid($order_item))
 						{
@@ -813,7 +815,7 @@
 					$order_item = createOrderItem($row);
 				}
 
-				$result->setResult($order_item->getId());
+				$result->setResult($order_item ? $order_item->getId() : false);
 			}
 			catch(PDOException $e)
 			{
