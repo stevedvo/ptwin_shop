@@ -27,6 +27,12 @@
 
 		public function jsonSerialize()
 		{
+			if (!is_null($this->item))
+			{
+				$item = $this->item->jsonSerialize();
+				$this->item = $item;
+			}
+
 			return get_object_vars($this);
 		}
 

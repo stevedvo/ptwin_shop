@@ -5,7 +5,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-12">
-				<div class="results-container">
+				<div class="results-container current-order">
 <?php
 					if (!is_array($order->getOrderItems()))
 					{
@@ -18,7 +18,7 @@
 						foreach ($order->getOrderItems() as $order_item_id => $order_item)
 						{
 ?>
-							<div class="row form">
+							<div class="row form" data-order_item_id="<?= $order_item->getId(); ?>">
 								<div class="col-xs-5">
 									<p><a href="/items/edit/<?= $order_item->getItemId(); ?>/"><?= $order_item->getItem()->getDescription(); ?></a></p>
 								</div>

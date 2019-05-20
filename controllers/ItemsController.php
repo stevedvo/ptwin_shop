@@ -330,6 +330,7 @@
 			$order_item->setOrderId($order->getId());
 			$order_item->setItemId($item->getId());
 			$order_item->setQuantity($item->getDefaultQty());
+			$order_item->setItem($item);
 
 			$order_item_id = $this->orders_service->addOrderItem($order_item);
 

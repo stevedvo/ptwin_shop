@@ -848,4 +848,54 @@
 
 			return $result;
 		}
+
+		public function getOrderItemById($order_item_id)
+		{
+			$result = new DalResult();
+			$order_item = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT oi.id AS order_item_id, oi.order_id, oi.item_id, oi.quantity FROM order_items AS oi WHERE oi.id = :order_item_id");
+				$query->execute([':order_item_id' => $order_item_id]);
+
+				$row = $query->fetch(PDO::FETCH_ASSOC);
+
+				if ($row)
+				{
+					$order_item = createOrderItem($row);
+				}
+
+				$result->setResult($order_item);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
+		public function updateOrderItem($order_item)
+		{
+			$result = new DalResult();
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE order_items SET order_id = :order_id, item_id = :item_id, quantity = :quantity WHERE id = :id");
+				$result->setResult($query->execute(
+				[
+					':order_id' => $order_item->getOrderId(),
+					':item_id'  => $order_item->getItemId(),
+					':quantity' => $order_item->getQuantity(),
+					':id'       => $order_item->getId()
+				]));
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
 	}

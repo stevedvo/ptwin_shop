@@ -65,4 +65,14 @@
 
 			return false;
 		}
+
+		public function getOrderItemById($order_item_id)
+		{
+			return $this->dal->getOrderItemById($order_item_id);
+		}
+
+		public function updateOrderItem($order_item)
+		{
+			return $this->dal->updateOrderItem($order_item);
+		}
 	}

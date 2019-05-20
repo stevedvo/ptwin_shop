@@ -6,6 +6,7 @@ $(function()
 	manageItems();
 	manageLists();
 	manageDepts();
+	manageOrders();
 	quickAdd();
 });
 
@@ -1056,12 +1057,99 @@ function quickAdd()
 				if (data)
 				{
 					input.val("");
-					console.log(data);
 					toastr.success("Item added to Current Order");
+
+					if ($(".results-container.current-order").length > 0)
+					{
+						var currentOrder = $(".results-container.current-order");
+						currentOrder.find(".no-results").remove();
+
+						if (currentOrder.find(".form[data-order_item_id='"+data.id+"']").length == 0)
+						{
+							var html =
+							'<div class="row form" data-order_item_id="'+data.id+'">'+
+								'<div class="col-xs-5">'+
+									'<p><a href="/items/edit/'+data.item_id+'/">'+data.item.description+'</a></p>'+
+								'</div>'+
+								'<div class="col-xs-1">'+
+									'<input type="number" name="quantity" data-validation="required:1_min-value:1" value="'+data.quantity+'" />'+
+								'</div>'+
+								'<div class="col-xs-3">'+
+									'<button class="btn btn-sm btn-primary js-update-order-item">Update</button>'+
+								'</div>'+
+								'<div class="col-xs-3">'+
+									'<button class="btn btn-sm btn-danger js-remove-order-item">Remove</button>'+
+								'</div>'+
+							'</div>';
+
+							$(".results-container.current-order").append(html);
+						}
+					}
 				}
 				else
 				{
 					toastr.error("QuickAdd: Could not add Item");
+					console.log(data);
+				}
+			}).fail(function(data)
+			{
+				toastr.error("QuickAdd: Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+}
+
+function manageOrders()
+{
+	$(document).on("click", ".js-update-order-item", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			var orderItemID = parseInt(form.data("order_item_id"));
+			var quantity = parseInt(form.find("[name='quantity']").val());
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : "/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Orders",
+					action     : "updateOrderItem",
+					request    :
+					{
+						'order_item_id' : orderItemID,
+						'quantity'      : quantity
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					// todo: check for exception
+					toastr.success("Order Item successfully updated");
+				}
+				else
+				{
+					toastr.error("Could not update Order Item");
 					console.log(data);
 				}
 			}).fail(function(data)
