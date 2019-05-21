@@ -1082,7 +1082,7 @@ function quickAdd()
 								'</div>'+
 							'</div>';
 
-							$(".results-container.current-order").append(html);
+							currentOrder.append(html);
 						}
 					}
 				}
@@ -1211,6 +1211,11 @@ function manageOrders()
 					{
 						toastr.success("Order Item successfully removed");
 						form.remove();
+
+						if ($(".current-order").find(".result-item").length == 0)
+						{
+							$(".current-order").append('<p class="no-results">No Items added to Order yet</p>');
+						}
 					}
 				}
 			}
@@ -1322,6 +1327,76 @@ function manageOrders()
 			else
 			{
 				toastr.error("Could not confirm Order");
+				console.log(data);
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+
+	$(document).on("click", ".js-add-list-to-current-order", function()
+	{
+		var form = $(this).closest(".form");
+		var orderID = parseInt(form.data("order_id"));
+		var listID = parseInt(form.find("select[name='add-list-to-current-order'] option:selected").val());
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : "/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Orders",
+				action     : "addListToOrder",
+				request    :
+				{
+					'list_id'  : listID,
+					'order_id' : orderID
+				}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				toastr.success("List successfully added to Order");
+
+				if ($(".results-container.current-order").length > 0)
+				{
+					var currentOrder = $(".results-container.current-order");
+					var html = "";
+					currentOrder.find(".no-results").remove();
+
+					$.each(data, function()
+					{
+						if (currentOrder.find(".form[data-order_item_id='"+this.id+"']").length == 0)
+						{
+							html+=
+							'<div class="row form result-item" data-order_item_id="'+this.id+'">'+
+								'<div class="col-xs-8 description-container">'+
+									'<p><a href="/items/edit/'+this.item_id+'/">'+this.item.description+'</a></p>'+
+								'</div>'+
+								'<div class="col-xs-4 quantity-container">'+
+									'<input type="number" name="quantity" data-validation="required:1_min-value:1" value="'+this.quantity+'" />'+
+								'</div>'+
+								'<div class="col-xs-4 col-xs-offset-4 update button-container">'+
+									'<button class="btn btn-sm btn-primary pull-right js-update-order-item">Update</button>'+
+								'</div>'+
+								'<div class="col-xs-4 remove button-container">'+
+									'<button class="btn btn-sm btn-danger pull-right js-remove-order-item">Remove</button>'+
+								'</div>'+
+							'</div>';
+						}
+					});
+
+					currentOrder.append(html);
+				}
+			}
+			else
+			{
+				toastr.error("Could not add List to Order");
 				console.log(data);
 			}
 		}).fail(function(data)

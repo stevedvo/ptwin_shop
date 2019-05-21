@@ -866,6 +866,49 @@
 			return $result;
 		}
 
+		public function getOrderItemsByOrderAndItems($order, $items)
+		{
+			$result = new DalResult();
+			$order_items = false;
+
+			$query_string = "";
+			$query_values = [':order_id' => $order->getId()];
+
+			foreach (array_keys($items) as $key => $item_id)
+			{
+				$query_string.= ":item_id_".$key.", ";
+				$query_values[":item_id_".$key] = $item_id;
+			}
+
+			$query_string = rtrim($query_string, ", ");
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT oi.id AS order_item_id, oi.order_id, oi.item_id, oi.quantity FROM order_items AS oi WHERE oi.order_id = :order_id AND oi.item_id IN (".$query_string.")");
+				$query->execute($query_values);
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					$order_items = [];
+
+					foreach ($rows as $row)
+					{
+						$order_item = createOrderItem($row);
+						$order_items[$order_item->getId()] = $order_item;
+					}
+				}
+
+				$result->setResult($order_items);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
 		public function addOrderItem($order_item)
 		{
 			$result = new DalResult();

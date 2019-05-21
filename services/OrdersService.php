@@ -66,6 +66,26 @@
 			return false;
 		}
 
+		public function addOrderItems($order_items)
+		{
+			if (is_array($order_items))
+			{
+				foreach ($order_items as $order_item)
+				{
+					$dalResult = $this->dal->addOrderItem($order_item);
+
+					if ($dalResult->getResult())
+					{
+						$order_item->setId($dalResult->getResult());
+					}
+				}
+
+				return $order_items;
+			}
+
+			return false;
+		}
+
 		public function getOrderItemById($order_item_id)
 		{
 			return $this->dal->getOrderItemById($order_item_id);
@@ -94,5 +114,10 @@
 		public function updateOrder($order)
 		{
 			return $this->dal->updateOrder($order);
+		}
+
+		public function getOrderItemsByOrderAndItems($order, $items)
+		{
+			return $this->dal->getOrderItemsByOrderAndItems($order, $items);
 		}
 	}
