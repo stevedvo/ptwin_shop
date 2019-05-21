@@ -1,6 +1,16 @@
+.container
+{
+	max-width: 750px;
+}
+
 .selected
 {
 	background-color: #afa;
+}
+
+input
+{
+	max-width: 100%;
 }
 
 main
@@ -17,6 +27,16 @@ main
 {
 	float: left;
 	width: 100%;
+}
+
+.results-container .result-item
+{
+	padding: 5px 0px;
+}
+
+.results-container.striped .result-item:nth-of-type(odd)
+{
+	background-color: #eee;
 }
 
 .item-container
@@ -111,6 +131,21 @@ input.remove
 .action-btns-container input
 {
 	width: 90px;
+}
+
+@media only screen and (min-width: 576px)
+{
+	.results-container.current-order .description-container
+	{
+		width: calc(6 / 12 * 100%);
+	}
+
+	.results-container.current-order .quantity-container,
+	.results-container.current-order .button-container
+	{
+		width: calc(2 / 12 * 100%);
+		margin: 0px;
+	}
 }
 
 @media only screen and (min-width: 768px)
