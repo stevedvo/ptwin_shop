@@ -40,6 +40,11 @@ main
 	background-color: #eee;
 }
 
+.results-container .link-container
+{
+	word-break: break-all;
+}
+
 .item-container
 {
 	width: 100%;

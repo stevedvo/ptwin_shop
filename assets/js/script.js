@@ -1276,4 +1276,58 @@ function manageOrders()
 			console.log(data);
 		});
 	});
+
+	$(document).on("click", ".js-confirm-current-order", function()
+	{
+		var form = $(this).closest(".form");
+		var orderID = parseInt(form.data("order_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : "/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Orders",
+				action     : "confirmOrder",
+				request    : {'order_id' : orderID}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				if (data.exception != null)
+				{
+					toastr.error("Could not confirm Order: PDOException");
+					console.log(data.exception);
+				}
+				else
+				{
+					if (!data.result)
+					{
+						toastr.error("Could not confirm Order: Unspecified error");
+						console.log(data);
+					}
+					else
+					{
+						toastr.success("Order successfully confirmed");
+						var timer = setTimeout(function()
+						{
+							location.href = "/orders/view/"+orderID+"/";
+						}, 750);
+					}
+				}
+			}
+			else
+			{
+				toastr.error("Could not confirm Order");
+				console.log(data);
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
 }

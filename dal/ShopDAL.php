@@ -940,6 +940,27 @@
 			return $result;
 		}
 
+		public function updateOrder($order)
+		{
+			$result = new DalResult();
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE orders SET date_ordered = :date_ordered WHERE id = :id");
+				$result->setResult($query->execute(
+				[
+					':id' => $order->getId(),
+					':date_ordered' => $order->getDateOrdered() ? $order->getDateOrdered()->format('Y-m-d') : null
+				]));
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
 		public function removeOrderItem($order_item)
 		{
 			$result = new DalResult();

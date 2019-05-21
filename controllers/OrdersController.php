@@ -95,4 +95,59 @@
 
 			return $dalResult->jsonSerialize();
 		}
+
+		public function View($request = null)
+		{
+			$order = false;
+
+			if (is_numeric($request))
+			{
+				$dalResult = $this->orders_service->getOrderById(intval($request));
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$order = $dalResult->getResult();
+				}
+			}
+
+			$this->orders_service->closeConnexion();
+
+			$pageData =
+			[
+				'page_title' => 'View Order',
+				'template'   => 'views/orders/view.php',
+				'page_data'  => ['order' => $order]
+			];
+
+			renderPage($pageData);
+		}
+
+		public function confirmOrder($request)
+		{
+			if (!isset($request['order_id']) || !is_numeric($request['order_id']))
+			{
+				return false;
+			}
+
+			$dalResult = $this->orders_service->getOrderById(intval($request['order_id']));
+
+			if (!is_null($dalResult->getException()))
+			{
+				return false;
+			}
+
+			$order = $dalResult->getResult();
+
+			if (!$order)
+			{
+				return false;
+			}
+
+			$order->setDateOrdered(new DateTime);
+			$dalResult = $this->orders_service->updateOrder($order);
+
+			$this->orders_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
 	}

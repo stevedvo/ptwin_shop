@@ -90,4 +90,9 @@
 		{
 			return $this->dal->removeAllOrderItemsFromOrder($order);
 		}
+
+		public function updateOrder($order)
+		{
+			return $this->dal->updateOrder($order);
+		}
 	}
