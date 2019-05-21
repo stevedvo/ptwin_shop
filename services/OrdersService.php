@@ -80,4 +80,14 @@
 		{
 			return $this->dal->removeOrderItem($order_item);
 		}
+
+		public function getOrderById($order_id)
+		{
+			return $this->dal->getOrderById($order_id);
+		}
+
+		public function removeAllOrderItemsFromOrder($order)
+		{
+			return $this->dal->removeAllOrderItemsFromOrder($order);
+		}
 	}

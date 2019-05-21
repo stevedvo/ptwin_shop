@@ -67,4 +67,32 @@
 
 			return $dalResult->jsonSerialize();
 		}
+
+		public function removeAllOrderItemsFromOrder($request)
+		{
+			if (!isset($request['order_id']) || !is_numeric($request['order_id']))
+			{
+				return false;
+			}
+
+			$dalResult = $this->orders_service->getOrderById(intval($request['order_id']));
+
+			if (!is_null($dalResult->getException()))
+			{
+				return false;
+			}
+
+			$order = $dalResult->getResult();
+
+			if (!$order)
+			{
+				return false;
+			}
+
+			$dalResult = $this->orders_service->removeAllOrderItemsFromOrder($order);
+
+			$this->orders_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
 	}

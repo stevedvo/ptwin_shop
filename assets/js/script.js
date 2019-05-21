@@ -1225,4 +1225,55 @@ function manageOrders()
 			console.log(data);
 		});
 	});
+
+	$(document).on("click", ".js-clear-current-order", function()
+	{
+		var form = $(this).closest(".form");
+		var orderID = parseInt(form.data("order_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : "/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Orders",
+				action     : "removeAllOrderItemsFromOrder",
+				request    : {'order_id' : orderID}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				if (data.exception != null)
+				{
+					toastr.error("Could not remove Order Items: PDOException");
+					console.log(data.exception);
+				}
+				else
+				{
+					if (!data.result)
+					{
+						toastr.error("Could not remove Order Items: Unspecified error");
+						console.log(data);
+					}
+					else
+					{
+						$(".current-order").empty().append('<p class="no-results">No Items added to Order yet</p>');
+						toastr.success("Order Items successfully removed");
+					}
+				}
+			}
+			else
+			{
+				toastr.error("Could not remove Order Items");
+				console.log(data);
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
 }
