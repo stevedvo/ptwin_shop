@@ -327,7 +327,11 @@ function manageItems()
 			{
 				toastr.success("Item successfully added to Order");
 
-				$(".result-item[data-item_id='"+itemID+"']").addClass("selected");
+				$.each($(".result-item[data-item_id='"+itemID+"']"), function()
+				{
+					$(this).addClass("selected");
+					$(this).find("button.js-remove-item-from-current-order").data("order_item_id", data.id);
+				});
 			}
 			else
 			{
@@ -339,6 +343,62 @@ function manageItems()
 			toastr.error("Could not perform request");
 			console.log(data);
 		});
+	});
+
+	$(document).on("click", ".js-remove-item-from-current-order", function()
+	{
+		var form = $(this).closest(".form");
+		var itemID = parseInt(form.data("item_id"));
+		var orderItemID = parseInt($(this).data("order_item_id"));
+
+		if (!isNaN(orderItemID))
+		{
+			$.ajax(
+			{
+				type     : "POST",
+				url      : "/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Items",
+					action     : "removeItemFromCurrentOrder",
+					request    : {'order_item_id' : orderItemID}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					if (data.exception != null)
+					{
+						toastr.error("Could not remove Item from Order: PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						if (!data.result)
+						{
+							toastr.error("Could not remove Item from Order: Unspecified error");
+							console.log(data);
+						}
+						else
+						{
+							toastr.success("Item successfully removed from Order");
+
+							$(".result-item[data-item_id='"+itemID+"']").removeClass("selected");
+						}
+					}
+				}
+				else
+				{
+					toastr.error("Could not remove Item from Order");
+					console.log(data);
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
 	});
 }
 

@@ -406,4 +406,30 @@
 
 			return $order_item->jsonSerialize();
 		}
+
+		public function removeItemFromCurrentOrder($request)
+		{
+			if (!isset($request['order_item_id']) || !is_numeric($request['order_item_id']))
+			{
+				return false;
+			}
+
+			$order_item = false;
+			$dalResult = $this->orders_service->getOrderItemById(intval($request['order_item_id']));
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$order_item = $dalResult->getResult();
+			}
+
+			if (!$order_item)
+			{
+				return false;
+			}
+
+			$dalResult = $this->orders_service->removeOrderItem($order_item);
+			$this->orders_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
 	}

@@ -65,7 +65,7 @@
 			{
 				foreach ($this->order_items as $order_item_id => $order_item)
 				{
-					$items_in_order[] = $order_item->getItemId();
+					$items_in_order[$order_item->getItemId()] = $order_item->getId();
 				}
 			}
 
