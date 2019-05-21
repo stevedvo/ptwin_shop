@@ -898,4 +898,21 @@
 
 			return $result;
 		}
+
+		public function removeOrderItem($order_item)
+		{
+			$result = new DalResult();
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("DELETE FROM order_items WHERE id = :order_item_id");
+				$result->setResult($query->execute([':order_item_id' => $order_item->getId()]));
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
 	}

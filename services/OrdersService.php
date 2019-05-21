@@ -75,4 +75,9 @@
 		{
 			return $this->dal->updateOrderItem($order_item);
 		}
+
+		public function removeOrderItem($order_item)
+		{
+			return $this->dal->removeOrderItem($order_item);
+		}
 	}

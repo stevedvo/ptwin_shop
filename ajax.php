@@ -3,6 +3,7 @@
 	{
 		require_once("load.php");
 
+		$result = false;
 		$action = $_POST['action'];
 		$request = $_POST['request'];
 
@@ -13,7 +14,11 @@
 			if (class_exists($controller))
 			{
 				$object = new $controller;
-				$result = $object->{$action}($request);
+
+				if (method_exists($object, $action))
+				{
+					$result = $object->{$action}($request);
+				}
 			}
 		}
 		elseif (function_exists($action))

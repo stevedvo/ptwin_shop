@@ -1144,8 +1144,23 @@ function manageOrders()
 			{
 				if (data)
 				{
-					// todo: check for exception
-					toastr.success("Order Item successfully updated");
+					if (data.exception != null)
+					{
+						toastr.error("Could not update Order Item: PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						if (!data.result)
+						{
+							toastr.error("Could not update Order Item: Unspecified error");
+							console.log(data);
+						}
+						else
+						{
+							toastr.success("Order Item successfully updated");
+						}
+					}
 				}
 				else
 				{
@@ -1154,9 +1169,60 @@ function manageOrders()
 				}
 			}).fail(function(data)
 			{
-				toastr.error("QuickAdd: Could not perform request");
+				toastr.error("Could not perform request");
 				console.log(data);
 			});
 		}
+	});
+
+	$(document).on("click", ".js-remove-order-item", function()
+	{
+		var form = $(this).closest(".form");
+		var orderItemID = parseInt(form.data("order_item_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : "/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Orders",
+				action     : "removeOrderItem",
+				request    : {'order_item_id' : orderItemID}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				if (data.exception != null)
+				{
+					toastr.error("Could not remove Order Item: PDOException");
+					console.log(data.exception);
+				}
+				else
+				{
+					if (!data.result)
+					{
+						toastr.error("Could not remove Order Item: Unspecified error");
+						console.log(data);
+					}
+					else
+					{
+						toastr.success("Order Item successfully removed");
+						form.remove();
+					}
+				}
+			}
+			else
+			{
+				toastr.error("Could not remove Order Item");
+				console.log(data);
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
 	});
 }
