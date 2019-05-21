@@ -16,21 +16,34 @@
 
 		public function Index()
 		{
+			$all_items = $order = $items_in_order = false;
 			$dalResult = $this->items_service->getAllItems();
-			$all_items = false;
 
 			if (!is_null($dalResult->getResult()))
 			{
 				$all_items = $dalResult->getResult();
 			}
 
+			$order = $this->orders_service->getCurrentOrder();
+
+			if ($order)
+			{
+				$items_in_order = $order->getItemIdsInOrder();
+			}
+
 			$this->items_service->closeConnexion();
+			$this->orders_service->closeConnexion();
 
 			$pageData =
 			[
 				'page_title' => 'Manage Items',
 				'template'   => 'views/items/index.php',
-				'page_data'  => ['all_items' => $all_items]
+				'page_data'  =>
+				[
+					'all_items'      => $all_items,
+					'order'          => $order,
+					'items_in_order' => $items_in_order
+				]
 			];
 
 			renderPage($pageData);
@@ -308,6 +321,53 @@
 			}
 
 			$dalResult = $this->items_service->getItemByDescription($request['description']);
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$item = $dalResult->getResult();
+			}
+
+			if (!$item)
+			{
+				return false;
+			}
+
+			$order = $this->orders_service->getCurrentOrder();
+
+			if (!$order)
+			{
+				return false;
+			}
+
+			$order_item = new OrderItem();
+			$order_item->setOrderId($order->getId());
+			$order_item->setItemId($item->getId());
+			$order_item->setQuantity($item->getDefaultQty());
+			$order_item->setItem($item);
+
+			$order_item_id = $this->orders_service->addOrderItem($order_item);
+
+			if (!$order_item_id)
+			{
+				return false;
+			}
+
+			$order_item->setId($order_item_id);
+
+			$this->items_service->closeConnexion();
+			$this->orders_service->closeConnexion();
+
+			return $order_item->jsonSerialize();
+		}
+
+		public function addItemToCurrentOrder($request)
+		{
+			if (!isset($request['item_id']) || !is_numeric($request['item_id']))
+			{
+				return false;
+			}
+
+			$dalResult = $this->items_service->getItemById(intval($request['item_id']));
 
 			if (!is_null($dalResult->getResult()))
 			{

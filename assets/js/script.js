@@ -304,6 +304,42 @@ function manageItems()
 			});
 		}
 	});
+
+	$(document).on("click", ".js-add-item-to-current-order", function()
+	{
+		var form = $(this).closest(".form");
+		var itemID = parseInt(form.data("item_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : "/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Items",
+				action     : "addItemToCurrentOrder",
+				request    : {'item_id' : itemID}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				toastr.success("Item successfully added to Order");
+
+				$(".result-item[data-item_id='"+itemID+"']").addClass("selected");
+			}
+			else
+			{
+				toastr.error("Could not add Item to Order");
+				console.log(data);
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
 }
 
 function manageLists()

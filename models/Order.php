@@ -56,4 +56,19 @@
 
 			$this->order_items[$order_item->getId()] = $order_item;
 		}
+
+		public function getItemIdsInOrder()
+		{
+			$items_in_order = [];
+
+			if (is_array($this->order_items))
+			{
+				foreach ($this->order_items as $order_item_id => $order_item)
+				{
+					$items_in_order[] = $order_item->getItemId();
+				}
+			}
+
+			return $items_in_order;
+		}
 	}
