@@ -79,6 +79,90 @@
 			return $result;
 		}
 
+		public function getAllDepartmentsWithItems()
+		{
+			$result = new DalResult();
+			$departments = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) ORDER BY d.dept_name, i.description");
+				$query->execute();
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					$departments = [];
+
+					foreach ($rows as $row)
+					{
+						if (!array_key_exists($row['dept_id'], $departments))
+						{
+							$department = createDepartment($row);
+							$departments[$department->getId()] = $department;
+						}
+
+						$item = createItem($row);
+
+						if (entityIsValid($item))
+						{
+							$departments[$row['dept_id']]->addItem($item);
+						}
+					}
+				}
+
+				$result->setResult($departments);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
+		public function getAllListsWithItems()
+		{
+			$result = new DalResult();
+			$lists = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT l.list_id, l.name AS list_name, i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.link FROM lists AS l LEFT JOIN items AS i ON (i.list_id = l.list_id) ORDER BY l.list_id, i.description");
+				$query->execute();
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					$lists = [];
+
+					foreach ($rows as $row)
+					{
+						if (!array_key_exists($row['list_id'], $lists))
+						{
+							$list = createList($row);
+							$lists[$list->getId()] = $list;
+						}
+
+						$item = createItem($row);
+
+						if (entityIsValid($item))
+						{
+							$lists[$row['list_id']]->addItem($item);
+						}
+					}
+				}
+
+				$result->setResult($lists);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
 		public function addList($list)
 		{
 			$result = new DalResult();

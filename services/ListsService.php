@@ -23,6 +23,11 @@
 			return $this->dal->getAllLists();
 		}
 
+		public function getAllListsWithItems()
+		{
+			return $this->dal->getAllListsWithItems();
+		}
+
 		public function getListById($list_id)
 		{
 			return $this->dal->getListById($list_id);

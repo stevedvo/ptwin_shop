@@ -23,6 +23,11 @@
 			return $this->dal->getAllDepartments();
 		}
 
+		public function getAllDepartmentsWithItems()
+		{
+			return $this->dal->getAllDepartmentsWithItems();
+		}
+
 		public function getDepartmentById($dept_id)
 		{
 			return $this->dal->getDepartmentById($dept_id);

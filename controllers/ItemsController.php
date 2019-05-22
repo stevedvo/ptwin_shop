@@ -16,12 +16,59 @@
 
 		public function Index()
 		{
-			$all_items = $order = $items_in_order = false;
-			$dalResult = $this->items_service->getAllItems();
+			$view_by = $all_items = $order = $items_in_order = $collection = false;
 
-			if (!is_null($dalResult->getResult()))
+			if (isset($_GET['view-by']))
 			{
-				$all_items = $dalResult->getResult();
+				if ($_GET['view-by'] == "department")
+				{
+					$view_by = "department";
+				}
+				elseif ($_GET['view-by'] == "list")
+				{
+					$view_by = "list";
+				}
+			}
+
+			if (!$view_by)
+			{
+				$dalResult = $this->items_service->getAllItems();
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$all_items = $dalResult->getResult();
+				}
+
+				$pageData =
+				[
+					'page_title' => 'Manage Items',
+					'template'   => 'views/items/index.php',
+					'page_data'  => ['all_items' => $all_items]
+				];
+
+			}
+			else
+			{
+				if ($view_by == "department")
+				{
+					$dalResult = $this->departments_service->getAllDepartmentsWithItems();
+				}
+				else
+				{
+					$dalResult = $this->lists_service->getAllListsWithItems();
+				}
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$collection = $dalResult->getResult();
+				}
+
+				$pageData =
+				[
+					'page_title' => 'View Items By '.ucwords($view_by),
+					'template'   => 'views/items/view-by-collection.php',
+					'page_data'  => ['collection' => $collection]
+				];
 			}
 
 			$order = $this->orders_service->getCurrentOrder();
@@ -31,20 +78,13 @@
 				$items_in_order = $order->getItemIdsInOrder();
 			}
 
+			$pageData['page_data']['order'] = $order;
+			$pageData['page_data']['items_in_order'] = $items_in_order;
+
 			$this->items_service->closeConnexion();
 			$this->orders_service->closeConnexion();
-
-			$pageData =
-			[
-				'page_title' => 'Manage Items',
-				'template'   => 'views/items/index.php',
-				'page_data'  =>
-				[
-					'all_items'      => $all_items,
-					'order'          => $order,
-					'items_in_order' => $items_in_order
-				]
-			];
+			$this->departments_service->closeConnexion();
+			$this->lists_service->closeConnexion();
 
 			renderPage($pageData);
 		}
