@@ -1,20 +1,48 @@
-*
+.container
 {
-	/*margin: 0px;*/
-	/*padding: 0px;*/
+	max-width: 750px;
+}
+
+.selected
+{
+	background-color: #afa;
+}
+
+input
+{
+	max-width: 100%;
+	background-color: transparent;
+}
+
+main
+{
+	padding-bottom: 20px;
 }
 
 .wrapper
 {
-	float: left;
-	width: calc(100% - 30px);
-	padding: 0px 15px;
+
 }
 
 .results-container
 {
 	float: left;
 	width: 100%;
+}
+
+.results-container .result-item
+{
+	padding: 5px 0px;
+}
+
+.results-container.striped .result-item:nth-of-type(odd)
+{
+	background-color: #eee;
+}
+
+.results-container .link-container
+{
+	word-break: break-all;
 }
 
 .item-container
@@ -36,7 +64,10 @@
 	padding-right: 15px;
 }
 
-input.item-description, input.item-comments, input.update, input.remove
+input.item-description,
+input.item-comments,
+input.update,
+input.remove
 {
 	width: 100%;
 	line-height: 15px;
@@ -108,34 +139,116 @@ input.item-description, input.item-comments, input.update, input.remove
 	width: 90px;
 }
 
-@media only screen and (min-width: 768px)
-{
-	input.item-description, input.item-comments, .update-container, .remove-container
-	{
-		width: calc(50% - 9px);
-	}
-	.qty-container>input
-	{
-		line-height: 15px;
-	}
-	.action-btns-container
-	{
-		width: 50%;
-	}
-}
-
-.category-table, .dept-table
+.category-table,
+.dept-table
 {
 	width: 100%;
 	max-width: 280px;
 }
 
-.category-row.selected, .dept-row.selected
+.category-row.selected,
+.dept-row.selected
 {
 	background: lightgreen;
 }
 
-.category-description, .dept-description
+.category-description,
+.dept-description
 {
 	width: 90%;
+}
+
+.form .input-error
+{
+	border: red solid 2px;
+}
+
+.form .error-message
+{
+	color: red;
+}
+
+.list-items-container span.btn
+{
+	margin-left: 15px;
+}
+
+#current-order-actions-container>div
+{
+	margin-bottom: 5px;
+}
+
+#current-order-actions-container #add-list-to-current-order-container .select-container,
+#current-order-actions-container #add-list-to-current-order-container .button-container
+{
+	float: left;
+	width: 50%;
+}
+
+#current-order-actions-container #add-list-to-current-order-container .select-container
+{
+	padding-right: 15px;
+}
+
+#current-order-actions-container #add-list-to-current-order-container .button-container
+{
+	padding-left: 15px;
+}
+
+#current-order-actions-container #add-list-to-current-order-container .select-container select
+{
+	width: 100%;
+}
+
+@media only screen and (min-width: 576px)
+{
+	#current-order-actions-container #confirm-current-order-container,
+	#current-order-actions-container #clear-current-order-container
+	{
+		width: 25%;
+	}
+
+	#current-order-actions-container #add-list-to-current-order-container
+	{
+		width: 50%;
+	}
+
+	#current-order-actions-container #add-list-to-current-order-container .select-container,
+	#current-order-actions-container #add-list-to-current-order-container .button-container
+	{
+		width: 50%;
+	}
+
+	.results-container.current-order .description-container
+	{
+		width: calc(6 / 12 * 100%);
+	}
+
+	.results-container.current-order .quantity-container,
+	.results-container.current-order .button-container
+	{
+		width: calc(2 / 12 * 100%);
+		margin: 0px;
+	}
+}
+
+@media only screen and (min-width: 768px)
+{
+	input.item-description,
+	input.item-comments,
+	.update-container,
+	.remove-container
+	{
+		width: calc(50% - 9px);
+	}
+
+	.qty-container>input
+	{
+		line-height: 15px;
+	}
+
+	.action-btns-container
+	{
+		width: 50%;
+	}
 }
