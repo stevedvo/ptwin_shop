@@ -1,1 +1,0 @@
-ALTER TABLE `items` ADD `link` TEXT NULL DEFAULT NULL AFTER `list_id`;
