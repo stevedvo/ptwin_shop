@@ -104,7 +104,7 @@
 
 		public function Edit($request = null)
 		{
-			$item = $lists = false;
+			$item = $lists = $departments = false;
 
 			if (is_numeric($request))
 			{

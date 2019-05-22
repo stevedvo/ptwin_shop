@@ -1,9 +1,9 @@
 <?php
-	preg_match_all("/([a-zA-Z0-9]{1,})/", $_SERVER['REQUEST_URI'], $matches);
+	preg_match_all("/([a-zA-Z0-9]{1,})/", substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], "?") ?: strlen($_SERVER['REQUEST_URI'])), $matches);
 
 	$controller = "Home";
 	$action = "Index";
-	$request = null;
+	$request = isset($_GET['id']) ? intval($_GET['id']) : $_GET;
 	$found = false;
 
 	switch (sizeof($matches[0]))
