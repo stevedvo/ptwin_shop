@@ -1194,6 +1194,43 @@ function quickAdd()
 			});
 		}
 	});
+
+	$(document).on("click", ".js-quick-edit-item", function()
+	{
+		var input = $(this).closest(".form").find("[name='item-description']");
+		var itemDescription = input.val();
+
+		if (itemDescription != "")
+		{
+			$.ajax(
+			{
+				type     : "POST",
+				url      : "/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Items",
+					action     : "quickEditItem",
+					request    : {'description' : itemDescription}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					location.href = "/items/edit/"+data.id+"/";
+				}
+				else
+				{
+					toastr.error("QuickAdd: Could not edit Item");
+					console.log(data);
+				}
+			}).fail(function(data)
+			{
+				toastr.error("QuickAdd: Could not perform request");
+				console.log(data);
+			});
+		}
+	});
 }
 
 function manageOrders()

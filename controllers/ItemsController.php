@@ -400,6 +400,30 @@
 			return $order_item->jsonSerialize();
 		}
 
+		public function quickEditItem($request)
+		{
+			if (!isset($request['description']) || empty($request['description']))
+			{
+				return false;
+			}
+
+			$dalResult = $this->items_service->getItemByDescription($request['description']);
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$item = $dalResult->getResult();
+			}
+
+			if (!$item)
+			{
+				return false;
+			}
+
+			$this->items_service->closeConnexion();
+
+			return $item->jsonSerialize();
+		}
+
 		public function addItemToCurrentOrder($request)
 		{
 			if (!isset($request['item_id']) || !is_numeric($request['item_id']))
