@@ -45,6 +45,11 @@ main
 	word-break: break-all;
 }
 
+.department-items-container .row>div
+{
+	margin-bottom: 5px;
+}
+
 .item-container
 {
 	width: 100%;
@@ -229,6 +234,21 @@ input.remove
 	{
 		width: calc(2 / 12 * 100%);
 		margin: 0px;
+	}
+
+	.department-items-container .row>div
+	{
+		margin: 0px;
+	}
+
+	.department-items-container .row>.department-name-container
+	{
+		width: calc(6 / 12 * 100%);
+	}
+
+	.department-items-container .row>.button-container
+	{
+		width: calc(2 / 12 * 100%);
 	}
 }
 

@@ -35,10 +35,10 @@
 							<input id="default_qty" type="number" name="default-qty" min="1" value="<?= $item->getDefaultQty(); ?>" data-validation="<?= $item->getValidation("DefaultQty"); ?>" />
 							<br/><br/>
 							<label for="total_qty">Total Qty:</label>
-							<span id="total_qty"><?= $item->getTotalQty(); ?></span>
+							<span id="total_qty">// todo: sum up Order qtys</span>
 							<br/><br/>
 							<label for="last_ordered">Last Ordered:</label>
-							<span id="last_ordered"><?= !is_null($item->getLastOrdered()) ? $item->getLastOrdered()->format('d-m-Y') : ''; ?></span>
+							<span id="last_ordered">// todo: find last Order or = blank</span>
 							<br/><br/>
 							<label for="link">Link:</label>
 							<input id="link" type="text" name="link" value="<?= $item->getLink(); ?>" data-validation="<?= $item->getValidation("Link"); ?>" />
@@ -68,7 +68,7 @@
 			<div class="row">
 				<div class="col-xs-12">
 					<h3>Current Departments</h3>
-					<div class="department-items-container" data-item_id="<?= $item->getId(); ?>">
+					<div class="department-items-container results-container" data-item_id="<?= $item->getId(); ?>">
 <?php
 						if (!is_array($item->getDepartments()))
 						{
@@ -81,7 +81,30 @@
 							foreach ($item->getDepartments() as $dept_id => $department)
 							{
 ?>
-								<p data-dept_id="<?= $department->getId(); ?>" data-description="<?= $department->getName(); ?>"><?= $department->getName(); ?><span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>
+								<div class="row result-item form">
+									<div class="col-xs-8 department-name-container">
+										<p data-dept_id="<?= $department->getId(); ?>" data-description="<?= $department->getName(); ?>"><?= $department->getName(); ?></p>
+									</div>
+
+									<div class="col-xs-4 button-container set-primary">
+<?php
+										if ($item->getPrimaryDept() != $department->getId())
+										{
+?>
+											<button class="btn btn-primary btn-sm pull-right js-set-primary-dept">Set As Primary</button>
+<?php
+										}
+?>
+									</div>
+
+									<div class="col-xs-4 col-xs-offset-4 button-container select">
+										<button class="btn btn-success btn-sm pull-right js-select-item">Select</button>
+									</div>
+
+									<div class="col-xs-4 button-container unselect">
+										<button class="btn btn-danger btn-sm pull-right js-unselect-item">Unselect</button>
+									</div>
+								</div>
 <?php
 							}
 						}
