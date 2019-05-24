@@ -32,12 +32,23 @@ main
 
 .results-container .result-item
 {
-	padding: 5px 0px;
+	padding: 5px 4px;
 }
 
 .results-container.striped .result-item:nth-of-type(odd)
 {
 	background-color: #eee;
+}
+
+.results-container .result-item.primary-dept
+{
+	border: #337ab7 solid 2px;
+	padding: 3px 2px;
+}
+
+.results-container .result-item.primary-dept button.js-set-primary-dept
+{
+	display: none;
 }
 
 .results-container .link-container

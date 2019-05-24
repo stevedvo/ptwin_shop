@@ -14,12 +14,12 @@ function globalFuncs()
 {
 	$(document).on("click", ".js-select-item", function()
 	{
-		$(this).parent().addClass("selected");
+		$(this).closest(".row").addClass("selected");
 	});
 
 	$(document).on("click", ".js-unselect-item", function()
 	{
-		$(this).parent().removeClass("selected");
+		$(this).closest(".row").removeClass("selected");
 	});
 }
 
@@ -303,6 +303,65 @@ function manageItems()
 				console.log(data);
 			});
 		}
+	});
+
+	$(document).on("click", ".js-set-primary-dept", function()
+	{
+		var departmentItemsContainer = $(this).closest(".department-items-container");
+		var form = $(this).closest(".form");
+		var itemID = parseInt(departmentItemsContainer.data("item_id"));
+		var deptID = parseInt(form.data("dept_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : "/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Items",
+				action     : "setItemPrimaryDepartment",
+				request    :
+				{
+					'item_id' : itemID,
+					'dept_id' : deptID
+				}
+			}
+		}).done(function(data)
+		{
+			console.log(data);
+			if (data)
+			{
+				if (data.result == true)
+				{
+					departmentItemsContainer.find(".primary-dept").removeClass("primary-dept");
+					form.addClass("primary-dept");
+
+					toastr.success("Primary Department successfully set");
+				}
+				else
+				{
+					if (data.exception != null)
+					{
+						toastr.error("PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						toastr.error("Unspecified error");
+						console.log(data);
+					}
+				}
+			}
+			else
+			{
+				toastr.error("Could not set Primary Department");
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
 	});
 
 	$(document).on("click", ".js-add-item-to-current-order", function()

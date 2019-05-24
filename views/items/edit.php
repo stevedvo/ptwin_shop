@@ -80,21 +80,15 @@
 						{
 							foreach ($item->getDepartments() as $dept_id => $department)
 							{
+								$isPrimary = $item->getPrimaryDept() == $department->getId() ? true : false;
 ?>
-								<div class="row result-item form">
+								<div class="row result-item form <?= $isPrimary ? 'primary-dept' : ''; ?>" data-dept_id="<?= $department->getId(); ?>">
 									<div class="col-xs-8 department-name-container">
-										<p data-dept_id="<?= $department->getId(); ?>" data-description="<?= $department->getName(); ?>"><?= $department->getName(); ?></p>
+										<p data-description="<?= $department->getName(); ?>"><?= $department->getName(); ?></p>
 									</div>
 
 									<div class="col-xs-4 button-container set-primary">
-<?php
-										if ($item->getPrimaryDept() != $department->getId())
-										{
-?>
-											<button class="btn btn-primary btn-sm pull-right js-set-primary-dept">Set As Primary</button>
-<?php
-										}
-?>
+										<button class="btn btn-primary btn-sm pull-right js-set-primary-dept">Set As Primary</button>
 									</div>
 
 									<div class="col-xs-4 col-xs-offset-4 button-container select">
