@@ -272,7 +272,7 @@ function manageItems()
 							$(this).remove();
 						});
 
-						if (departmentItemsContainer.find("p").length == 0)
+						if (departmentItemsContainer.find(".result-item").length == 0)
 						{
 							departmentItemsContainer.html('<p class="no-results">Not added to any Departments.</p>');
 						}

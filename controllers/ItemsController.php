@@ -294,7 +294,14 @@
 		{
 			$dept_ids = [];
 
-			if (!is_array($request['dept_ids']) || !is_numeric($request['item_id']))
+			$item = $this->items_service->verifyItemRequest($request);
+
+			if (!$item)
+			{
+				return false;
+			}
+
+			if (!is_array($request['dept_ids']))
 			{
 				return false;
 			}
@@ -309,7 +316,17 @@
 				$dept_ids[] = intval($dept_id);
 			}
 
-			$dalResult = $this->items_service->removeDepartmentsFromItem($dept_ids, intval($request['item_id']));
+			$dalResult = $this->items_service->removeDepartmentsFromItem($dept_ids, $item->getId());
+
+			if (!is_null($dalResult->getResult()))
+			{
+				if (array_search($item->getPrimaryDept(), $dept_ids) !== false)
+				{
+					$item->setPrimaryDept(null);
+					$dalResult = $this->items_service->updateItem($item);
+				}
+			}
+
 			$this->items_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();
