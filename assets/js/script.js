@@ -199,7 +199,7 @@ function manageItems()
 			{
 				if (data.result == true)
 				{
-					var html = '<p data-dept_id="'+departmentID+'" data-description="'+selectedOption.text()+'">'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>';
+					var html = data.partial_view;
 
 					$(".department-items-container").append(html);
 					$(".department-items-container").find(".no-results").remove();
@@ -329,7 +329,6 @@ function manageItems()
 			}
 		}).done(function(data)
 		{
-			console.log(data);
 			if (data)
 			{
 				if (data.result == true)

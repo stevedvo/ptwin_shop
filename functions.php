@@ -129,3 +129,13 @@
 		include_once($template);
 		include_once('views/shared/footer.php');
 	}
+
+	function getPartialView($template, $params)
+	{
+		ob_start();
+		include('views/partial/'.$template.'.php');
+		$partial_view = ob_get_contents();
+		ob_end_clean();
+
+		return $partial_view;
+	}
