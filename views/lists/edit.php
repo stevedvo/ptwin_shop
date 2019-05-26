@@ -33,15 +33,13 @@
 			<div class="row">
 				<div class="col-xs-12">
 					<h3>Current Items in List</h3>
-					<div class="list-items-container" data-list_id="<?= $list->getId(); ?>">
+					<div class="list-items-container results-container" data-list_id="<?= $list->getId(); ?>">
 <?php
 						if (is_array($list->getItems()) && sizeof($list->getItems()) > 0)
 						{
 							foreach ($list->getItems() as $item_id => $item)
 							{
-?>
-								<p data-item_id="<?= $item->getId(); ?>" data-description="<?= $item->getDescription(); ?>"><?= $item->getDescription(); ?><span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>
-<?php
+								echo getPartialView("ListItem", ['item' => $item]);
 							}
 						}
 						else

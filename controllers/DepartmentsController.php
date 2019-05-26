@@ -144,6 +144,12 @@
 			}
 
 			$dalResult = $this->departments_service->addItemToDepartment($item, $department);
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$dalResult->setPartialView(getPartialView("DepartmentItem", ['item' => $item]));
+			}
+
 			$this->departments_service->closeConnexion();
 			$this->items_service->closeConnexion();
 

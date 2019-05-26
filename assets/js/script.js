@@ -549,7 +549,7 @@ function manageLists()
 		{
 			if (data)
 			{
-				var html = '<p data-item_id="'+itemID+'">'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>';
+				var html = data.partial_view;
 
 				$(".list-items-container").append(html);
 				$(".list-items-container").find(".no-results").remove();
@@ -822,7 +822,7 @@ function manageDepts()
 			{
 				if (data.result == true)
 				{
-					var html = '<p data-item_id="'+itemID+'" data-description="'+selectedOption.text()+'">'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>';
+					var html = data.partial_view;
 
 					$(".department-items-container").append(html);
 					$(".department-items-container").find(".no-results").remove();

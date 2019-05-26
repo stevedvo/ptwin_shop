@@ -33,15 +33,13 @@
 			<div class="row">
 				<div class="col-xs-12">
 					<h3>Current Items in Department</h3>
-					<div class="department-items-container" data-department_id="<?= $department->getId(); ?>">
+					<div class="department-items-container results-container" data-department_id="<?= $department->getId(); ?>">
 <?php
 						if (is_array($department->getItems()) && sizeof($department->getItems()) > 0)
 						{
 							foreach ($department->getItems() as $item_id => $item)
 							{
-?>
-								<p data-item_id="<?= $item->getId(); ?>" data-description="<?= $item->getDescription(); ?>"><?= $item->getDescription(); ?><span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>
-<?php
+								echo getPartialView("DepartmentItem", ['item' => $item]);
 							}
 						}
 						else

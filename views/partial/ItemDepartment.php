@@ -4,7 +4,7 @@
 ?>
 <div class="row result-item form <?= $isPrimary ? 'primary-dept' : ''; ?>" data-dept_id="<?= $department->getId(); ?>">
 	<div class="col-xs-8 department-name-container">
-		<p data-description="<?= $department->getName(); ?>"><?= $department->getName(); ?></p>
+		<a href="/departments/edit/<?= $department->getId(); ?>/"><p data-description="<?= $department->getName(); ?>"><?= $department->getName(); ?></p></a>
 	</div>
 
 	<div class="col-xs-4 button-container set-primary">

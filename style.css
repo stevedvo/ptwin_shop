@@ -56,7 +56,8 @@ main
 	word-break: break-all;
 }
 
-.department-items-container .row>div
+.department-items-container .row>div,
+.list-items-container .row>div
 {
 	margin-bottom: 5px;
 }
@@ -247,17 +248,20 @@ input.remove
 		margin: 0px;
 	}
 
-	.department-items-container .row>div
+	.department-items-container .row>div,
+	.list-items-container .row>div
 	{
 		margin: 0px;
 	}
 
-	.department-items-container .row>.department-name-container
+	.department-items-container .row>.department-name-container,
+	.list-items-container .row>.list-name-container
 	{
 		width: calc(6 / 12 * 100%);
 	}
 
-	.department-items-container .row>.button-container
+	.department-items-container .row>.button-container,
+	.list-items-container .row>.button-container
 	{
 		width: calc(2 / 12 * 100%);
 	}
