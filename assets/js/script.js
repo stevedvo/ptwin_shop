@@ -55,7 +55,7 @@ function manageItems()
 			$.ajax(
 			{
 				type     : "POST",
-				url      : "/ajax.php",
+				url      : constants.SITEURL+"/ajax.php",
 				dataType : "json",
 				data     :
 				{
@@ -79,7 +79,7 @@ function manageItems()
 						toastr.success("New Item successfully added");
 						var timer = setTimeout(function()
 						{
-							location.href = "/items/edit/"+data.result+"/";
+							location.href = constants.SITEURL+"/items/edit/"+data.result+"/";
 						}, 750);
 					}
 					else
@@ -130,7 +130,7 @@ function manageItems()
 			$.ajax(
 			{
 				type     : "POST",
-				url      : "/ajax.php",
+				url      : constants.SITEURL+"/ajax.php",
 				dataType : "json",
 				data     :
 				{
@@ -182,7 +182,7 @@ function manageItems()
 		$.ajax(
 		{
 			type     : "POST",
-			url      : "/ajax.php",
+			url      : constants.SITEURL+"/ajax.php",
 			dataType : "json",
 			data     :
 			{
@@ -250,7 +250,7 @@ function manageItems()
 			$.ajax(
 			{
 				type     : "POST",
-				url      : "/ajax.php",
+				url      : constants.SITEURL+"/ajax.php",
 				dataType : "json",
 				data     :
 				{
@@ -316,7 +316,7 @@ function manageItems()
 		$.ajax(
 		{
 			type     : "POST",
-			url      : "/ajax.php",
+			url      : constants.SITEURL+"/ajax.php",
 			dataType : "json",
 			data     :
 			{
@@ -372,7 +372,7 @@ function manageItems()
 		$.ajax(
 		{
 			type     : "POST",
-			url      : "/ajax.php",
+			url      : constants.SITEURL+"/ajax.php",
 			dataType : "json",
 			data     :
 			{
@@ -415,7 +415,7 @@ function manageItems()
 			$.ajax(
 			{
 				type     : "POST",
-				url      : "/ajax.php",
+				url      : constants.SITEURL+"/ajax.php",
 				dataType : "json",
 				data     :
 				{
@@ -488,7 +488,7 @@ function manageLists()
 			$.ajax(
 			{
 				type     : "POST",
-				url      : "/ajax.php",
+				url      : constants.SITEURL+"/ajax.php",
 				dataType : "json",
 				data     :
 				{
@@ -502,7 +502,7 @@ function manageLists()
 				{
 					if (data.exception == null)
 					{
-						var html = '<p><a href="/lists/edit/'+parseInt(data.result)+'/">'+listName+'</a></p>';
+						var html = '<p><a href="'+constants.SITEURL+'/lists/edit/'+parseInt(data.result)+'/">'+listName+'</a></p>';
 
 						$(".results-container").append(html);
 						$(".results-container").find(".no-results").remove();
@@ -534,7 +534,7 @@ function manageLists()
 		$.ajax(
 		{
 			type     : "POST",
-			url      : "/ajax.php",
+			url      : constants.SITEURL+"/ajax.php",
 			dataType : "json",
 			data     :
 			{
@@ -588,7 +588,7 @@ function manageLists()
 			$.ajax(
 			{
 				type     : "POST",
-				url      : "/ajax.php",
+				url      : constants.SITEURL+"/ajax.php",
 				dataType : "json",
 				data     :
 				{
@@ -659,7 +659,7 @@ function manageLists()
 			$.ajax(
 			{
 				type     : "POST",
-				url      : "/ajax.php",
+				url      : constants.SITEURL+"/ajax.php",
 				dataType : "json",
 				data     :
 				{
@@ -699,7 +699,7 @@ function manageLists()
 		$.ajax(
 		{
 			type     : "POST",
-			url      : "/ajax.php",
+			url      : constants.SITEURL+"/ajax.php",
 			dataType : "json",
 			data     :
 			{
@@ -716,7 +716,7 @@ function manageLists()
 					toastr.success("List successfully removed");
 					var timer = setTimeout(function()
 					{
-						location.href = "/lists/";
+						location.href = constants.SITEURL+"/lists/";
 					}, 750);
 				}
 			}
@@ -759,7 +759,7 @@ function manageDepts()
 			$.ajax(
 			{
 				type     : "POST",
-				url      : "/ajax.php",
+				url      : constants.SITEURL+"/ajax.php",
 				dataType : "json",
 				data     :
 				{
@@ -773,7 +773,7 @@ function manageDepts()
 				{
 					if (data.exception == null)
 					{
-						var html = '<p><a href="/departments/edit/'+parseInt(data.result)+'/">'+departmentName+'</a></p>';
+						var html = '<p><a href="'+constants.SITEURL+'/departments/edit/'+parseInt(data.result)+'/">'+departmentName+'</a></p>';
 
 						$(".results-container").append(html);
 						$(".results-container").find(".no-results").remove();
@@ -805,7 +805,7 @@ function manageDepts()
 		$.ajax(
 		{
 			type     : "POST",
-			url      : "/ajax.php",
+			url      : constants.SITEURL+"/ajax.php",
 			dataType : "json",
 			data     :
 			{
@@ -873,7 +873,7 @@ function manageDepts()
 			$.ajax(
 			{
 				type     : "POST",
-				url      : "/ajax.php",
+				url      : constants.SITEURL+"/ajax.php",
 				dataType : "json",
 				data     :
 				{
@@ -955,7 +955,7 @@ function manageDepts()
 			$.ajax(
 			{
 				type     : "POST",
-				url      : "/ajax.php",
+				url      : constants.SITEURL+"/ajax.php",
 				dataType : "json",
 				data     :
 				{
@@ -995,7 +995,7 @@ function manageDepts()
 		$.ajax(
 		{
 			type     : "POST",
-			url      : "/ajax.php",
+			url      : constants.SITEURL+"/ajax.php",
 			dataType : "json",
 			data     :
 			{
@@ -1012,7 +1012,7 @@ function manageDepts()
 					toastr.success("Department successfully removed");
 					var timer = setTimeout(function()
 					{
-						location.href = "/departments/";
+						location.href = constants.SITEURL+"/departments/";
 					}, 750);
 				}
 				else
@@ -1142,7 +1142,7 @@ function quickAdd()
 	$.ajax(
 	{
 		type     : "POST",
-		url      : "/ajax.php",
+		url      : constants.SITEURL+"/ajax.php",
 		dataType : "json",
 		data     :
 		{
@@ -1199,7 +1199,7 @@ function quickAdd()
 			$.ajax(
 			{
 				type     : "POST",
-				url      : "/ajax.php",
+				url      : constants.SITEURL+"/ajax.php",
 				dataType : "json",
 				data     :
 				{
@@ -1224,7 +1224,7 @@ function quickAdd()
 							var html =
 							'<div class="row form result-item" data-order_item_id="'+data.id+'">'+
 								'<div class="col-xs-8 description-container">'+
-									'<p><a href="/items/edit/'+data.item_id+'/">'+data.item.description+'</a></p>'+
+									'<p><a href="'+constants.SITEURL+'/items/edit/'+data.item_id+'/">'+data.item.description+'</a></p>'+
 								'</div>'+
 								'<div class="col-xs-4 quantity-container">'+
 									'<input type="number" name="quantity" data-validation="required:1_min-value:1" value="'+data.quantity+'" />'+
@@ -1264,7 +1264,7 @@ function quickAdd()
 			$.ajax(
 			{
 				type     : "POST",
-				url      : "/ajax.php",
+				url      : constants.SITEURL+"/ajax.php",
 				dataType : "json",
 				data     :
 				{
@@ -1276,7 +1276,7 @@ function quickAdd()
 			{
 				if (data)
 				{
-					location.href = "/items/edit/"+data.id+"/";
+					location.href = constants.SITEURL+"/items/edit/"+data.id+"/";
 				}
 				else
 				{
@@ -1320,7 +1320,7 @@ function manageOrders()
 			$.ajax(
 			{
 				type     : "POST",
-				url      : "/ajax.php",
+				url      : constants.SITEURL+"/ajax.php",
 				dataType : "json",
 				data     :
 				{
@@ -1375,7 +1375,7 @@ function manageOrders()
 		$.ajax(
 		{
 			type     : "POST",
-			url      : "/ajax.php",
+			url      : constants.SITEURL+"/ajax.php",
 			dataType : "json",
 			data     :
 			{
@@ -1431,7 +1431,7 @@ function manageOrders()
 		$.ajax(
 		{
 			type     : "POST",
-			url      : "/ajax.php",
+			url      : constants.SITEURL+"/ajax.php",
 			dataType : "json",
 			data     :
 			{
@@ -1482,7 +1482,7 @@ function manageOrders()
 		$.ajax(
 		{
 			type     : "POST",
-			url      : "/ajax.php",
+			url      : constants.SITEURL+"/ajax.php",
 			dataType : "json",
 			data     :
 			{
@@ -1511,7 +1511,7 @@ function manageOrders()
 						toastr.success("Order successfully confirmed");
 						var timer = setTimeout(function()
 						{
-							location.href = "/orders/view/"+orderID+"/";
+							location.href = constants.SITEURL+"/orders/view/"+orderID+"/";
 						}, 750);
 					}
 				}
@@ -1537,7 +1537,7 @@ function manageOrders()
 		$.ajax(
 		{
 			type     : "POST",
-			url      : "/ajax.php",
+			url      : constants.SITEURL+"/ajax.php",
 			dataType : "json",
 			data     :
 			{
@@ -1568,7 +1568,7 @@ function manageOrders()
 							html+=
 							'<div class="row form result-item" data-order_item_id="'+this.id+'">'+
 								'<div class="col-xs-8 description-container">'+
-									'<p><a href="/items/edit/'+this.item_id+'/">'+this.item.description+'</a></p>'+
+									'<p><a href="'+constants.SITEURL+'/items/edit/'+this.item_id+'/">'+this.item.description+'</a></p>'+
 								'</div>'+
 								'<div class="col-xs-4 quantity-container">'+
 									'<input type="number" name="quantity" data-validation="required:1_min-value:1" value="'+this.quantity+'" />'+
@@ -1606,7 +1606,7 @@ function adminFuncs()
 		$.ajax(
 		{
 			type     : "POST",
-			url      : "/ajax.php",
+			url      : constants.SITEURL+"/ajax.php",
 			dataType : "json",
 			data     :
 			{

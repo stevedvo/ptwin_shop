@@ -35,7 +35,7 @@
 ?>
 								<div class="row result-item">
 									<div class="col-xs-2 description-container">
-										<a href="/items/edit/<?= $order_item->getItemId(); ?>/"><p><?= $order_item->getItem()->getDescription(); ?></p></a>
+										<a href="<?= SITEURL; ?>/items/edit/<?= $order_item->getItemId(); ?>/"><p><?= $order_item->getItem()->getDescription(); ?></p></a>
 									</div>
 
 									<div class="col-xs-2 comments-container">

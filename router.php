@@ -1,5 +1,5 @@
 <?php
-	preg_match_all("/([a-zA-Z0-9]{1,})/", substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], "?") ?: strlen($_SERVER['REQUEST_URI'])), $matches);
+	preg_match_all("/([a-zA-Z0-9]{1,})/", $sanitised_request, $matches);
 
 	$controller = "Home";
 	$action = "Index";

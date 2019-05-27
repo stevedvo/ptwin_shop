@@ -34,7 +34,7 @@
 						foreach ($lists as $list_id => $list)
 						{
 ?>
-							<p><a href="/lists/edit/<?= $list->getId(); ?>/"><?= $list->getName(); ?></a></p>
+							<p><a href="<?= SITEURL; ?>/lists/edit/<?= $list->getId(); ?>/"><?= $list->getName(); ?></a></p>
 <?php
 						}
 					}

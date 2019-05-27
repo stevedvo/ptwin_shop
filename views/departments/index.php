@@ -34,7 +34,7 @@
 						foreach ($departments as $department_id => $department)
 						{
 ?>
-							<p><a href="/departments/edit/<?= $department->getId(); ?>/"><?= $department->getName(); ?></a></p>
+							<p><a href="<?= SITEURL; ?>/departments/edit/<?= $department->getId(); ?>/"><?= $department->getName(); ?></a></p>
 <?php
 						}
 					}
