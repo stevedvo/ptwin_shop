@@ -521,4 +521,50 @@
 
 			return $dalResult->jsonSerialize();
 		}
+
+		public function resetPrimaryDepartments($request)
+		{
+			$dalResult = $this->items_service->getItemDepartmentLookupArray();
+
+			if (!is_null($dalResult->getException()))
+			{
+				return false;
+			}
+
+			$departments_lookup = $dalResult->getResult();
+
+			if (!is_array($departments_lookup))
+			{
+				return false;
+			}
+
+			foreach ($departments_lookup as $item_id => $dept_id)
+			{
+				$request =
+				[
+					'item_id' => $item_id,
+					'dept_id' => $dept_id
+				];
+
+				$item = $this->items_service->verifyItemRequest($request);
+				$department = $this->departments_service->verifyDepartmentRequest($request);
+
+				if (!$item || !$department)
+				{
+					return false;
+				}
+
+				$dalResult = $this->items_service->setItemPrimaryDepartment($department, $item);
+
+				if (!is_null($dalResult->getException()))
+				{
+					return false;
+				}
+			}
+
+			$this->items_service->closeConnexion();
+			$this->departments_service->closeConnexion();
+
+			return true;
+		}
 	}

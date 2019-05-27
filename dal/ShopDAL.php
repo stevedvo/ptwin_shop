@@ -1127,7 +1127,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, idl.dept_id, d.dept_name FROM items AS i LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) ORDER BY i.primary_dept, i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, idl.dept_id, d.dept_name FROM items AS i LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) ORDER BY d.dept_name, i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -1169,6 +1169,40 @@
 				}
 
 				$result->setResult($departments);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
+		public function getItemDepartmentLookupArray()
+		{
+			$result = new DalResult();
+			$departments_lookup = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT idl.dept_id, idl.item_id FROM item_dept_link AS idl");
+				$query->execute();
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					$departments_lookup = [];
+
+					foreach ($rows as $row)
+					{
+						if (!array_key_exists($row['item_id'], $departments_lookup))
+						{
+							$departments_lookup[$row['item_id']] = $row['dept_id'];
+						}
+					}
+				}
+
+				$result->setResult($departments_lookup);
 			}
 			catch(PDOException $e)
 			{

@@ -23,7 +23,7 @@
 				<div class="col-xs-12">
 					<div id="edit-item" class="form">
 						<fieldset>
-							<legend>Edit Item</legend>
+							<legend>Edit <?= $item->getDescription(); ?></legend>
 							<input type="hidden" name="item-id" value="<?= $item->getId(); ?>" />
 							<label for="description">Description:</label>
 							<input id="description" type="text" name="description" placeholder="Required" value="<?= $item->getDescription(); ?>" data-validation="<?= $item->getValidation("Description"); ?>" />

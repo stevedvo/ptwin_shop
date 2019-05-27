@@ -8,6 +8,7 @@ $(function()
 	manageDepts();
 	manageOrders();
 	quickAdd();
+	adminFuncs();
 });
 
 function globalFuncs()
@@ -1588,6 +1589,40 @@ function manageOrders()
 			else
 			{
 				toastr.error("Could not add List to Order");
+				console.log(data);
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+}
+
+function adminFuncs()
+{
+	$(document).on("click", ".js-reset-item-primary-departments", function()
+	{
+		$.ajax(
+		{
+			type     : "POST",
+			url      : "/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Items",
+				action     : "resetPrimaryDepartments",
+				request    : {'reset' : true}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				toastr.success("Done");
+			}
+			else
+			{
+				toastr.error("Fail");
 				console.log(data);
 			}
 		}).fail(function(data)

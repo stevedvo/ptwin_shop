@@ -93,4 +93,9 @@
 		{
 			return $this->dal->removeDepartmentsFromItem($dept_ids, $item_id);
 		}
+
+		public function getItemDepartmentLookupArray()
+		{
+			return $this->dal->getItemDepartmentLookupArray();
+		}
 	}
