@@ -81,4 +81,9 @@
 		{
 			return $this->dal->removeDepartment($department);
 		}
+
+		public function getPrimaryDepartments()
+		{
+			return $this->dal->getPrimaryDepartments();
+		}
 	}

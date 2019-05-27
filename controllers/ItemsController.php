@@ -28,6 +28,10 @@
 				{
 					$view_by = "list";
 				}
+				elseif ($_GET['view-by'] == "primary_dept")
+				{
+					$view_by = "primary department";
+				}
 			}
 
 			if (!$view_by)
@@ -53,9 +57,13 @@
 				{
 					$dalResult = $this->departments_service->getAllDepartmentsWithItems();
 				}
-				else
+				elseif ($view_by == "list")
 				{
 					$dalResult = $this->lists_service->getAllListsWithItems();
+				}
+				else
+				{
+					$dalResult = $this->departments_service->getPrimaryDepartments();
 				}
 
 				if (!is_null($dalResult->getResult()))
