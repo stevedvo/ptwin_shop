@@ -28,6 +28,10 @@
 				{
 					$view_by = "list";
 				}
+				elseif ($_GET['view-by'] == "primary_dept")
+				{
+					$view_by = "primary department";
+				}
 			}
 
 			if (!$view_by)
@@ -53,9 +57,13 @@
 				{
 					$dalResult = $this->departments_service->getAllDepartmentsWithItems();
 				}
-				else
+				elseif ($view_by == "list")
 				{
 					$dalResult = $this->lists_service->getAllListsWithItems();
+				}
+				else
+				{
+					$dalResult = $this->departments_service->getPrimaryDepartments();
 				}
 
 				if (!is_null($dalResult->getResult()))
@@ -269,38 +277,21 @@
 
 		public function addDepartmentToItem($request)
 		{
-			$item = $department = false;
+			$item = $this->items_service->verifyItemRequest($request);
+			$department = $this->departments_service->verifyDepartmentRequest($request);
 
-			if (!is_numeric($request['item_id']) || !is_numeric($request['dept_id']))
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->getItemById(intval($request['item_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$item = $dalResult->getResult();
-			}
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			$dalResult = $this->departments_service->getDepartmentById(intval($request['dept_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$department = $dalResult->getResult();
-			}
-
-			if (!$department)
+			if (!$item || !$department)
 			{
 				return false;
 			}
 
 			$dalResult = $this->items_service->addDepartmentToItem($department, $item);
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$dalResult->setPartialView(getPartialView("ItemDepartment", ['department' => $department]));
+			}
+
 			$this->departments_service->closeConnexion();
 			$this->items_service->closeConnexion();
 
@@ -311,7 +302,14 @@
 		{
 			$dept_ids = [];
 
-			if (!is_array($request['dept_ids']) || !is_numeric($request['item_id']))
+			$item = $this->items_service->verifyItemRequest($request);
+
+			if (!$item)
+			{
+				return false;
+			}
+
+			if (!is_array($request['dept_ids']))
 			{
 				return false;
 			}
@@ -326,7 +324,17 @@
 				$dept_ids[] = intval($dept_id);
 			}
 
-			$dalResult = $this->items_service->removeDepartmentsFromItem($dept_ids, intval($request['item_id']));
+			$dalResult = $this->items_service->removeDepartmentsFromItem($dept_ids, $item->getId());
+
+			if (!is_null($dalResult->getResult()))
+			{
+				if (array_search($item->getPrimaryDept(), $dept_ids) !== false)
+				{
+					$item->setPrimaryDept(null);
+					$dalResult = $this->items_service->updateItem($item);
+				}
+			}
+
 			$this->items_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();
@@ -495,5 +503,68 @@
 			$this->orders_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();
+		}
+
+		public function setItemPrimaryDepartment($request)
+		{
+			$item = $this->items_service->verifyItemRequest($request);
+			$department = $this->departments_service->verifyDepartmentRequest($request);
+
+			if (!$item || !$department)
+			{
+				return false;
+			}
+
+			$dalResult = $this->items_service->setItemPrimaryDepartment($department, $item);
+			$this->departments_service->closeConnexion();
+			$this->items_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
+
+		public function resetPrimaryDepartments($request)
+		{
+			$dalResult = $this->items_service->getItemDepartmentLookupArray();
+
+			if (!is_null($dalResult->getException()))
+			{
+				return false;
+			}
+
+			$departments_lookup = $dalResult->getResult();
+
+			if (!is_array($departments_lookup))
+			{
+				return false;
+			}
+
+			foreach ($departments_lookup as $item_id => $dept_id)
+			{
+				$request =
+				[
+					'item_id' => $item_id,
+					'dept_id' => $dept_id
+				];
+
+				$item = $this->items_service->verifyItemRequest($request);
+				$department = $this->departments_service->verifyDepartmentRequest($request);
+
+				if (!$item || !$department)
+				{
+					return false;
+				}
+
+				$dalResult = $this->items_service->setItemPrimaryDepartment($department, $item);
+
+				if (!is_null($dalResult->getException()))
+				{
+					return false;
+				}
+			}
+
+			$this->items_service->closeConnexion();
+			$this->departments_service->closeConnexion();
+
+			return true;
 		}
 	}

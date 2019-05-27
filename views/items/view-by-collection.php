@@ -21,7 +21,7 @@
 						{
 ?>
 							<div class="collection-container">
-								<h4><?= $collection->getName(); ?></h4>
+								<h4><?= $collection->getName() ?: 'No collection defined'; ?></h4>
 								<div class="collection-items-container">
 <?php
 									if (!is_array($collection->getItems()) || sizeof($collection->getItems()) == 0)

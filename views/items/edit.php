@@ -23,7 +23,7 @@
 				<div class="col-xs-12">
 					<div id="edit-item" class="form">
 						<fieldset>
-							<legend>Edit Item</legend>
+							<legend>Edit <?= $item->getDescription(); ?></legend>
 							<input type="hidden" name="item-id" value="<?= $item->getId(); ?>" />
 							<label for="description">Description:</label>
 							<input id="description" type="text" name="description" placeholder="Required" value="<?= $item->getDescription(); ?>" data-validation="<?= $item->getValidation("Description"); ?>" />
@@ -35,10 +35,10 @@
 							<input id="default_qty" type="number" name="default-qty" min="1" value="<?= $item->getDefaultQty(); ?>" data-validation="<?= $item->getValidation("DefaultQty"); ?>" />
 							<br/><br/>
 							<label for="total_qty">Total Qty:</label>
-							<span id="total_qty"><?= $item->getTotalQty(); ?></span>
+							<span id="total_qty">// todo: sum up Order qtys</span>
 							<br/><br/>
 							<label for="last_ordered">Last Ordered:</label>
-							<span id="last_ordered"><?= !is_null($item->getLastOrdered()) ? $item->getLastOrdered()->format('d-m-Y') : ''; ?></span>
+							<span id="last_ordered">// todo: find last Order or = blank</span>
 							<br/><br/>
 							<label for="link">Link:</label>
 							<input id="link" type="text" name="link" value="<?= $item->getLink(); ?>" data-validation="<?= $item->getValidation("Link"); ?>" />
@@ -68,7 +68,7 @@
 			<div class="row">
 				<div class="col-xs-12">
 					<h3>Current Departments</h3>
-					<div class="department-items-container" data-item_id="<?= $item->getId(); ?>">
+					<div class="department-items-container results-container" data-item_id="<?= $item->getId(); ?>">
 <?php
 						if (!is_array($item->getDepartments()))
 						{
@@ -80,9 +80,9 @@
 						{
 							foreach ($item->getDepartments() as $dept_id => $department)
 							{
-?>
-								<p data-dept_id="<?= $department->getId(); ?>" data-description="<?= $department->getName(); ?>"><?= $department->getName(); ?><span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>
-<?php
+								$isPrimary = $item->getPrimaryDept() == $department->getId() ? true : false;
+
+								echo getPartialView("ItemDepartment", ['department' => $department, 'isPrimary' => $isPrimary]);
 							}
 						}
 ?>

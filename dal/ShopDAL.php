@@ -86,7 +86,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) ORDER BY d.dept_name, i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) ORDER BY d.dept_name, i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -128,7 +128,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT l.list_id, l.name AS list_name, i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.link FROM lists AS l LEFT JOIN items AS i ON (i.list_id = l.list_id) ORDER BY l.list_id, i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT l.list_id, l.name AS list_name, i.item_id, i.description, i.comments, i.default_qty, i.link, i.primary_dept FROM lists AS l LEFT JOIN items AS i ON (i.list_id = l.list_id) ORDER BY l.list_id, i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -231,16 +231,14 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("INSERT INTO items (description, comments, default_qty, total_qty, last_ordered, selected, list_id, link) VALUES (:description, :comments, :default_qty, :total_qty, :last_ordered, :selected, :list_id, :link)");
+				$query = $this->ShopDb->conn->prepare("INSERT INTO items (description, comments, default_qty, list_id, link, primary_dept) VALUES (:description, :comments, :default_qty, :list_id, :link, :primary_dept)");
 				$query->execute(
 				[
 					':description'  => $item->getDescription(),
 					':comments'     => $item->getComments(),
 					':default_qty'  => !is_null($item->getDefaultQty()) ? $item->getDefaultQty() : 1,
-					':total_qty'    => !is_null($item->getTotalQty()) ? $item->getTotalQty() : 0,
-					':last_ordered' => !is_null($item->getLastOrdered()) ? $item->getLastOrdered()->format('Y-m-d') : null,
-					':selected'     => !is_null($item->getSelected()) ? $item->getSelected() : 0,
 					':list_id'      => $item->getListId(),
+					':primary_dept' => $item->getPrimaryDept(),
 					':link'         => $item->getLink(),
 				]);
 
@@ -261,7 +259,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM items AS i WHERE i.description = :description");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept FROM items AS i WHERE i.description = :description");
 				$query->execute([':description' => $description]);
 				$row = $query->fetch(PDO::FETCH_ASSOC);
 
@@ -287,7 +285,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE d.dept_id = :dept_id ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE d.dept_id = :dept_id ORDER BY i.description");
 				$query->execute([':dept_id' => $dept_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -352,7 +350,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT l.list_id, l.name AS list_name, i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.link FROM lists AS l LEFT JOIN items AS i ON (l.list_id = i.list_id) WHERE l.list_id = :list_id ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT l.list_id, l.name AS list_name, i.item_id, i.description, i.comments, i.default_qty, i.link, i.primary_dept FROM lists AS l LEFT JOIN items AS i ON (l.list_id = i.list_id) WHERE l.list_id = :list_id ORDER BY i.description");
 				$query->execute([':list_id' => $list_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -391,7 +389,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM items AS i ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept FROM items AS i ORDER BY i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -423,7 +421,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link, idl.dept_id, d.dept_name FROM items AS i LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) WHERE i.item_id = :item_id ORDER BY d.dept_name");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, idl.dept_id, d.dept_name FROM items AS i LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) WHERE i.item_id = :item_id ORDER BY d.dept_name");
 				$query->execute([':item_id' => $item_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -594,7 +592,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM items AS i WHERE i.item_id IN (".$query_string.")");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept FROM items AS i WHERE i.item_id IN (".$query_string.")");
 				$query->execute($query_values);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -627,7 +625,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM items AS i WHERE i.list_id = :list_id");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept FROM items AS i WHERE i.list_id = :list_id");
 				$query->execute([':list_id' => $list_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -659,16 +657,16 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("UPDATE items SET description = :description, comments = :comments, default_qty = :default_qty, selected = :selected, list_id = :list_id, link = :link WHERE item_id = :item_id");
+				$query = $this->ShopDb->conn->prepare("UPDATE items SET description = :description, comments = :comments, default_qty = :default_qty, list_id = :list_id, link = :link, primary_dept = :primary_dept WHERE item_id = :item_id");
 				$result->setResult($query->execute(
 				[
-					':description' => $item->getDescription(),
-					':comments'    => $item->getComments(),
-					':default_qty' => $item->getDefaultQty(),
-					':selected'    => $item->getSelected(),
-					':list_id'     => $item->getListId(),
-					':link'        => $item->getLink(),
-					':item_id'     => $item->getId()
+					':description'  => $item->getDescription(),
+					':comments'     => $item->getComments(),
+					':default_qty'  => $item->getDefaultQty(),
+					':list_id'      => $item->getListId(),
+					':link'         => $item->getLink(),
+					':primary_dept' => $item->getPrimaryDept(),
+					':item_id'      => $item->getId()
 				]));
 			}
 			catch(PDOException $e)
@@ -773,7 +771,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT idl.dept_id, idl.item_id, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM item_dept_link AS idl LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE idl.dept_id = :dept_id");
+				$query = $this->ShopDb->conn->prepare("SELECT idl.dept_id, idl.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept FROM item_dept_link AS idl LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE idl.dept_id = :dept_id");
 				$query->execute([':dept_id' => $dept_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -822,7 +820,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT o.id AS order_id, o.date_ordered AS date_ordered, oi.id AS order_item_id, oi.item_id, oi.quantity, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM orders AS o LEFT JOIN order_items AS oi ON (o.id = oi.order_id) LEFT JOIN items AS i ON (i.item_id = oi.item_id) WHERE o.date_ordered IS NULL ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT o.id AS order_id, o.date_ordered AS date_ordered, oi.id AS order_item_id, oi.item_id, oi.quantity, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept FROM orders AS o LEFT JOIN order_items AS oi ON (o.id = oi.order_id) LEFT JOIN items AS i ON (i.item_id = oi.item_id) WHERE o.date_ordered IS NULL ORDER BY i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -863,7 +861,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT o.id AS order_id, o.date_ordered AS date_ordered, oi.id AS order_item_id, oi.item_id, oi.quantity, i.description, i.comments, i.default_qty, i.total_qty, i.last_ordered, i.selected, i.list_id, i.link FROM orders AS o LEFT JOIN order_items AS oi ON (o.id = oi.order_id) LEFT JOIN items AS i ON (i.item_id = oi.item_id) WHERE o.id = :order_id");
+				$query = $this->ShopDb->conn->prepare("SELECT o.id AS order_id, o.date_ordered AS date_ordered, oi.id AS order_item_id, oi.item_id, oi.quantity, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept FROM orders AS o LEFT JOIN order_items AS oi ON (o.id = oi.order_id) LEFT JOIN items AS i ON (i.item_id = oi.item_id) WHERE o.id = :order_id");
 				$query->execute([':order_id' => $order_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -1113,6 +1111,98 @@
 			{
 				$query = $this->ShopDb->conn->prepare("DELETE FROM order_items WHERE order_id = :order_id");
 				$result->setResult($query->execute([':order_id' => $order->getId()]));
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
+		public function getPrimaryDepartments()
+		{
+			$result = new DalResult();
+			$departments = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, idl.dept_id, d.dept_name FROM items AS i LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) ORDER BY d.dept_name, i.description");
+				$query->execute();
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					$departments = [];
+
+					foreach ($rows as $row)
+					{
+						if (is_null($row['primary_dept']))
+						{
+							$key = 0;
+
+							if (!array_key_exists($key, $departments))
+							{
+								$departments[$key] = new Department();
+							}
+
+							$item = createItem($row);
+							$departments[$key]->addItem($item);
+						}
+						else
+						{
+							$key = $row['primary_dept'];
+
+							if ($key == $row['dept_id'])
+							{
+								if (!array_key_exists($key, $departments))
+								{
+									$department = createDepartment($row);
+									$departments[$department->getId()] = $department;
+								}
+
+								$item = createItem($row);
+								$departments[$key]->addItem($item);
+							}
+						}
+					}
+				}
+
+				$result->setResult($departments);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
+		public function getItemDepartmentLookupArray()
+		{
+			$result = new DalResult();
+			$departments_lookup = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT idl.dept_id, idl.item_id FROM item_dept_link AS idl");
+				$query->execute();
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					$departments_lookup = [];
+
+					foreach ($rows as $row)
+					{
+						if (!array_key_exists($row['item_id'], $departments_lookup))
+						{
+							$departments_lookup[$row['item_id']] = $row['dept_id'];
+						}
+					}
+				}
+
+				$result->setResult($departments_lookup);
 			}
 			catch(PDOException $e)
 			{

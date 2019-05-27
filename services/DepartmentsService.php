@@ -13,6 +13,30 @@
 			$this->dal->closeConnexion();
 		}
 
+		public function verifyDepartmentRequest($request)
+		{
+			$department = false;
+
+			if (!is_numeric($request['dept_id']))
+			{
+				return false;
+			}
+
+			$dalResult = $this->dal->getDepartmentById(intval($request['dept_id']));
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$department = $dalResult->getResult();
+			}
+
+			if (!$department)
+			{
+				return false;
+			}
+
+			return $department;
+		}
+
 		public function addDepartment($department)
 		{
 			return $this->dal->addDepartment($department);
@@ -56,5 +80,10 @@
 		public function removeDepartment($department)
 		{
 			return $this->dal->removeDepartment($department);
+		}
+
+		public function getPrimaryDepartments()
+		{
+			return $this->dal->getPrimaryDepartments();
 		}
 	}

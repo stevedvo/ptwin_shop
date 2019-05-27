@@ -145,6 +145,12 @@
 			}
 
 			$dalResult = $this->lists_service->addItemToList($item, $list);
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$dalResult->setPartialView(getPartialView("ListItem", ['item' => $item]));
+			}
+
 			$this->lists_service->closeConnexion();
 			$this->items_service->closeConnexion();
 

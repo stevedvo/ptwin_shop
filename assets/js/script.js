@@ -8,18 +8,19 @@ $(function()
 	manageDepts();
 	manageOrders();
 	quickAdd();
+	adminFuncs();
 });
 
 function globalFuncs()
 {
 	$(document).on("click", ".js-select-item", function()
 	{
-		$(this).parent().addClass("selected");
+		$(this).closest(".row").addClass("selected");
 	});
 
 	$(document).on("click", ".js-unselect-item", function()
 	{
-		$(this).parent().removeClass("selected");
+		$(this).closest(".row").removeClass("selected");
 	});
 }
 
@@ -199,7 +200,7 @@ function manageItems()
 			{
 				if (data.result == true)
 				{
-					var html = '<p data-dept_id="'+departmentID+'" data-description="'+selectedOption.text()+'">'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>';
+					var html = data.partial_view;
 
 					$(".department-items-container").append(html);
 					$(".department-items-container").find(".no-results").remove();
@@ -272,7 +273,7 @@ function manageItems()
 							$(this).remove();
 						});
 
-						if (departmentItemsContainer.find("p").length == 0)
+						if (departmentItemsContainer.find(".result-item").length == 0)
 						{
 							departmentItemsContainer.html('<p class="no-results">Not added to any Departments.</p>');
 						}
@@ -303,6 +304,64 @@ function manageItems()
 				console.log(data);
 			});
 		}
+	});
+
+	$(document).on("click", ".js-set-primary-dept", function()
+	{
+		var departmentItemsContainer = $(this).closest(".department-items-container");
+		var form = $(this).closest(".form");
+		var itemID = parseInt(departmentItemsContainer.data("item_id"));
+		var deptID = parseInt(form.data("dept_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : "/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Items",
+				action     : "setItemPrimaryDepartment",
+				request    :
+				{
+					'item_id' : itemID,
+					'dept_id' : deptID
+				}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				if (data.result == true)
+				{
+					departmentItemsContainer.find(".primary-dept").removeClass("primary-dept");
+					form.addClass("primary-dept");
+
+					toastr.success("Primary Department successfully set");
+				}
+				else
+				{
+					if (data.exception != null)
+					{
+						toastr.error("PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						toastr.error("Unspecified error");
+						console.log(data);
+					}
+				}
+			}
+			else
+			{
+				toastr.error("Could not set Primary Department");
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
 	});
 
 	$(document).on("click", ".js-add-item-to-current-order", function()
@@ -491,7 +550,7 @@ function manageLists()
 		{
 			if (data)
 			{
-				var html = '<p data-item_id="'+itemID+'">'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>';
+				var html = data.partial_view;
 
 				$(".list-items-container").append(html);
 				$(".list-items-container").find(".no-results").remove();
@@ -764,7 +823,7 @@ function manageDepts()
 			{
 				if (data.result == true)
 				{
-					var html = '<p data-item_id="'+itemID+'" data-description="'+selectedOption.text()+'">'+selectedOption.text()+'<span class="btn btn-danger btn-sm js-select-item">Select</span><span class="btn btn-danger btn-sm js-unselect-item">Unselect</span></p>';
+					var html = data.partial_view;
 
 					$(".department-items-container").append(html);
 					$(".department-items-container").find(".no-results").remove();
@@ -1530,6 +1589,40 @@ function manageOrders()
 			else
 			{
 				toastr.error("Could not add List to Order");
+				console.log(data);
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+}
+
+function adminFuncs()
+{
+	$(document).on("click", ".js-reset-item-primary-departments", function()
+	{
+		$.ajax(
+		{
+			type     : "POST",
+			url      : "/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Items",
+				action     : "resetPrimaryDepartments",
+				request    : {'reset' : true}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				toastr.success("Done");
+			}
+			else
+			{
+				toastr.error("Fail");
 				console.log(data);
 			}
 		}).fail(function(data)

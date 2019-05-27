@@ -13,6 +13,30 @@
 			$this->dal->closeConnexion();
 		}
 
+		public function verifyItemRequest($request)
+		{
+			$item = false;
+
+			if (!is_numeric($request['item_id']))
+			{
+				return false;
+			}
+
+			$dalResult = $this->dal->getItemById(intval($request['item_id']));
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$item = $dalResult->getResult();
+			}
+
+			if (!$item)
+			{
+				return false;
+			}
+
+			return $item;
+		}
+
 		public function addItem($item)
 		{
 			return $this->dal->addItem($item);
@@ -58,8 +82,20 @@
 			return $this->dal->addDepartmentToItem($department, $item);
 		}
 
+		public function setItemPrimaryDepartment($department, $item)
+		{
+			$item->setPrimaryDept($department->getId());
+
+			return $this->dal->updateItem($item);
+		}
+
 		public function removeDepartmentsFromItem($dept_ids, $item_id)
 		{
 			return $this->dal->removeDepartmentsFromItem($dept_ids, $item_id);
+		}
+
+		public function getItemDepartmentLookupArray()
+		{
+			return $this->dal->getItemDepartmentLookupArray();
 		}
 	}

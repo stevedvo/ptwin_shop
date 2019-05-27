@@ -32,7 +32,7 @@ main
 
 .results-container .result-item
 {
-	padding: 5px 0px;
+	padding: 5px 4px;
 }
 
 .results-container.striped .result-item:nth-of-type(odd)
@@ -40,9 +40,26 @@ main
 	background-color: #eee;
 }
 
+.results-container .result-item.primary-dept
+{
+	border: #337ab7 solid 2px;
+	padding: 3px 2px;
+}
+
+.results-container .result-item.primary-dept button.js-set-primary-dept
+{
+	display: none;
+}
+
 .results-container .link-container
 {
 	word-break: break-all;
+}
+
+.department-items-container .row>div,
+.list-items-container .row>div
+{
+	margin-bottom: 5px;
 }
 
 .item-container
@@ -229,6 +246,24 @@ input.remove
 	{
 		width: calc(2 / 12 * 100%);
 		margin: 0px;
+	}
+
+	.department-items-container .row>div,
+	.list-items-container .row>div
+	{
+		margin: 0px;
+	}
+
+	.department-items-container .row>.department-name-container,
+	.list-items-container .row>.list-name-container
+	{
+		width: calc(6 / 12 * 100%);
+	}
+
+	.department-items-container .row>.button-container,
+	.list-items-container .row>.button-container
+	{
+		width: calc(2 / 12 * 100%);
 	}
 }
 

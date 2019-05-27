@@ -32,13 +32,11 @@
 		$description = isset($request['description']) ? $request['description'] : null;
 		$comments = isset($request['comments']) ? $request['comments'] : null;
 		$default_qty = isset($request['default_qty']) ? intval($request['default_qty']) : null;
-		$total_qty = isset($request['total_qty']) ? intval($request['total_qty']) : null;
-		$last_ordered = isset($request['last_ordered']) ? sanitiseDate($request['last_ordered']) : null;
-		$selected = isset($request['selected']) ? $request['selected'] : null;
 		$list_id = isset($request['list_id']) ? intval($request['list_id']) : null;
 		$link = isset($request['link']) ? $request['link'] : null;
+		$primary_dept = isset($request['primary_dept']) ? intval($request['primary_dept']) : null;
 
-		$item = new Item($id, $description, $comments, $default_qty, $total_qty, $last_ordered, $selected, $list_id, $link);
+		$item = new Item($id, $description, $comments, $default_qty, $list_id, $link, $primary_dept);
 
 		return $item;
 	}
@@ -130,4 +128,14 @@
 		include_once('views/shared/header.php');
 		include_once($template);
 		include_once('views/shared/footer.php');
+	}
+
+	function getPartialView($template, $params)
+	{
+		ob_start();
+		include('views/partial/'.$template.'.php');
+		$partial_view = ob_get_contents();
+		ob_end_clean();
+
+		return $partial_view;
 	}
