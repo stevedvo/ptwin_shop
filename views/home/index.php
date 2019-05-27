@@ -55,7 +55,7 @@
 ?>
 							<div class="row form result-item" data-order_item_id="<?= $order_item->getId(); ?>">
 								<div class="col-xs-8 description-container">
-									<p><a href="/items/edit/<?= $order_item->getItemId(); ?>/"><?= $order_item->getItem()->getDescription(); ?></a></p>
+									<p><a href="<?= SITEURL; ?>/items/edit/<?= $order_item->getItemId(); ?>/"><?= $order_item->getItem()->getDescription(); ?></a></p>
 								</div>
 
 								<div class="col-xs-4 quantity-container">

@@ -7,7 +7,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-12">
-				<a class="btn btn-primary" href="/items/create/">Add New Item</a>
+				<a class="btn btn-primary" href="<?= SITEURL; ?>/items/create/">Add New Item</a>
 			</div>
 		</div>
 
@@ -29,7 +29,7 @@
 ?>
 							<div class="row form result-item <?= array_key_exists($item->getId(), $items_in_order) ? 'selected' : ''; ?>" data-item_id="<?= $item->getId(); ?>">
 								<div class="col-xs-5 description-container">
-									<a href="/items/edit/<?= $item->getId(); ?>/"><p><?= $item->getDescription(); ?></p></a>
+									<a href="<?= SITEURL; ?>/items/edit/<?= $item->getId(); ?>/"><p><?= $item->getDescription(); ?></p></a>
 								</div>
 
 								<div class="col-xs-3 button-container">
