@@ -1,5 +1,6 @@
 <?php
 	$order = $response['order'];
+	$departments = $response['departments'];
 ?>
 <main class="wrapper">
 	<div class="container">
@@ -30,8 +31,23 @@
 <?php
 						if (is_array($order->getOrderItems()) && sizeof($order->getOrderItems()) > 0)
 						{
+							$current_dept = null;
+
 							foreach ($order->getOrderItems() as $order_item_id => $order_item)
 							{
+								$item_dept = $order_item->getItem()->getPrimaryDept();
+
+								if ($item_dept != $current_dept)
+								{
+									$current_dept = $item_dept;
+?>
+									<div class="collection-container">
+										<h4><?= $departments[$item_dept]->getName() ?: 'No collection defined'; ?></h4>
+										<div class="collection-items-container">
+										</div>
+									</div>
+<?php
+								} // need to sort this out: end collection container when all items in that primary dept have been output, and start a new collection container to display next department
 ?>
 								<div class="row result-item">
 									<div class="col-xs-2 description-container">
