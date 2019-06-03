@@ -8,6 +8,7 @@
 		{
 			$this->orders_service = new OrdersService();
 			$this->lists_service = new ListsService();
+			$this->departments_service = new DepartmentsService();
 		}
 
 		public function updateOrderItem($request)
@@ -100,7 +101,7 @@
 
 		public function View($request = null)
 		{
-			$order = false;
+			$order = $departments = false;
 
 			if (is_numeric($request))
 			{
@@ -112,13 +113,28 @@
 				}
 			}
 
+			if ($order)
+			{
+				$dalResult = $this->departments_service->getAllDepartments();
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$departments = $dalResult->getResult();
+				}
+			}
+
 			$this->orders_service->closeConnexion();
+			$this->departments_service->closeConnexion();
 
 			$pageData =
 			[
 				'page_title' => 'View Order',
 				'template'   => 'views/orders/view.php',
-				'page_data'  => ['order' => $order]
+				'page_data'  =>
+				[
+					'order'       => $order,
+					'departments' => $departments
+				]
 			];
 
 			renderPage($pageData);
