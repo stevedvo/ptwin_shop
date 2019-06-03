@@ -32,6 +32,7 @@
 						<a class="btn btn-primary" href="<?= SITEURL; ?>/items/?view-by=primary_dept">Primary Depts</a>
 						<a class="btn btn-primary" href="<?= SITEURL; ?>/lists/">Manage Lists</a>
 						<a class="btn btn-primary" href="<?= SITEURL; ?>/departments/">Manage Depts</a>
+						<a class="btn btn-primary" href="<?= SITEURL; ?>/orders/">Manage Orders</a>
 					</div>
 					<hr/>
 				</div>

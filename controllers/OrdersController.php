@@ -99,6 +99,29 @@
 			return $dalResult->jsonSerialize();
 		}
 
+		public function Index()
+		{
+			$orders = false;
+
+			$dalResult = $this->orders_service->getAllOrders();
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$orders = $dalResult->getResult();
+			}
+
+			$this->orders_service->closeConnexion();
+
+			$pageData =
+			[
+				'page_title' => 'Manage Orders',
+				'template'   => 'views/orders/index.php',
+				'page_data'  => ['orders' => $orders]
+			];
+
+			renderPage($pageData);
+		}
+
 		public function View($request = null)
 		{
 			$order = $departments = false;
