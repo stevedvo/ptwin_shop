@@ -32,41 +32,61 @@
 						if (is_array($order->getOrderItems()) && sizeof($order->getOrderItems()) > 0)
 						{
 							$current_dept = null;
+							$i = 0;
 
 							foreach ($order->getOrderItems() as $order_item_id => $order_item)
 							{
 								$item_dept = $order_item->getItem()->getPrimaryDept();
+								$dept_heading = !is_null($item_dept) ? $departments[$item_dept]->getName() : 'No collection defined';
 
-								if ($item_dept != $current_dept)
+								if ($i == 0)
 								{
-									$current_dept = $item_dept;
 ?>
 									<div class="collection-container">
-										<h4><?= $departments[$item_dept]->getName() ?: 'No collection defined'; ?></h4>
+										<h4><?= $dept_heading; ?></h4>
 										<div class="collection-items-container">
+<?php
+								}
+								elseif ($item_dept != $current_dept)
+								{
+?>
+										</div>
+									</div>
+
+									<div class="collection-container">
+										<h4><?= $dept_heading; ?></h4>
+										<div class="collection-items-container">
+<?php
+								}
+?>
+											<div class="row result-item">
+												<div class="col-xs-2 description-container">
+													<a href="<?= SITEURL; ?>/items/edit/<?= $order_item->getItemId(); ?>/"><p><?= $order_item->getItem()->getDescription(); ?></p></a>
+												</div>
+
+												<div class="col-xs-2 comments-container">
+													<p><?= $order_item->getItem()->getComments(); ?></p>
+												</div>
+
+												<div class="col-xs-7 link-container">
+													<a href="<?= $order_item->getItem()->getLink(); ?>" target="_blank"><p><?= $order_item->getItem()->getLink(); ?></p></a>
+												</div>
+
+												<div class="col-xs-1 quantity-container">
+													<p><?= $order_item->getQuantity(); ?></p>
+												</div>
+											</div>
+<?php
+								$current_dept = $item_dept;
+								$i++;
+
+								if ($i == sizeof($order->getOrderItems()))
+								{
+?>
 										</div>
 									</div>
 <?php
-								} // need to sort this out: end collection container when all items in that primary dept have been output, and start a new collection container to display next department
-?>
-								<div class="row result-item">
-									<div class="col-xs-2 description-container">
-										<a href="<?= SITEURL; ?>/items/edit/<?= $order_item->getItemId(); ?>/"><p><?= $order_item->getItem()->getDescription(); ?></p></a>
-									</div>
-
-									<div class="col-xs-2 comments-container">
-										<p><?= $order_item->getItem()->getComments(); ?></p>
-									</div>
-
-									<div class="col-xs-7 link-container">
-										<a href="<?= $order_item->getItem()->getLink(); ?>" target="_blank"><p><?= $order_item->getItem()->getLink(); ?></p></a>
-									</div>
-
-									<div class="col-xs-1 quantity-container">
-										<p><?= $order_item->getQuantity(); ?></p>
-									</div>
-								</div>
-<?php
+								}
 							}
 						}
 						else
