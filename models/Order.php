@@ -3,12 +3,21 @@
 	{
 		private $id;
 		private $date_ordered;
+		private $validation;
 		private $order_items;
 
 		public function __construct($id = null, $date_ordered = null)
 		{
 			$this->id = $id;
 			$this->date_ordered = $date_ordered;
+			$this->validation =
+			[
+				'DateOrdered' =>
+				[
+					'required' => true,
+					'datatype' => 'date'
+				]
+			];
 			$this->order_items = null;
 		}
 
@@ -35,6 +44,30 @@
 		public function setDateOrdered($date_ordered)
 		{
 			$this->date_ordered = $date_ordered;
+		}
+
+		public function getValidation($property = null)
+		{
+			if (is_null($property))
+			{
+				return $this->validation;
+			}
+
+			if (!isset($this->validation[$property]))
+			{
+				return false;
+			}
+
+			$validation = "";
+
+			foreach ($this->validation[$property] as $key => $value)
+			{
+				$validation.= $key.":".$value."_";
+			}
+
+			$validation = rtrim($validation, "_");
+
+			return $validation;
 		}
 
 		public function getOrderItems()

@@ -163,6 +163,47 @@
 			renderPage($pageData);
 		}
 
+		public function Edit($request = null)
+		{
+			$order = $departments = false;
+
+			if (is_numeric($request))
+			{
+				$dalResult = $this->orders_service->getOrderById(intval($request));
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$order = $dalResult->getResult();
+				}
+			}
+
+			if ($order)
+			{
+				$dalResult = $this->departments_service->getAllDepartments();
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$departments = $dalResult->getResult();
+				}
+			}
+
+			$this->orders_service->closeConnexion();
+			$this->departments_service->closeConnexion();
+
+			$pageData =
+			[
+				'page_title' => 'Edit Order',
+				'template'   => 'views/orders/edit.php',
+				'page_data'  =>
+				[
+					'order'       => $order,
+					'departments' => $departments
+				]
+			];
+
+			renderPage($pageData);
+		}
+
 		public function confirmOrder($request)
 		{
 			if (!isset($request['order_id']) || !is_numeric($request['order_id']))

@@ -1127,6 +1127,17 @@ function validateForm(form)
 								}
 							}
 							break;
+							case 'datatype':
+							{
+								switch (criterion[1])
+								{
+									case 'date':
+									{
+										
+									}
+								}
+							}
+							break;
 						}
 					}
 				}
@@ -1596,6 +1607,79 @@ function manageOrders()
 			toastr.error("Could not perform request");
 			console.log(data);
 		});
+	});
+
+	$(document).on("click", ".js-update-order", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			// var orderItemID = parseInt(form.data("order_item_id"));
+			// var quantity = parseInt(form.find("[name='quantity']").val());
+
+			// $.ajax(
+			// {
+			// 	type     : "POST",
+			// 	url      : constants.SITEURL+"/ajax.php",
+			// 	dataType : "json",
+			// 	data     :
+			// 	{
+			// 		controller : "Orders",
+			// 		action     : "updateOrderItem",
+			// 		request    :
+			// 		{
+			// 			'order_item_id' : orderItemID,
+			// 			'quantity'      : quantity
+			// 		}
+			// 	}
+			// }).done(function(data)
+			// {
+			// 	if (data)
+			// 	{
+			// 		if (data.exception != null)
+			// 		{
+			// 			toastr.error("Could not update Order Item: PDOException");
+			// 			console.log(data.exception);
+			// 		}
+			// 		else
+			// 		{
+			// 			if (!data.result)
+			// 			{
+			// 				toastr.error("Could not update Order Item: Unspecified error");
+			// 				console.log(data);
+			// 			}
+			// 			else
+			// 			{
+			// 				toastr.success("Order Item successfully updated");
+			// 			}
+			// 		}
+			// 	}
+			// 	else
+			// 	{
+			// 		toastr.error("Could not update Order Item");
+			// 		console.log(data);
+			// 	}
+			// }).fail(function(data)
+			// {
+			// 	toastr.error("Could not perform request");
+			// 	console.log(data);
+			// });
+		}
 	});
 }
 
