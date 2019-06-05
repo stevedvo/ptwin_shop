@@ -11,6 +11,38 @@
 			$this->departments_service = new DepartmentsService();
 		}
 
+		public function updateOrder($request)
+		{
+			$order_update = createOrder($request);
+
+			if (!entityIsValid($order_update))
+			{
+				return false;
+			}
+
+			// $dalResult = $this->orders_service->getOrderItemById($order_item_update->getId());
+
+			// if (!is_null($dalResult->getException()))
+			// {
+			// 	return false;
+			// }
+
+			// $order_item = $dalResult->getResult();
+
+			// if (!$order_item)
+			// {
+			// 	return false;
+			// }
+
+			// $order_item->setQuantity($order_item_update->getQuantity());
+
+			// $dalResult = $this->orders_service->updateOrderItem($order_item);
+
+			// $this->orders_service->closeConnexion();
+
+			// return $dalResult->jsonSerialize();
+		}
+
 		public function updateOrderItem($request)
 		{
 			$order_item_update = createOrderItem($request);

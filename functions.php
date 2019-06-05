@@ -112,9 +112,29 @@
 	{
 		$date = DateTime::createFromFormat('Y-m-d', $date_string);
 
+		if ($date)
+		{
+			$validDate = checkdate(substr($date_string, 5, 2), substr($date_string, 8, 2), substr($date_string, 0, 4));
+
+			if (!$validDate)
+			{
+				$date = false;
+			}
+		}
+
 		if (!$date)
 		{
 			$date = DateTime::createFromFormat('d-m-Y', $date_string);
+
+			if ($date)
+			{
+				$validDate = checkdate(substr($date_string, 3, 2), substr($date_string, 0, 2), substr($date_string, 6, 4));
+
+				if (!$validDate)
+				{
+					$date = false;
+				}
+			}
 		}
 
 		return $date;

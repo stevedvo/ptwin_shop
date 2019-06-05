@@ -20,9 +20,8 @@
 ?>
 			<div class="row">
 				<div class="col-xs-12">
-					<div class="form order-container">
+					<div class="form order-container" data-order_id="<?= $order->getId(); ?>">
 						<label>Date Ordered:</label>
-						<input type="hidden" name="order_id" value="<?= $order->getId(); ?>" />
 						<input type="text" name="date_ordered" placeholder="Required" data-validation="<?= $order->getValidation("DateOrdered"); ?>" value="<?= !is_null($order->getDateOrdered()) ? $order->getDateOrdered()->format('d-m-Y') : ''; ?>" />
 						<button class="btn btn-primary js-update-order">Update</button>
 					</div>

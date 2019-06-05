@@ -1133,8 +1133,33 @@ function validateForm(form)
 								{
 									case 'date':
 									{
-										
+										var dateReg = /^\d{2}([./-])\d{2}\1\d{4}$/;
+										var validFormat = $thisInput.val().match(dateReg);
+										var validationPassed = false;
+
+										if (validFormat != null)
+										{
+											var validDate = moment(validFormat[0].substr(6, 4)+"-"+validFormat[0].substr(3, 2)+"-"+validFormat[0].substr(0, 2));
+
+											if (validDate.format() != "Invalid date")
+											{
+												validationPassed = true;
+											}
+										}
+
+										if (!validationPassed)
+										{
+											if (result[$thisInput.attr("name")] == undefined)
+											{
+												result[$thisInput.attr("name")] = "Date must be in format dd-mm-yyyy and be valid. ";
+											}
+											else
+											{
+												result[$thisInput.attr("name")]+= "Date must be in format dd-mm-yyyy and be valid. ";
+											}
+										}
 									}
+									break;
 								}
 							}
 							break;
@@ -1629,56 +1654,56 @@ function manageOrders()
 		}
 		else
 		{
-			// var orderItemID = parseInt(form.data("order_item_id"));
-			// var quantity = parseInt(form.find("[name='quantity']").val());
+			var orderID = parseInt(form.data("order_id"));
+			var dateOrdered = form.find("[name='date_ordered']").val();
 
-			// $.ajax(
-			// {
-			// 	type     : "POST",
-			// 	url      : constants.SITEURL+"/ajax.php",
-			// 	dataType : "json",
-			// 	data     :
-			// 	{
-			// 		controller : "Orders",
-			// 		action     : "updateOrderItem",
-			// 		request    :
-			// 		{
-			// 			'order_item_id' : orderItemID,
-			// 			'quantity'      : quantity
-			// 		}
-			// 	}
-			// }).done(function(data)
-			// {
-			// 	if (data)
-			// 	{
-			// 		if (data.exception != null)
-			// 		{
-			// 			toastr.error("Could not update Order Item: PDOException");
-			// 			console.log(data.exception);
-			// 		}
-			// 		else
-			// 		{
-			// 			if (!data.result)
-			// 			{
-			// 				toastr.error("Could not update Order Item: Unspecified error");
-			// 				console.log(data);
-			// 			}
-			// 			else
-			// 			{
-			// 				toastr.success("Order Item successfully updated");
-			// 			}
-			// 		}
-			// 	}
-			// 	else
-			// 	{
-			// 		toastr.error("Could not update Order Item");
-			// 		console.log(data);
-			// 	}
-			// }).fail(function(data)
-			// {
-			// 	toastr.error("Could not perform request");
-			// 	console.log(data);
-			// });
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Orders",
+					action     : "updateOrder",
+					request    :
+					{
+						'order_id'     : orderID,
+						'date_ordered' : dateOrdered
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					if (data.exception != null)
+					{
+						toastr.error("Could not update Order: PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						if (!data.result)
+						{
+							toastr.error("Could not update Order: Unspecified error");
+							console.log(data);
+						}
+						else
+						{
+							toastr.success("Order successfully updated");
+						}
+					}
+				}
+				else
+				{
+					toastr.error("Could not update Order");
+					console.log(data);
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
 		}
 	});
 }
