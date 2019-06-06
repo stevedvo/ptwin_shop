@@ -19,11 +19,31 @@
 		{
 ?>
 			<div class="row">
-				<div class="col-xs-12">
-					<div class="form order-container" data-order_id="<?= $order->getId(); ?>">
-						<label>Date Ordered:</label>
-						<input type="text" name="date_ordered" placeholder="Required" data-validation="<?= $order->getValidation("DateOrdered"); ?>" value="<?= !is_null($order->getDateOrdered()) ? $order->getDateOrdered()->format('d-m-Y') : ''; ?>" />
-						<button class="btn btn-primary js-update-order">Update</button>
+				<div class="form order-container col-xs-12" data-order_id="<?= $order->getId(); ?>">
+					<div class="row">
+						<div class="label-container col-xs-5">
+							<label>Date Ordered:</label>
+						</div>
+
+						<div class="input-container col-xs-4">
+							<input type="text" class="pull-right" name="date_ordered" placeholder="Required" data-validation="<?= $order->getValidation("DateOrdered"); ?>" value="<?= !is_null($order->getDateOrdered()) ? $order->getDateOrdered()->format('d-m-Y') : ''; ?>" />
+						</div>
+
+						<div class="button-container col-xs-3">
+							<button class="btn btn-sm btn-primary pull-right js-update-order">Update</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="form add-item-to-previous-order-container col-xs-12">
+					<div class="row">
+						<div class="input-container col-xs-9">
+							<input type="text" id="add-item-to-previous-order" class="pull-right" name="item-description" />
+						</div>
+
+						<div class="button-container col-xs-3">
+							<button class="btn btn-primary btn-sm pull-right js-add-item-to-previous-order">Add</button>
+						</div>
 					</div>
 				</div>
 			</div>

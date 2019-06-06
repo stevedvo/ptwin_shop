@@ -1212,6 +1212,7 @@ function quickAdd()
 					});
 
 					$("#quick-add").autocomplete({source : availableItems});
+					$("#add-item-to-previous-order").autocomplete({source : availableItems});
 				}
 			}
 		}
