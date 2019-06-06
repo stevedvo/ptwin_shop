@@ -236,13 +236,16 @@ input.remove
 		width: 50%;
 	}
 
-	.results-container.current-order .description-container
+	.results-container.current-order .description-container,
+	.results-container.previous-order .description-container
 	{
 		width: calc(6 / 12 * 100%);
 	}
 
 	.results-container.current-order .quantity-container,
-	.results-container.current-order .button-container
+	.results-container.current-order .button-container,
+	.results-container.previous-order .quantity-container,
+	.results-container.previous-order .button-container
 	{
 		width: calc(2 / 12 * 100%);
 		margin: 0px;
