@@ -20,27 +20,27 @@
 				return false;
 			}
 
-			// $dalResult = $this->orders_service->getOrderItemById($order_item_update->getId());
+			$dalResult = $this->orders_service->getOrderById($order_update->getId());
 
-			// if (!is_null($dalResult->getException()))
-			// {
-			// 	return false;
-			// }
+			if (!is_null($dalResult->getException()))
+			{
+				return false;
+			}
 
-			// $order_item = $dalResult->getResult();
+			$order = $dalResult->getResult();
 
-			// if (!$order_item)
-			// {
-			// 	return false;
-			// }
+			if (!$order)
+			{
+				return false;
+			}
 
-			// $order_item->setQuantity($order_item_update->getQuantity());
+			$order->setDateOrdered($order_update->getDateOrdered());
 
-			// $dalResult = $this->orders_service->updateOrderItem($order_item);
+			$dalResult = $this->orders_service->updateOrder($order);
 
-			// $this->orders_service->closeConnexion();
+			$this->orders_service->closeConnexion();
 
-			// return $dalResult->jsonSerialize();
+			return $dalResult->jsonSerialize();
 		}
 
 		public function updateOrderItem($request)
