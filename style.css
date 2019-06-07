@@ -190,6 +190,11 @@ input.remove
 	margin-left: 15px;
 }
 
+.form.order-container
+{
+	margin-bottom: 10px;
+}
+
 #current-order-actions-container>div
 {
 	margin-bottom: 5px;
@@ -236,13 +241,16 @@ input.remove
 		width: 50%;
 	}
 
-	.results-container.current-order .description-container
+	.results-container.current-order .description-container,
+	.results-container.previous-order .description-container
 	{
 		width: calc(6 / 12 * 100%);
 	}
 
 	.results-container.current-order .quantity-container,
-	.results-container.current-order .button-container
+	.results-container.current-order .button-container,
+	.results-container.previous-order .quantity-container,
+	.results-container.previous-order .button-container
 	{
 		width: calc(2 / 12 * 100%);
 		margin: 0px;
@@ -264,6 +272,16 @@ input.remove
 	.list-items-container .row>.button-container
 	{
 		width: calc(2 / 12 * 100%);
+	}
+
+	.form.order-container
+	{
+		width: calc(7 / 12 * 100%);
+	}
+
+	.form.add-item-to-previous-order-container
+	{
+		width: calc(5 / 12 * 100%);
 	}
 }
 

@@ -37,6 +37,11 @@
 			return $order;
 		}
 
+		public function getAllOrders()
+		{
+			return $this->dal->getAllOrders();
+		}
+
 		public function addOrder($order)
 		{
 			return $this->dal->addOrder($order);

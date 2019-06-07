@@ -8,6 +8,7 @@
 		<script type="text/javascript" src="<?= SITEURL; ?>/jQuery/jquery-1.12.3.min.js"></script>
 		<script type="text/javascript" src="<?= SITEURL; ?>/jQuery/jquery-ui-1.11.4/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="<?= SITEURL; ?>/assets/toastr/toastr.min.js"></script>
+		<script type="text/javascript" src="<?= SITEURL; ?>/assets/moment.js/moment-with-locales.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="<?= SITEURL; ?>/assets/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="<?= SITEURL; ?>/jQuery/jquery-ui-1.11.4/jquery-ui.min.css" />
 		<link rel="stylesheet" type="text/css" href="<?= SITEURL; ?>/assets/toastr/toastr.min.css" />
@@ -32,19 +33,18 @@
 						<a class="btn btn-primary" href="<?= SITEURL; ?>/items/?view-by=primary_dept">Primary Depts</a>
 						<a class="btn btn-primary" href="<?= SITEURL; ?>/lists/">Manage Lists</a>
 						<a class="btn btn-primary" href="<?= SITEURL; ?>/departments/">Manage Depts</a>
+						<a class="btn btn-primary" href="<?= SITEURL; ?>/orders/">Manage Orders</a>
 					</div>
 					<hr/>
 				</div>
 
 				<div class="row">
 					<div class="col-xs-12">
-						<div class="ui-widget">
-							<label for="quick-add">Quick Add: </label>
-							<div class="form">
-								<input type="text" id="quick-add" name="item-description" />
-								<button class="btn btn-primary btn-sm js-quick-add-item">Add</button>
-								<button class="btn btn-primary btn-sm js-quick-edit-item">Edit</button>
-							</div>
+						<label for="quick-add">Quick Add: </label>
+						<div class="form">
+							<input type="text" id="quick-add" name="item-description" />
+							<button class="btn btn-primary btn-sm js-quick-add-item">Add</button>
+							<button class="btn btn-primary btn-sm js-quick-edit-item">Edit</button>
 						</div>
 					</div>
 				</div>
