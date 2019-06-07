@@ -3,12 +3,15 @@
 	{
 		private $orders_service;
 		private $lists_service;
+		private $departments_service;
+		private $items_service;
 
 		public function __construct()
 		{
 			$this->orders_service = new OrdersService();
 			$this->lists_service = new ListsService();
 			$this->departments_service = new DepartmentsService();
+			$this->items_service = new ItemsService();
 		}
 
 		public function updateOrder($request)
@@ -374,5 +377,57 @@
 			$this->orders_service->closeConnexion();
 
 			return $saved_order_items;
+		}
+
+		public function addItemToPreviousOrder($request)
+		{
+			if (!isset($request['description']) || empty($request['description']) || !isset($request['order_id']) || !is_numeric($request['order_id']))
+			{
+				return false;
+			}
+
+			$dalResult = $this->items_service->getItemByDescription($request['description']);
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$item = $dalResult->getResult();
+			}
+
+			if (!$item)
+			{
+				return false;
+			}
+
+			$dalResult = $this->orders_service->getOrderById(intval($request['order_id']));
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$order = $dalResult->getResult();
+			}
+
+			if (!$order)
+			{
+				return false;
+			}
+
+			$order_item = new OrderItem();
+			$order_item->setOrderId($order->getId());
+			$order_item->setItemId($item->getId());
+			$order_item->setQuantity($item->getDefaultQty());
+			$order_item->setItem($item);
+
+			$order_item_id = $this->orders_service->addOrderItem($order_item);
+
+			if (!$order_item_id)
+			{
+				return false;
+			}
+
+			$order_item->setId($order_item_id);
+
+			$this->items_service->closeConnexion();
+			$this->orders_service->closeConnexion();
+
+			return $order_item->jsonSerialize();
 		}
 	}

@@ -1707,6 +1707,76 @@ function manageOrders()
 			});
 		}
 	});
+
+	$(document).on("click", ".js-add-item-to-previous-order", function()
+	{
+		var orderID = parseInt($(this).closest(".form").data("order_id"));
+		var input = $(this).closest(".form").find("[name='item-description']");
+		var itemDescription = input.val();
+
+		if (itemDescription != "")
+		{
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Orders",
+					action     : "addItemToPreviousOrder",
+					request    :
+					{
+						'order_id'    : orderID,
+						'description' : itemDescription
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					input.val("");
+					toastr.success("Item added to Order");
+
+					if ($(".results-container.previous-order").length > 0)
+					{
+						var order = $(".results-container.previous-order");
+						order.find(".no-results").remove();
+
+						if (order.find(".form[data-order_item_id='"+data.id+"']").length == 0)
+						{
+							var html =
+							'<div class="row form result-item" data-order_item_id="'+data.id+'">'+
+								'<div class="col-xs-8 description-container">'+
+									'<p><a href="'+constants.SITEURL+'/items/edit/'+data.item_id+'/">'+data.item.description+'</a></p>'+
+								'</div>'+
+								'<div class="col-xs-4 quantity-container">'+
+									'<input type="number" name="quantity" data-validation="required:1_min-value:1" value="'+data.quantity+'" />'+
+								'</div>'+
+								'<div class="col-xs-4 col-xs-offset-4 update button-container">'+
+									'<button class="btn btn-sm btn-primary pull-right js-update-order-item">Update</button>'+
+								'</div>'+
+								'<div class="col-xs-4 remove button-container">'+
+									'<button class="btn btn-sm btn-danger pull-right js-remove-order-item">Remove</button>'+
+								'</div>'+
+							'</div>';
+
+							order.append(html);
+						}
+					}
+				}
+				else
+				{
+					toastr.error("Could not add Item");
+					console.log(data);
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
 }
 
 function adminFuncs()

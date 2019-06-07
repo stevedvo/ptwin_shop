@@ -35,7 +35,7 @@
 					</div>
 				</div>
 
-				<div class="form add-item-to-previous-order-container col-xs-12">
+				<div class="form add-item-to-previous-order-container col-xs-12" data-order_id="<?= $order->getId(); ?>">
 					<div class="row">
 						<div class="input-container col-xs-9">
 							<input type="text" id="add-item-to-previous-order" class="pull-right" name="item-description" />
