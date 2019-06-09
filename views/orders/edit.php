@@ -26,7 +26,7 @@
 						</div>
 
 						<div class="input-container col-xs-4">
-							<input type="text" class="pull-right" name="date_ordered" placeholder="Required" data-validation="<?= $order->getValidation("DateOrdered"); ?>" value="<?= !is_null($order->getDateOrdered()) ? $order->getDateOrdered()->format('d-m-Y') : ''; ?>" />
+							<input type="text" class="pull-right" name="date_ordered" placeholder="Required" data-validation="<?= getValidationString($order, "DateOrdered"); ?>" value="<?= !is_null($order->getDateOrdered()) ? $order->getDateOrdered()->format('d-m-Y') : ''; ?>" />
 						</div>
 
 						<div class="button-container col-xs-3">
@@ -88,7 +88,7 @@
 												</div>
 
 												<div class="col-xs-4 quantity-container">
-													<input type="number" name="quantity" data-validation="<?= $order_item->getValidation("Quantity"); ?>" value="<?= $order_item->getQuantity(); ?>" />
+													<input type="number" name="quantity" data-validation="<?= getValidationString($order_item, "Quantity"); ?>" value="<?= $order_item->getQuantity(); ?>" />
 												</div>
 
 												<div class="col-xs-4 col-xs-offset-4 update button-container">

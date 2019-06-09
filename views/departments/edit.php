@@ -24,7 +24,7 @@
 					<div class="form department-container">
 						<label>Department Name:</label>
 						<input type="hidden" name="department-id" value="<?= $department->getId(); ?>" />
-						<input type="text" name="department-name" placeholder="Required" data-validation="<?= $department->getValidation("Name"); ?>" value="<?= $department->getName(); ?>" />
+						<input type="text" name="department-name" placeholder="Required" data-validation="<?= getValidationString($department, "Name"); ?>" value="<?= $department->getName(); ?>" />
 						<button class="btn btn-primary js-update-department">Update</button>
 					</div>
 				</div>
