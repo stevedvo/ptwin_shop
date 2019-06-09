@@ -63,6 +63,30 @@
 		return $order_item;
 	}
 
+	function getValidationString($object, $property)
+	{
+		if (is_null($object) || !is_object($object) || is_null($property) || empty($property))
+		{
+			return false;
+		}
+
+		if (!isset($object->getValidation()[$property]))
+		{
+			return false;
+		}
+
+		$validation = "";
+
+		foreach ($object->getValidation()[$property] as $key => $value)
+		{
+			$validation.= $key.":".$value."_";
+		}
+
+		$validation = rtrim($validation, "_");
+
+		return $validation;
+	}
+
 	function entityIsValid($entity)
 	{
 		if (is_array($entity->getValidation()))

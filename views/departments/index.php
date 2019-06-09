@@ -10,7 +10,7 @@
 					<fieldset>
 						<legend>Add Department</legend>
 						<label for="department-name">Department Name:</label>
-						<input id="department-name" type="text" name="department-name" placeholder="Required" data-validation="<?= $deptPrototype->getValidation("Name"); ?>" />
+						<input id="department-name" type="text" name="department-name" placeholder="Required" data-validation="<?= getValidationString($deptPrototype, "Name"); ?>" />
 						<br/><br/>
 						<input type="submit" class="btn btn-primary js-add-department" value="Add Department" />
 					</fieldset><br/>

@@ -26,13 +26,13 @@
 							<legend>Edit <?= $item->getDescription(); ?></legend>
 							<input type="hidden" name="item-id" value="<?= $item->getId(); ?>" />
 							<label for="description">Description:</label>
-							<input id="description" type="text" name="description" placeholder="Required" value="<?= $item->getDescription(); ?>" data-validation="<?= $item->getValidation("Description"); ?>" />
+							<input id="description" type="text" name="description" placeholder="Required" value="<?= $item->getDescription(); ?>" data-validation="<?= getValidationString($item, "Description"); ?>" />
 							<br/><br/>
 							<label for="comments">Comments:</label>
-							<input id="comments" type="text" name="comments" value="<?= $item->getComments(); ?>" data-validation="<?= $item->getValidation("Comments"); ?>" />
+							<input id="comments" type="text" name="comments" value="<?= $item->getComments(); ?>" data-validation="<?= getValidationString($item, "Comments"); ?>" />
 							<br/><br/>
 							<label for="default_qty">Default Qty:</label>
-							<input id="default_qty" type="number" name="default-qty" min="1" value="<?= $item->getDefaultQty(); ?>" data-validation="<?= $item->getValidation("DefaultQty"); ?>" />
+							<input id="default_qty" type="number" name="default-qty" min="1" value="<?= $item->getDefaultQty(); ?>" data-validation="<?= getValidationString($item, "DefaultQty"); ?>" />
 							<br/><br/>
 							<label for="total_qty">Total Qty:</label>
 							<span id="total_qty">// todo: sum up Order qtys</span>
@@ -41,10 +41,10 @@
 							<span id="last_ordered">// todo: find last Order or = blank</span>
 							<br/><br/>
 							<label for="link">Link:</label>
-							<input id="link" type="text" name="link" value="<?= $item->getLink(); ?>" data-validation="<?= $item->getValidation("Link"); ?>" />
+							<input id="link" type="text" name="link" value="<?= $item->getLink(); ?>" data-validation="<?= getValidationString($item, "Link"); ?>" />
 							<br/><br/>
 							<label for="list">List:</label>
-							<select id="list" name="list-id" data-validation="<?= $item->getValidation("ListId"); ?>">
+							<select id="list" name="list-id" data-validation="<?= getValidationString($item, "ListId"); ?>">
 								<option value="" selected disabled>Please select...</option>
 <?php
 								if (is_array($lists))

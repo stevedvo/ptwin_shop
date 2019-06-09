@@ -58,16 +58,7 @@
 				return false;
 			}
 
-			$validation = "";
-
-			foreach ($this->validation[$property] as $key => $value)
-			{
-				$validation.= $key.":".$value."_";
-			}
-
-			$validation = rtrim($validation, "_");
-
-			return $validation;
+			return getValidationString($this, $property);
 		}
 
 		public function getOrderItems()

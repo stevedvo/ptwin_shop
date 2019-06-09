@@ -10,19 +10,19 @@
 					<fieldset>
 						<legend>Add Item</legend>
 						<label for="description">Description:</label>
-						<input id="description" type="text" name="description" placeholder="Required" data-validation="<?= $itemPrototype->getValidation("Description"); ?>" />
+						<input id="description" type="text" name="description" placeholder="Required" data-validation="<?= getValidationString($itemPrototype, "Description"); ?>" />
 						<br/><br/>
 						<label for="comments">Comments:</label>
-						<input id="comments" type="text" name="comments" data-validation="<?= $itemPrototype->getValidation("Comments"); ?>" />
+						<input id="comments" type="text" name="comments" data-validation="<?= getValidationString($itemPrototype, "Comments"); ?>" />
 						<br/><br/>
 						<label for="default_qty">Default Qty:</label>
-						<input id="default_qty" type="number" name="default-qty" min="1" value="1" data-validation="<?= $itemPrototype->getValidation("DefaultQty"); ?>" />
+						<input id="default_qty" type="number" name="default-qty" min="1" value="1" data-validation="<?= getValidationString($itemPrototype, "DefaultQty"); ?>" />
 						<br/><br/>
 						<label for="link">Link:</label>
-						<input id="link" type="text" name="link" data-validation="<?= $itemPrototype->getValidation("Link"); ?>" />
+						<input id="link" type="text" name="link" data-validation="<?= getValidationString($itemPrototype, "Link"); ?>" />
 						<br/><br/>
 						<label for="list">List:</label>
-						<select id="list" name="list-id" data-validation="<?= $itemPrototype->getValidation("ListId"); ?>">
+						<select id="list" name="list-id" data-validation="<?= getValidationString($itemPrototype, "ListId"); ?>">
 							<option value="" selected disabled>Please select...</option>
 <?php
 							if (is_array($lists))
