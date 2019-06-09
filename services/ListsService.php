@@ -5,7 +5,7 @@
 
 		public function __construct()
 		{
-			$this->dal = new ShopDAL();
+			$this->dal = new ListsDAL();
 		}
 
 		public function closeConnexion()
@@ -41,11 +41,6 @@
 		public function addItemToList($item, $list)
 		{
 			return $this->dal->addItemToList($item, $list);
-		}
-
-		public function removeItemsFromList($item_ids, $list_id)
-		{
-			return $this->dal->removeItemsFromList($item_ids, $list_id);
 		}
 
 		public function updateList($list)

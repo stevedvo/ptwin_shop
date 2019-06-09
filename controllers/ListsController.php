@@ -157,31 +157,6 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		public function removeItemsFromList($request)
-		{
-			$item_ids = [];
-
-			if (!is_array($request['item_ids']) || !is_numeric($request['list_id']))
-			{
-				return false;
-			}
-
-			foreach ($request['item_ids'] as $item_id)
-			{
-				if (!is_numeric($item_id))
-				{
-					return false;
-				}
-
-				$item_ids[] = intval($item_id);
-			}
-
-			$dalResult = $this->lists_service->removeItemsFromList($item_ids, intval($request['list_id']));
-			$this->lists_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
-		}
-
 		public function editList($request)
 		{
 			$list = createList($request);

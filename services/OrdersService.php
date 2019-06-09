@@ -5,7 +5,7 @@
 
 		public function __construct()
 		{
-			$this->dal = new ShopDAL();
+			$this->dal = new OrdersDAL();
 		}
 
 		public function closeConnexion()
