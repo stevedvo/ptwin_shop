@@ -1053,119 +1053,110 @@ function validateForm(form)
 			var $thisInput = $(this);
 			var validation = $thisInput.data("validation");
 
-			if (validation != "" && validation != undefined)
+			if (validation != "" && validation != undefined && validation != null && typeof validation == "object")
 			{
-				var criteria = validation.split("_");
-
-				if (criteria.length > 0)
+				$.each(validation, function(key, value)
 				{
-					var criterion = [];
-
-					for (var i = 0; i < criteria.length; i++)
+					switch (key)
 					{
-						criterion = criteria[i].split(":");
-
-						switch (criterion[0])
+						case 'required':
 						{
-							case 'required':
+							if ($thisInput.val() == null || $thisInput.val().length == 0)
 							{
-								if ($thisInput.val() == null || $thisInput.val().length == 0)
+								if (result[$thisInput.attr("name")] == undefined)
 								{
-									if (result[$thisInput.attr("name")] == undefined)
-									{
-										result[$thisInput.attr("name")] = "This field is required. ";
-									}
-									else
-									{
-										result[$thisInput.attr("name")]+= "This field is required. ";
-									}
+									result[$thisInput.attr("name")] = "This field is required. ";
+								}
+								else
+								{
+									result[$thisInput.attr("name")]+= "This field is required. ";
 								}
 							}
-							break;
-							case 'min-length':
-							{
-								if ($thisInput.val().length < criterion[1])
-								{
-									if (result[$thisInput.attr("name")] == undefined)
-									{
-										result[$thisInput.attr("name")] = "Must be "+criterion[1]+" characters or more. ";
-									}
-									else
-									{
-										result[$thisInput.attr("name")]+= "Must be "+criterion[1]+" characters or more. ";
-									}
-								}
-							}
-							break;
-							case 'max-length':
-							{
-								if ($thisInput.val().length > criterion[1])
-								{
-									if (result[$thisInput.attr("name")] == undefined)
-									{
-										result[$thisInput.attr("name")] = "Must be "+criterion[1]+" characters or less. ";
-									}
-									else
-									{
-										result[$thisInput.attr("name")]+= "Must be "+criterion[1]+" characters or less. ";
-									}
-								}
-							}
-							break;
-							case 'min-value':
-							{
-								if (parseInt($thisInput.val()) < parseInt(criterion[1]))
-								{
-									if (result[$thisInput.attr("name")] == undefined)
-									{
-										result[$thisInput.attr("name")] = "Must be "+criterion[1]+" or higher. ";
-									}
-									else
-									{
-										result[$thisInput.attr("name")]+= "Must be "+criterion[1]+" or higher. ";
-									}
-								}
-							}
-							break;
-							case 'datatype':
-							{
-								switch (criterion[1])
-								{
-									case 'date':
-									{
-										var dateReg = /^\d{2}([./-])\d{2}\1\d{4}$/;
-										var validFormat = $thisInput.val().match(dateReg);
-										var validationPassed = false;
-
-										if (validFormat != null)
-										{
-											var validDate = moment(validFormat[0].substr(6, 4)+"-"+validFormat[0].substr(3, 2)+"-"+validFormat[0].substr(0, 2));
-
-											if (validDate.format() != "Invalid date")
-											{
-												validationPassed = true;
-											}
-										}
-
-										if (!validationPassed)
-										{
-											if (result[$thisInput.attr("name")] == undefined)
-											{
-												result[$thisInput.attr("name")] = "Date must be in format dd-mm-yyyy and be valid. ";
-											}
-											else
-											{
-												result[$thisInput.attr("name")]+= "Date must be in format dd-mm-yyyy and be valid. ";
-											}
-										}
-									}
-									break;
-								}
-							}
-							break;
 						}
+						break;
+						case 'min-length':
+						{
+							if ($thisInput.val().length < value)
+							{
+								if (result[$thisInput.attr("name")] == undefined)
+								{
+									result[$thisInput.attr("name")] = "Must be "+value+" characters or more. ";
+								}
+								else
+								{
+									result[$thisInput.attr("name")]+= "Must be "+value+" characters or more. ";
+								}
+							}
+						}
+						break;
+						case 'max-length':
+						{
+							if ($thisInput.val().length > value)
+							{
+								if (result[$thisInput.attr("name")] == undefined)
+								{
+									result[$thisInput.attr("name")] = "Must be "+value+" characters or less. ";
+								}
+								else
+								{
+									result[$thisInput.attr("name")]+= "Must be "+value+" characters or less. ";
+								}
+							}
+						}
+						break;
+						case 'min-value':
+						{
+							if (parseInt($thisInput.val()) < parseInt(value))
+							{
+								if (result[$thisInput.attr("name")] == undefined)
+								{
+									result[$thisInput.attr("name")] = "Must be "+value+" or higher. ";
+								}
+								else
+								{
+									result[$thisInput.attr("name")]+= "Must be "+value+" or higher. ";
+								}
+							}
+						}
+						break;
+						case 'datatype':
+						{
+							switch (value)
+							{
+								case 'date':
+								{
+									var dateReg = /^\d{2}([./-])\d{2}\1\d{4}$/;
+									var validFormat = $thisInput.val().match(dateReg);
+									var validationPassed = false;
+
+									if (validFormat != null)
+									{
+										var validDate = moment(validFormat[0].substr(6, 4)+"-"+validFormat[0].substr(3, 2)+"-"+validFormat[0].substr(0, 2));
+
+										if (validDate.format() != "Invalid date")
+										{
+											validationPassed = true;
+										}
+									}
+
+									if (!validationPassed)
+									{
+										if (result[$thisInput.attr("name")] == undefined)
+										{
+											result[$thisInput.attr("name")] = "Date must be in format dd-mm-yyyy and be valid. ";
+										}
+										else
+										{
+											result[$thisInput.attr("name")]+= "Date must be in format dd-mm-yyyy and be valid. ";
+										}
+									}
+								}
+								break;
+							}
+						}
+						break;
 					}
-				}
+				});
 			}
 		});
 	}
