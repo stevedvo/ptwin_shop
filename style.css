@@ -200,6 +200,24 @@ input.remove
 	margin-bottom: 5px;
 }
 
+.form#add-item>.row
+{
+	margin-bottom: 10px;
+}
+
+.form#add-item label
+{
+	float: left;
+	width: calc(4 / 12 * 100%);
+}
+
+.form#add-item input,
+.form#add-item select
+{
+	float: left;
+	width: calc(8 / 12 * 100%);
+}
+
 #current-order-actions-container #add-list-to-current-order-container .select-container,
 #current-order-actions-container #add-list-to-current-order-container .button-container
 {
