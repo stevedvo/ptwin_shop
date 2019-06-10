@@ -75,14 +75,14 @@
 			return false;
 		}
 
-		$validation = "";
+		$validation = "{";
 
 		foreach ($object->getValidation()[$property] as $key => $value)
 		{
-			$validation.= $key.":".$value."_";
+			$validation.= "&quot;".$key."&quot;:&quot;".$value."&quot;,";
 		}
 
-		$validation = rtrim($validation, "_");
+		$validation = rtrim($validation, ",")."}";
 
 		return $validation;
 	}
