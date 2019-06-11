@@ -12,6 +12,7 @@ input
 {
 	max-width: 100%;
 	background-color: transparent;
+	padding: 1px 5px;
 }
 
 main
@@ -200,22 +201,39 @@ input.remove
 	margin-bottom: 5px;
 }
 
-.form#add-item>.row
+.form#add-item>.row,
+.form#edit-item>.row
 {
 	margin-bottom: 10px;
 }
 
-.form#add-item label
+.form#add-item label,
+.form#edit-item label
 {
 	float: left;
 	width: calc(4 / 12 * 100%);
 }
 
-.form#add-item input,
-.form#add-item select
+.form#add-item input:not([type='submit']),
+.form#add-item select,
+.form#edit-item input:not([type='submit']),
+.form#edit-item select
 {
 	float: left;
 	width: calc(8 / 12 * 100%);
+}
+
+.form#edit-list input
+{
+	float: left;
+	width: calc(6 / 12 * 100%);
+}
+
+.form#edit-list label,
+.form#edit-list button
+{
+	float: left;
+	width: calc(3 / 12 * 100%);
 }
 
 #current-order-actions-container #add-list-to-current-order-container .select-container,
@@ -236,6 +254,13 @@ input.remove
 }
 
 #current-order-actions-container #add-list-to-current-order-container .select-container select
+{
+	width: 100%;
+}
+
+.department-selection,
+.list-selection,
+.item-selection
 {
 	width: 100%;
 }
@@ -300,6 +325,44 @@ input.remove
 	.form.add-item-to-previous-order-container
 	{
 		width: calc(5 / 12 * 100%);
+	}
+
+	.form#add-item label,
+	.form#edit-item label,
+	.add-department-to-item-container,
+	.move-items-to-list-container,
+	.add-item-to-list-container
+	{
+		width: calc(2 / 12 * 100%);
+	}
+
+	.form#add-item input:not([type='submit']),
+	.form#add-item select,
+	.form#edit-item input:not([type='submit']),
+	.form#edit-item select,
+	.department-selection-container,
+	.list-selection-container,
+	.item-selection-container
+	{
+		width: calc(4 / 12 * 100%);
+	}
+
+	.form#edit-list input
+	{
+		width: calc(3 / 12 * 100%);
+	}
+
+	.form#edit-list label,
+	.form#edit-list button
+	{
+		width: calc(2 / 12 * 100%);
+	}
+
+	.form#edit-list input,
+	.form#edit-list label,
+	.form#edit-list button
+	{
+		margin: 0px 15px;
 	}
 }
 

@@ -120,12 +120,12 @@ function manageItems()
 		}
 		else
 		{
-			var itemID = form.find("[name='item-id']").val();
+			var itemID = parseInt(form.data("item_id"));
 			var description = form.find("[name='description']").val();
 			var comments = form.find("[name='comments']").val();
-			var defaultQty = form.find("[name='default-qty']").val();
+			var defaultQty = parseInt(form.find("[name='default-qty']").val());
 			var link = form.find("[name='link']").val();
-			var listID = form.find("[name='list-id'] option:selected").val();
+			var listID = parseInt(form.find("[name='list-id'] option:selected").val());
 
 			$.ajax(
 			{
