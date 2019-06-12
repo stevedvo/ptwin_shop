@@ -21,46 +21,70 @@
 ?>
 			<div class="row">
 				<div class="col-xs-12">
-					<div id="edit-item" class="form">
-						<fieldset>
-							<legend>Edit <?= $item->getDescription(); ?></legend>
-							<input type="hidden" name="item-id" value="<?= $item->getId(); ?>" />
-							<label for="description">Description:</label>
-							<input id="description" type="text" name="description" placeholder="Required" value="<?= $item->getDescription(); ?>" data-validation="<?= getValidationString($item, "Description"); ?>" />
-							<br/><br/>
-							<label for="comments">Comments:</label>
-							<input id="comments" type="text" name="comments" value="<?= $item->getComments(); ?>" data-validation="<?= getValidationString($item, "Comments"); ?>" />
-							<br/><br/>
-							<label for="default_qty">Default Qty:</label>
-							<input id="default_qty" type="number" name="default-qty" min="1" value="<?= $item->getDefaultQty(); ?>" data-validation="<?= getValidationString($item, "DefaultQty"); ?>" />
-							<br/><br/>
-							<label for="total_qty">Total Qty:</label>
-							<span id="total_qty">// todo: sum up Order qtys</span>
-							<br/><br/>
-							<label for="last_ordered">Last Ordered:</label>
-							<span id="last_ordered">// todo: find last Order or = blank</span>
-							<br/><br/>
-							<label for="link">Link:</label>
-							<input id="link" type="text" name="link" value="<?= $item->getLink(); ?>" data-validation="<?= getValidationString($item, "Link"); ?>" />
-							<br/><br/>
-							<label for="list">List:</label>
-							<select id="list" name="list-id" data-validation="<?= getValidationString($item, "ListId"); ?>">
-								<option value="" selected disabled>Please select...</option>
+					<div id="edit-item" class="form" data-item_id="<?= $item->getId(); ?>">
+						<h3>Edit <?= $item->getDescription(); ?></h3>
+						<div class="row">
+							<div class="description-container col-xs-12">
+								<label for="description">Description:</label>
+								<input id="description" type="text" name="description" placeholder="Required" value="<?= $item->getDescription(); ?>" data-validation="<?= getValidationString($item, "Description"); ?>" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="comments-container col-xs-12">
+								<label for="comments">Comments:</label>
+								<input id="comments" type="text" name="comments" value="<?= $item->getComments(); ?>" data-validation="<?= getValidationString($item, "Comments"); ?>" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="default-qty-container col-xs-12">
+								<label for="default_qty">Default Qty:</label>
+								<input id="default_qty" type="number" name="default-qty" min="1" value="<?= $item->getDefaultQty(); ?>" data-validation="<?= getValidationString($item, "DefaultQty"); ?>" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="total-qty-container col-xs-12">
+								<label for="total_qty">Total Qty:</label>
+								<span id="total_qty">// todo: sum up Order qtys</span>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="last-ordered-container col-xs-12">
+								<label for="last_ordered">Last Ordered:</label>
+								<span id="last_ordered">// todo: find last Order or = blank</span>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="link-container col-xs-12">
+								<label for="link">Link:</label>
+								<input id="link" type="text" name="link" value="<?= $item->getLink(); ?>" data-validation="<?= getValidationString($item, "Link"); ?>" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="list-container col-xs-12">
+								<label for="list">List:</label>
+								<select id="list" name="list-id" data-validation="<?= getValidationString($item, "ListId"); ?>">
+									<option value="" selected disabled>Please select...</option>
 <?php
-								if (is_array($lists))
-								{
-									foreach ($lists as $list_id => $list)
+									if (is_array($lists))
 									{
+										foreach ($lists as $list_id => $list)
+										{
 ?>
-										<option value="<?= $list->getId(); ?>" <?= $list->getId() == $item->getListId() ? 'selected' : ''; ?>><?= $list->getName(); ?></option>
+											<option value="<?= $list->getId(); ?>" <?= $list->getId() == $item->getListId() ? 'selected' : ''; ?>><?= $list->getName(); ?></option>
 <?php
+										}
 									}
-								}
 ?>
-							</select>
-							<br/><br/>
-							<input type="submit" class="btn btn-primary js-edit-item" value="Edit Item" />
-						</fieldset>
+								</select>
+							</div>
+						</div>
+						<input type="submit" class="btn btn-primary js-edit-item" value="Edit Item" />
 					</div>
 				</div>
 			</div>
@@ -94,24 +118,31 @@
 				<div class="col-xs-12">
 					<h3>Add Department to Item</h3>
 					<div class="form">
-						<input type="hidden" name="item-id" value="<?= $item->getId(); ?>" />
-						<select class="department-selection">
+						<div class="row">
+							<input type="hidden" name="item-id" value="<?= $item->getId(); ?>" />
+							<div class="col-xs-8 department-selection-container">
+								<select class="department-selection">
 <?php
-							if (is_array($all_departments))
-							{
-								foreach ($all_departments as $dept_id => $department)
-								{
-									if ((!is_array($item->getDepartments())) || (is_array($item->getDepartments()) && !array_key_exists($dept_id, $item->getDepartments())))
+									if (is_array($all_departments))
 									{
+										foreach ($all_departments as $dept_id => $department)
+										{
+											if ((!is_array($item->getDepartments())) || (is_array($item->getDepartments()) && !array_key_exists($dept_id, $item->getDepartments())))
+											{
 ?>
-										<option data-dept_id="<?= $department->getId(); ?>"><?= $department->getName(); ?></option>
+												<option data-dept_id="<?= $department->getId(); ?>"><?= $department->getName(); ?></option>
 <?php
+											}
+										}
 									}
-								}
-							}
 ?>
-						</select>
-						<button class="btn btn-primary btn-sm js-add-department-to-item">Add to Item</button>
+								</select>
+							</div>
+
+							<div class="col-xs-4 add-department-to-item-container">
+								<button class="btn btn-primary btn-sm pull-right js-add-department-to-item">Add to Item</button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

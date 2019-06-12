@@ -12,6 +12,7 @@ input
 {
 	max-width: 100%;
 	background-color: transparent;
+	padding: 1px 5px;
 }
 
 main
@@ -49,6 +50,26 @@ main
 .results-container .result-item.primary-dept button.js-set-primary-dept
 {
 	display: none;
+}
+
+.results-container .collection-container .collection-items-container .result-item .button-container button.js-add-item-to-current-order
+{
+	display: block;
+}
+
+.results-container .collection-container .collection-items-container .result-item .button-container button.js-remove-item-from-current-order
+{
+	display: none;
+}
+
+.results-container .collection-container .collection-items-container .result-item.selected .button-container button.js-add-item-to-current-order
+{
+	display: none;
+}
+
+.results-container .collection-container .collection-items-container .result-item.selected .button-container button.js-remove-item-from-current-order
+{
+	display: block;
 }
 
 .results-container .link-container
@@ -200,6 +221,44 @@ input.remove
 	margin-bottom: 5px;
 }
 
+.form#add-item>.row,
+.form#edit-item>.row
+{
+	margin-bottom: 10px;
+}
+
+.form#add-item label,
+.form#edit-item label
+{
+	float: left;
+	width: calc(4 / 12 * 100%);
+}
+
+.form#add-item input:not([type='submit']),
+.form#add-item select,
+.form#edit-item input:not([type='submit']),
+.form#edit-item select
+{
+	float: left;
+	width: calc(8 / 12 * 100%);
+}
+
+.form#edit-list input,
+.form#edit-department input
+{
+	float: left;
+	width: calc(6 / 12 * 100%);
+}
+
+.form#edit-list label,
+.form#edit-list button,
+.form#edit-department label,
+.form#edit-department button
+{
+	float: left;
+	width: calc(3 / 12 * 100%);
+}
+
 #current-order-actions-container #add-list-to-current-order-container .select-container,
 #current-order-actions-container #add-list-to-current-order-container .button-container
 {
@@ -218,6 +277,13 @@ input.remove
 }
 
 #current-order-actions-container #add-list-to-current-order-container .select-container select
+{
+	width: 100%;
+}
+
+.department-selection,
+.list-selection,
+.item-selection
 {
 	width: 100%;
 }
@@ -256,6 +322,22 @@ input.remove
 		margin: 0px;
 	}
 
+	.results-container.view-previous-order .collection-container .collection-items-container .result-item .description-container,
+	.results-container.view-previous-order .collection-container .collection-items-container .result-item .comments-container
+	{
+		width: calc(2 / 12 * 100%);
+	}
+
+	.results-container.view-previous-order .collection-container .collection-items-container .result-item .link-container
+	{
+		width: calc(7 / 12 * 100%);
+	}
+
+	.results-container.view-previous-order .collection-container .collection-items-container .result-item .quantity-container
+	{
+		width: calc(1 / 12 * 100%);
+	}
+
 	.department-items-container .row>div,
 	.list-items-container .row>div
 	{
@@ -282,6 +364,51 @@ input.remove
 	.form.add-item-to-previous-order-container
 	{
 		width: calc(5 / 12 * 100%);
+	}
+
+	.form#add-item label,
+	.form#edit-item label,
+	.add-department-to-item-container,
+	.move-items-to-list-container,
+	.add-item-to-list-container,
+	.add-item-to-department-container
+	{
+		width: calc(2 / 12 * 100%);
+	}
+
+	.form#add-item input:not([type='submit']),
+	.form#add-item select,
+	.form#edit-item input:not([type='submit']),
+	.form#edit-item select,
+	.department-selection-container,
+	.list-selection-container,
+	.item-selection-container
+	{
+		width: calc(4 / 12 * 100%);
+	}
+
+	.form#edit-list input,
+	.form#edit-department input
+	{
+		width: calc(3 / 12 * 100%);
+	}
+
+	.form#edit-list label,
+	.form#edit-list button,
+	.form#edit-department label,
+	.form#edit-department button
+	{
+		width: calc(2 / 12 * 100%);
+	}
+
+	.form#edit-list input,
+	.form#edit-list label,
+	.form#edit-list button,
+	.form#edit-department input,
+	.form#edit-department label,
+	.form#edit-department button
+	{
+		margin: 0px 15px;
 	}
 }
 

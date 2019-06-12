@@ -21,11 +21,11 @@
 ?>
 			<div class="row">
 				<div class="col-xs-12">
-					<div class="form list-container">
+					<div id="edit-list" class="form list-container">
 						<label>List Name:</label>
 						<input type="hidden" name="list-id" value="<?= $list->getId(); ?>" />
 						<input type="text" name="list-name" placeholder="Required" data-validation="<?= getValidationString($list, "Name"); ?>" value="<?= $list->getName(); ?>" />
-						<button class="btn btn-primary js-update-list">Update</button>
+						<button class="btn btn-primary btn-sm js-update-list">Update</button>
 					</div>
 				</div>
 			</div>
@@ -58,23 +58,30 @@
 				<div class="col-xs-12">
 					<h3>Move Selected Item(s) to List</h3>
 					<div class="form">
-						<select>
+						<div class="row">
+							<div class="col-xs-8 list-selection-container">
+								<select class="list-selection">
 <?php
-							if (is_array($all_lists))
-							{
-								foreach ($all_lists as $newlist_id => $newlist)
-								{
-									if ($list->getId() != $newlist_id)
+									if (is_array($all_lists))
 									{
+										foreach ($all_lists as $newlist_id => $newlist)
+										{
+											if ($list->getId() != $newlist_id)
+											{
 ?>
-										<option data-list_id="<?= $newlist->getId(); ?>"><?= $newlist->getName(); ?></option>
+												<option data-list_id="<?= $newlist->getId(); ?>"><?= $newlist->getName(); ?></option>
 <?php
+											}
+										}
 									}
-								}
-							}
 ?>
-						</select>
-						<button class="btn btn-primary btn-sm js-move-items-to-list">Confirm</button>
+								</select>
+							</div>
+
+							<div class="col-xs-4 move-items-to-list-container">
+								<button class="btn btn-primary btn-sm pull-right js-move-items-to-list">Confirm</button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -83,24 +90,31 @@
 				<div class="col-xs-12">
 					<h3>Add Item to List</h3>
 					<div class="form">
-						<input type="hidden" name="list-id" value="<?= $list->getId(); ?>" />
-						<select class="item-selection">
+						<div class="row">
+							<div class="col-xs-8 item-selection-container">
+								<input type="hidden" name="list-id" value="<?= $list->getId(); ?>" />
+								<select class="item-selection">
 <?php
-							if (is_array($all_items))
-							{
-								foreach ($all_items as $item_id => $item)
-								{
-									if (is_array($list->getItems()) && !array_key_exists($item_id, $list->getItems()))
+									if (is_array($all_items))
 									{
+										foreach ($all_items as $item_id => $item)
+										{
+											if (is_array($list->getItems()) && !array_key_exists($item_id, $list->getItems()))
+											{
 ?>
-										<option data-item_id="<?= $item->getId(); ?>"><?= $item->getDescription(); ?></option>
+												<option data-item_id="<?= $item->getId(); ?>"><?= $item->getDescription(); ?></option>
 <?php
+											}
+										}
 									}
-								}
-							}
 ?>
-						</select>
-						<button class="btn btn-primary btn-sm js-add-item-to-list">Add to List</button>
+								</select>
+							</div>
+
+							<div class="col-xs-4 add-item-to-list-container">
+								<button class="btn btn-primary btn-sm pull-right js-add-item-to-list">Add to List</button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

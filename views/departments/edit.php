@@ -21,11 +21,11 @@
 ?>
 			<div class="row">
 				<div class="col-xs-12">
-					<div class="form department-container">
-						<label>Department Name:</label>
+					<div id="edit-department" class="form department-container">
+						<label>Dept Name:</label>
 						<input type="hidden" name="department-id" value="<?= $department->getId(); ?>" />
 						<input type="text" name="department-name" placeholder="Required" data-validation="<?= getValidationString($department, "Name"); ?>" value="<?= $department->getName(); ?>" />
-						<button class="btn btn-primary js-update-department">Update</button>
+						<button class="btn btn-primary btn-sm js-update-department">Update</button>
 					</div>
 				</div>
 			</div>
@@ -58,24 +58,31 @@
 				<div class="col-xs-12">
 					<h3>Add Item to Department</h3>
 					<div class="form">
-						<input type="hidden" name="department-id" value="<?= $department->getId(); ?>" />
-						<select class="item-selection">
+						<div class="row">
+							<div class="col-xs-8 item-selection-container">
+								<input type="hidden" name="department-id" value="<?= $department->getId(); ?>" />
+								<select class="item-selection">
 <?php
-							if (is_array($all_items))
-							{
-								foreach ($all_items as $item_id => $item)
-								{
-									if (is_array($department->getItems()) && !array_key_exists($item_id, $department->getItems()))
+									if (is_array($all_items))
 									{
+										foreach ($all_items as $item_id => $item)
+										{
+											if (is_array($department->getItems()) && !array_key_exists($item_id, $department->getItems()))
+											{
 ?>
-										<option data-item_id="<?= $item->getId(); ?>"><?= $item->getDescription(); ?></option>
+												<option data-item_id="<?= $item->getId(); ?>"><?= $item->getDescription(); ?></option>
 <?php
+											}
+										}
 									}
-								}
-							}
 ?>
-						</select>
-						<button class="btn btn-primary btn-sm js-add-item-to-department">Add to Department</button>
+								</select>
+							</div>
+
+							<div class="col-xs-4 add-item-to-department-container">
+								<button class="btn btn-primary btn-sm pull-right js-add-item-to-department">Add to Dept</button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

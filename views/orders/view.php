@@ -27,7 +27,7 @@
 
 			<div class="row">
 				<div class="col-xs-12">
-					<div class="results-container striped">
+					<div class="results-container view-previous-order striped">
 <?php
 						if (is_array($order->getOrderItems()) && sizeof($order->getOrderItems()) > 0)
 						{
@@ -60,19 +60,19 @@
 								}
 ?>
 											<div class="row result-item">
-												<div class="col-xs-2 description-container">
+												<div class="col-xs-8 description-container">
 													<a href="<?= SITEURL; ?>/items/edit/<?= $order_item->getItemId(); ?>/"><p><?= $order_item->getItem()->getDescription(); ?></p></a>
 												</div>
 
-												<div class="col-xs-2 comments-container">
+												<div class="col-xs-4 comments-container">
 													<p><?= $order_item->getItem()->getComments(); ?></p>
 												</div>
 
-												<div class="col-xs-7 link-container">
+												<div class="col-xs-9 link-container">
 													<a href="<?= $order_item->getItem()->getLink(); ?>" target="_blank"><p><?= $order_item->getItem()->getLink(); ?></p></a>
 												</div>
 
-												<div class="col-xs-1 quantity-container">
+												<div class="col-xs-3 quantity-container">
 													<p><?= $order_item->getQuantity(); ?></p>
 												</div>
 											</div>
