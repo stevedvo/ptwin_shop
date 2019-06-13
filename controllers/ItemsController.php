@@ -97,9 +97,15 @@
 			renderPage($pageData);
 		}
 
-		public function Create()
+		public function Create($request)
 		{
-			$itemPrototype = new Item();
+			$item = new Item();
+
+			if (isset($request['description']) && !empty($request['description']))
+			{
+				$item->setDescription($request['description']);
+			}
+
 			$dalResult = $this->lists_service->getAllLists();
 
 			if (is_null($dalResult->getException()))
@@ -115,8 +121,8 @@
 				'template'   => 'views/items/create.php',
 				'page_data'  =>
 				[
-					'item_prototype' => $itemPrototype,
-					'lists'          => $lists
+					'item' 	=> $item,
+					'lists' => $lists
 				]
 			];
 
@@ -145,6 +151,19 @@
 			}
 
 			$dalResult = $this->items_service->addItem($item);
+
+			if (!is_null($dalResult->getException()))
+			{
+				return false;
+			}
+
+			$item_id = $dalResult->getResult();
+
+			if (isset($request['add_to_order']) && $request['add_to_order'] !== false)
+			{
+				// add logic here to add to currnet order
+			}
+
 			$this->items_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();
@@ -377,7 +396,9 @@
 
 			if (!$item)
 			{
-				return false;
+				$item = new Item();
+				$item->setDescription($request['description']);
+				return $item->jsonSerialize();
 			}
 
 			$order = $this->orders_service->getCurrentOrder();

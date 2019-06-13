@@ -51,6 +51,7 @@ function manageItems()
 			var defaultQty = form.find("[name='default-qty']").val();
 			var link = form.find("[name='link']").val();
 			var listID = form.find("[name='list-id'] option:selected").val();
+			var addToOrder = form.find("[name='add-to-current-order']").prop("checked");
 
 			$.ajax(
 			{
@@ -63,11 +64,12 @@ function manageItems()
 					action     : "addItem",
 					request    :
 					{
-						'description' : description,
-						'comments'    : comments,
-						'default_qty' : defaultQty,
-						'link'        : link,
-						'list_id'     : listID
+						'description'  : description,
+						'comments'     : comments,
+						'default_qty'  : defaultQty,
+						'link'         : link,
+						'list_id'      : listID,
+						'add_to_order' : addToOrder
 					}
 				}
 			}).done(function(data)
@@ -1239,6 +1241,15 @@ function quickAdd()
 			{
 				if (data)
 				{
+					if (data.description == itemDescription)
+					{
+						toastr.error("QuickAdd: Item not found... redirecting.");
+						var timer = setTimeout(function()
+						{
+							location.href = constants.SITEURL+"/items/create/?description="+itemDescription;
+						}, 750);
+					}
+
 					input.val("");
 					toastr.success("Item added to Current Order");
 
