@@ -51,6 +51,7 @@ function manageItems()
 			var defaultQty = form.find("[name='default-qty']").val();
 			var link = form.find("[name='link']").val();
 			var listID = form.find("[name='list-id'] option:selected").val();
+			var addToOrder = form.find("[name='add-to-current-order']").prop("checked") ? 1 : 0;
 
 			$.ajax(
 			{
@@ -63,29 +64,33 @@ function manageItems()
 					action     : "addItem",
 					request    :
 					{
-						'description' : description,
-						'comments'    : comments,
-						'default_qty' : defaultQty,
-						'link'        : link,
-						'list_id'     : listID
+						'description'  : description,
+						'comments'     : comments,
+						'default_qty'  : defaultQty,
+						'link'         : link,
+						'list_id'      : listID,
+						'add_to_order' : addToOrder
 					}
 				}
 			}).done(function(data)
 			{
 				if (data)
 				{
-					if (data.exception == null)
+					toastr.success("New Item successfully added");
+
+					if (data.item == undefined)
 					{
-						toastr.success("New Item successfully added");
 						var timer = setTimeout(function()
 						{
-							location.href = constants.SITEURL+"/items/edit/"+data.result+"/";
+							location.href = constants.SITEURL+"/items/edit/"+data.id+"/";
 						}, 750);
 					}
 					else
 					{
-						toastr.error("PDOException");
-						console.log(data);
+						var timer = setTimeout(function()
+						{
+							location.href = constants.SITEURL+"/items/edit/"+data.item.id+"/";
+						}, 750);
 					}
 				}
 				else
@@ -1239,33 +1244,44 @@ function quickAdd()
 			{
 				if (data)
 				{
-					input.val("");
-					toastr.success("Item added to Current Order");
-
-					if ($(".results-container.current-order").length > 0)
+					if (data.description == itemDescription)
 					{
-						var currentOrder = $(".results-container.current-order");
-						currentOrder.find(".no-results").remove();
-
-						if (currentOrder.find(".form[data-order_item_id='"+data.id+"']").length == 0)
+						toastr.error("QuickAdd: Item not found... redirecting.");
+						var timer = setTimeout(function()
 						{
-							var html =
-							'<div class="row form result-item" data-order_item_id="'+data.id+'">'+
-								'<div class="col-xs-8 description-container">'+
-									'<p><a href="'+constants.SITEURL+'/items/edit/'+data.item_id+'/">'+data.item.description+'</a></p>'+
-								'</div>'+
-								'<div class="col-xs-4 quantity-container">'+
-									'<input type="number" name="quantity" data-validation="required:1_min-value:1" value="'+data.quantity+'" />'+
-								'</div>'+
-								'<div class="col-xs-4 col-xs-offset-4 update button-container">'+
-									'<button class="btn btn-sm btn-primary pull-right js-update-order-item">Update</button>'+
-								'</div>'+
-								'<div class="col-xs-4 remove button-container">'+
-									'<button class="btn btn-sm btn-danger pull-right js-remove-order-item">Remove</button>'+
-								'</div>'+
-							'</div>';
+							location.href = constants.SITEURL+"/items/create/?description="+itemDescription;
+						}, 750);
+					}
+					else
+					{
+						input.val("");
+						toastr.success("Item added to Current Order");
 
-							currentOrder.append(html);
+						if ($(".results-container.current-order").length > 0)
+						{
+							var currentOrder = $(".results-container.current-order");
+							currentOrder.find(".no-results").remove();
+
+							if (currentOrder.find(".form[data-order_item_id='"+data.id+"']").length == 0)
+							{
+								var html =
+								'<div class="row form result-item" data-order_item_id="'+data.id+'">'+
+									'<div class="col-xs-8 description-container">'+
+										'<p><a href="'+constants.SITEURL+'/items/edit/'+data.item_id+'/">'+data.item.description+'</a></p>'+
+									'</div>'+
+									'<div class="col-xs-4 quantity-container">'+
+										'<input type="number" name="quantity" data-validation="required:1_min-value:1" value="'+data.quantity+'" />'+
+									'</div>'+
+									'<div class="col-xs-4 col-xs-offset-4 update button-container">'+
+										'<button class="btn btn-sm btn-primary pull-right js-update-order-item">Update</button>'+
+									'</div>'+
+									'<div class="col-xs-4 remove button-container">'+
+										'<button class="btn btn-sm btn-danger pull-right js-remove-order-item">Remove</button>'+
+									'</div>'+
+								'</div>';
+
+								currentOrder.append(html);
+							}
 						}
 					}
 				}

@@ -97,9 +97,15 @@
 			renderPage($pageData);
 		}
 
-		public function Create()
+		public function Create($request)
 		{
-			$itemPrototype = new Item();
+			$item = new Item();
+
+			if (isset($request['description']) && !empty($request['description']))
+			{
+				$item->setDescription($request['description']);
+			}
+
 			$dalResult = $this->lists_service->getAllLists();
 
 			if (is_null($dalResult->getException()))
@@ -115,8 +121,8 @@
 				'template'   => 'views/items/create.php',
 				'page_data'  =>
 				[
-					'item_prototype' => $itemPrototype,
-					'lists'          => $lists
+					'item' 	=> $item,
+					'lists' => $lists
 				]
 			];
 
@@ -145,9 +151,48 @@
 			}
 
 			$dalResult = $this->items_service->addItem($item);
+
+			if (!is_null($dalResult->getException()))
+			{
+				return false;
+			}
+
+			$item_id = $dalResult->getResult();
+			$item->setId($item_id);
+
+			if (isset($request['add_to_order']) && $request['add_to_order'] != false)
+			{
+				$order = $this->orders_service->getCurrentOrder();
+
+				if (!$order)
+				{
+					return false;
+				}
+
+				$order_item = new OrderItem();
+				$order_item->setOrderId($order->getId());
+				$order_item->setItemId($item->getId());
+				$order_item->setQuantity($item->getDefaultQty());
+				$order_item->setItem($item);
+
+				$order_item_id = $this->orders_service->addOrderItem($order_item);
+
+				if (!$order_item_id)
+				{
+					return false;
+				}
+
+				$order_item->setId($order_item_id);
+
+				$this->items_service->closeConnexion();
+				$this->orders_service->closeConnexion();
+
+				return $order_item->jsonSerialize();
+			}
+
 			$this->items_service->closeConnexion();
 
-			return $dalResult->jsonSerialize();
+			return $item->jsonSerialize();
 		}
 
 		public function Edit($request = null)
@@ -377,7 +422,9 @@
 
 			if (!$item)
 			{
-				return false;
+				$item = new Item();
+				$item->setDescription($request['description']);
+				return $item->jsonSerialize();
 			}
 
 			$order = $this->orders_service->getCurrentOrder();
@@ -434,17 +481,7 @@
 
 		public function addItemToCurrentOrder($request)
 		{
-			if (!isset($request['item_id']) || !is_numeric($request['item_id']))
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->getItemById(intval($request['item_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$item = $dalResult->getResult();
-			}
+			$item = $this->items_service->verifyItemRequest($request);
 
 			if (!$item)
 			{
