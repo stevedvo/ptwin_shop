@@ -158,15 +158,41 @@
 			}
 
 			$item_id = $dalResult->getResult();
+			$item->setId($item_id);
 
-			if (isset($request['add_to_order']) && $request['add_to_order'] !== false)
+			if (isset($request['add_to_order']) && $request['add_to_order'] != false)
 			{
-				// add logic here to add to currnet order
+				$order = $this->orders_service->getCurrentOrder();
+
+				if (!$order)
+				{
+					return false;
+				}
+
+				$order_item = new OrderItem();
+				$order_item->setOrderId($order->getId());
+				$order_item->setItemId($item->getId());
+				$order_item->setQuantity($item->getDefaultQty());
+				$order_item->setItem($item);
+
+				$order_item_id = $this->orders_service->addOrderItem($order_item);
+
+				if (!$order_item_id)
+				{
+					return false;
+				}
+
+				$order_item->setId($order_item_id);
+
+				$this->items_service->closeConnexion();
+				$this->orders_service->closeConnexion();
+
+				return $order_item->jsonSerialize();
 			}
 
 			$this->items_service->closeConnexion();
 
-			return $dalResult->jsonSerialize();
+			return $item->jsonSerialize();
 		}
 
 		public function Edit($request = null)
@@ -455,17 +481,7 @@
 
 		public function addItemToCurrentOrder($request)
 		{
-			if (!isset($request['item_id']) || !is_numeric($request['item_id']))
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->getItemById(intval($request['item_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$item = $dalResult->getResult();
-			}
+			$item = $this->items_service->verifyItemRequest($request);
 
 			if (!$item)
 			{
