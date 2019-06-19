@@ -111,6 +111,11 @@
 			return $this->dal->getOrderById($order_id);
 		}
 
+		public function getOrdersByItem($item)
+		{
+			return $this->dal->getOrdersByItem($item);
+		}
+
 		public function removeAllOrderItemsFromOrder($order)
 		{
 			return $this->dal->removeAllOrderItemsFromOrder($order);

@@ -2,6 +2,7 @@
 	$item = $response['item'];
 	$lists = $response['lists'];
 	$all_departments = $response['all_departments'];
+	var_dump($item->getOrders());
 ?>
 <main class="wrapper">
 	<div class="container">

@@ -10,8 +10,9 @@
 		private $primary_dept;
 		private $validation;
 		private $departments;
+		private $orders;
 
-		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $departments = null)
+		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $departments = null, $orders = null)
 		{
 			$this->id = $id;
 			$this->description = $description;
@@ -31,6 +32,7 @@
 				'ListId' => ['required' => true]
 			];
 			$this->departments = $departments;
+			$this->orders = $orders;
 		}
 
 		public function jsonSerialize()
@@ -141,5 +143,15 @@
 			}
 
 			$this->departments[$department->getId()] = $department;
+		}
+
+		public function getOrders()
+		{
+			return $this->orders;
+		}
+
+		public function setOrders($orders)
+		{
+			$this->orders = $orders;
 		}
 	}
