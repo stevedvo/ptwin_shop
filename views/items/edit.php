@@ -2,7 +2,6 @@
 	$item = $response['item'];
 	$lists = $response['lists'];
 	$all_departments = $response['all_departments'];
-	var_dump($item->getOrders());
 ?>
 <main class="wrapper">
 	<div class="container">
@@ -42,20 +41,6 @@
 							<div class="default-qty-container col-xs-12">
 								<label for="default_qty">Default Qty:</label>
 								<input id="default_qty" type="number" name="default-qty" min="1" value="<?= $item->getDefaultQty(); ?>" data-validation="<?= getValidationString($item, "DefaultQty"); ?>" />
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="total-qty-container col-xs-12">
-								<label for="total_qty">Total Qty:</label>
-								<span id="total_qty">// todo: sum up Order qtys</span>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="last-ordered-container col-xs-12">
-								<label for="last_ordered">Last Ordered:</label>
-								<span id="last_ordered">// todo: find last Order or = blank</span>
 							</div>
 						</div>
 
@@ -153,6 +138,94 @@
 					<h3>Remove</h3>
 					<div class="form">
 						<button class="btn btn-danger btn-sm js-remove-departments-from-item">Remove Selected Department(s) from Item</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-xs-12">
+					<h3>Orders</h3>
+					<div class="row results-container">
+<?php
+						if (!is_array($item->getOrders()) || sizeof($item->getOrders()) < 1)
+						{
+?>
+							<div class="col-xs-12">
+								<p class="no-results">No Orders could be found for this Item.</p>
+							</div>
+<?php
+						}
+						else
+						{
+?>
+							<div class="results-header col-xs-12">
+								<div class="row">
+									<div class="col-xs-4 results-header-item">
+										<p><strong>Order ID</strong></p>
+									</div>
+
+									<div class="col-xs-4 results-header-item">
+										<p><strong>Date Ordered</strong></p>
+									</div>
+
+									<div class="col-xs-4 results-header-item">
+										<p><strong>Quantity</strong></p>
+									</div>
+								</div>
+							</div>
+
+							<div class="results-body col-xs-12">
+<?php
+								foreach ($item->getOrders() as $order_id => $order)
+								{
+?>
+									<div class="row">
+										<div class="col-xs-4 order-result-item">
+											<p>#<?= $order->getId(); ?></p>
+										</div>
+
+										<div class="col-xs-4 order-result-item">
+											<p><?= $order->getDateOrdered()->format('d-m-Y'); ?></p>
+										</div>
+
+										<div class="col-xs-4 order-result-item">
+											<p><?= $order->getOrderItembyItemId($item->getId())->getQuantity(); ?></p>
+										</div>
+									</div>
+<?php
+								}
+?>
+							</div>
+<?php
+						}
+?>
+					</div>
+
+					<h4>Stats</h4>
+					<div class="row results-container">
+						<div class="col-xs-8">
+							<p>Total Ordered:</p>
+						</div>
+
+						<div class="col-xs-4">
+							<p><?= $item->getTotalOrdered(); ?></p>
+						</div>
+
+						<div class="col-xs-8">
+							<p>Last Order:</p>
+						</div>
+
+						<div class="col-xs-8">
+							<?php var_dump($item->getLastOrder()); ?>
+						</div>
+
+						<div class="col-xs-8">
+							<p>First Order:</p>
+						</div>
+
+						<div class="col-xs-8">
+							<?php var_dump($item->getFirstOrder()); ?>
+						</div>
 					</div>
 				</div>
 			</div>

@@ -154,4 +154,74 @@
 		{
 			$this->orders = $orders;
 		}
+
+		public function getTotalOrdered()
+		{
+			$total = 0;
+
+			if (is_array($this->orders))
+			{
+				foreach ($this->orders as $order_id => $order)
+				{
+					$order_item = $order->getOrderItembyItemId($this->id);
+
+					if ($order_item)
+					{
+						$total+= $order_item->getQuantity();
+					}
+				}
+			}
+
+			return $total;
+		}
+
+		public function getLastOrder()
+		{
+			$last_order = false;
+
+			if (is_array($this->orders))
+			{
+				foreach ($this->orders as $order_id => $order)
+				{
+					if (!$last_order)
+					{
+						$last_order = $order;
+					}
+					else
+					{
+						if ($order->getDateOrdered() > $last_order->getDateOrdered())
+						{
+							$last_order = $order;
+						}
+					}
+				}
+			}
+
+			return $last_order;
+		}
+
+		public function getFirstOrder()
+		{
+			$first_order = false;
+
+			if (is_array($this->orders))
+			{
+				foreach ($this->orders as $order_id => $order)
+				{
+					if (!$first_order)
+					{
+						$first_order = $order;
+					}
+					else
+					{
+						if ($order->getDateOrdered() < $first_order->getDateOrdered())
+						{
+							$first_order = $order;
+						}
+					}
+				}
+			}
+
+			return $first_order;
+		}
 	}
