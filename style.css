@@ -338,6 +338,23 @@ input.remove
 		width: calc(1 / 12 * 100%);
 	}
 
+	.results-container.item-order-history .order-id-container,
+	.results-container.item-order-history .order-quantity-container
+	{
+		width: calc(2 / 12 * 100%);
+	}
+
+	.results-container.item-order-history .order-date-container
+	{
+		width: calc(3 / 12 * 100%);
+	}
+
+	.results-container.item-order-statistics .label-container,
+	.results-container.item-order-statistics .statistic-container
+	{
+		width: calc(3 / 12 * 100%);
+	}
+
 	.department-items-container .row>div,
 	.list-items-container .row>div
 	{
