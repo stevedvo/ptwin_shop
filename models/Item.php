@@ -330,4 +330,36 @@
 
 			return $this->daily_consumption_recent;
 		}
+
+		public function getStockLevelPrediction($days_ahead = 0, $consumption = 'overall')
+		{
+			$stock_level = $daily_consumption = false;
+
+			switch ($consumption)
+			{
+				case 'overall':
+					$daily_consumption = $this->getDailyConsumptionOverall();
+					break;
+				case 'recent':
+					$daily_consumption = $this->getDailyConsumptionRecent();
+					break;
+				default:
+					# code...
+					break;
+			}
+
+			if (!$daily_consumption)
+			{
+				return false;
+			}
+
+			$total_ordered = $this->getTotalOrdered();
+			$first_order = $this->getFirstOrder();
+			$days_elapsed = $first_order->getDateOrdered()->diff(new DateTime())->format('%a');
+			$days = $days_elapsed + $days_ahead;
+			$total_consumption = $daily_consumption * $days;
+			$stock_level = $total_ordered - $total_consumption;
+
+			return $stock_level;
+		}
 	}
