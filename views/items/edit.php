@@ -204,8 +204,8 @@
 					</div>
 
 					<h4>Stats</h4>
-					<div class="row">
-						<div class="results-container item-order-statistics">
+					<div class="results-container item-order-statistics">
+						<div class="row">
 							<div class="col-xs-8 label-container">
 								<p>Total Ordered:</p>
 							</div>
@@ -213,21 +213,25 @@
 							<div class="col-xs-4 statistic-container">
 								<p><?= $item->getTotalOrdered(); ?></p>
 							</div>
+						</div>
 
+						<div class="row">
 							<div class="col-xs-8 label-container">
 								<p>Consumption (Overall):</p>
 							</div>
 
 							<div class="col-xs-4 statistic-container">
-								<?= $item->getDailyConsumptionOverall() ? round($item->getDailyConsumptionOverall(), 2) : 'N/A'; ?>
+								<?= $item->getDailyConsumptionOverall() ? round($item->getDailyConsumptionOverall() * 7, 2).'/wk' : 'N/A'; ?>
 							</div>
+						</div>
 
+						<div class="row">
 							<div class="col-xs-8 label-container">
 								<p>Consumption (Recent):</p>
 							</div>
 
 							<div class="col-xs-4 statistic-container">
-								<?= $item->getDailyConsumptionRecent() ? round($item->getDailyConsumptionRecent(), 2) : 'N/A'; ?>
+								<?= $item->getDailyConsumptionRecent() ? round($item->getDailyConsumptionRecent() * 7, 2).'/wk' : 'N/A'; ?>
 							</div>
 						</div>
 					</div>
