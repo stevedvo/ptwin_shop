@@ -95,4 +95,25 @@
 
 			return $items_in_order;
 		}
+
+		public function getOrderItembyItemId($item_id)
+		{
+			$order_item_to_return = false;
+
+			if (is_array($this->order_items))
+			{
+				foreach ($this->order_items as $order_item_id => $order_item)
+				{
+					if (!$order_item_to_return)
+					{
+						if ($order_item->getItemId() == $item_id)
+						{
+							$order_item_to_return = $order_item;
+						}
+					}
+				}
+			}
+
+			return $order_item_to_return;
+		}
 	}

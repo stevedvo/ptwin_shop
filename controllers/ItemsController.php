@@ -224,11 +224,19 @@
 				{
 					$departments = $dalResult->getResult();
 				}
+
+				$dalResult = $this->orders_service->getOrdersByItem($item);
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$item->setOrders($dalResult->getResult());
+				}
 			}
 
 			$this->items_service->closeConnexion();
 			$this->lists_service->closeConnexion();
 			$this->departments_service->closeConnexion();
+			$this->orders_service->closeConnexion();
 
 			$pageData =
 			[

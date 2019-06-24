@@ -10,8 +10,11 @@
 		private $primary_dept;
 		private $validation;
 		private $departments;
+		private $orders;
+		private $daily_consumption_overall;
+		private $daily_consumption_recent;
 
-		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $departments = null)
+		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $departments = null, $orders = null, $daily_consumption_overall = null, $daily_consumption_recent = null)
 		{
 			$this->id = $id;
 			$this->description = $description;
@@ -31,6 +34,9 @@
 				'ListId' => ['required' => true]
 			];
 			$this->departments = $departments;
+			$this->orders = $orders;
+			$this->daily_consumption_overall = $daily_consumption_overall;
+			$this->daily_consumption_recent = $daily_consumption_recent;
 		}
 
 		public function jsonSerialize()
@@ -141,5 +147,187 @@
 			}
 
 			$this->departments[$department->getId()] = $department;
+		}
+
+		public function getOrders()
+		{
+			return $this->orders;
+		}
+
+		public function setOrders($orders)
+		{
+			$this->orders = $orders;
+		}
+
+		public function getTotalOrdered()
+		{
+			$total = 0;
+
+			if (is_array($this->orders))
+			{
+				foreach ($this->orders as $order_id => $order)
+				{
+					$order_item = $order->getOrderItembyItemId($this->id);
+
+					if ($order_item)
+					{
+						$total+= $order_item->getQuantity();
+					}
+				}
+			}
+
+			return $total;
+		}
+
+		public function getFirstOrder()
+		{
+			$first_order = false;
+
+			if (is_array($this->orders))
+			{
+				foreach ($this->orders as $order_id => $order)
+				{
+					if (!$first_order)
+					{
+						$first_order = $order;
+					}
+					else
+					{
+						if ($order->getDateOrdered() < $first_order->getDateOrdered())
+						{
+							$first_order = $order;
+						}
+					}
+				}
+			}
+
+			return $first_order;
+		}
+
+		public function getLastOrder()
+		{
+			$last_order = false;
+
+			if (is_array($this->orders))
+			{
+				foreach ($this->orders as $order_id => $order)
+				{
+					if (!$last_order)
+					{
+						$last_order = $order;
+					}
+					else
+					{
+						if ($order->getDateOrdered() > $last_order->getDateOrdered())
+						{
+							$last_order = $order;
+						}
+					}
+				}
+			}
+
+			return $last_order;
+		}
+
+		public function getPenultimateOrder()
+		{
+			$penultimate_order = $last_order = false;
+
+			if (is_array($this->orders))
+			{
+				foreach ($this->orders as $order_id => $order)
+				{
+					if (!$last_order)
+					{
+						$last_order = $order;
+					}
+					else
+					{
+						if ($order->getDateOrdered() > $last_order->getDateOrdered())
+						{
+							$penultimate_order = $last_order;
+							$last_order = $order;
+						}
+						else
+						{
+							if (!$penultimate_order)
+							{
+								$penultimate_order = $order;
+							}
+							else
+							{
+								if ($order->getDateOrdered() > $penultimate_order->getDateOrdered())
+								{
+									$penultimate_order = $order;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return $penultimate_order;
+		}
+
+		public function calculateDailyConsumptionOverall()
+		{
+			$consumption = $first_order = $last_order = false;
+
+			$first_order = $this->getFirstOrder();
+			$last_order = $this->getLastOrder();
+
+			if ($first_order && $last_order)
+			{
+				$days = $first_order->getDateOrdered()->diff($last_order->getDateOrdered())->format('%a');
+
+				if ($days != '0')
+				{
+					$total = $this->getTotalOrdered() - $last_order->getOrderItembyItemId($this->id)->getQuantity();
+					$consumption = $total / $days;
+				}
+			}
+
+			$this->daily_consumption_overall = $consumption;
+		}
+
+		public function getDailyConsumptionOverall()
+		{
+			if (!$this->daily_consumption_overall)
+			{
+				$this->calculateDailyConsumptionOverall();
+			}
+
+			return $this->daily_consumption_overall;
+		}
+
+		public function calculateDailyConsumptionRecent()
+		{
+			$consumption = $penultimate_order = $last_order = false;
+
+			$penultimate_order = $this->getPenultimateOrder();
+			$last_order = $this->getLastOrder();
+
+			if ($penultimate_order && $last_order)
+			{
+				$days = $penultimate_order->getDateOrdered()->diff($last_order->getDateOrdered())->format('%a');
+
+				if ($days != '0')
+				{
+					$total = $penultimate_order->getOrderItembyItemId($this->id)->getQuantity();
+					$consumption = $total / $days;
+				}
+			}
+
+			$this->daily_consumption_recent = $consumption;
+		}
+
+		public function getDailyConsumptionRecent()
+		{
+			if (!$this->daily_consumption_recent)
+			{
+				$this->calculateDailyConsumptionRecent();
+			}
+
+			return $this->daily_consumption_recent;
 		}
 	}

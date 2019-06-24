@@ -45,20 +45,6 @@
 						</div>
 
 						<div class="row">
-							<div class="total-qty-container col-xs-12">
-								<label for="total_qty">Total Qty:</label>
-								<span id="total_qty">// todo: sum up Order qtys</span>
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="last-ordered-container col-xs-12">
-								<label for="last_ordered">Last Ordered:</label>
-								<span id="last_ordered">// todo: find last Order or = blank</span>
-							</div>
-						</div>
-
-						<div class="row">
 							<div class="link-container col-xs-12">
 								<label for="link">Link:</label>
 								<input id="link" type="text" name="link" value="<?= $item->getLink(); ?>" data-validation="<?= getValidationString($item, "Link"); ?>" />
@@ -152,6 +138,102 @@
 					<h3>Remove</h3>
 					<div class="form">
 						<button class="btn btn-danger btn-sm js-remove-departments-from-item">Remove Selected Department(s) from Item</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-xs-12">
+					<h3>Orders</h3>
+					<div class="row">
+						<div class="results-container item-order-history">
+	<?php
+							if (!is_array($item->getOrders()) || sizeof($item->getOrders()) < 1)
+							{
+	?>
+								<div class="col-xs-12">
+									<p class="no-results">No Orders could be found for this Item.</p>
+								</div>
+	<?php
+							}
+							else
+							{
+	?>
+								<div class="results-header col-xs-12">
+									<div class="row">
+										<div class="col-xs-4 results-header-item order-id-container">
+											<p><strong>Order ID</strong></p>
+										</div>
+
+										<div class="col-xs-5 results-header-item order-date-container">
+											<p><strong>Date Ordered</strong></p>
+										</div>
+
+										<div class="col-xs-3 results-header-item order-quantity-container">
+											<p><strong>Quantity</strong></p>
+										</div>
+									</div>
+								</div>
+
+								<div class="results-body col-xs-12">
+	<?php
+									foreach ($item->getOrders() as $order_id => $order)
+									{
+	?>
+										<div class="row">
+											<div class="col-xs-4 order-result-item order-id-container">
+												<p>#<?= $order->getId(); ?></p>
+											</div>
+
+											<div class="col-xs-5 order-result-item order-date-container">
+												<p><?= $order->getDateOrdered()->format('d-m-Y'); ?></p>
+											</div>
+
+											<div class="col-xs-3 order-result-item order-quantity-container">
+												<p><?= $order->getOrderItembyItemId($item->getId())->getQuantity(); ?></p>
+											</div>
+										</div>
+	<?php
+									}
+	?>
+								</div>
+	<?php
+							}
+	?>
+						</div>
+					</div>
+
+					<h4>Stats</h4>
+					<div class="results-container item-order-statistics">
+						<div class="row">
+							<div class="col-xs-8 label-container">
+								<p>Total Ordered:</p>
+							</div>
+
+							<div class="col-xs-4 statistic-container">
+								<p><?= $item->getTotalOrdered(); ?></p>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-xs-8 label-container">
+								<p>Consumption (Overall):</p>
+							</div>
+
+							<div class="col-xs-4 statistic-container">
+								<?= $item->getDailyConsumptionOverall() ? round($item->getDailyConsumptionOverall() * 7, 2).'/wk' : 'N/A'; ?>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-xs-8 label-container">
+								<p>Consumption (Recent):</p>
+							</div>
+
+							<div class="col-xs-4 statistic-container">
+								<?= $item->getDailyConsumptionRecent() ? round($item->getDailyConsumptionRecent() * 7, 2).'/wk' : 'N/A'; ?>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

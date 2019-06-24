@@ -149,6 +149,48 @@
 			return $result;
 		}
 
+		public function getOrdersByItem($item)
+		{
+			$result = new DalResult();
+			$orders = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT oi.id AS order_item_id, oi.order_id, oi.item_id, oi.quantity, o.date_ordered FROM order_items AS oi LEFT JOIN orders AS o ON (o.id = oi.order_id) WHERE item_id = :item_id AND o.date_ordered IS NOT NULL ORDER BY o.date_ordered DESC");
+				$query->execute([':item_id' => $item->getId()]);
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					$orders = [];
+
+					foreach ($rows as $row)
+					{
+						if (!array_key_exists($row['order_id'], $orders))
+						{
+							$order = createOrder($row);
+							$orders[$order->getId()] = $order;
+						}
+
+						$order_item = createOrderItem($row);
+
+						if (entityIsValid($order_item))
+						{
+							$orders[$row['order_id']]->addOrderItem($order_item);
+						}
+					}
+				}
+
+				$result->setResult($orders);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
 		public function updateOrder($order)
 		{
 			$result = new DalResult();
