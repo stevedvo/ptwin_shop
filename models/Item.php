@@ -159,6 +159,21 @@
 			$this->orders = $orders;
 		}
 
+		public function hasOrders()
+		{
+			if (!is_array($this->orders))
+			{
+				return false;
+			}
+
+			if (count($this->orders) == 0)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
 		public function getTotalOrdered()
 		{
 			$total = 0;
@@ -357,7 +372,7 @@
 			$first_order = $this->getFirstOrder();
 			$days_elapsed = $first_order->getDateOrdered()->diff(new DateTime())->format('%a');
 			$days = $days_elapsed + $days_ahead;
-			$total_consumption = $daily_consumption * $days;
+			$total_consumption = round($daily_consumption * $days);
 			$stock_level = $total_ordered - $total_consumption;
 
 			return $stock_level;

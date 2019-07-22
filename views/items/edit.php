@@ -216,22 +216,54 @@
 						</div>
 
 						<div class="row">
-							<div class="col-xs-8 label-container">
-								<p>Consumption (Overall):</p>
+							<div class="col-xs-4 col-xs-offset-4">
+								<p>Overall</p>
 							</div>
 
-							<div class="col-xs-4 statistic-container">
-								<?= $item->getDailyConsumptionOverall() ? round($item->getDailyConsumptionOverall() * 7, 2).'/wk' : 'N/A'; ?>
+							<div class="col-xs-4">
+								<p>Recent</p>
 							</div>
 						</div>
 
 						<div class="row">
-							<div class="col-xs-8 label-container">
-								<p>Consumption (Recent):</p>
+							<div class="col-xs-4">
+								<p>Use/wk</p>
 							</div>
 
-							<div class="col-xs-4 statistic-container">
-								<?= $item->getDailyConsumptionRecent() ? round($item->getDailyConsumptionRecent() * 7, 2).'/wk' : 'N/A'; ?>
+							<div class="col-xs-4">
+								<p><?= $item->hasOrders() ? round($item->getDailyConsumptionOverall() * 7, 2) : 'N/A'; ?></p>
+							</div>
+
+							<div class="col-xs-4">
+								<p><?= $item->hasOrders() ? round($item->getDailyConsumptionRecent() * 7, 2) : 'N/A'; ?></p>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-xs-4">
+								<p>Stock Now</p>
+							</div>
+
+							<div class="col-xs-4">
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(0, "overall") : 'N/A'; ?></p>
+							</div>
+
+							<div class="col-xs-4">
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(0, "recent") : 'N/A'; ?></p>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-xs-4">
+								<p>Stock +7d</p>
+							</div>
+
+							<div class="col-xs-4">
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(7, "overall") : 'N/A'; ?></p>
+							</div>
+
+							<div class="col-xs-4">
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(7, "recent") : 'N/A'; ?></p>
 							</div>
 						</div>
 					</div>
