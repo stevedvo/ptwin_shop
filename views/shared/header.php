@@ -31,6 +31,7 @@
 						<a class="btn btn-primary" href="<?= SITEURL; ?>/items/?view-by=list">View By List</a>
 						<a class="btn btn-primary" href="<?= SITEURL; ?>/items/?view-by=department">View By Dept</a>
 						<a class="btn btn-primary" href="<?= SITEURL; ?>/items/?view-by=primary_dept">Primary Depts</a>
+						<a class="btn btn-primary" href="<?= SITEURL; ?>/items/?view-by=suggestions">Suggestions</a>
 						<a class="btn btn-primary" href="<?= SITEURL; ?>/lists/">Manage Lists</a>
 						<a class="btn btn-primary" href="<?= SITEURL; ?>/departments/">Manage Depts</a>
 						<a class="btn btn-primary" href="<?= SITEURL; ?>/orders/">Manage Orders</a>

@@ -20,17 +20,23 @@
 
 			if (isset($_GET['view-by']))
 			{
-				if ($_GET['view-by'] == "department")
+				switch ($_GET['view-by'])
 				{
-					$view_by = "department";
-				}
-				elseif ($_GET['view-by'] == "list")
-				{
-					$view_by = "list";
-				}
-				elseif ($_GET['view-by'] == "primary_dept")
-				{
-					$view_by = "primary department";
+					case 'department':
+						$view_by = "department";
+						break;
+
+					case 'list':
+						$view_by = "list";
+						break;
+
+					case 'primary_dept':
+						$view_by = "primary department";
+						break;
+
+					case 'suggestions':
+						$view_by = "suggestions";
+						break;
 				}
 			}
 
@@ -49,21 +55,38 @@
 					'template'   => 'views/items/index.php',
 					'page_data'  => ['all_items' => $all_items]
 				];
+			}
+			elseif ($view_by == "suggestions")
+			{
+				$dalResult = $this->items_service->getAllItems();
 
+				if (!is_null($dalResult->getResult()))
+				{
+					$suggested_items = $dalResult->getResult();
+				}
+
+				$pageData =
+				[
+					'page_title' => 'Suggested Items',
+					'template'   => 'views/items/index.php',
+					'page_data'  => ['all_items' => $suggested_items]
+				];
 			}
 			else
 			{
-				if ($view_by == "department")
+				switch ($view_by)
 				{
-					$dalResult = $this->departments_service->getAllDepartmentsWithItems();
-				}
-				elseif ($view_by == "list")
-				{
-					$dalResult = $this->lists_service->getAllListsWithItems();
-				}
-				else
-				{
-					$dalResult = $this->departments_service->getPrimaryDepartments();
+					case 'department':
+						$dalResult = $this->departments_service->getAllDepartmentsWithItems();
+						break;
+
+					case 'list':
+						$dalResult = $this->lists_service->getAllListsWithItems();
+						break;
+
+					case 'primary department':
+						$dalResult = $this->departments_service->getPrimaryDepartments();
+						break;
 				}
 
 				if (!is_null($dalResult->getResult()))
