@@ -58,18 +58,13 @@
 			}
 			elseif ($view_by == "suggestions")
 			{
-				$dalResult = $this->items_service->getAllItems();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$suggested_items = $dalResult->getResult();
-				}
+				$suggested_items = $this->items_service->getAllSuggestedItems();
 
 				$pageData =
 				[
 					'page_title' => 'Suggested Items',
-					'template'   => 'views/items/index.php',
-					'page_data'  => ['all_items' => $suggested_items]
+					'template'   => 'views/items/suggestions.php',
+					'page_data'  => ['suggested_items' => $suggested_items]
 				];
 			}
 			else

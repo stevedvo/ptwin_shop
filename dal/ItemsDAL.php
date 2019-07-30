@@ -183,6 +183,50 @@
 			return $result;
 		}
 
+		public function getAllSuggestedItems()
+		{
+			$result = new DalResult();
+			$items = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT oi.id AS order_item_id, oi.order_id, oi.item_id, i.description, oi.quantity, o.date_ordered FROM order_items AS oi LEFT JOIN orders AS o ON (o.id = oi.order_id) LEFT JOIN items AS i ON (i.item_id = oi.item_id) WHERE o.date_ordered IS NOT NULL ORDER BY i.description, o.date_ordered DESC");
+				$query->execute();
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					$items = [];
+
+					foreach ($rows as $row)
+					{
+						if (!array_key_exists($row['item_id'], $items))
+						{
+							$item = createItem($row);
+							$items[$item->getId()] = $item;
+						}
+
+						if (!$items[$row['item_id']]->hasOrder($row['order_id']))
+						{
+							$order = createOrder($row);
+							$items[$row['item_id']]->addOrder($order);
+						}
+
+						$order_item = createOrderItem($row);
+						$items[$row['item_id']]->getOrders()[$row['order_id']]->addOrderItem($order_item);
+					}
+				}
+
+				$result->setResult($items);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
 		public function getItemsByDepartmentId($dept_id)
 		{
 			$result = new DalResult();

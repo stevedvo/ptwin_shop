@@ -159,6 +159,33 @@
 			$this->orders = $orders;
 		}
 
+		public function addOrder($order)
+		{
+			if (!is_array($this->orders))
+			{
+				$this->orders = [];
+			}
+
+			$this->orders[$order->getId()] = $order;
+		}
+
+		public function hasOrder($order_id)
+		{
+			if (!$this->hasOrders())
+			{
+				return false;
+			}
+
+			if (!array_key_exists($order_id, $this->orders))
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+
 		public function hasOrders()
 		{
 			if (!is_array($this->orders))
