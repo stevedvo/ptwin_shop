@@ -464,6 +464,63 @@ function manageItems()
 			});
 		}
 	});
+
+	$(document).on("click", ".js-mute-suggestion", function()
+	{
+		var form = $(this).closest(".form");
+		var itemID = parseInt(form.data("item_id"));
+		var muteBasis = $(this).data("mute_basis");
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Items",
+				action     : "updateItemMuteSetting",
+				request    :
+				{
+					'item_id'    : itemID,
+					'mute_basis' : muteBasis
+				}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				if (data.exception != null)
+				{
+					toastr.error("Could not update Item: PDOException");
+					console.log(data.exception);
+				}
+				else
+				{
+					if (!data.result)
+					{
+						toastr.error("Could not update Item: Unspecified error");
+						console.log(data);
+					}
+					else
+					{
+						toastr.success("Item suggestion successfully muted");
+
+						form.fadeOut();
+					}
+				}
+			}
+			else
+			{
+				toastr.error("Could not remove Item from Order");
+				console.log(data);
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
 }
 
 function manageLists()

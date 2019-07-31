@@ -58,11 +58,11 @@
 									</div>
 
 									<div class="col-xs-4 button-container mute-button">
-										<button class="btn btn-sm btn-primary pull-right">Mute Temp</button>
+										<button class="btn btn-sm btn-primary pull-right js-mute-suggestion" data-mute_basis="temp">Mute Temp</button>
 									</div>
 
 									<div class="col-xs-4 button-container mute-button">
-										<button class="btn btn-sm btn-primary pull-right">Mute Perm</button>
+										<button class="btn btn-sm btn-primary pull-right js-mute-suggestion" data-mute_basis="perm">Mute Perm</button>
 									</div>
 								</div>
 <?php

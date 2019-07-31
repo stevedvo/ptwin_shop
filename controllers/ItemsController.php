@@ -630,4 +630,9 @@
 
 			return true;
 		}
+
+		public function updateItemMuteSetting($request)
+		{
+			var_dump($request);
+		}
 	}
