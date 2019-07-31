@@ -147,18 +147,18 @@
 					<h3>Orders</h3>
 					<div class="row">
 						<div class="results-container item-order-history">
-	<?php
+<?php
 							if (!is_array($item->getOrders()) || sizeof($item->getOrders()) < 1)
 							{
-	?>
+?>
 								<div class="col-xs-12">
 									<p class="no-results">No Orders could be found for this Item.</p>
 								</div>
-	<?php
+<?php
 							}
 							else
 							{
-	?>
+?>
 								<div class="results-header col-xs-12">
 									<div class="row">
 										<div class="col-xs-4 results-header-item order-id-container">
@@ -176,10 +176,10 @@
 								</div>
 
 								<div class="results-body col-xs-12">
-	<?php
+<?php
 									foreach ($item->getOrders() as $order_id => $order)
 									{
-	?>
+?>
 										<div class="row">
 											<div class="col-xs-4 order-result-item order-id-container">
 												<p>#<?= $order->getId(); ?></p>
@@ -193,13 +193,13 @@
 												<p><?= $order->getOrderItembyItemId($item->getId())->getQuantity(); ?></p>
 											</div>
 										</div>
-	<?php
+<?php
 									}
-	?>
+?>
 								</div>
-	<?php
+<?php
 							}
-	?>
+?>
 						</div>
 					</div>
 
