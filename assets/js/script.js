@@ -131,6 +131,8 @@ function manageItems()
 			var defaultQty = parseInt(form.find("[name='default-qty']").val());
 			var link = form.find("[name='link']").val();
 			var listID = parseInt(form.find("[name='list-id'] option:selected").val());
+			var muteTemp = form.find("[name='mute-temp']").prop("checked") == true ? 1 : 0;
+			var mutePerm = form.find("[name='mute-perm']").prop("checked") == true ? 1 : 0;
 
 			$.ajax(
 			{
@@ -148,7 +150,9 @@ function manageItems()
 						'comments'    : comments,
 						'default_qty' : defaultQty,
 						'link'        : link,
-						'list_id'     : listID
+						'list_id'     : listID,
+						'mute_temp'   : muteTemp,
+						'mute_perm'   : mutePerm
 					}
 				}
 			}).done(function(data)

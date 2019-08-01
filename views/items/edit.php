@@ -70,6 +70,20 @@
 								</select>
 							</div>
 						</div>
+
+						<div class="row">
+							<div class="mute-temp-container col-xs-12">
+								<label for="mute-temp">Mute Temp:</label>
+								<input id="mute-temp" type="checkbox" name="mute-temp" value="1" <?= $item->getMuteTemp() ? 'checked' : ''; ?> data-validation="<?= getValidationString($item, "MuteTemp"); ?>" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="mute-perm-container col-xs-12">
+								<label for="mute-perm">Mute Perm:</label>
+								<input id="mute-perm" type="checkbox" name="mute-perm" value="1" <?= $item->getMutePerm() ? 'checked' : ''; ?> data-validation="<?= getValidationString($item, "MutePerm"); ?>" />
+							</div>
+						</div>
 						<input type="submit" class="btn btn-primary js-edit-item" value="Edit Item" />
 					</div>
 				</div>

@@ -299,6 +299,8 @@
 			$item_update->setDefaultQty($item->getDefaultQty());
 			$item_update->setListId($item->getListId());
 			$item_update->setLink($item->getLink());
+			$item_update->setMuteTemp($item->getMuteTemp());
+			$item_update->setMutePerm($item->getMutePerm());
 
 			$dalResult = $this->items_service->updateItem($item_update);
 			$this->items_service->closeConnexion();
@@ -633,6 +635,36 @@
 
 		public function updateItemMuteSetting($request)
 		{
-			var_dump($request);
+			if (!isset($request['item_id']) || !isset($request['mute_basis']))
+			{
+				return false;
+			}
+
+			if (empty($request['mute_basis']) || !($request['mute_basis'] == "temp" || $request['mute_basis'] == "perm"))
+			{
+				return false;
+			}
+
+			$item = $this->items_service->verifyItemRequest($request);
+
+			if (!$item)
+			{
+				return false;
+			}
+
+			switch ($request['mute_basis'])
+			{
+				case 'temp':
+					$item->setMuteTemp(true);
+					break;
+				case 'perm':
+					$item->setMutePerm(true);
+					break;
+			}
+
+			$dalResult = $this->items_service->updateItem($item);
+			$this->items_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
 		}
 	}

@@ -8,13 +8,15 @@
 		private $list_id;
 		private $link;
 		private $primary_dept;
+		private $mute_temp;
+		private $mute_perm;
 		private $validation;
 		private $departments;
 		private $orders;
 		private $daily_consumption_overall;
 		private $daily_consumption_recent;
 
-		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $departments = null, $orders = null, $daily_consumption_overall = null, $daily_consumption_recent = null)
+		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $mute_temp = null, $mute_perm = null, $departments = null, $orders = null, $daily_consumption_overall = null, $daily_consumption_recent = null)
 		{
 			$this->id = $id;
 			$this->description = $description;
@@ -23,6 +25,8 @@
 			$this->list_id = $list_id;
 			$this->link = $link;
 			$this->primary_dept = $primary_dept;
+			$this->mute_temp = $mute_temp;
+			$this->mute_perm = $mute_perm;
 			$this->validation =
 			[
 				'Description' => ['required' => true],
@@ -112,6 +116,26 @@
 		public function setPrimaryDept($primary_dept)
 		{
 			$this->primary_dept = $primary_dept;
+		}
+
+		public function getMuteTemp()
+		{
+			return $this->mute_temp;
+		}
+
+		public function setMuteTemp($mute_temp)
+		{
+			$this->mute_temp = $mute_temp;
+		}
+
+		public function getMutePerm()
+		{
+			return $this->mute_perm;
+		}
+
+		public function setMutePerm($mute_perm)
+		{
+			$this->mute_perm = $mute_perm;
 		}
 
 		public function getValidation($property = null)
