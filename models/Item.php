@@ -409,9 +409,6 @@
 				case 'recent':
 					$daily_consumption = $this->getDailyConsumptionRecent();
 					break;
-				default:
-					# code...
-					break;
 			}
 
 			if (!$daily_consumption)

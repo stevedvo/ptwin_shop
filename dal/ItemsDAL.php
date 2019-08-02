@@ -402,4 +402,21 @@
 
 			return $result;
 		}
+
+		public function resetMuteTemps()
+		{
+			$result = new DalResult();
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE items SET mute_temp = :mute_temp");
+				$result->setResult($query->execute(['mute_temp' => 0]));
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
 	}

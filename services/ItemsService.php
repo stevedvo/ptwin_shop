@@ -126,4 +126,9 @@
 		{
 			return $this->dal->getItemDepartmentLookupArray();
 		}
+
+		public function resetMuteTemps()
+		{
+			return $this->dal->resetMuteTemps();
+		}
 	}
