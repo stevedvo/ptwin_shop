@@ -52,22 +52,22 @@ main
 	display: none;
 }
 
-.results-container .collection-container .collection-items-container .result-item .button-container button.js-add-item-to-current-order
+.results-container .result-item .button-container button.js-add-item-to-current-order
 {
 	display: block;
 }
 
-.results-container .collection-container .collection-items-container .result-item .button-container button.js-remove-item-from-current-order
+.results-container .result-item .button-container button.js-remove-item-from-current-order
 {
 	display: none;
 }
 
-.results-container .collection-container .collection-items-container .result-item.selected .button-container button.js-add-item-to-current-order
+.results-container .result-item.selected .button-container button.js-add-item-to-current-order
 {
 	display: none;
 }
 
-.results-container .collection-container .collection-items-container .result-item.selected .button-container button.js-remove-item-from-current-order
+.results-container .result-item.selected .button-container button.js-remove-item-from-current-order
 {
 	display: block;
 }
@@ -336,6 +336,26 @@ input.remove
 	.results-container.view-previous-order .collection-container .collection-items-container .result-item .quantity-container
 	{
 		width: calc(1 / 12 * 100%);
+	}
+
+	.results-container.suggestions .description-container
+	{
+		width: calc(3 / 12 * 100%);
+	}
+
+	.results-container.suggestions .stock-level-container
+	{
+		width: calc(1.5 / 12 * 100%);
+	}
+
+	.results-container.suggestions .button-container
+	{
+		width: calc(2 / 12 * 100%);
+	}
+
+	.results-container.suggestions .button-container.mute-button
+	{
+		width: calc(2 / 12 * 100%);
 	}
 
 	.results-container.item-order-history .order-id-container,

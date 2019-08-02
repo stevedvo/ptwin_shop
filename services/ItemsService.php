@@ -47,6 +47,34 @@
 			return $this->dal->getAllItems();
 		}
 
+		public function getAllSuggestedItems()
+		{
+			$suggested_items = [];
+
+			$dalResult = $this->dal->getAllSuggestedItems();
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$all_items = $dalResult->getResult();
+
+				if (is_array($all_items))
+				{
+					foreach ($all_items as $item_id => $item)
+					{
+						$est_overall = $item->getStockLevelPrediction(7, 'overall');
+						$est_recent = $item->getStockLevelPrediction(7, 'recent');
+
+						if (($est_overall !== false && $est_overall < 1) || ($est_recent !== false && $est_recent < 1))
+						{
+							$suggested_items[$item->getId()] = $item;
+						}
+					}
+				}
+			}
+
+			return $suggested_items;
+		}
+
 		public function getItemById($item_id)
 		{
 			return $this->dal->getItemById($item_id);
@@ -97,5 +125,10 @@
 		public function getItemDepartmentLookupArray()
 		{
 			return $this->dal->getItemDepartmentLookupArray();
+		}
+
+		public function resetMuteTemps()
+		{
+			return $this->dal->resetMuteTemps();
 		}
 	}

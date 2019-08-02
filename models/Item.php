@@ -8,13 +8,15 @@
 		private $list_id;
 		private $link;
 		private $primary_dept;
+		private $mute_temp;
+		private $mute_perm;
 		private $validation;
 		private $departments;
 		private $orders;
 		private $daily_consumption_overall;
 		private $daily_consumption_recent;
 
-		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $departments = null, $orders = null, $daily_consumption_overall = null, $daily_consumption_recent = null)
+		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $mute_temp = null, $mute_perm = null, $departments = null, $orders = null, $daily_consumption_overall = null, $daily_consumption_recent = null)
 		{
 			$this->id = $id;
 			$this->description = $description;
@@ -23,6 +25,8 @@
 			$this->list_id = $list_id;
 			$this->link = $link;
 			$this->primary_dept = $primary_dept;
+			$this->mute_temp = $mute_temp;
+			$this->mute_perm = $mute_perm;
 			$this->validation =
 			[
 				'Description' => ['required' => true],
@@ -114,6 +118,26 @@
 			$this->primary_dept = $primary_dept;
 		}
 
+		public function getMuteTemp()
+		{
+			return $this->mute_temp;
+		}
+
+		public function setMuteTemp($mute_temp)
+		{
+			$this->mute_temp = $mute_temp;
+		}
+
+		public function getMutePerm()
+		{
+			return $this->mute_perm;
+		}
+
+		public function setMutePerm($mute_perm)
+		{
+			$this->mute_perm = $mute_perm;
+		}
+
 		public function getValidation($property = null)
 		{
 			if (is_null($property))
@@ -157,6 +181,48 @@
 		public function setOrders($orders)
 		{
 			$this->orders = $orders;
+		}
+
+		public function addOrder($order)
+		{
+			if (!is_array($this->orders))
+			{
+				$this->orders = [];
+			}
+
+			$this->orders[$order->getId()] = $order;
+		}
+
+		public function hasOrder($order_id)
+		{
+			if (!$this->hasOrders())
+			{
+				return false;
+			}
+
+			if (!array_key_exists($order_id, $this->orders))
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+
+		public function hasOrders()
+		{
+			if (!is_array($this->orders))
+			{
+				return false;
+			}
+
+			if (count($this->orders) == 0)
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		public function getTotalOrdered()
@@ -329,5 +395,34 @@
 			}
 
 			return $this->daily_consumption_recent;
+		}
+
+		public function getStockLevelPrediction($days_ahead = 0, $consumption = 'overall')
+		{
+			$stock_level = $daily_consumption = false;
+
+			switch ($consumption)
+			{
+				case 'overall':
+					$daily_consumption = $this->getDailyConsumptionOverall();
+					break;
+				case 'recent':
+					$daily_consumption = $this->getDailyConsumptionRecent();
+					break;
+			}
+
+			if (!$daily_consumption)
+			{
+				return false;
+			}
+
+			$total_ordered = $this->getTotalOrdered();
+			$first_order = $this->getFirstOrder();
+			$days_elapsed = $first_order->getDateOrdered()->diff(new DateTime())->format('%a');
+			$days = $days_elapsed + $days_ahead;
+			$total_consumption = round($daily_consumption * $days);
+			$stock_level = $total_ordered - $total_consumption;
+
+			return $stock_level;
 		}
 	}

@@ -1,0 +1,1 @@
+ALTER TABLE `items` ADD `mute_temp` BOOLEAN NOT NULL DEFAULT FALSE AFTER `primary_dept`, ADD `mute_perm` BOOLEAN NOT NULL DEFAULT FALSE AFTER `mute_temp`;

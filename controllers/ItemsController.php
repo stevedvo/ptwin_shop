@@ -20,17 +20,23 @@
 
 			if (isset($_GET['view-by']))
 			{
-				if ($_GET['view-by'] == "department")
+				switch ($_GET['view-by'])
 				{
-					$view_by = "department";
-				}
-				elseif ($_GET['view-by'] == "list")
-				{
-					$view_by = "list";
-				}
-				elseif ($_GET['view-by'] == "primary_dept")
-				{
-					$view_by = "primary department";
+					case 'department':
+						$view_by = "department";
+						break;
+
+					case 'list':
+						$view_by = "list";
+						break;
+
+					case 'primary_dept':
+						$view_by = "primary department";
+						break;
+
+					case 'suggestions':
+						$view_by = "suggestions";
+						break;
 				}
 			}
 
@@ -49,21 +55,33 @@
 					'template'   => 'views/items/index.php',
 					'page_data'  => ['all_items' => $all_items]
 				];
+			}
+			elseif ($view_by == "suggestions")
+			{
+				$suggested_items = $this->items_service->getAllSuggestedItems();
 
+				$pageData =
+				[
+					'page_title' => 'Suggested Items',
+					'template'   => 'views/items/suggestions.php',
+					'page_data'  => ['suggested_items' => $suggested_items]
+				];
 			}
 			else
 			{
-				if ($view_by == "department")
+				switch ($view_by)
 				{
-					$dalResult = $this->departments_service->getAllDepartmentsWithItems();
-				}
-				elseif ($view_by == "list")
-				{
-					$dalResult = $this->lists_service->getAllListsWithItems();
-				}
-				else
-				{
-					$dalResult = $this->departments_service->getPrimaryDepartments();
+					case 'department':
+						$dalResult = $this->departments_service->getAllDepartmentsWithItems();
+						break;
+
+					case 'list':
+						$dalResult = $this->lists_service->getAllListsWithItems();
+						break;
+
+					case 'primary department':
+						$dalResult = $this->departments_service->getPrimaryDepartments();
+						break;
 				}
 
 				if (!is_null($dalResult->getResult()))
@@ -281,6 +299,8 @@
 			$item_update->setDefaultQty($item->getDefaultQty());
 			$item_update->setListId($item->getListId());
 			$item_update->setLink($item->getLink());
+			$item_update->setMuteTemp($item->getMuteTemp());
+			$item_update->setMutePerm($item->getMutePerm());
 
 			$dalResult = $this->items_service->updateItem($item_update);
 			$this->items_service->closeConnexion();
@@ -611,5 +631,40 @@
 			$this->departments_service->closeConnexion();
 
 			return true;
+		}
+
+		public function updateItemMuteSetting($request)
+		{
+			if (!isset($request['item_id']) || !isset($request['mute_basis']))
+			{
+				return false;
+			}
+
+			if (empty($request['mute_basis']) || !($request['mute_basis'] == "temp" || $request['mute_basis'] == "perm"))
+			{
+				return false;
+			}
+
+			$item = $this->items_service->verifyItemRequest($request);
+
+			if (!$item)
+			{
+				return false;
+			}
+
+			switch ($request['mute_basis'])
+			{
+				case 'temp':
+					$item->setMuteTemp(true);
+					break;
+				case 'perm':
+					$item->setMutePerm(true);
+					break;
+			}
+
+			$dalResult = $this->items_service->updateItem($item);
+			$this->items_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
 		}
 	}

@@ -70,6 +70,20 @@
 								</select>
 							</div>
 						</div>
+
+						<div class="row">
+							<div class="mute-temp-container col-xs-12">
+								<label for="mute-temp">Mute Temp:</label>
+								<input id="mute-temp" type="checkbox" name="mute-temp" value="1" <?= $item->getMuteTemp() ? 'checked' : ''; ?> data-validation="<?= getValidationString($item, "MuteTemp"); ?>" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="mute-perm-container col-xs-12">
+								<label for="mute-perm">Mute Perm:</label>
+								<input id="mute-perm" type="checkbox" name="mute-perm" value="1" <?= $item->getMutePerm() ? 'checked' : ''; ?> data-validation="<?= getValidationString($item, "MutePerm"); ?>" />
+							</div>
+						</div>
 						<input type="submit" class="btn btn-primary js-edit-item" value="Edit Item" />
 					</div>
 				</div>
@@ -147,18 +161,18 @@
 					<h3>Orders</h3>
 					<div class="row">
 						<div class="results-container item-order-history">
-	<?php
+<?php
 							if (!is_array($item->getOrders()) || sizeof($item->getOrders()) < 1)
 							{
-	?>
+?>
 								<div class="col-xs-12">
 									<p class="no-results">No Orders could be found for this Item.</p>
 								</div>
-	<?php
+<?php
 							}
 							else
 							{
-	?>
+?>
 								<div class="results-header col-xs-12">
 									<div class="row">
 										<div class="col-xs-4 results-header-item order-id-container">
@@ -176,10 +190,10 @@
 								</div>
 
 								<div class="results-body col-xs-12">
-	<?php
+<?php
 									foreach ($item->getOrders() as $order_id => $order)
 									{
-	?>
+?>
 										<div class="row">
 											<div class="col-xs-4 order-result-item order-id-container">
 												<p>#<?= $order->getId(); ?></p>
@@ -193,13 +207,13 @@
 												<p><?= $order->getOrderItembyItemId($item->getId())->getQuantity(); ?></p>
 											</div>
 										</div>
-	<?php
+<?php
 									}
-	?>
+?>
 								</div>
-	<?php
+<?php
 							}
-	?>
+?>
 						</div>
 					</div>
 
@@ -216,22 +230,54 @@
 						</div>
 
 						<div class="row">
-							<div class="col-xs-8 label-container">
-								<p>Consumption (Overall):</p>
+							<div class="col-xs-4 col-xs-offset-4">
+								<p>Overall</p>
 							</div>
 
-							<div class="col-xs-4 statistic-container">
-								<?= $item->getDailyConsumptionOverall() ? round($item->getDailyConsumptionOverall() * 7, 2).'/wk' : 'N/A'; ?>
+							<div class="col-xs-4">
+								<p>Recent</p>
 							</div>
 						</div>
 
 						<div class="row">
-							<div class="col-xs-8 label-container">
-								<p>Consumption (Recent):</p>
+							<div class="col-xs-4">
+								<p>Use/wk</p>
 							</div>
 
-							<div class="col-xs-4 statistic-container">
-								<?= $item->getDailyConsumptionRecent() ? round($item->getDailyConsumptionRecent() * 7, 2).'/wk' : 'N/A'; ?>
+							<div class="col-xs-4">
+								<p><?= $item->hasOrders() ? round($item->getDailyConsumptionOverall() * 7, 2) : 'N/A'; ?></p>
+							</div>
+
+							<div class="col-xs-4">
+								<p><?= $item->hasOrders() ? round($item->getDailyConsumptionRecent() * 7, 2) : 'N/A'; ?></p>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-xs-4">
+								<p>Stock Now</p>
+							</div>
+
+							<div class="col-xs-4">
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(0, "overall") : 'N/A'; ?></p>
+							</div>
+
+							<div class="col-xs-4">
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(0, "recent") : 'N/A'; ?></p>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-xs-4">
+								<p>Stock +7d</p>
+							</div>
+
+							<div class="col-xs-4">
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(7, "overall") : 'N/A'; ?></p>
+							</div>
+
+							<div class="col-xs-4">
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(7, "recent") : 'N/A'; ?></p>
 							</div>
 						</div>
 					</div>

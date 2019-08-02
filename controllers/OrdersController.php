@@ -263,7 +263,20 @@
 			$order->setDateOrdered(new DateTime);
 			$dalResult = $this->orders_service->updateOrder($order);
 
+			if (!is_null($dalResult->getException()))
+			{
+				return $dalResult;
+			}
+
+			if (!$dalResult->getResult())
+			{
+				return $dalResult;
+			}
+
+			$dalResult = $this->items_service->resetMuteTemps();
+
 			$this->orders_service->closeConnexion();
+			$this->items_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();
 		}
