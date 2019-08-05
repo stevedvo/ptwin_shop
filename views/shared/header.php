@@ -12,6 +12,7 @@
 		<link rel="stylesheet" type="text/css" href="<?= SITEURL; ?>/assets/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="<?= SITEURL; ?>/jQuery/jquery-ui-1.11.4/jquery-ui.min.css" />
 		<link rel="stylesheet" type="text/css" href="<?= SITEURL; ?>/assets/toastr/toastr.min.css" />
+		<link rel="stylesheet" type="text/css" href="<?= SITEURL; ?>/assets/fontawesome/css/all.css" />
 		<link rel="stylesheet" type="text/css" href="<?= SITEURL; ?>/style.css" />
 	</head>
 
@@ -19,24 +20,13 @@
 		<header class="wrapper page-header">
 			<div class="container">
 				<div class="row">
-					<div class="col-xs-12">
-						<h1><?= $page_title; ?></h1>
+					<div class="col-xs-10">
+						<h2 class="page-heading"><?= $page_title; ?></h2>
 					</div>
-				</div>
 
-				<div class="row">
-					<div class="col-xs-12">
-						<a class="btn btn-primary" href="<?= SITEURL; ?>/">Home</a>
-						<a class="btn btn-primary" href="<?= SITEURL; ?>/items/">Manage Items</a>
-						<a class="btn btn-primary" href="<?= SITEURL; ?>/items/?view-by=list">View By List</a>
-						<a class="btn btn-primary" href="<?= SITEURL; ?>/items/?view-by=department">View By Dept</a>
-						<a class="btn btn-primary" href="<?= SITEURL; ?>/items/?view-by=primary_dept">Primary Depts</a>
-						<a class="btn btn-primary" href="<?= SITEURL; ?>/items/?view-by=suggestions">Suggestions</a>
-						<a class="btn btn-primary" href="<?= SITEURL; ?>/lists/">Manage Lists</a>
-						<a class="btn btn-primary" href="<?= SITEURL; ?>/departments/">Manage Depts</a>
-						<a class="btn btn-primary" href="<?= SITEURL; ?>/orders/">Manage Orders</a>
+					<div class="mobile-navigation-container col-xs-2 text-right">
+						<i class="fas fa-bars"></i>
 					</div>
-					<hr/>
 				</div>
 
 				<div class="row">
@@ -51,3 +41,27 @@
 				</div>
 			</div>
 		</header>
+
+		<nav class="container">
+			<div class="row">
+				<div class="mobile-navigation-container col-xs-12 pull-right text-right">
+					<i class="fas fa-times"></i>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-xs-12">
+					<ul>
+						<li><a href="<?= SITEURL; ?>/">Home</a></li>
+						<li><a href="<?= SITEURL; ?>/items/">Manage Items</a></li>
+						<li><a href="<?= SITEURL; ?>/items/?view-by=list">View By List</a></li>
+						<li><a href="<?= SITEURL; ?>/items/?view-by=department">View By Dept</a></li>
+						<li><a href="<?= SITEURL; ?>/items/?view-by=primary_dept">Primary Depts</a></li>
+						<li><a href="<?= SITEURL; ?>/items/?view-by=suggestions">Suggestions</a></li>
+						<li><a href="<?= SITEURL; ?>/lists/">Manage Lists</a></li>
+						<li><a href="<?= SITEURL; ?>/departments/">Manage Depts</a></li>
+						<li><a href="<?= SITEURL; ?>/orders/">Manage Orders</a></li>
+					</ul>
+				</div>
+			</div>
+		</nav>

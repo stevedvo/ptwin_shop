@@ -2,6 +2,7 @@ $ = jQuery;
 
 $(function()
 {
+	initNavigation();
 	globalFuncs();
 	manageItems();
 	manageLists();
@@ -10,6 +11,14 @@ $(function()
 	quickAdd();
 	adminFuncs();
 });
+
+function initNavigation()
+{
+	$(document).on("click", ".mobile-navigation-container", function()
+	{
+		$("nav").toggleClass("nav-open");
+	});
+}
 
 function globalFuncs()
 {
