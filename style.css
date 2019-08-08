@@ -30,6 +30,7 @@ header.page-header h2.page-heading
 	margin: 10px 0px;
 	font-size: 20px;
 	line-height: 39px;
+	cursor: pointer;
 }
 
 nav
@@ -45,6 +46,11 @@ nav
 	z-index: 10;
 	height: 100vh;
 	display: none;
+}
+
+nav.container
+{
+	max-width: calc(750px * 0.75);
 }
 
 nav.nav-open
@@ -66,15 +72,18 @@ nav ul
 	text-align: right;
 }
 
-nav ul li
-{
-	font-size: 16px;
-	line-height: 30px;
-}
-
 nav ul li a
 {
 	color: white;
+	font-size: 16px;
+	line-height: 36px;
+}
+
+nav ul li a:hover
+{
+	color: white;
+	font-weight: 700;
+	text-decoration: none;
 }
 
 main
@@ -508,6 +517,19 @@ input.remove
 	.form#edit-department button
 	{
 		margin: 0px 15px;
+	}
+}
+
+@media only screen and (min-width: 750px)
+{
+	nav
+	{
+		right: calc(((100vw - 750px) / 2) - (750px * 0.75));
+	}
+
+	nav.nav-open
+	{
+		right: calc((100vw - 750px) / 2);
 	}
 }
 
