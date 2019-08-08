@@ -37,6 +37,10 @@
 					case 'suggestions':
 						$view_by = "suggestions";
 						break;
+
+					case 'muted-suggestions':
+						$view_by = "muted-suggestions";
+						break;
 				}
 			}
 
@@ -65,6 +69,17 @@
 					'page_title' => 'Suggested Items',
 					'template'   => 'views/items/suggestions.php',
 					'page_data'  => ['suggested_items' => $suggested_items]
+				];
+			}
+			elseif ($view_by == "muted-suggestions")
+			{
+				$muted_items = $this->items_service->getAllMutedSuggestedItems();
+
+				$pageData =
+				[
+					'page_title' => 'Muted Suggestions',
+					'template'   => 'views/items/muted-suggestions.php',
+					'page_data'  => ['muted_items' => $muted_items]
 				];
 			}
 			else
