@@ -143,6 +143,32 @@ main
 	display: block;
 }
 
+.results-container .result-item .button-container button.js-mute-suggestion,
+.results-container .result-item .button-container button.js-unmute-suggestion
+{
+	display: block;
+}
+
+.results-container .result-item.muted-temp .button-container button.js-mute-suggestion[data-mute_basis='temp']
+{
+	display: none;
+}
+
+.results-container .result-item.unmuted-temp .button-container button.js-unmute-suggestion[data-mute_basis='temp']
+{
+	display: none;
+}
+
+.results-container .result-item.muted-perm .button-container button.js-mute-suggestion[data-mute_basis='perm']
+{
+	display: none;
+}
+
+.results-container .result-item.unmuted-perm .button-container button.js-unmute-suggestion[data-mute_basis='perm']
+{
+	display: none;
+}
+
 .results-container .link-container
 {
 	word-break: break-all;

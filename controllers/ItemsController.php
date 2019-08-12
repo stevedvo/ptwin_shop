@@ -667,13 +667,15 @@
 				return false;
 			}
 
+			$new_setting = isset($request['unmute']) ? 0 : 1;
+
 			switch ($request['mute_basis'])
 			{
 				case 'temp':
-					$item->setMuteTemp(true);
+					$item->setMuteTemp($new_setting);
 					break;
 				case 'perm':
-					$item->setMutePerm(true);
+					$item->setMutePerm($new_setting);
 					break;
 			}
 

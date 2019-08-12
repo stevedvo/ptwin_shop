@@ -39,7 +39,7 @@
 							foreach ($suggested_items as $item_id => $item)
 							{
 ?>
-								<div class="row form result-item <?= array_key_exists($item->getId(), $items_in_order) ? 'selected' : ''; ?>" data-item_id="<?= $item->getId(); ?>">
+								<div class="row form fade-on-mute result-item <?= array_key_exists($item->getId(), $items_in_order) ? 'selected' : ''; ?>" data-item_id="<?= $item->getId(); ?>">
 									<div class="col-xs-4 description-container">
 										<a href="<?= SITEURL; ?>/items/edit/<?= $item->getId(); ?>/"><p><?= $item->getDescription(); ?></p></a>
 									</div>
@@ -58,11 +58,11 @@
 									</div>
 
 									<div class="col-xs-4 button-container mute-button">
-										<button class="btn btn-sm btn-primary pull-right js-mute-suggestion" data-mute_basis="temp">Mute Temp</button>
+										<button class="btn btn-sm btn-danger pull-right js-mute-suggestion" data-mute_basis="temp">Mute Temp</button>
 									</div>
 
 									<div class="col-xs-4 button-container mute-button">
-										<button class="btn btn-sm btn-primary pull-right js-mute-suggestion" data-mute_basis="perm">Mute Perm</button>
+										<button class="btn btn-sm btn-danger pull-right js-mute-suggestion" data-mute_basis="perm">Mute Perm</button>
 									</div>
 								</div>
 <?php

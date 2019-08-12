@@ -480,9 +480,10 @@ function manageItems()
 
 	$(document).on("click", ".js-mute-suggestion", function()
 	{
-		var form = $(this).closest(".form");
+		var $this = $(this);
+		var form = $this.closest(".form");
 		var itemID = parseInt(form.data("item_id"));
-		var muteBasis = $(this).data("mute_basis");
+		var muteBasis = $this.data("mute_basis");
 
 		$.ajax(
 		{
@@ -519,13 +520,81 @@ function manageItems()
 					{
 						toastr.success("Item suggestion successfully muted");
 
-						form.fadeOut();
+						if (form.hasClass("fade-on-mute"))
+						{
+							form.fadeOut();
+						}
+						else
+						{
+							form.removeClass("unmuted-"+muteBasis);
+							form.addClass("muted-"+muteBasis);
+						}
 					}
 				}
 			}
 			else
 			{
-				toastr.error("Could not remove Item from Order");
+				toastr.error("Could not mute Item");
+				console.log(data);
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+
+	$(document).on("click", ".js-unmute-suggestion", function()
+	{
+		var $this = $(this);
+		var form = $this.closest(".form");
+		var itemID = parseInt(form.data("item_id"));
+		var muteBasis = $this.data("mute_basis");
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Items",
+				action     : "updateItemMuteSetting",
+				request    :
+				{
+					'item_id'    : itemID,
+					'mute_basis' : muteBasis,
+					'unmute'     : 1
+				}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				if (data.exception != null)
+				{
+					toastr.error("Could not update Item: PDOException");
+					console.log(data.exception);
+				}
+				else
+				{
+					if (!data.result)
+					{
+						toastr.error("Could not update Item: Unspecified error");
+						console.log(data);
+					}
+					else
+					{
+						toastr.success("Item successfully unmuted");
+
+						form.removeClass("muted-"+muteBasis);
+						form.addClass("unmuted-"+muteBasis);
+					}
+				}
+			}
+			else
+			{
+				toastr.error("Could not unmute Item");
 				console.log(data);
 			}
 		}).fail(function(data)
