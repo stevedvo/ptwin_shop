@@ -416,12 +416,12 @@
 				return false;
 			}
 
-			$total_ordered = $this->getTotalOrdered();
-			$first_order = $this->getFirstOrder();
-			$days_elapsed = $first_order->getDateOrdered()->diff(new DateTime())->format('%a');
+			$last_order = $this->getLastOrder();
+			$last_order_qty = $last_order->getOrderItembyItemId($this->id)->getQuantity();
+			$days_elapsed = $last_order->getDateOrdered()->diff(new DateTime())->format('%a');
 			$days = $days_elapsed + $days_ahead;
-			$total_consumption = round($daily_consumption * $days);
-			$stock_level = $total_ordered - $total_consumption;
+			$est_consumption = round($daily_consumption * $days);
+			$stock_level = $last_order_qty - $est_consumption;
 
 			return $stock_level;
 		}
