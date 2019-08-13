@@ -79,7 +79,8 @@ nav ul li a
 	line-height: 36px;
 }
 
-nav ul li a:hover
+nav ul li a:hover,
+nav ul li a:focus
 {
 	color: white;
 	font-weight: 700;
@@ -141,6 +142,32 @@ main
 .results-container .result-item.selected .button-container button.js-remove-item-from-current-order
 {
 	display: block;
+}
+
+.results-container .result-item .button-container button.js-mute-suggestion,
+.results-container .result-item .button-container button.js-unmute-suggestion
+{
+	display: block;
+}
+
+.results-container .result-item.muted-temp .button-container button.js-mute-suggestion[data-mute_basis='temp']
+{
+	display: none;
+}
+
+.results-container .result-item.unmuted-temp .button-container button.js-unmute-suggestion[data-mute_basis='temp']
+{
+	display: none;
+}
+
+.results-container .result-item.muted-perm .button-container button.js-mute-suggestion[data-mute_basis='perm']
+{
+	display: none;
+}
+
+.results-container .result-item.unmuted-perm .button-container button.js-unmute-suggestion[data-mute_basis='perm']
+{
+	display: none;
 }
 
 .results-container .link-container

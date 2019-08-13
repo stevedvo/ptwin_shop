@@ -227,6 +227,41 @@
 			return $result;
 		}
 
+		public function getAllMutedSuggestedItems()
+		{
+			$result = new DalResult();
+			$items = false;
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm FROM items AS i WHERE i.mute_temp = 1 OR i.mute_perm = 1 ORDER BY i.description");
+				$query->execute();
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					$items = [];
+
+					foreach ($rows as $row)
+					{
+						if (!array_key_exists($row['item_id'], $items))
+						{
+							$item = createItem($row);
+							$items[$item->getId()] = $item;
+						}
+					}
+				}
+
+				$result->setResult($items);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
+
+			return $result;
+		}
+
 		public function getItemsByDepartmentId($dept_id)
 		{
 			$result = new DalResult();

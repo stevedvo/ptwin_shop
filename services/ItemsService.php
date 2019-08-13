@@ -75,6 +75,20 @@
 			return $suggested_items;
 		}
 
+		public function getAllMutedSuggestedItems()
+		{
+			$muted_items = [];
+
+			$dalResult = $this->dal->getAllMutedSuggestedItems();
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$muted_items = $dalResult->getResult();
+			}
+
+			return $muted_items;
+		}
+
 		public function getItemById($item_id)
 		{
 			return $this->dal->getItemById($item_id);
