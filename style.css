@@ -79,7 +79,8 @@ nav ul li a
 	line-height: 36px;
 }
 
-nav ul li a:hover
+nav ul li a:hover,
+nav ul li a:focus
 {
 	color: white;
 	font-weight: 700;
