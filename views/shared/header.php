@@ -20,11 +20,15 @@
 		<header class="wrapper page-header">
 			<div class="container">
 				<div class="row">
-					<div class="col-xs-10">
+					<div class="col-xs-9 page-heading-container">
 						<h2 class="page-heading"><?= $page_title; ?></h2>
 					</div>
 
-					<div class="mobile-navigation-container col-xs-2 text-right">
+					<div class="home-link-container text-right">
+						<a href="<?= SITEURL; ?>/"><i class="fas fa-home"></i></a>
+					</div>
+
+					<div class="mobile-navigation-container text-right">
 						<i class="fas fa-bars"></i>
 					</div>
 				</div>

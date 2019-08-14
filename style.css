@@ -25,7 +25,16 @@ header.page-header h2.page-heading
 	margin-top: 10px;
 }
 
-.mobile-navigation-container
+header .mobile-navigation-container,
+header .home-link-container
+{
+	float: left;
+	padding: 0px 15px;
+	width: calc(1.5 / 12 * 100%);
+}
+
+.mobile-navigation-container,
+.home-link-container
 {
 	margin: 10px 0px;
 	font-size: 20px;
@@ -388,6 +397,17 @@ input.remove
 
 @media only screen and (min-width: 576px)
 {
+	header .page-heading-container
+	{
+		width: calc(10 / 12 * 100%);
+	}
+
+	header .mobile-navigation-container,
+	header .home-link-container
+	{
+		width: calc(1 / 12 * 100%);
+	}
+
 	#current-order-actions-container #confirm-current-order-container,
 	#current-order-actions-container #clear-current-order-container
 	{
