@@ -19,8 +19,12 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("INSERT INTO departments (dept_name) VALUES (:name)");
-				$query->execute([':name' => $department->getName()]);
+				$query = $this->ShopDb->conn->prepare("INSERT INTO departments (dept_name, seq) VALUES (:dept_name, :seq)");
+				$query->execute(
+				[
+					':dept_name' => $department->getName(),
+					':seq'       => $department->getSeq()
+				]);
 				$result->setResult($this->ShopDb->conn->lastInsertId());
 			}
 			catch(PDOException $e)
@@ -38,7 +42,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE d.dept_id = :dept_id ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, d.seq, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE d.dept_id = :dept_id ORDER BY i.description");
 				$query->execute([':dept_id' => $dept_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -77,7 +81,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT dept_id, dept_name FROM departments WHERE dept_name = :name");
+				$query = $this->ShopDb->conn->prepare("SELECT dept_id, dept_name, seq FROM departments WHERE dept_name = :name");
 				$query->execute([':name' => $dept_name]);
 				$row = $query->fetch(PDO::FETCH_ASSOC);
 
@@ -103,7 +107,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT dept_id, dept_name FROM departments ORDER BY dept_name");
+				$query = $this->ShopDb->conn->prepare("SELECT dept_id, dept_name, seq FROM departments ORDER BY seq, dept_name");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -136,7 +140,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.mute_temp, i.mute_perm FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) ORDER BY d.dept_name, i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, d.seq, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.mute_temp, i.mute_perm FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) ORDER BY d.seq, d.dept_name, i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -226,10 +230,11 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("UPDATE departments SET dept_name = :dept_name WHERE dept_id = :dept_id");
+				$query = $this->ShopDb->conn->prepare("UPDATE departments SET dept_name = :dept_name, seq = :seq WHERE dept_id = :dept_id");
 				$result->setResult($query->execute(
 				[
 					':dept_name' => $department->getName(),
+					':seq'       => $department->getSeq(),
 					':dept_id'   => $department->getId()
 				]));
 			}
@@ -265,7 +270,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, idl.dept_id, d.dept_name FROM items AS i LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) ORDER BY ISNULL(i.primary_dept), d.dept_name, i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, idl.dept_id, d.dept_name, d.seq FROM items AS i LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) ORDER BY ISNULL(i.primary_dept), d.seq, d.dept_name, i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 

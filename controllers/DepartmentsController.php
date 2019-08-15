@@ -190,21 +190,15 @@
 				return false;
 			}
 
-			if (is_null($department->getId()))
+			$dept_update = $this->departments_service->verifyDepartmentRequest($request);
+
+			if (!$dept_update)
 			{
 				return false;
 			}
-
-			$dalResult = $this->departments_service->getDepartmentById($department->getId());
-
-			if (!$dalResult->getResult() instanceof Department)
-			{
-				return false;
-			}
-
-			$dept_update = $dalResult->getResult();
 
 			$dept_update->setName($department->getName());
+			$dept_update->setSeq($department->getSeq());
 
 			$dalResult = $this->departments_service->updateDepartment($dept_update);
 			$this->departments_service->closeConnexion();

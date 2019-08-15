@@ -22,10 +22,21 @@
 			<div class="row">
 				<div class="col-xs-12">
 					<div id="edit-department" class="form department-container">
-						<label>Dept Name:</label>
 						<input type="hidden" name="department-id" value="<?= $department->getId(); ?>" />
-						<input type="text" name="department-name" placeholder="Required" data-validation="<?= getValidationString($department, "Name"); ?>" value="<?= $department->getName(); ?>" />
-						<button class="btn btn-primary btn-sm js-update-department">Update</button>
+						<div class="row">
+							<div class="col-xs-12">
+								<label>Dept Name:</label>
+								<input type="text" name="department-name" placeholder="Required" data-validation="<?= getValidationString($department, "Name"); ?>" value="<?= $department->getName(); ?>" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-xs-12">
+								<label>Sequence:</label>
+								<input type="number" name="seq" min="0" placeholder="Required" data-validation="<?= getValidationString($department, "Seq"); ?>" value="<?= $department->getSeq(); ?>" />
+								<button class="btn btn-primary btn-sm js-update-department">Update</button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

@@ -18,10 +18,11 @@
 
 	function createDepartment($request)
 	{
-		$id = isset($request['dept_id']) ? $request['dept_id'] : null;
+		$id = isset($request['dept_id']) ? intval($request['dept_id']) : null;
 		$name = isset($request['dept_name']) ? $request['dept_name'] : null;
+		$seq = isset($request['seq']) ? intval($request['seq']) : null;
 
-		$department = new Department($id, $name);
+		$department = new Department($id, $name, $seq);
 
 		return $department;
 	}
@@ -91,6 +92,7 @@
 
 	function entityIsValid($entity)
 	{
+		var_dump($entity);
 		if (is_array($entity->getValidation()))
 		{
 			foreach ($entity->getValidation() as $property => $criteria)
@@ -100,6 +102,10 @@
 
 				foreach ($criteria as $criterion => $value)
 				{
+					var_dump($property);
+					var_dump($criterion);
+					var_dump($value);
+					var_dump($property_value);
 					switch ($criterion)
 					{
 						case 'required':

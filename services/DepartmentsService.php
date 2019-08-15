@@ -24,7 +24,7 @@
 
 			$dalResult = $this->dal->getDepartmentById(intval($request['dept_id']));
 
-			if (!is_null($dalResult->getResult()))
+			if ($dalResult->getResult() instanceof Department)
 			{
 				$department = $dalResult->getResult();
 			}

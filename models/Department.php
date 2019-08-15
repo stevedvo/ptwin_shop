@@ -3,18 +3,25 @@
 	{
 		private $id;
 		private $name;
+		private $seq;
 		private $validation;
 		private $items;
 
-		public function __construct($id = null, $name = null, $items = [])
+		public function __construct($id = null, $name = null, $seq = null, $items = [])
 		{
 			$this->id = $id;
 			$this->name = $name;
+			$this->seq = $seq;
 			$this->validation =
 			[
 				'Name' =>
 				[
 					'required' => true
+				],
+				'Seq' =>
+				[
+					'required' => true,
+					'min-value' => 0
 				]
 			];
 			$this->items = $items;
@@ -38,6 +45,16 @@
 		public function setName($name)
 		{
 			$this->name = $name;
+		}
+
+		public function getSeq()
+		{
+			return $this->seq;
+		}
+
+		public function setSeq($seq)
+		{
+			$this->seq = $seq;
 		}
 
 		public function getValidation($property = null)

@@ -909,7 +909,11 @@ function manageDepts()
 				{
 					controller : "Departments",
 					action     : "addDepartment",
-					request    : {'dept_name' : departmentName}
+					request    :
+					{
+						'dept_name' : departmentName,
+						'seq'       : 0
+					}
 				}
 			}).done(function(data)
 			{
@@ -1095,6 +1099,7 @@ function manageDepts()
 		{
 			var deptID = parseInt(form.find("[name='department-id']").val());
 			var deptName = form.find("[name='department-name']").val();
+			var deptSeq = parseInt(form.find("[name='seq']").val());
 
 			$.ajax(
 			{
@@ -1108,7 +1113,8 @@ function manageDepts()
 					request    :
 					{
 						'dept_id'   : deptID,
-						'dept_name' : deptName
+						'dept_name' : deptName,
+						'seq'       : deptSeq
 					}
 				}
 			}).done(function(data)
