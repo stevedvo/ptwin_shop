@@ -565,6 +565,23 @@ input.remove
 	{
 		margin: 0px 15px;
 	}
+
+	.form.department-list-item .department-name-container
+	{
+		width: calc(6 / 12 * 100%);
+	}
+
+	.form.department-list-item .department-seq-container,
+	.form.department-list-item .button-container
+	{
+		width: calc(2 / 12 * 100%);
+		margin-left: 0px;
+	}
+
+	.form.department-list-item input
+	{
+		width: 100%;
+	}
 }
 
 @media only screen and (min-width: 750px)

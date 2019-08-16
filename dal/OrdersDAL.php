@@ -115,7 +115,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT o.id AS order_id, o.date_ordered, oi.id AS order_item_id, oi.item_id, oi.quantity, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, d.dept_name FROM orders AS o LEFT JOIN order_items AS oi ON (o.id = oi.order_id) LEFT JOIN items AS i ON (i.item_id = oi.item_id) LEFT JOIN departments AS d ON (d.dept_id = i.primary_dept) WHERE o.id = :order_id ORDER BY ISNULL(i.primary_dept), d.dept_name, i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT o.id AS order_id, o.date_ordered, oi.id AS order_item_id, oi.item_id, oi.quantity, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, d.dept_name, d.seq FROM orders AS o LEFT JOIN order_items AS oi ON (o.id = oi.order_id) LEFT JOIN items AS i ON (i.item_id = oi.item_id) LEFT JOIN departments AS d ON (d.dept_id = i.primary_dept) WHERE o.id = :order_id ORDER BY ISNULL(i.primary_dept), d.seq, d.dept_name, i.description");
 				$query->execute([':order_id' => $order_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 

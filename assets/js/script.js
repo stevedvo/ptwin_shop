@@ -909,23 +909,24 @@ function manageDepts()
 				{
 					controller : "Departments",
 					action     : "addDepartment",
-					request    : {'dept_name' : departmentName}
+					request    :
+					{
+						'dept_name' : departmentName,
+						'seq'       : 0
+					}
 				}
 			}).done(function(data)
 			{
 				if (data)
 				{
-					if (data.exception == null)
-					{
-						var html = '<p><a href="'+constants.SITEURL+'/departments/edit/'+parseInt(data.result)+'/">'+departmentName+'</a></p>';
+					var html = data.partial_view;
 
-						$(".results-container").append(html);
-						$(".results-container").find(".no-results").remove();
-						form.find(".input-error").removeClass("input-error");
-						form.find("[name='department-name']").val("");
+					$(".results-container").append(html);
+					$(".results-container").find(".no-results").remove();
+					form.find(".input-error").removeClass("input-error");
+					form.find("[name='department-name']").val("");
 
-						toastr.success("New Department successfully added");
-					}
+					toastr.success("New Department successfully added");
 				}
 				else
 				{
@@ -1095,6 +1096,7 @@ function manageDepts()
 		{
 			var deptID = parseInt(form.find("[name='department-id']").val());
 			var deptName = form.find("[name='department-name']").val();
+			var deptSeq = parseInt(form.find("[name='seq']").val());
 
 			$.ajax(
 			{
@@ -1108,7 +1110,8 @@ function manageDepts()
 					request    :
 					{
 						'dept_id'   : deptID,
-						'dept_name' : deptName
+						'dept_name' : deptName,
+						'seq'       : deptSeq
 					}
 				}
 			}).done(function(data)

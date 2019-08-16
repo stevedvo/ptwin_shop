@@ -18,10 +18,11 @@
 
 	function createDepartment($request)
 	{
-		$id = isset($request['dept_id']) ? $request['dept_id'] : null;
+		$id = isset($request['dept_id']) ? intval($request['dept_id']) : null;
 		$name = isset($request['dept_name']) ? $request['dept_name'] : null;
+		$seq = isset($request['seq']) ? intval($request['seq']) : null;
 
-		$department = new Department($id, $name);
+		$department = new Department($id, $name, $seq);
 
 		return $department;
 	}
@@ -103,7 +104,7 @@
 					switch ($criterion)
 					{
 						case 'required':
-							if (is_null($property_value) || empty($property_value))
+							if (is_null($property_value) || strlen($property_value) < 1)
 							{
 								return false;
 							}
