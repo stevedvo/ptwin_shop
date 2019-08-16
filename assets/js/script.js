@@ -1349,8 +1349,10 @@ function quickAdd()
 						availableItems.push(this.description);
 					});
 
-					$("#quick-add").autocomplete({source : availableItems});
-					$("#add-item-to-previous-order").autocomplete({source : availableItems});
+					var sortedItems = arraySort(availableItems);
+
+					$("#quick-add").autocomplete({source : sortedItems});
+					$("#add-item-to-previous-order").autocomplete({source : sortedItems});
 				}
 			}
 		}
@@ -1960,4 +1962,36 @@ function adminFuncs()
 			console.log(data);
 		});
 	});
+}
+
+function arraySort(availableItems)
+{
+	var lowerCaseArray = [];
+	var sortedArray = [];
+
+	$.each(availableItems, function()
+	{
+		lowerCaseArray.push(this.toLowerCase());
+	});
+
+	lowerCaseArray.sort();
+
+	$.each(lowerCaseArray, function()
+	{
+		sortedArray.push(ucWords(this));
+	});
+
+	return sortedArray;
+}
+
+function ucWords(str)
+{
+	var splitStr = str.toLowerCase().split(' ');
+
+	for (var i = 0; i < splitStr.length; i++)
+	{
+		splitStr[i] = splitStr[i].charAt(0).toUpperCase()+splitStr[i].substring(1);
+	}
+
+	return splitStr.join(' ');
 }
