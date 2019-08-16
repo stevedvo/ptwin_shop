@@ -919,17 +919,14 @@ function manageDepts()
 			{
 				if (data)
 				{
-					if (data.exception == null)
-					{
-						var html = '<p><a href="'+constants.SITEURL+'/departments/edit/'+parseInt(data.result)+'/">'+departmentName+'</a></p>';
+					var html = data.partial_view;
 
-						$(".results-container").append(html);
-						$(".results-container").find(".no-results").remove();
-						form.find(".input-error").removeClass("input-error");
-						form.find("[name='department-name']").val("");
+					$(".results-container").append(html);
+					$(".results-container").find(".no-results").remove();
+					form.find(".input-error").removeClass("input-error");
+					form.find("[name='department-name']").val("");
 
-						toastr.success("New Department successfully added");
-					}
+					toastr.success("New Department successfully added");
 				}
 				else
 				{

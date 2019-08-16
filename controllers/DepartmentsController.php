@@ -59,6 +59,18 @@
 			}
 
 			$dalResult = $this->departments_service->addDepartment($department);
+
+			if (!is_null($dalResult->getException()))
+			{
+				return false;
+			}
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$department->setId($dalResult->getResult());
+				$dalResult->setPartialView(getPartialView("DepartmentListItem", ['item' => $department]));
+			}
+
 			$this->departments_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();
@@ -112,33 +124,10 @@
 
 		public function addItemToDepartment($request)
 		{
-			$item = $department = false;
+			$item = $this->items_service->verifyItemRequest($request);
+			$department = $this->items_service->verifyDepartmentRequest($request);
 
-			if (!is_numeric($request['item_id']) || !is_numeric($request['dept_id']))
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->getItemById(intval($request['item_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$item = $dalResult->getResult();
-			}
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			$dalResult = $this->departments_service->getDepartmentById(intval($request['dept_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$department = $dalResult->getResult();
-			}
-
-			if (!$department)
+			if (!$item || !$department)
 			{
 				return false;
 			}

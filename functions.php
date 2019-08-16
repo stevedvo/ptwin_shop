@@ -92,7 +92,6 @@
 
 	function entityIsValid($entity)
 	{
-		var_dump($entity);
 		if (is_array($entity->getValidation()))
 		{
 			foreach ($entity->getValidation() as $property => $criteria)
@@ -102,14 +101,10 @@
 
 				foreach ($criteria as $criterion => $value)
 				{
-					var_dump($property);
-					var_dump($criterion);
-					var_dump($value);
-					var_dump($property_value);
 					switch ($criterion)
 					{
 						case 'required':
-							if (is_null($property_value) || empty($property_value))
+							if (is_null($property_value) || strlen($property_value) < 1)
 							{
 								return false;
 							}
