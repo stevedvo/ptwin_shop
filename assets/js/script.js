@@ -1611,6 +1611,69 @@ function manageOrders()
 		});
 	});
 
+	$(document).on("click", ".js-check-order-item", function()
+	{
+		var $this = $(this);
+		var form = $this.closest(".form");
+		var orderItemID = parseInt(form.data("order_item_id"));
+		var check = $this.data("check") == "check" ? 1 : $this.data("check") == "uncheck" ? 0 : null;
+
+		if (check == null)
+		{
+			toastr.error("Could not update Order Item");
+		}
+		else
+		{
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Orders",
+					action     : "checkOrderItem",
+					request    :
+					{
+						'order_item_id' : orderItemID,
+						'check'         : check
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					if (data.exception != null)
+					{
+						toastr.error("Could not update Order Item: PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						if (!data.result)
+						{
+							toastr.error("Could not update Order Item: Unspecified error");
+							console.log(data);
+						}
+						else
+						{
+							toastr.success("Order Item successfully updated");
+						}
+					}
+				}
+				else
+				{
+					toastr.error("Could not update Order Item");
+					console.log(data);
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+
 	$(document).on("click", ".js-clear-current-order", function()
 	{
 		var form = $(this).closest(".form");

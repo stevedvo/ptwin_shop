@@ -190,7 +190,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT oi.id AS order_item_id, oi.order_id, oi.item_id, i.description, oi.quantity, o.date_ordered FROM order_items AS oi LEFT JOIN orders AS o ON (o.id = oi.order_id) LEFT JOIN items AS i ON (i.item_id = oi.item_id) WHERE o.date_ordered IS NOT NULL AND i.mute_temp != 1 AND i.mute_perm != 1 ORDER BY i.description, o.date_ordered DESC");
+				$query = $this->ShopDb->conn->prepare("SELECT oi.id AS order_item_id, oi.order_id, oi.item_id, i.description, oi.quantity, oi.checked, o.date_ordered FROM order_items AS oi LEFT JOIN orders AS o ON (o.id = oi.order_id) LEFT JOIN items AS i ON (i.item_id = oi.item_id) WHERE o.date_ordered IS NOT NULL AND i.mute_temp != 1 AND i.mute_perm != 1 ORDER BY i.description, o.date_ordered DESC");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 

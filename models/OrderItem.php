@@ -5,22 +5,25 @@
 		private $order_id;
 		private $item_id;
 		private $quantity;
+		private $checked;
 		private $validation;
 		private $item;
 
-		public function __construct($id = null, $order_id = null, $item_id = null, $quantity = null)
+		public function __construct($id = null, $order_id = null, $item_id = null, $quantity = null, $checked = null)
 		{
 			$this->id = $id;
 			$this->order_id = $order_id;
 			$this->item_id = $item_id;
 			$this->quantity = $quantity;
+			$this->checked = $checked;
 			$this->validation =
 			[
 				'Quantity' =>
 				[
 					'required' => true,
 					'min-value' => 1
-				]
+				],
+				'Checked' => ['datatype' => 'boolean']
 			];
 			$this->item = null;
 		}
@@ -74,6 +77,16 @@
 		public function setQuantity($quantity)
 		{
 			$this->quantity = $quantity;
+		}
+
+		public function getChecked()
+		{
+			return $this->checked;
+		}
+
+		public function setChecked($checked)
+		{
+			$this->checked = $checked;
 		}
 
 		public function getValidation($property = null)
