@@ -451,7 +451,11 @@
 			$order_item->setOrderId($order->getId());
 			$order_item->setItemId($item->getId());
 			$order_item->setQuantity($item->getDefaultQty());
+			$order_item->setChecked(0);
 			$order_item->setItem($item);
+
+			// todo: amend code below to get a dalResult, and populate this using getPartialView()
+			// use same getPartialView on /orders/edit/{id}/ to ensure consistent DOM structure for initial page load and dynamic adding of new Order Items
 
 			$order_item_id = $this->orders_service->addOrderItem($order_item);
 

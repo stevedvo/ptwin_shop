@@ -1636,7 +1636,7 @@ function manageOrders()
 					request    :
 					{
 						'order_item_id' : orderItemID,
-						'check'         : check
+						'checked'       : check
 					}
 				}
 			}).done(function(data)
@@ -1657,6 +1657,17 @@ function manageOrders()
 						}
 						else
 						{
+							form.removeClass("checked unchecked");
+
+							if (check == 1)
+							{
+								form.addClass("checked");
+							}
+							else if (check == 0)
+							{
+								form.addClass("unchecked");
+							}
+
 							toastr.success("Order Item successfully updated");
 						}
 					}
@@ -1671,6 +1682,22 @@ function manageOrders()
 				toastr.error("Could not perform request");
 				console.log(data);
 			});
+		}
+	});
+
+	$(document).on("click", ".js-toggle-checked-items-visibility", function()
+	{
+		var $this = $(this);
+
+		if ($this.hasClass("checked-off"))
+		{
+			$(".result-item.checked").show();
+			$this.removeClass("checked-off").addClass("checked-on").text("Hide Checked Items");
+		}
+		else if ($this.hasClass("checked-on"))
+		{
+			$(".result-item.checked").hide();
+			$this.removeClass("checked-on").addClass("checked-off").text("Show Checked Items");
 		}
 	});
 
