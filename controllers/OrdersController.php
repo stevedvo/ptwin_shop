@@ -452,23 +452,21 @@
 			$order_item->setItemId($item->getId());
 			$order_item->setQuantity($item->getDefaultQty());
 			$order_item->setChecked(0);
-			$order_item->setItem($item);
 
-			// todo: amend code below to get a dalResult, and populate this using getPartialView()
-			// use same getPartialView on /orders/edit/{id}/ to ensure consistent DOM structure for initial page load and dynamic adding of new Order Items
+			$dalResult = $this->orders_service->addOrderItem($order_item);
 
-			$order_item_id = $this->orders_service->addOrderItem($order_item);
-
-			if (!$order_item_id)
+			if (!$dalResult->getResult())
 			{
 				return false;
 			}
 
-			$order_item->setId($order_item_id);
+			$dalResult->getResult()->setItem($item);
+			$dalResult->setPartialView(getPartialView("ListOrderItem", ['order_item' => $dalResult->getResult()]));
+			$dalResult->setResult($dalResult->getResult()->jsonSerialize());
 
 			$this->items_service->closeConnexion();
 			$this->orders_service->closeConnexion();
 
-			return $order_item->jsonSerialize();
+			return $dalResult->jsonSerialize();
 		}
 	}

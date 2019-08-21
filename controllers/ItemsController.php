@@ -206,21 +206,21 @@
 				$order_item->setOrderId($order->getId());
 				$order_item->setItemId($item->getId());
 				$order_item->setQuantity($item->getDefaultQty());
-				$order_item->setItem($item);
+				$order_item->setChecked(0);
 
-				$order_item_id = $this->orders_service->addOrderItem($order_item);
+				$dalResult = $this->orders_service->addOrderItem($order_item);
 
-				if (!$order_item_id)
+				if (!$dalResult->getResult())
 				{
 					return false;
 				}
 
-				$order_item->setId($order_item_id);
+				$dalResult->getResult()->setItem($item);
 
 				$this->items_service->closeConnexion();
 				$this->orders_service->closeConnexion();
 
-				return $order_item->jsonSerialize();
+				return $dalResult->getResult()->jsonSerialize();
 			}
 
 			$this->items_service->closeConnexion();
@@ -481,21 +481,21 @@
 			$order_item->setOrderId($order->getId());
 			$order_item->setItemId($item->getId());
 			$order_item->setQuantity($item->getDefaultQty());
-			$order_item->setItem($item);
+			$order_item->setChecked(0);
 
-			$order_item_id = $this->orders_service->addOrderItem($order_item);
+			$dalResult = $this->orders_service->addOrderItem($order_item);
 
-			if (!$order_item_id)
+			if (!$dalResult->getResult())
 			{
 				return false;
 			}
 
-			$order_item->setId($order_item_id);
+			$dalResult->getResult()->setItem($item);
 
 			$this->items_service->closeConnexion();
 			$this->orders_service->closeConnexion();
 
-			return $order_item->jsonSerialize();
+			return $dalResult->getResult()->jsonSerialize();
 		}
 
 		public function quickEditItem($request)
@@ -542,21 +542,21 @@
 			$order_item->setOrderId($order->getId());
 			$order_item->setItemId($item->getId());
 			$order_item->setQuantity($item->getDefaultQty());
-			$order_item->setItem($item);
+			$order_item->setChecked(0);
 
-			$order_item_id = $this->orders_service->addOrderItem($order_item);
+			$dalResult = $this->orders_service->addOrderItem($order_item);
 
-			if (!$order_item_id)
+			if (!$dalResult->getResult())
 			{
 				return false;
 			}
 
-			$order_item->setId($order_item_id);
+			$dalResult->getResult()->setItem($item);
 
 			$this->items_service->closeConnexion();
 			$this->orders_service->closeConnexion();
 
-			return $order_item->jsonSerialize();
+			return $dalResult->getResult()->jsonSerialize();
 		}
 
 		public function removeItemFromCurrentOrder($request)

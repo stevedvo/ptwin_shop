@@ -233,7 +233,7 @@
 					$order_item = createOrderItem($row);
 				}
 
-				$result->setResult($order_item ? $order_item->getId() : false);
+				$result->setResult($order_item);
 			}
 			catch(PDOException $e)
 			{

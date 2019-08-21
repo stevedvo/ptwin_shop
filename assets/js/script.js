@@ -1984,23 +1984,9 @@ function manageOrders()
 						var order = $(".results-container.previous-order");
 						order.find(".no-results").remove();
 
-						if (order.find(".form[data-order_item_id='"+data.id+"']").length == 0)
+						if (order.find(".form[data-order_item_id='"+data.result.id+"']").length == 0)
 						{
-							var html =
-							'<div class="row form result-item" data-order_item_id="'+data.id+'">'+
-								'<div class="col-xs-8 description-container">'+
-									'<p><a href="'+constants.SITEURL+'/items/edit/'+data.item_id+'/">'+data.item.description+'</a></p>'+
-								'</div>'+
-								'<div class="col-xs-4 quantity-container">'+
-									'<input type="number" name="quantity" data-validation="required:1_min-value:1" value="'+data.quantity+'" />'+
-								'</div>'+
-								'<div class="col-xs-4 col-xs-offset-4 update button-container">'+
-									'<button class="btn btn-sm btn-primary pull-right js-update-order-item">Update</button>'+
-								'</div>'+
-								'<div class="col-xs-4 remove button-container">'+
-									'<button class="btn btn-sm btn-danger pull-right js-remove-order-item">Remove</button>'+
-								'</div>'+
-							'</div>';
+							var html = data.partial_view;
 
 							order.append(html);
 						}
