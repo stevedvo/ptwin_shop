@@ -13,6 +13,30 @@
 			$this->dal->closeConnexion();
 		}
 
+		public function verifyOrderItemRequest($request)
+		{
+			$item = false;
+
+			if (!is_numeric($request['order_item_id']))
+			{
+				return false;
+			}
+
+			$dalResult = $this->dal->getOrderItemById(intval($request['order_item_id']));
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$item = $dalResult->getResult();
+			}
+
+			if (!$item)
+			{
+				return false;
+			}
+
+			return $item;
+		}
+
 		public function getCurrentOrder()
 		{
 			$order = false;
@@ -53,7 +77,7 @@
 
 			if ($dalResult->getResult())
 			{
-				return $dalResult->getResult();
+				return $dalResult;
 			}
 
 			if (!is_null($dalResult->getException()))
@@ -65,7 +89,10 @@
 
 			if ($dalResult->getResult())
 			{
-				return $dalResult->getResult();
+				$order_item->setId($dalResult->getResult());
+				$dalResult->setResult($order_item);
+
+				return $dalResult;
 			}
 
 			return false;

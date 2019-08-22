@@ -78,6 +78,30 @@
 			return $dalResult->jsonSerialize();
 		}
 
+		public function checkOrderItem($request)
+		{
+			$order_item = $this->orders_service->verifyOrderItemRequest($request);
+
+			if (!$order_item)
+			{
+				return false;
+			}
+
+			$order_item_update = createOrderItem($request);
+			$order_item->setChecked($order_item_update->getChecked());
+
+			if (!entityIsValid($order_item))
+			{
+				return false;
+			}
+
+			$dalResult = $this->orders_service->updateOrderItem($order_item);
+
+			$this->orders_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
+
 		public function removeOrderItem($request)
 		{
 			if (!isset($request['order_item_id']) || !is_numeric($request['order_item_id']))
@@ -427,20 +451,22 @@
 			$order_item->setOrderId($order->getId());
 			$order_item->setItemId($item->getId());
 			$order_item->setQuantity($item->getDefaultQty());
-			$order_item->setItem($item);
+			$order_item->setChecked(0);
 
-			$order_item_id = $this->orders_service->addOrderItem($order_item);
+			$dalResult = $this->orders_service->addOrderItem($order_item);
 
-			if (!$order_item_id)
+			if (!$dalResult->getResult())
 			{
 				return false;
 			}
 
-			$order_item->setId($order_item_id);
+			$dalResult->getResult()->setItem($item);
+			$dalResult->setPartialView(getPartialView("ListOrderItem", ['order_item' => $dalResult->getResult()]));
+			$dalResult->setResult($dalResult->getResult()->jsonSerialize());
 
 			$this->items_service->closeConnexion();
 			$this->orders_service->closeConnexion();
 
-			return $order_item->jsonSerialize();
+			return $dalResult->jsonSerialize();
 		}
 	}

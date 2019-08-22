@@ -60,8 +60,9 @@
 		$order_id = isset($request['order_id']) ? $request['order_id'] : null;
 		$item_id = isset($request['item_id']) ? $request['item_id'] : null;
 		$quantity = isset($request['quantity']) ? intval($request['quantity']) : null;
+		$checked = isset($request['checked']) ? intval($request['checked']) : null;
 
-		$order_item = new OrderItem($id, $order_id, $item_id, $quantity);
+		$order_item = new OrderItem($id, $order_id, $item_id, $quantity, $checked);
 
 		return $order_item;
 	}
@@ -125,6 +126,19 @@
 							if (intval($property_value) < intval($value))
 							{
 								return false;
+							}
+							break;
+						case 'datatype':
+							{
+								switch ($value)
+								{
+									case 'boolean':
+										if ($property_value != 0 && $property_value != 1)
+										{
+											return false;
+										}
+									break;
+								}
 							}
 							break;
 					}

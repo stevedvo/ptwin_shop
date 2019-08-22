@@ -1611,6 +1611,96 @@ function manageOrders()
 		});
 	});
 
+	$(document).on("click", ".js-check-order-item", function()
+	{
+		var $this = $(this);
+		var form = $this.closest(".form");
+		var orderItemID = parseInt(form.data("order_item_id"));
+		var check = $this.data("check") == "check" ? 1 : $this.data("check") == "uncheck" ? 0 : null;
+
+		if (check == null)
+		{
+			toastr.error("Could not update Order Item");
+		}
+		else
+		{
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Orders",
+					action     : "checkOrderItem",
+					request    :
+					{
+						'order_item_id' : orderItemID,
+						'checked'       : check
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					if (data.exception != null)
+					{
+						toastr.error("Could not update Order Item: PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						if (!data.result)
+						{
+							toastr.error("Could not update Order Item: Unspecified error");
+							console.log(data);
+						}
+						else
+						{
+							form.removeClass("checked unchecked");
+
+							if (check == 1)
+							{
+								form.addClass("checked");
+							}
+							else if (check == 0)
+							{
+								form.addClass("unchecked");
+							}
+
+							toastr.success("Order Item successfully updated");
+						}
+					}
+				}
+				else
+				{
+					toastr.error("Could not update Order Item");
+					console.log(data);
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+
+	$(document).on("click", ".js-toggle-checked-items-visibility", function()
+	{
+		var $this = $(this);
+
+		if ($this.hasClass("checked-off"))
+		{
+			$(".result-item.checked").show();
+			$this.removeClass("checked-off").addClass("checked-on").text("Hide Checked Items");
+		}
+		else if ($this.hasClass("checked-on"))
+		{
+			$(".result-item.checked").hide();
+			$this.removeClass("checked-on").addClass("checked-off").text("Show Checked Items");
+		}
+	});
+
 	$(document).on("click", ".js-clear-current-order", function()
 	{
 		var form = $(this).closest(".form");
@@ -1894,23 +1984,9 @@ function manageOrders()
 						var order = $(".results-container.previous-order");
 						order.find(".no-results").remove();
 
-						if (order.find(".form[data-order_item_id='"+data.id+"']").length == 0)
+						if (order.find(".form[data-order_item_id='"+data.result.id+"']").length == 0)
 						{
-							var html =
-							'<div class="row form result-item" data-order_item_id="'+data.id+'">'+
-								'<div class="col-xs-8 description-container">'+
-									'<p><a href="'+constants.SITEURL+'/items/edit/'+data.item_id+'/">'+data.item.description+'</a></p>'+
-								'</div>'+
-								'<div class="col-xs-4 quantity-container">'+
-									'<input type="number" name="quantity" data-validation="required:1_min-value:1" value="'+data.quantity+'" />'+
-								'</div>'+
-								'<div class="col-xs-4 col-xs-offset-4 update button-container">'+
-									'<button class="btn btn-sm btn-primary pull-right js-update-order-item">Update</button>'+
-								'</div>'+
-								'<div class="col-xs-4 remove button-container">'+
-									'<button class="btn btn-sm btn-danger pull-right js-remove-order-item">Remove</button>'+
-								'</div>'+
-							'</div>';
+							var html = data.partial_view;
 
 							order.append(html);
 						}
