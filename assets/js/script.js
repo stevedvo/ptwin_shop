@@ -18,6 +18,8 @@ function initNavigation()
 	{
 		$("nav").toggleClass("nav-open");
 	});
+
+	$("main").css({"margin-top" : $("header").height()+15+"px"});
 }
 
 function globalFuncs()
