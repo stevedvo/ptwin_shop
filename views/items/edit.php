@@ -18,6 +18,7 @@
 		}
 		else
 		{
+			var_dump($item->getRecentOrders());
 ?>
 			<div class="row">
 				<div class="col-xs-12">

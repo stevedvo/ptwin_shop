@@ -13,10 +13,11 @@
 		private $validation;
 		private $departments;
 		private $orders;
+		private $recent_orders;
 		private $daily_consumption_overall;
 		private $daily_consumption_recent;
 
-		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $mute_temp = null, $mute_perm = null, $departments = null, $orders = null, $daily_consumption_overall = null, $daily_consumption_recent = null)
+		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $mute_temp = null, $mute_perm = null, $departments = null, $orders = null, $recent_orders = null, $daily_consumption_overall = null, $daily_consumption_recent = null)
 		{
 			$this->id = $id;
 			$this->description = $description;
@@ -39,6 +40,7 @@
 			];
 			$this->departments = $departments;
 			$this->orders = $orders;
+			$this->recent_orders = $recent_orders;
 			$this->daily_consumption_overall = $daily_consumption_overall;
 			$this->daily_consumption_recent = $daily_consumption_recent;
 		}
@@ -333,6 +335,55 @@
 			}
 
 			return $penultimate_order;
+		}
+
+		public function getRecentOrders()
+		{
+			if (!$this->recent_orders)
+			{
+				$this->calculateRecentOrders();
+			}
+
+			return $this->recent_orders;
+		}
+
+		public function setRecentOrders($orders)
+		{
+			$this->recent_orders = $orders;
+		}
+
+		public function addRecentOrder($order)
+		{
+			if (!is_array($this->recent_orders))
+			{
+				$this->recent_orders = [];
+			}
+
+			$this->recent_orders[$order->getId()] = $order;
+		}
+
+		public function calculateRecentOrders()
+		{
+			$cutoff_date = new DateTime();
+			$cutoff_date->modify("-1 month");
+			$break = false;
+
+			if ($this->hasOrders())
+			{
+				foreach ($this->orders as $order_id => $order)
+				{
+					if (!$break)
+					{
+						$this->addRecentOrder($order);
+						$interval = $order->getDateOrdered()->diff($cutoff_date);
+
+						if (!$interval->invert)
+						{
+							$break = true;
+						}
+					}
+				}
+			}
 		}
 
 		public function calculateDailyConsumptionOverall()
