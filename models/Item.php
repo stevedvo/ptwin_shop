@@ -419,18 +419,40 @@
 
 		public function calculateDailyConsumptionRecent()
 		{
-			$consumption = $penultimate_order = $last_order = false;
+			$from_date = $to_date = $total_recent_qty = $latest_recent_qty = $consumption = null;
 
-			$penultimate_order = $this->getPenultimateOrder();
-			$last_order = $this->getLastOrder();
-
-			if ($penultimate_order && $last_order)
+			if ($this->getRecentOrders())
 			{
-				$days = $penultimate_order->getDateOrdered()->diff($last_order->getDateOrdered())->format('%a');
+				foreach ($this->recent_orders as $order_id => $order)
+				{
+					if (is_null($from_date))
+					{
+						$from_date = $order->getDateOrdered();
+						$to_date = $order->getDateOrdered();
+						$total_recent_qty = $order->getOrderItembyItemId($this->id)->getQuantity();
+						$latest_recent_qty = $order->getOrderItembyItemId($this->id)->getQuantity();
+					}
+					else
+					{
+						$total_recent_qty+= $order->getOrderItembyItemId($this->id)->getQuantity();
+
+						if ($from_date->diff($order->getDateOrdered())->invert)
+						{
+							$from_date = $order->getDateOrdered();
+						}
+						else
+						{
+							$to_date = $order->getDateOrdered();
+							$latest_recent_qty = $order->getOrderItembyItemId($this->id)->getQuantity();
+						}
+					}
+				}
+
+				$days = $from_date->diff($to_date)->format('%a');
 
 				if ($days != '0')
 				{
-					$total = $penultimate_order->getOrderItembyItemId($this->id)->getQuantity();
+					$total = $total_recent_qty - $latest_recent_qty;
 					$consumption = $total / $days;
 				}
 			}
