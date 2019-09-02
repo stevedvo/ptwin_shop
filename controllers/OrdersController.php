@@ -307,19 +307,7 @@
 
 		public function addListToOrder($request)
 		{
-			if (!isset($request['list_id']) || !is_numeric($request['list_id']) || !isset($request['order_id']) || !is_numeric($request['order_id']))
-			{
-				return false;
-			}
-
-			$dalResult = $this->lists_service->getListById(intval($request['list_id']));
-
-			if (!is_null($dalResult->getException()))
-			{
-				return false;
-			}
-
-			$list = $dalResult->getResult();
+			$list = $this->lists_service->verifyListRequest($request);
 
 			if (!$list)
 			{
@@ -331,14 +319,7 @@
 				return false;
 			}
 
-			$dalResult = $this->orders_service->getOrderById(intval($request['order_id']));
-
-			if (!is_null($dalResult->getException()))
-			{
-				return false;
-			}
-
-			$order = $dalResult->getResult();
+			$order = $this->orders_service->verifyOrderRequest($request);
 
 			if (!$order)
 			{
@@ -390,6 +371,7 @@
 					$order_item->setOrderId($order->getId());
 					$order_item->setItemId($item->getId());
 					$order_item->setQuantity($item->getDefaultQty());
+					$order_item->setChecked(0);
 					$order_item->setItem($item);
 
 					$new_order_items[] = $order_item;

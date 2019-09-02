@@ -13,6 +13,30 @@
 			$this->dal->closeConnexion();
 		}
 
+		public function verifyOrderRequest($request)
+		{
+			$order = false;
+
+			if (!is_numeric($request['order_id']))
+			{
+				return false;
+			}
+
+			$dalResult = $this->dal->getOrderById(intval($request['order_id']));
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$order = $dalResult->getResult();
+			}
+
+			if (!$order)
+			{
+				return false;
+			}
+
+			return $order;
+		}
+
 		public function verifyOrderItemRequest($request)
 		{
 			$item = false;
@@ -109,6 +133,10 @@
 					if ($dalResult->getResult())
 					{
 						$order_item->setId($dalResult->getResult());
+					}
+					else
+					{
+						return false;
 					}
 				}
 
