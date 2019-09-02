@@ -13,6 +13,30 @@
 			$this->dal->closeConnexion();
 		}
 
+		public function verifyListRequest($request)
+		{
+			$list = false;
+
+			if (!is_numeric($request['list_id']))
+			{
+				return false;
+			}
+
+			$dalResult = $this->dal->getListById(intval($request['list_id']));
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$list = $dalResult->getResult();
+			}
+
+			if (!$list)
+			{
+				return false;
+			}
+
+			return $list;
+		}
+
 		public function addList($list)
 		{
 			return $this->dal->addList($list);
