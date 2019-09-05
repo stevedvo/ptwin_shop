@@ -211,6 +211,24 @@ main
 	word-break: break-all;
 }
 
+.results-container.item-order-history .results-body a
+{
+	display: flex;
+	border: 1px solid #fff;
+}
+
+.results-container.item-order-history .results-body a:hover
+{
+	background-color: #eee;
+	border: 1px solid #aaa;
+}
+
+.results-container.item-order-history .results-body p
+{
+	margin: 0px;
+	line-height: 24px;
+}
+
 .department-items-container .row>div,
 .list-items-container .row>div
 {

@@ -195,17 +195,19 @@
 									{
 ?>
 										<div class="row">
-											<div class="col-xs-4 order-result-item order-id-container">
-												<p>#<?= $order->getId(); ?></p>
-											</div>
+											<a href="<?= SITEURL; ?>/orders/view/<?= $order->getId(); ?>/">
+												<div class="col-xs-4 order-result-item order-id-container">
+													<p>#<?= $order->getId(); ?></p>
+												</div>
 
-											<div class="col-xs-5 order-result-item order-date-container">
-												<p><?= $order->getDateOrdered()->format('d-m-Y'); ?></p>
-											</div>
+												<div class="col-xs-5 order-result-item order-date-container">
+													<p><?= $order->getDateOrdered()->format('d-m-Y'); ?></p>
+												</div>
 
-											<div class="col-xs-3 order-result-item order-quantity-container">
-												<p><?= $order->getOrderItembyItemId($item->getId())->getQuantity(); ?></p>
-											</div>
+												<div class="col-xs-3 order-result-item order-quantity-container">
+													<p><?= $order->getOrderItembyItemId($item->getId())->getQuantity(); ?></p>
+												</div>
+											</a>
 										</div>
 <?php
 									}
