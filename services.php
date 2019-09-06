@@ -3,3 +3,4 @@
 	require_once('services/ItemsService.php');
 	require_once('services/ListsService.php');
 	require_once('services/OrdersService.php');
+	require_once('services/PackSizesService.php');

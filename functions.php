@@ -67,6 +67,17 @@
 		return $order_item;
 	}
 
+	function createPackSize($request)
+	{
+		$id = isset($request['packsize_id']) ? intval($request['packsize_id']) : null;
+		$name = isset($request['packsize_name']) ? $request['packsize_name'] : null;
+		$short_name = isset($request['packsize_short_name']) ? $request['packsize_short_name'] : null;
+
+		$packsize = new PackSize($id, $name, $short_name);
+
+		return $packsize;
+	}
+
 	function getValidationString($object, $property)
 	{
 		if (is_null($object) || !is_object($object) || is_null($property) || empty($property))
