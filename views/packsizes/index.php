@@ -36,9 +36,7 @@
 					{
 						foreach ($packsizes as $packsize_id => $packsize)
 						{
-?>
-							<p><a href="<?= SITEURL; ?>/packsizes/edit/<?= $packsize->getId(); ?>/"><?= $packsize->getName(); ?> [<?= $packsize->getShortName(); ?>]</a></p>
-<?php
+							echo getPartialView("PackSizeListItem", ['item' => $packsize]);
 						}
 					}
 ?>

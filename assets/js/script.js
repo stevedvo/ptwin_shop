@@ -8,6 +8,7 @@ $(function()
 	manageLists();
 	manageDepts();
 	manageOrders();
+	managePackSizes();
 	quickAdd();
 	adminFuncs();
 });
@@ -1311,6 +1312,82 @@ function validateForm(form)
 	}
 
 	return result;
+}
+
+function managePackSizes()
+{
+	$(document).on("click", ".js-add-packsize", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			var name = form.find("[name='packsize_name']").val();
+			var shortName = form.find("[name='packsize_short_name']").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "PackSizes",
+					action     : "addPackSize",
+					request    :
+					{
+						'packsize_name'       : name,
+						'packsize_short_name' : shortName
+					}
+				}
+			}).done(function(data)
+			{
+				console.log(data);
+				if (data)
+				{
+					if (data.exception != null)
+					{
+						toastr.error("PDOException: "+data.exception.errorInfo[2]);
+					}
+					else if (data.partial_view != null)
+					{
+						var html = data.partial_view;
+
+						$(".results-container").append(html);
+						$(".results-container").find(".no-results").remove();
+						form.find(".input-error").removeClass("input-error");
+						form.find("[name='packsize_name']").val("");
+						form.find("[name='packsize_short_name']").val("");
+
+						toastr.success("New Pack Size successfully added");
+					}
+				}
+				else
+				{
+					toastr.error("Could not save Pack Size");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+
 }
 
 function quickAdd()

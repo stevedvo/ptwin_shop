@@ -35,32 +35,51 @@
 			renderPage($pageData);
 		}
 
-		// public function addPackSize($request)
-		// {
-		// 	$packsize = createPackSize($request);
+		public function addPackSize($request)
+		{
+			$packsize = createPackSize($request);
 
-		// 	if (!entityIsValid($packsize))
-		// 	{
-		// 		return false;
-		// 	}
+			if (!entityIsValid($packsize))
+			{
+				return false;
+			}
 
-		// 	$dalResult = $this->packsizes_service->getPackSizeByName($packsize->getName());
+			$dalResult = $this->packsizes_service->getPackSizeByName($packsize->getName());
 
-		// 	if (!is_null($dalResult->getException()))
-		// 	{
-		// 		return false;
-		// 	}
+			if (!is_null($dalResult->getException()))
+			{
+				return $dalResult;
+			}
 
-		// 	if ($dalResult->getResult() instanceof PackSize)
-		// 	{
-		// 		return false;
-		// 	}
+			if ($dalResult->getResult() instanceof PackSize)
+			{
+				return false;
+			}
 
-		// 	$dalResult = $this->packsizes_service->addPackSize($packsize);
-		// 	$this->packsizes_service->closeConnexion();
+			$dalResult = $this->packsizes_service->getPackSizeByShortName($packsize->getShortName());
 
-		// 	return $dalResult->jsonSerialize();
-		// }
+			if (!is_null($dalResult->getException()))
+			{
+				return $dalResult->jsonSerialize();
+			}
+
+			if ($dalResult->getResult() instanceof PackSize)
+			{
+				return false;
+			}
+
+			$dalResult = $this->packsizes_service->addPackSize($packsize);
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$packsize->setId($dalResult->getResult());
+				$dalResult->setPartialView(getPartialView("PackSizeListItem", ['item' => $packsize]));
+			}
+
+			$this->packsizes_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
 
 		// public function Edit($request = null)
 		// {
