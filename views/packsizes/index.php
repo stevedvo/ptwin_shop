@@ -9,8 +9,10 @@
 				<div id="add-packsize" class="form">
 					<fieldset>
 						<legend>Add Pack Size</legend>
-						<label for="packsize-name">Pack Size Name:</label>
-						<input id="packsize-name" type="text" name="packsize_name" placeholder="Required" data-validation="<?= getValidationString($packsizePrototype, "Name"); ?>" />
+						<div class="row">
+							<label class="col-xs-12" for="packsize-name">Pack Size Name:</label>
+							<input class="col-xs-12" id="packsize-name" type="text" name="packsize_name" placeholder="Required" data-validation="<?= getValidationString($packsizePrototype, "Name"); ?>" />
+						</div>
 						<br />
 						<label for="packsize-shortname">Short Name:</label>
 						<input id="packsize-shortname" type="text" name="packsize_short_name" placeholder="Required" data-validation="<?= getValidationString($packsizePrototype, "ShortName"); ?>" />

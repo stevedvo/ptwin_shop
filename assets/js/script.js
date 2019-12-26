@@ -1356,7 +1356,6 @@ function managePackSizes()
 				}
 			}).done(function(data)
 			{
-				console.log(data);
 				if (data)
 				{
 					if (data.exception != null)

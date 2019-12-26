@@ -72,7 +72,7 @@
 
 			if (!is_null($dalResult->getResult()))
 			{
-				$packsize->setId($dalResult->getResult());
+				$packsize = $dalResult->getResult();
 				$dalResult->setPartialView(getPartialView("PackSizeListItem", ['item' => $packsize]));
 			}
 
