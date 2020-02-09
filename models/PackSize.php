@@ -13,14 +13,8 @@
 			$this->short_name = $short_name;
 			$this->validation =
 			[
-				'Name' =>
-				[
-					'required' => true
-				],
-				'ShortName' =>
-				[
-					'required' => true
-				]
+				'Name'      => ['required' => true],
+				'ShortName' => ['required' => true]
 			];
 		}
 

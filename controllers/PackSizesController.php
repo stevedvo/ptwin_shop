@@ -81,52 +81,52 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		// public function Edit($request = null)
-		// {
-		// 	$packsize = $all_packsizes = $all_items = false;
+		public function Edit($request = null)
+		{
+			$packsize = $all_packsizes = $all_items = false;
 
-		// 	if (is_numeric($request))
-		// 	{
-		// 		$dalResult = $this->packsizes_service->getPackSizeById(intval($request));
+			if (is_numeric($request))
+			{
+				$dalResult = $this->packsizes_service->getPackSizeById(intval($request));
 
-		// 		if (!is_null($dalResult->getResult()))
-		// 		{
-		// 			$packsize = $dalResult->getResult();
-		// 		}
+				if (!is_null($dalResult->getResult()))
+				{
+					$packsize = $dalResult->getResult();
+				}
 
-		// 		$dalResult = $this->packsizes_service->getAllPackSizes();
+				// $dalResult = $this->packsizes_service->getAllPackSizes();
 
-		// 		if (!is_null($dalResult->getResult()))
-		// 		{
-		// 			$all_packsizes = $dalResult->getResult();
-		// 		}
+				// if (!is_null($dalResult->getResult()))
+				// {
+				// 	$all_packsizes = $dalResult->getResult();
+				// }
 
-		// 		$dalResult = $this->items_service->getAllItems();
+				// $dalResult = $this->items_service->getAllItems();
 
-		// 		if (!is_null($dalResult->getResult()))
-		// 		{
-		// 			$all_items = $dalResult->getResult();
-		// 		}
-		// 	}
+				// if (!is_null($dalResult->getResult()))
+				// {
+				// 	$all_items = $dalResult->getResult();
+				// }
+			}
 
-		// 	$this->packsizes_service->closeConnexion();
-		// 	$this->items_service->closeConnexion();
+			$this->packsizes_service->closeConnexion();
+			// $this->items_service->closeConnexion();
 
-		// 	$pageData =
-		// 	[
-		// 		'page_title' => 'Edit PackSize',
-		// 		'template'   => 'views/packsizes/edit.php',
-		// 		'page_data'  =>
-		// 		[
-		// 			'packsize'      => $packsize,
-		// 			'all_packsizes' => $all_packsizes,
-		// 			'all_items' => $all_items
-		// 		]
-		// 	];
+			$pageData =
+			[
+				'page_title' => 'Edit PackSize',
+				'template'   => 'views/packsizes/edit.php',
+				'page_data'  =>
+				[
+					'packsize'      => $packsize,
+					'all_packsizes' => $all_packsizes,
+					'all_items'     => $all_items
+				]
+			];
 
-		// 	renderPage($pageData);
-		// 	include_once('views/packsizes/edit.php');
-		// }
+			renderPage($pageData);
+			include_once('views/packsizes/edit.php');
+		}
 
 		// public function editPackSize($request)
 		// {

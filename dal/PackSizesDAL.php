@@ -123,44 +123,31 @@
 			return $result;
 		}
 
-		// public function getPackSizeById($packsize_id)
-		// {
-		// 	$result = new DalResult();
-		// 	$packsize = false;
+		public function getPackSizeById($packsize_id)
+		{
+			$result = new DalResult();
+			$packsize = false;
 
-		// 	try
-		// 	{
-		// 		$query = $this->ShopDb->conn->prepare("SELECT l.packsize_id, l.name AS packsize_name, i.item_id, i.description, i.comments, i.default_qty, i.link, i.primary_dept, i.mute_temp, i.mute_perm FROM pack_sizes AS l LEFT JOIN items AS i ON (l.packsize_id = i.packsize_id) WHERE l.packsize_id = :packsize_id ORDER BY i.description");
-		// 		$query->execute([':packsize_id' => $packsize_id]);
-		// 		$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT p.id AS packsize_id, p.name As packsize_name, p.short_name AS packsize_short_name FROM pack_sizes AS p WHERE p.id = :packsize_id");
+				$query->execute([':packsize_id' => $packsize_id]);
+				$row = $query->fetch(PDO::FETCH_ASSOC);
 
-		// 		if ($rows)
-		// 		{
-		// 			foreach ($rows as $row)
-		// 			{
-		// 				if (!$packsize)
-		// 				{
-		// 					$packsize = createPackSize($row);
-		// 				}
+				if ($row)
+				{
+					$packsize = createPackSize($row);
+				}
 
-		// 				$item = createItem($row);
+				$result->setResult($packsize);
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
 
-		// 				if (entityIsValid($item))
-		// 				{
-		// 					$packsize->addItem($item);
-		// 				}
-		// 			}
-		// 		}
-
-		// 		$result->setResult($packsize);
-		// 	}
-		// 	catch(PDOException $e)
-		// 	{
-		// 		$result->setException($e);
-		// 	}
-
-		// 	return $result;
-		// }
+			return $result;
+		}
 
 		// public function updatePackSize($packsize)
 		// {
