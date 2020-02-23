@@ -1,6 +1,7 @@
 <?php
 	$item = $response['item'];
 	$lists = $response['lists'];
+	$packsizes = $response['packsizes'];
 	$all_departments = $response['all_departments'];
 ?>
 <main class="wrapper">
@@ -63,6 +64,25 @@
 										{
 ?>
 											<option value="<?= $list->getId(); ?>" <?= $list->getId() == $item->getListId() ? 'selected' : ''; ?>><?= $list->getName(); ?></option>
+<?php
+										}
+									}
+?>
+								</select>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="packsize-container col-xs-12">
+								<label for="packsize_id">Packsize:</label>
+								<select id="packsize_id" name="packsize_id" data-validation="<?= getValidationString($item, "PackSizeId"); ?>">
+<?php
+									if (is_array($packsizes))
+									{
+										foreach ($packsizes as $packsize_id => $packsize)
+										{
+?>
+											<option value="<?= $packsize->getId(); ?>" <?= $packsize->getId() == $item->getPackSizeId() ? 'selected' : ''; ?>><?= $packsize->getName()." [".$packsize->getShortName()."]"; ?></option>
 <?php
 										}
 									}
@@ -205,7 +225,7 @@
 												</div>
 
 												<div class="col-xs-3 order-result-item order-quantity-container">
-													<p><?= $order->getOrderItembyItemId($item->getId())->getQuantity(); ?></p>
+													<p><?= $order->getOrderItembyItemId($item->getId())->getQuantity()." ".$item->getPackSizeShortName(); ?></p>
 												</div>
 											</a>
 										</div>
@@ -227,7 +247,7 @@
 							</div>
 
 							<div class="col-xs-4 statistic-container">
-								<p><?= $item->getTotalOrdered(); ?></p>
+								<p><?= $item->getTotalOrdered()." ".$item->getPackSizeShortName(); ?></p>
 							</div>
 						</div>
 
@@ -243,7 +263,7 @@
 
 						<div class="row">
 							<div class="col-xs-4">
-								<p>Use/wk</p>
+								<p><?= $item->getPackSizeShortName(); ?>/wk</p>
 							</div>
 
 							<div class="col-xs-4">
@@ -261,11 +281,11 @@
 							</div>
 
 							<div class="col-xs-4">
-								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(0, "overall") : 'N/A'; ?></p>
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(0, "overall")." ".$item->getPackSizeShortName() : 'N/A'; ?></p>
 							</div>
 
 							<div class="col-xs-4">
-								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(0, "recent") : 'N/A'; ?></p>
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(0, "recent")." ".$item->getPackSizeShortName() : 'N/A'; ?></p>
 							</div>
 						</div>
 
@@ -275,11 +295,11 @@
 							</div>
 
 							<div class="col-xs-4">
-								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(7, "overall") : 'N/A'; ?></p>
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(7, "overall")." ".$item->getPackSizeShortName() : 'N/A'; ?></p>
 							</div>
 
 							<div class="col-xs-4">
-								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(7, "recent") : 'N/A'; ?></p>
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(7, "recent")." ".$item->getPackSizeShortName() : 'N/A'; ?></p>
 							</div>
 						</div>
 					</div>

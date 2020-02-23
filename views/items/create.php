@@ -1,6 +1,7 @@
 <?php
 	$item = $response['item'];
 	$lists = $response['lists'];
+	$packsizes = $response['packsizes'];
 ?>
 <main class="wrapper">
 	<div class="container">
@@ -48,6 +49,25 @@
 									{
 ?>
 										<option value="<?= $list->getId(); ?>"><?= $list->getName(); ?></option>
+<?php
+									}
+								}
+?>
+							</select>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="packsize-container col-xs-12">
+							<label for="packsize_id">Packsize:</label>
+							<select id="packsize_id" name="packsize_id" data-validation="<?= getValidationString($item, "PackSizeId"); ?>">
+<?php
+								if (is_array($packsizes))
+								{
+									foreach ($packsizes as $packsize_id => $packsize)
+									{
+?>
+										<option value="<?= $packsize->getId(); ?>"><?= $packsize->getName()." [".$packsize->getShortName()."]"; ?></option>
 <?php
 									}
 								}

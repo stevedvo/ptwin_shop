@@ -38,8 +38,9 @@
 		$primary_dept = isset($request['primary_dept']) ? intval($request['primary_dept']) : null;
 		$mute_temp = isset($request['mute_temp']) ? intval($request['mute_temp']) : 0;
 		$mute_perm = isset($request['mute_perm']) ? intval($request['mute_perm']) : 0;
+		$packsize_id = isset($request['packsize_id']) ? intval($request['packsize_id']) : null;
 
-		$item = new Item($id, $description, $comments, $default_qty, $list_id, $link, $primary_dept, $mute_temp, $mute_perm);
+		$item = new Item($id, $description, $comments, $default_qty, $list_id, $link, $primary_dept, $mute_temp, $mute_perm, $packsize_id);
 
 		return $item;
 	}

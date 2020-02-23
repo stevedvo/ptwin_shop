@@ -62,8 +62,9 @@ function manageItems()
 			var comments = form.find("[name='comments']").val();
 			var defaultQty = form.find("[name='default-qty']").val();
 			var link = form.find("[name='link']").val();
-			var listID = form.find("[name='list-id'] option:selected").val();
+			var listID = parseInt(form.find("[name='list-id'] option:selected").val());
 			var addToOrder = form.find("[name='add-to-current-order']").prop("checked") ? 1 : 0;
+			var packSizeID = parseInt(form.find("[name='packsize_id'] option:selected").val());
 
 			$.ajax(
 			{
@@ -81,7 +82,8 @@ function manageItems()
 						'default_qty'  : defaultQty,
 						'link'         : link,
 						'list_id'      : listID,
-						'add_to_order' : addToOrder
+						'add_to_order' : addToOrder,
+						'packsize_id'  : packSizeID
 					}
 				}
 			}).done(function(data)
@@ -145,6 +147,7 @@ function manageItems()
 			var listID = parseInt(form.find("[name='list-id'] option:selected").val());
 			var muteTemp = form.find("[name='mute-temp']").prop("checked") == true ? 1 : 0;
 			var mutePerm = form.find("[name='mute-perm']").prop("checked") == true ? 1 : 0;
+			var packSizeID = parseInt(form.find("[name='packsize_id'] option:selected").val());
 
 			$.ajax(
 			{
@@ -164,7 +167,8 @@ function manageItems()
 						'link'        : link,
 						'list_id'     : listID,
 						'mute_temp'   : muteTemp,
-						'mute_perm'   : mutePerm
+						'mute_perm'   : mutePerm,
+						'packsize_id' : packSizeID
 					}
 				}
 			}).done(function(data)
@@ -1551,21 +1555,7 @@ function quickAdd()
 
 							if (currentOrder.find(".form[data-order_item_id='"+data.id+"']").length == 0)
 							{
-								var html =
-								'<div class="row form result-item" data-order_item_id="'+data.id+'">'+
-									'<div class="col-xs-8 description-container">'+
-										'<p><a href="'+constants.SITEURL+'/items/edit/'+data.item_id+'/">'+data.item.description+'</a></p>'+
-									'</div>'+
-									'<div class="col-xs-4 quantity-container">'+
-										'<input type="number" name="quantity" data-validation="required:1_min-value:1" value="'+data.quantity+'" />'+
-									'</div>'+
-									'<div class="col-xs-4 col-xs-offset-4 update button-container">'+
-										'<button class="btn btn-sm btn-primary pull-right js-update-order-item">Update</button>'+
-									'</div>'+
-									'<div class="col-xs-4 remove button-container">'+
-										'<button class="btn btn-sm btn-danger pull-right js-remove-order-item">Remove</button>'+
-									'</div>'+
-								'</div>';
+								var html = data.partial_view;
 
 								currentOrder.append(html);
 							}

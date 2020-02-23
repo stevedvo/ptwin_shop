@@ -1,0 +1,1 @@
+ALTER TABLE `items` ADD `packsize_id` INT NOT NULL DEFAULT '1' AFTER `mute_perm`;
