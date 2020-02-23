@@ -1387,6 +1387,71 @@ function managePackSizes()
 		}
 	});
 
+	$(document).on("click", ".js-edit-packsize", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			var id = parseInt(form.data("packsize_id"));
+			var name = form.find("[name='packsize_name']").val();
+			var shortName = form.find("[name='packsize_short_name']").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "PackSizes",
+					action     : "editPackSize",
+					request    :
+					{
+						'packsize_id'         : id,
+						'packsize_name'       : name,
+						'packsize_short_name' : shortName
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					if (data.exception == null)
+					{
+						toastr.success("PackSize successfully updated");
+					}
+					else
+					{
+						toastr.error("PDOException");
+						console.log(data);
+					}
+				}
+				else
+				{
+					toastr.error("Could not save PackSize");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
 }
 
 function quickAdd()

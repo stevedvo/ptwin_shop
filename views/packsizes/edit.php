@@ -25,15 +25,15 @@
 						<h3>Edit <?= $packsize->getName(); ?></h3>
 						<div class="row">
 							<div class="name-container col-xs-12">
-								<label for="name">Name:</label>
-								<input id="name" type="text" name="name" placeholder="Required" value="<?= $packsize->getName(); ?>" data-validation="<?= getValidationString($packsize, "Name"); ?>" />
+								<label for="packsize_name">Name:</label>
+								<input id="packsize_name" type="text" name="packsize_name" placeholder="Required" value="<?= $packsize->getName(); ?>" data-validation="<?= getValidationString($packsize, "Name"); ?>" />
 							</div>
 						</div>
 
 						<div class="row">
 							<div class="comments-container col-xs-12">
-								<label for="shortname">Short Name:</label>
-								<input id="shortname" type="text" name="shortname" value="<?= $packsize->getShortName(); ?>" data-validation="<?= getValidationString($packsize, "ShortName"); ?>" />
+								<label for="packsize_short_name">Short Name:</label>
+								<input id="packsize_short_name" type="text" name="packsize_short_name" placeholder="Required" value="<?= $packsize->getShortName(); ?>" data-validation="<?= getValidationString($packsize, "ShortName"); ?>" />
 							</div>
 						</div>
 						<input type="submit" class="btn btn-primary js-edit-packsize" value="Edit packsize" />

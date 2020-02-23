@@ -62,10 +62,10 @@
 			return $this->dal->getPackSizeById($packsize_id);
 		}
 
-		// public function updatePackSize($packsize)
-		// {
-		// 	return $this->dal->updatePackSize($packsize);
-		// }
+		public function updatePackSize($packsize)
+		{
+			return $this->dal->updatePackSize($packsize);
+		}
 
 		// public function removePackSize($packsize)
 		// {

@@ -149,26 +149,27 @@
 			return $result;
 		}
 
-		// public function updatePackSize($packsize)
-		// {
-		// 	$result = new DalResult();
+		public function updatePackSize($packsize)
+		{
+			$result = new DalResult();
 
-		// 	try
-		// 	{
-		// 		$query = $this->ShopDb->conn->prepare("UPDATE pack_sizes SET name = :name WHERE packsize_id = :packsize_id");
-		// 		$result->setResult($query->execute(
-		// 		[
-		// 			':name'    => $packsize->getName(),
-		// 			':packsize_id' => $packsize->getId()
-		// 		]));
-		// 	}
-		// 	catch(PDOException $e)
-		// 	{
-		// 		$result->setException($e);
-		// 	}
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE pack_sizes SET name = :name, short_name = :short_name WHERE id = :packsize_id");
+				$result->setResult($query->execute(
+				[
+					':packsize_id' => $packsize->getId(),
+					':name'        => $packsize->getName(),
+					':short_name'  => $packsize->getShortName()
+				]));
+			}
+			catch(PDOException $e)
+			{
+				$result->setException($e);
+			}
 
-		// 	return $result;
-		// }
+			return $result;
+		}
 
 		// public function removePackSize($packsize)
 		// {
