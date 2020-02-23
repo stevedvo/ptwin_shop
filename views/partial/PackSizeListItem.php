@@ -1,8 +1,7 @@
 <?php
 	$packsize = $params['item'];
 ?>
-<div class="row form result-item packsize-list-item">
-	<input type="hidden" name="packsize_id" value="<?= $packsize->getId(); ?>" />
+<div class="row form result-item packsize-list-item" data-packsize_id="<?= $packsize->getId(); ?>">
 	<div class="col-xs-8 packsize-name-container">
 		<input type="text" name="packsize_name" placeholder="Required" data-validation="<?= getValidationString($packsize, "Name"); ?>" value="<?= $packsize->getName(); ?>" />
 	</div>
@@ -16,6 +15,6 @@
 	</div>
 
 	<div class="col-xs-4 button-container text-right">
-		<button class="btn btn-sm btn-danger js-update-packsize">Update</button>
+		<button class="btn btn-sm btn-danger js-edit-packsize">Update</button>
 	</div>
 </div>
