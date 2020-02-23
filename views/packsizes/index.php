@@ -7,18 +7,20 @@
 		<div class="row">
 			<div class="col-xs-12">
 				<div id="add-packsize" class="form">
-					<fieldset>
-						<legend>Add Pack Size</legend>
-						<div class="row">
-							<label class="col-xs-12" for="packsize-name">Pack Size Name:</label>
-							<input class="col-xs-12" id="packsize-name" type="text" name="packsize_name" placeholder="Required" data-validation="<?= getValidationString($packsizePrototype, "Name"); ?>" />
+					<h3>Add Pack Size</h3>
+					<div class="row">
+						<div class="name-container col-xs-12">
+							<label for="packsize_name">Name:</label>
+							<input id="packsize_name" type="text" name="packsize_name" placeholder="Required" data-validation="<?= getValidationString($packsizePrototype, "Name"); ?>" />
 						</div>
-						<br />
-						<label for="packsize-shortname">Short Name:</label>
-						<input id="packsize-shortname" type="text" name="packsize_short_name" placeholder="Required" data-validation="<?= getValidationString($packsizePrototype, "ShortName"); ?>" />
-						<br/><br/>
-						<input type="submit" class="btn btn-primary js-add-packsize" value="Add Pack Size" />
-					</fieldset><br/>
+
+						<div class="shortname-container col-xs-12">
+							<label for="packsize_short_name">Short Name:</label>
+							<input id="packsize_short_name" type="text" name="packsize_short_name" placeholder="Required" data-validation="<?= getValidationString($packsizePrototype, "ShortName"); ?>" />
+						</div>
+					</div>
+					<br />
+					<input type="submit" class="btn btn-primary js-add-packsize" value="Add Pack Size" />
 				</div>
 			</div>
 		</div>

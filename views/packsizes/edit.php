@@ -28,14 +28,13 @@
 								<label for="packsize_name">Name:</label>
 								<input id="packsize_name" type="text" name="packsize_name" placeholder="Required" value="<?= $packsize->getName(); ?>" data-validation="<?= getValidationString($packsize, "Name"); ?>" />
 							</div>
-						</div>
 
-						<div class="row">
-							<div class="comments-container col-xs-12">
+							<div class="shortname-container col-xs-12">
 								<label for="packsize_short_name">Short Name:</label>
 								<input id="packsize_short_name" type="text" name="packsize_short_name" placeholder="Required" value="<?= $packsize->getShortName(); ?>" data-validation="<?= getValidationString($packsize, "ShortName"); ?>" />
 							</div>
 						</div>
+						<br />
 						<input type="submit" class="btn btn-primary js-edit-packsize" value="Edit packsize" />
 					</div>
 				</div>
