@@ -380,22 +380,23 @@
 
 			$order_items = $this->orders_service->addOrderItems($new_order_items);
 
-			$saved_order_items = false;
+			$partial_view = "";
+			$dalResult = new DalResult();
 
 			if (is_array($order_items))
 			{
-				$saved_order_items = [];
-
 				foreach ($order_items as $order_item)
 				{
-					$saved_order_items[$order_item->getId()] = $order_item->jsonSerialize();
+					$partial_view.= getPartialView("CurrentOrderItem", ['order_item' => $order_item]);
 				}
+
+				$dalResult->setPartialView($partial_view);
 			}
 
 			$this->lists_service->closeConnexion();
 			$this->orders_service->closeConnexion();
 
-			return $saved_order_items;
+			return $dalResult->jsonSerialize();
 		}
 
 		public function addItemToPreviousOrder($request)
