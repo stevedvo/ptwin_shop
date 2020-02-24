@@ -113,4 +113,30 @@
 		{
 			$this->item = $item;
 		}
+
+		public function getItemDescription()
+		{
+			$item_description = null;
+			$item = $this->getItem();
+
+			if (!is_null($item))
+			{
+				$item_description = $item->getDescription();
+			}
+
+			return $item_description;
+		}
+
+		public function getItemPackSizeShortName()
+		{
+			$item_packSizeShortName = "";
+			$item = $this->getItem();
+
+			if ($item instanceof Item)
+			{
+				$item_packSizeShortName = $item->getPackSizeShortName();
+			}
+
+			return $item_packSizeShortName;
+		}
 	}

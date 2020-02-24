@@ -183,17 +183,8 @@
 
 		public function View($request = null)
 		{
-			$order = $departments = false;
-
-			if (is_numeric($request))
-			{
-				$dalResult = $this->orders_service->getOrderById(intval($request));
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$order = $dalResult->getResult();
-				}
-			}
+			$departments = false;
+			$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
 
 			if ($order)
 			{
@@ -224,17 +215,8 @@
 
 		public function Edit($request = null)
 		{
-			$order = $departments = false;
-
-			if (is_numeric($request))
-			{
-				$dalResult = $this->orders_service->getOrderById(intval($request));
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$order = $dalResult->getResult();
-				}
-			}
+			$departments = false;
+			$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
 
 			if ($order)
 			{

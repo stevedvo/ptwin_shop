@@ -4,12 +4,16 @@
 <div class="row form result-item <?= $order_item->getChecked() ? 'checked' : 'unchecked'; ?>" data-order_item_id="<?= $order_item->getId(); ?>">
 	<div class="col-xs-12 order-item-details">
 		<div class="row">
-			<div class="col-xs-8 description-container">
-				<p><a href="<?= SITEURL; ?>/items/edit/<?= $order_item->getItemId(); ?>/"><?= $order_item->getItem()->getDescription(); ?></a></p>
+			<div class="col-xs-7 description-container">
+				<p><a href="<?= SITEURL; ?>/items/edit/<?= $order_item->getItemId(); ?>/"><?= $order_item->getItemDescription(); ?></a></p>
 			</div>
 
-			<div class="col-xs-4 quantity-container">
+			<div class="col-xs-3 quantity-container">
 				<input type="number" name="quantity" data-validation="<?= getValidationString($order_item, "Quantity"); ?>" value="<?= $order_item->getQuantity(); ?>" />
+			</div>
+
+			<div class="col-xs-2 packsize-container">
+				<p><?= $order_item->getItemPackSizeShortName(); ?></p>
 			</div>
 		</div>
 	</div>
