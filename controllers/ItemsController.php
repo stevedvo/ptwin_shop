@@ -240,17 +240,9 @@
 
 		public function Edit($request = null)
 		{
-			$item = $lists = $departments = false;
+			$lists = $departments = false;
 
-			if (is_numeric($request))
-			{
-				$dalResult = $this->items_service->getItemById(intval($request));
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$item = $dalResult->getResult();
-				}
-			}
+			$item = $this->items_service->verifyItemRequest(['item_id' => $request]);
 
 			if ($item)
 			{
