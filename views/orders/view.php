@@ -68,12 +68,16 @@
 													<p><?= $order_item->getItem()->getComments(); ?></p>
 												</div>
 
-												<div class="col-xs-9 link-container">
+												<div class="col-xs-8 link-container">
 													<a href="<?= $order_item->getItem()->getLink(); ?>" target="_blank"><p><?= $order_item->getItem()->getLink(); ?></p></a>
 												</div>
 
-												<div class="col-xs-3 quantity-container">
+												<div class="col-xs-2 quantity-container">
 													<p><?= $order_item->getQuantity(); ?></p>
+												</div>
+
+												<div class="col-xs-2 packsize-container">
+													<p><?= $order_item->getItemPackSizeShortName(); ?></p>
 												</div>
 											</div>
 <?php

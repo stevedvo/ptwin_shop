@@ -8,6 +8,7 @@ $(function()
 	manageLists();
 	manageDepts();
 	manageOrders();
+	managePackSizes();
 	quickAdd();
 	adminFuncs();
 });
@@ -61,8 +62,9 @@ function manageItems()
 			var comments = form.find("[name='comments']").val();
 			var defaultQty = form.find("[name='default-qty']").val();
 			var link = form.find("[name='link']").val();
-			var listID = form.find("[name='list-id'] option:selected").val();
+			var listID = parseInt(form.find("[name='list-id'] option:selected").val());
 			var addToOrder = form.find("[name='add-to-current-order']").prop("checked") ? 1 : 0;
+			var packSizeID = parseInt(form.find("[name='packsize_id'] option:selected").val());
 
 			$.ajax(
 			{
@@ -80,7 +82,8 @@ function manageItems()
 						'default_qty'  : defaultQty,
 						'link'         : link,
 						'list_id'      : listID,
-						'add_to_order' : addToOrder
+						'add_to_order' : addToOrder,
+						'packsize_id'  : packSizeID
 					}
 				}
 			}).done(function(data)
@@ -144,6 +147,7 @@ function manageItems()
 			var listID = parseInt(form.find("[name='list-id'] option:selected").val());
 			var muteTemp = form.find("[name='mute-temp']").prop("checked") == true ? 1 : 0;
 			var mutePerm = form.find("[name='mute-perm']").prop("checked") == true ? 1 : 0;
+			var packSizeID = parseInt(form.find("[name='packsize_id'] option:selected").val());
 
 			$.ajax(
 			{
@@ -163,7 +167,8 @@ function manageItems()
 						'link'        : link,
 						'list_id'     : listID,
 						'mute_temp'   : muteTemp,
-						'mute_perm'   : mutePerm
+						'mute_perm'   : mutePerm,
+						'packsize_id' : packSizeID
 					}
 				}
 			}).done(function(data)
@@ -1313,6 +1318,146 @@ function validateForm(form)
 	return result;
 }
 
+function managePackSizes()
+{
+	$(document).on("click", ".js-add-packsize", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			var name = form.find("[name='packsize_name']").val();
+			var shortName = form.find("[name='packsize_short_name']").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "PackSizes",
+					action     : "addPackSize",
+					request    :
+					{
+						'packsize_name'       : name,
+						'packsize_short_name' : shortName
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					if (data.exception != null)
+					{
+						toastr.error("PDOException: "+data.exception.errorInfo[2]);
+					}
+					else if (data.partial_view != null)
+					{
+						var html = data.partial_view;
+
+						$(".results-container").append(html);
+						$(".results-container").find(".no-results").remove();
+						form.find(".input-error").removeClass("input-error");
+						form.find("[name='packsize_name']").val("");
+						form.find("[name='packsize_short_name']").val("");
+
+						toastr.success("New Pack Size successfully added");
+					}
+				}
+				else
+				{
+					toastr.error("Could not save Pack Size");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+
+	$(document).on("click", ".js-edit-packsize", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			var id = parseInt(form.data("packsize_id"));
+			var name = form.find("[name='packsize_name']").val();
+			var shortName = form.find("[name='packsize_short_name']").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "PackSizes",
+					action     : "editPackSize",
+					request    :
+					{
+						'packsize_id'         : id,
+						'packsize_name'       : name,
+						'packsize_short_name' : shortName
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					if (data.exception == null)
+					{
+						toastr.success("PackSize successfully updated");
+					}
+					else
+					{
+						toastr.error("PDOException");
+						console.log(data);
+					}
+				}
+				else
+				{
+					toastr.error("Could not save PackSize");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+}
+
 function quickAdd()
 {
 	$.ajax(
@@ -1410,21 +1555,7 @@ function quickAdd()
 
 							if (currentOrder.find(".form[data-order_item_id='"+data.id+"']").length == 0)
 							{
-								var html =
-								'<div class="row form result-item" data-order_item_id="'+data.id+'">'+
-									'<div class="col-xs-8 description-container">'+
-										'<p><a href="'+constants.SITEURL+'/items/edit/'+data.item_id+'/">'+data.item.description+'</a></p>'+
-									'</div>'+
-									'<div class="col-xs-4 quantity-container">'+
-										'<input type="number" name="quantity" data-validation="required:1_min-value:1" value="'+data.quantity+'" />'+
-									'</div>'+
-									'<div class="col-xs-4 col-xs-offset-4 update button-container">'+
-										'<button class="btn btn-sm btn-primary pull-right js-update-order-item">Update</button>'+
-									'</div>'+
-									'<div class="col-xs-4 remove button-container">'+
-										'<button class="btn btn-sm btn-danger pull-right js-remove-order-item">Remove</button>'+
-									'</div>'+
-								'</div>';
+								var html = data.partial_view;
 
 								currentOrder.append(html);
 							}
@@ -1838,30 +1969,8 @@ function manageOrders()
 				if ($(".results-container.current-order").length > 0)
 				{
 					var currentOrder = $(".results-container.current-order");
-					var html = "";
+					var html = data.partial_view;
 					currentOrder.find(".no-results").remove();
-
-					$.each(data, function()
-					{
-						if (currentOrder.find(".form[data-order_item_id='"+this.id+"']").length == 0)
-						{
-							html+=
-							'<div class="row form result-item" data-order_item_id="'+this.id+'">'+
-								'<div class="col-xs-8 description-container">'+
-									'<p><a href="'+constants.SITEURL+'/items/edit/'+this.item_id+'/">'+this.item.description+'</a></p>'+
-								'</div>'+
-								'<div class="col-xs-4 quantity-container">'+
-									'<input type="number" name="quantity" data-validation="required:1_min-value:1" value="'+this.quantity+'" />'+
-								'</div>'+
-								'<div class="col-xs-4 col-xs-offset-4 update button-container">'+
-									'<button class="btn btn-sm btn-primary pull-right js-update-order-item">Update</button>'+
-								'</div>'+
-								'<div class="col-xs-4 remove button-container">'+
-									'<button class="btn btn-sm btn-danger pull-right js-remove-order-item">Remove</button>'+
-								'</div>'+
-							'</div>';
-						}
-					});
 
 					currentOrder.append(html);
 				}

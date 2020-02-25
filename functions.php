@@ -38,8 +38,9 @@
 		$primary_dept = isset($request['primary_dept']) ? intval($request['primary_dept']) : null;
 		$mute_temp = isset($request['mute_temp']) ? intval($request['mute_temp']) : 0;
 		$mute_perm = isset($request['mute_perm']) ? intval($request['mute_perm']) : 0;
+		$packsize_id = isset($request['packsize_id']) ? intval($request['packsize_id']) : null;
 
-		$item = new Item($id, $description, $comments, $default_qty, $list_id, $link, $primary_dept, $mute_temp, $mute_perm);
+		$item = new Item($id, $description, $comments, $default_qty, $list_id, $link, $primary_dept, $mute_temp, $mute_perm, $packsize_id);
 
 		return $item;
 	}
@@ -65,6 +66,17 @@
 		$order_item = new OrderItem($id, $order_id, $item_id, $quantity, $checked);
 
 		return $order_item;
+	}
+
+	function createPackSize($request)
+	{
+		$id = isset($request['packsize_id']) ? intval($request['packsize_id']) : null;
+		$name = isset($request['packsize_name']) ? $request['packsize_name'] : null;
+		$short_name = isset($request['packsize_short_name']) ? $request['packsize_short_name'] : null;
+
+		$packsize = new PackSize($id, $name, $short_name);
+
+		return $packsize;
 	}
 
 	function getValidationString($object, $property)

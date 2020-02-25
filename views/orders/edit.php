@@ -87,13 +87,10 @@
 										<div class="collection-items-container">
 <?php
 								}
-?>
-<?php
 											echo getPartialView("ListOrderItem", ['order_item' => $order_item]);
-?>
-<?php
-								$current_dept = $item_dept;
-								$i++;
+
+											$current_dept = $item_dept;
+											$i++;
 
 								if ($i == sizeof($order->getOrderItems()))
 								{

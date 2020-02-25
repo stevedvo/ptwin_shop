@@ -483,7 +483,7 @@ ul.ui-autocomplete li.ui-state-focus
 
 	.results-container.current-order .description-container
 	{
-		width: calc(6 / 12 * 100%);
+		width: calc(5 / 12 * 100%);
 	}
 
 	.results-container.current-order .quantity-container,
@@ -491,6 +491,11 @@ ul.ui-autocomplete li.ui-state-focus
 	{
 		width: calc(2 / 12 * 100%);
 		margin: 0px;
+	}
+
+	.results-container.current-order .packsize-container
+	{
+		width: calc(1 / 12 * 100%);
 	}
 
 	.results-container.view-previous-order .collection-container .collection-items-container .result-item .description-container,
@@ -501,10 +506,11 @@ ul.ui-autocomplete li.ui-state-focus
 
 	.results-container.view-previous-order .collection-container .collection-items-container .result-item .link-container
 	{
-		width: calc(7 / 12 * 100%);
+		width: calc(6 / 12 * 100%);
 	}
 
-	.results-container.view-previous-order .collection-container .collection-items-container .result-item .quantity-container
+	.results-container.view-previous-order .collection-container .collection-items-container .result-item .quantity-container,
+	.results-container.view-previous-order .collection-container .collection-items-container .result-item .packsize-container
 	{
 		width: calc(1 / 12 * 100%);
 	}
@@ -619,21 +625,31 @@ ul.ui-autocomplete li.ui-state-focus
 		margin: 0px 15px;
 	}
 
-	.form.department-list-item .department-name-container
+	.form.department-list-item .department-name-container,
+	.form.packsize-list-item .packsize-name-container
 	{
 		width: calc(6 / 12 * 100%);
 	}
 
 	.form.department-list-item .department-seq-container,
-	.form.department-list-item .button-container
+	.form.department-list-item .button-container,
+	.form.packsize-list-item .packsize-shortname-container,
+	.form.packsize-list-item .button-container
 	{
 		width: calc(2 / 12 * 100%);
 		margin-left: 0px;
 	}
 
-	.form.department-list-item input
+	.form.department-list-item input,
+	.form.packsize-list-item input
 	{
 		width: 100%;
+	}
+
+	#add-packsize .name-container,
+	#add-packsize .shortname-container
+	{
+		width: 50%;
 	}
 }
 

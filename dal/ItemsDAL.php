@@ -19,7 +19,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("INSERT INTO items (description, comments, default_qty, list_id, link, primary_dept) VALUES (:description, :comments, :default_qty, :list_id, :link, :primary_dept)");
+				$query = $this->ShopDb->conn->prepare("INSERT INTO items (description, comments, default_qty, list_id, link, primary_dept, packsize_id) VALUES (:description, :comments, :default_qty, :list_id, :link, :primary_dept, :packsize_id)");
 				$query->execute(
 				[
 					':description'  => $item->getDescription(),
@@ -28,6 +28,7 @@
 					':list_id'      => $item->getListId(),
 					':primary_dept' => $item->getPrimaryDept(),
 					':link'         => $item->getLink(),
+					':packsize_id'  => $item->getPackSizeId(),
 				]);
 
 				$result->setResult($this->ShopDb->conn->lastInsertId());
@@ -47,7 +48,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, idl.dept_id, d.dept_name, d.seq FROM items AS i LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) WHERE i.item_id = :item_id ORDER BY d.seq, d.dept_name");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name, idl.dept_id, d.dept_name, d.seq FROM items AS i LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) WHERE i.item_id = :item_id ORDER BY d.seq, d.dept_name");
 				$query->execute([':item_id' => $item_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -60,6 +61,8 @@
 						if (!$item)
 						{
 							$item = createItem($row);
+							$packsize = createPackSize($row);
+							$item->setPackSize($packsize);
 						}
 
 						$department = createDepartment($row);
@@ -99,7 +102,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm FROM items AS i WHERE i.item_id IN (".$query_string.")");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM items AS i WHERE i.item_id IN (".$query_string.")");
 				$query->execute($query_values);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -132,13 +135,15 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm FROM items AS i WHERE i.description = :description");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM items AS i LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE i.description = :description");
 				$query->execute([':description' => $description]);
 				$row = $query->fetch(PDO::FETCH_ASSOC);
 
 				if ($row)
 				{
 					$item = createItem($row);
+					$packsize = createPackSize($row);
+					$item->setPackSize($packsize);
 				}
 
 				$result->setResult($item);
@@ -158,7 +163,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm FROM items AS i ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM items AS i ORDER BY i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -234,7 +239,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm FROM items AS i WHERE i.mute_temp = 1 OR i.mute_perm = 1 ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM items AS i WHERE i.mute_temp = 1 OR i.mute_perm = 1 ORDER BY i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -269,7 +274,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT idl.dept_id, idl.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm FROM item_dept_link AS idl LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE idl.dept_id = :dept_id");
+				$query = $this->ShopDb->conn->prepare("SELECT idl.dept_id, idl.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM item_dept_link AS idl LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE idl.dept_id = :dept_id");
 				$query->execute([':dept_id' => $dept_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -301,7 +306,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm FROM items AS i WHERE i.list_id = :list_id");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM items AS i WHERE i.list_id = :list_id");
 				$query->execute([':list_id' => $list_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -333,9 +338,10 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("UPDATE items SET description = :description, comments = :comments, default_qty = :default_qty, list_id = :list_id, link = :link, primary_dept = :primary_dept, mute_temp = :mute_temp, mute_perm = :mute_perm WHERE item_id = :item_id");
+				$query = $this->ShopDb->conn->prepare("UPDATE items SET description = :description, comments = :comments, default_qty = :default_qty, list_id = :list_id, link = :link, primary_dept = :primary_dept, mute_temp = :mute_temp, mute_perm = :mute_perm, packsize_id = :packsize_id WHERE item_id = :item_id");
 				$result->setResult($query->execute(
 				[
+					':item_id'      => $item->getId(),
 					':description'  => $item->getDescription(),
 					':comments'     => $item->getComments(),
 					':default_qty'  => $item->getDefaultQty(),
@@ -344,7 +350,7 @@
 					':primary_dept' => $item->getPrimaryDept(),
 					':mute_temp'    => $item->getMuteTemp(),
 					':mute_perm'    => $item->getMutePerm(),
-					':item_id'      => $item->getId()
+					':packsize_id'  => $item->getPackSizeId()
 				]));
 			}
 			catch(PDOException $e)

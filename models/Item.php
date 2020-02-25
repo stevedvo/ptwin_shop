@@ -10,14 +10,16 @@
 		private $primary_dept;
 		private $mute_temp;
 		private $mute_perm;
+		private $packsize_id;
 		private $validation;
 		private $departments;
 		private $orders;
 		private $recent_orders;
+		private $packsize;
 		private $daily_consumption_overall;
 		private $daily_consumption_recent;
 
-		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $mute_temp = null, $mute_perm = null, $departments = null, $orders = null, $recent_orders = null, $daily_consumption_overall = null, $daily_consumption_recent = null)
+		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $mute_temp = null, $mute_perm = null, $packsize_id = null, $departments = null, $orders = null, $recent_orders = null, $packsize = null, $daily_consumption_overall = null, $daily_consumption_recent = null)
 		{
 			$this->id = $id;
 			$this->description = $description;
@@ -28,19 +30,22 @@
 			$this->primary_dept = $primary_dept;
 			$this->mute_temp = $mute_temp;
 			$this->mute_perm = $mute_perm;
+			$this->packsize_id = $packsize_id;
 			$this->validation =
 			[
 				'Description' => ['required' => true],
-				'DefaultQty' =>
+				'DefaultQty'  =>
 				[
-					'required' => true,
+					'required'  => true,
 					'min-value' => 1
 				],
-				'ListId' => ['required' => true]
+				'ListId'      => ['required' => true],
+				'PackSizeId'  => ['required' => true]
 			];
 			$this->departments = $departments;
 			$this->orders = $orders;
 			$this->recent_orders = $recent_orders;
+			$this->packsize = $packsize;
 			$this->daily_consumption_overall = $daily_consumption_overall;
 			$this->daily_consumption_recent = $daily_consumption_recent;
 		}
@@ -138,6 +143,16 @@
 		public function setMutePerm($mute_perm)
 		{
 			$this->mute_perm = $mute_perm;
+		}
+
+		public function getPackSizeId()
+		{
+			return $this->packsize_id;
+		}
+
+		public function setPackSizeId($packsize_id)
+		{
+			$this->packsize_id = $packsize_id;
 		}
 
 		public function getValidation($property = null)
@@ -384,6 +399,29 @@
 					}
 				}
 			}
+		}
+
+		public function getPackSize()
+		{
+			return $this->packsize;
+		}
+
+		public function setPackSize($packsize)
+		{
+			$this->packsize = $packsize;
+		}
+
+		public function getPackSizeShortName()
+		{
+			$packSizeShortName = null;
+			$packsize = $this->getPackSize();
+
+			if ($packsize instanceof PackSize)
+			{
+				$packSizeShortName = $packsize->getShortName();
+			}
+
+			return $packSizeShortName;
 		}
 
 		public function calculateDailyConsumptionOverall()

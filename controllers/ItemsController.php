@@ -12,6 +12,7 @@
 			$this->lists_service = new ListsService();
 			$this->departments_service = new DepartmentsService();
 			$this->orders_service = new OrdersService();
+			$this->packsizes_service = new PackSizesService();
 		}
 
 		public function Index()
@@ -146,7 +147,15 @@
 				$lists = $dalResult->getResult();
 			}
 
+			$dalResult = $this->packsizes_service->getAllPackSizes();
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$packsizes = $dalResult->getResult();
+			}
+
 			$this->lists_service->closeConnexion();
+			$this->packsizes_service->closeConnexion();
 
 			$pageData =
 			[
@@ -154,8 +163,9 @@
 				'template'   => 'views/items/create.php',
 				'page_data'  =>
 				[
-					'item' 	=> $item,
-					'lists' => $lists
+					'item' 	    => $item,
+					'lists'     => $lists,
+					'packsizes' => $packsizes
 				]
 			];
 
@@ -251,6 +261,13 @@
 					$lists = $dalResult->getResult();
 				}
 
+				$dalResult = $this->packsizes_service->getAllPackSizes();
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$packsizes = $dalResult->getResult();
+				}
+
 				$dalResult = $this->departments_service->getAllDepartments();
 
 				if (!is_null($dalResult->getResult()))
@@ -270,6 +287,7 @@
 			$this->lists_service->closeConnexion();
 			$this->departments_service->closeConnexion();
 			$this->orders_service->closeConnexion();
+			$this->packsizes_service->closeConnexion();
 
 			$pageData =
 			[
@@ -279,7 +297,8 @@
 				[
 					'item'            => $item,
 					'lists'           => $lists,
-					'all_departments' => $departments
+					'all_departments' => $departments,
+					'packsizes'       => $packsizes
 				]
 			];
 
@@ -288,36 +307,25 @@
 
 		public function editItem($request)
 		{
-			$item = createItem($request);
+			$item_update = createItem($request);
 
-			if (!entityIsValid($item))
+			if (!entityIsValid($item_update))
 			{
 				return false;
 			}
 
-			if (is_null($item->getId()))
-			{
-				return false;
-			}
+			$item = $this->items_service->verifyItemRequest($request);
 
-			$dalResult = $this->items_service->getItemById($item->getId());
+			$item->setDescription($item_update->getDescription());
+			$item->setComments($item_update->getComments());
+			$item->setDefaultQty($item_update->getDefaultQty());
+			$item->setListId($item_update->getListId());
+			$item->setLink($item_update->getLink());
+			$item->setPackSizeId($item_update->getPackSizeId());
+			$item->setMuteTemp($item_update->getMuteTemp());
+			$item->setMutePerm($item_update->getMutePerm());
 
-			if (!$dalResult->getResult() instanceof Item)
-			{
-				return false;
-			}
-
-			$item_update = $dalResult->getResult();
-
-			$item_update->setDescription($item->getDescription());
-			$item_update->setComments($item->getComments());
-			$item_update->setDefaultQty($item->getDefaultQty());
-			$item_update->setListId($item->getListId());
-			$item_update->setLink($item->getLink());
-			$item_update->setMuteTemp($item->getMuteTemp());
-			$item_update->setMutePerm($item->getMutePerm());
-
-			$dalResult = $this->items_service->updateItem($item_update);
+			$dalResult = $this->items_service->updateItem($item);
 			$this->items_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();
@@ -491,11 +499,12 @@
 			}
 
 			$dalResult->getResult()->setItem($item);
+			$dalResult->setPartialView(getPartialView("CurrentOrderItem", ['order_item' => $dalResult->getResult()]));
 
 			$this->items_service->closeConnexion();
 			$this->orders_service->closeConnexion();
 
-			return $dalResult->getResult()->jsonSerialize();
+			return $dalResult->jsonSerialize();
 		}
 
 		public function quickEditItem($request)
