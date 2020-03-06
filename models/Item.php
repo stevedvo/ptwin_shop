@@ -385,10 +385,6 @@
 
 			if ($this->hasOrders())
 			{
-
-			var_debug($interval);
-			var_debug($period);
-			var_debug($cutoff_date);exit;
 				foreach ($this->orders as $order_id => $order)
 				{
 					if (!$break)
@@ -403,6 +399,8 @@
 					}
 				}
 			}
+
+			var_debug($this->getRecentOrders());exit;
 		}
 
 		public function getPackSize()

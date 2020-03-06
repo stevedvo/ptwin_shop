@@ -117,7 +117,7 @@
 					switch ($criterion)
 					{
 						case 'required':
-							if (is_null($property_value) || strlen($property_value) < 1)
+							if (is_null($property_value) || (is_string($property_value) && strlen($property_value) < 1))
 							{
 								return false;
 							}
