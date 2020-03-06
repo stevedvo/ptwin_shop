@@ -63,6 +63,28 @@
 			}
 			elseif ($view_by == "suggestions")
 			{
+				$consumption_interval = $consumption_period = null;
+
+				if (isset($_GET['consumption_interval']) && is_numeric($_GET['consumption_interval']))
+				{
+					$consumption_interval = intval($_GET['consumption_interval']);
+				}
+
+				if (isset($_GET['consumption_period']))
+				{
+					$valid_periods = ['day', 'week', 'month', 'year'];
+
+					if (in_array($_GET['consumption_period'], $valid_periods))
+					{
+						$consumption_period = $_GET['consumption_period'];
+					}
+				}
+
+				if (!is_null($consumption_interval) && !is_null($consumption_period))
+				{
+					$suggested_items = $this->items_service->getAllSuggestedItems($consumption_interval, $consumption_period);
+				}
+
 				$suggested_items = $this->items_service->getAllSuggestedItems();
 
 				$pageData =
@@ -273,6 +295,28 @@
 				{
 					$item->setOrders($dalResult->getResult());
 				}
+			}
+
+			$consumption_interval = $consumption_period = null;
+
+			if (isset($_GET['consumption_interval']) && is_numeric($_GET['consumption_interval']))
+			{
+				$consumption_interval = intval($_GET['consumption_interval']);
+			}
+
+			if (isset($_GET['consumption_period']))
+			{
+				$valid_periods = ['day', 'week', 'month', 'year'];
+
+				if (in_array($_GET['consumption_period'], $valid_periods))
+				{
+					$consumption_period = $_GET['consumption_period'];
+				}
+			}
+
+			if (!is_null($consumption_interval) && !is_null($consumption_period))
+			{
+				$item->calculateRecentOrders($consumption_interval, $consumption_period);
 			}
 
 			$this->items_service->closeConnexion();

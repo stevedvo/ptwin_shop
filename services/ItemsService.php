@@ -47,7 +47,7 @@
 			return $this->dal->getAllItems();
 		}
 
-		public function getAllSuggestedItems()
+		public function getAllSuggestedItems($interval = 3, $period = "month")
 		{
 			$suggested_items = [];
 
@@ -61,6 +61,7 @@
 				{
 					foreach ($all_items as $item_id => $item)
 					{
+						$item->calculateRecentOrders($interval, $period);
 						$est_overall = $item->getStockLevelPrediction(7, 'overall');
 						$est_recent = $item->getStockLevelPrediction(7, 'recent');
 
