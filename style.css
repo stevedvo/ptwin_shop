@@ -515,6 +515,31 @@ ul.ui-autocomplete li.ui-state-focus
 		width: calc(1 / 12 * 100%);
 	}
 
+	.results-container.print-previous-order
+	{
+		width: 50%;
+	}
+
+	.results-container.print-previous-order p
+	{
+		margin: 0px;
+	}
+
+	.results-container.print-previous-order .collection-container .collection-items-container .result-item:last-of-type
+	{
+		margin-bottom: 15px;
+	}
+
+	.results-container.print-previous-order .collection-container .collection-items-container .result-item .description-container
+	{
+		width: calc(10 / 12 * 100%);
+	}
+
+	.results-container.view-previous-order .collection-container .collection-items-container .result-item .quantity-container
+	{
+		width: calc(2 / 12 * 100%);
+	}
+
 	.results-container.suggestions .description-container
 	{
 		width: calc(3 / 12 * 100%);

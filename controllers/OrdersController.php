@@ -234,7 +234,7 @@
 			$pageData =
 			[
 				'page_title' => 'View Order',
-				'template'   => 'views/orders/view.php',
+				'template'   => 'views/orders/print.php',
 				'page_data'  =>
 				[
 					'order'       => $order,
@@ -242,7 +242,7 @@
 				]
 			];
 
-			renderPage($pageData);
+			renderPrint($pageData);
 		}
 
 		public function Edit($request = null)
