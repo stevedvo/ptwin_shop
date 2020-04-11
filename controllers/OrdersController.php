@@ -213,6 +213,38 @@
 			renderPage($pageData);
 		}
 
+		public function Print($request = null)
+		{
+			$departments = false;
+			$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
+
+			if ($order)
+			{
+				$dalResult = $this->departments_service->getAllDepartments();
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$departments = $dalResult->getResult();
+				}
+			}
+
+			$this->orders_service->closeConnexion();
+			$this->departments_service->closeConnexion();
+
+			$pageData =
+			[
+				'page_title' => 'Print Order',
+				'template'   => 'views/orders/print.php',
+				'page_data'  =>
+				[
+					'order'       => $order,
+					'departments' => $departments
+				]
+			];
+
+			renderPrint($pageData);
+		}
+
 		public function Edit($request = null)
 		{
 			$departments = false;

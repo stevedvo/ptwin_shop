@@ -203,6 +203,16 @@
 		include_once('views/shared/footer.php');
 	}
 
+	function renderPrint($pageData)
+	{
+		$page_title = $pageData['page_title'];
+		$template = $pageData['template'];
+		$response = $pageData['page_data'];
+		include_once('views/shared/print-header.php');
+		include_once($template);
+		include_once('views/shared/print-footer.php');
+	}
+
 	function getPartialView($template, $params)
 	{
 		ob_start();
