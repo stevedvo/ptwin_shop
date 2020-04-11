@@ -3,6 +3,7 @@ $ = jQuery;
 $(function()
 {
 	initNavigation();
+	initToastr();
 	globalFuncs();
 	manageItems();
 	manageLists();
@@ -21,6 +22,12 @@ function initNavigation()
 	});
 
 	$("main").css({"margin-top" : $("header").height()+15+"px"});
+}
+
+function initToastr()
+{
+	toastr.options.closeButton = true;
+	toastr.options.progressBar = true;
 }
 
 function globalFuncs()
