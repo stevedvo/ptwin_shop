@@ -20,8 +20,14 @@
 ?>
 			<div class="row">
 				<div class="col-xs-12">
-					<p>Order ID: <?= $order->getId(); ?></p>
-					<p>Date Ordered: <?= $order->getDateOrdered() ? $order->getDateOrdered()->format('d-m-Y') : ""; ?></p>
+					<p>Order #<?= $order->getId(); ?> - Date Ordered: <?= $order->getDateOrdered() ? $order->getDateOrdered()->format('d-m-Y') : ""; ?></p>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-xs-12">
+					<a href="<?= SITEURL.'/orders/print/'.$order->getId().'/'; ?>" class="btn btn-primary btn-sm" target="_blank">Print</a>
+					<a href="<?= SITEURL.'/orders/edit/'.$order->getId().'/'; ?>" class="btn btn-primary btn-sm">Edit</a>
 				</div>
 			</div>
 

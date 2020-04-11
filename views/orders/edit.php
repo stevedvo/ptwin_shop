@@ -49,7 +49,11 @@
 			</div>
 
 			<div class="row">
-				<div class="col-xs-12 text-right">
+				<div class="col-xs-6">
+					<a href="<?= SITEURL.'/orders/print/'.$order->getId().'/'; ?>" class="btn btn-primary btn-sm" target="_blank">Print</a>
+					<a href="<?= SITEURL.'/orders/view/'.$order->getId().'/'; ?>" class="btn btn-primary btn-sm">View</a>
+				</div>
+				<div class="col-xs-6 text-right">
 					<button class="btn btn-primary btn-sm js-toggle-checked-items-visibility checked-off">Show Checked Items</button>
 				</div>
 			</div>

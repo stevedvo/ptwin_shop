@@ -123,9 +123,12 @@ main
 	padding: 5px 4px;
 }
 
-.results-container.striped .result-item:nth-of-type(odd)
+@media print, screen
 {
-	background-color: #eee;
+	.results-container.striped .result-item:nth-of-type(odd)
+	{
+		background-color: #eee;
+	}
 }
 
 .results-container .result-item.primary-dept
@@ -518,11 +521,17 @@ ul.ui-autocomplete li.ui-state-focus
 	.results-container.print-previous-order
 	{
 		width: 50%;
+		padding: 0px 15px;
 	}
 
 	.results-container.print-previous-order p
 	{
 		margin: 0px;
+	}
+
+	.results-container.print-previous-order .collection-container .collection-items-container .result-item
+	{
+		padding: 0px;
 	}
 
 	.results-container.print-previous-order .collection-container .collection-items-container .result-item:last-of-type
@@ -532,12 +541,12 @@ ul.ui-autocomplete li.ui-state-focus
 
 	.results-container.print-previous-order .collection-container .collection-items-container .result-item .description-container
 	{
-		width: calc(10 / 12 * 100%);
+		width: calc(9 / 12 * 100%);
 	}
 
-	.results-container.view-previous-order .collection-container .collection-items-container .result-item .quantity-container
+	.results-container.print-previous-order .collection-container .collection-items-container .result-item .quantity-container
 	{
-		width: calc(2 / 12 * 100%);
+		width: calc(3 / 12 * 100%);
 	}
 
 	.results-container.suggestions .description-container

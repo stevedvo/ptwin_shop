@@ -233,7 +233,7 @@
 
 			$pageData =
 			[
-				'page_title' => 'View Order',
+				'page_title' => 'Print Order',
 				'template'   => 'views/orders/print.php',
 				'page_data'  =>
 				[
