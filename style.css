@@ -445,7 +445,7 @@ ul.ui-autocomplete li.ui-state-focus
 	font-weight: 400;
 }
 
-@media only screen and (min-width: 576px)
+@media print, screen and (min-width: 576px)
 {
 	header .page-heading-container
 	{
@@ -653,7 +653,7 @@ ul.ui-autocomplete li.ui-state-focus
 	}
 }
 
-@media only screen and (min-width: 750px)
+@media print, screen and (min-width: 750px)
 {
 	nav
 	{
@@ -666,7 +666,7 @@ ul.ui-autocomplete li.ui-state-focus
 	}
 }
 
-@media only screen and (min-width: 768px)
+@media print, screen and (min-width: 768px)
 {
 	input.item-description,
 	input.item-comments,
