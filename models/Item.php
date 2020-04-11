@@ -377,10 +377,10 @@
 			$this->recent_orders[$order->getId()] = $order;
 		}
 
-		public function calculateRecentOrders()
+		public function calculateRecentOrders($interval = 3, $period = "month")
 		{
 			$cutoff_date = new DateTime();
-			$cutoff_date->modify("-1 month");
+			$cutoff_date->modify("-".$interval." ".$period);
 			$break = false;
 
 			if ($this->hasOrders())
