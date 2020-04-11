@@ -255,7 +255,7 @@
 
 		public function Edit($request = null)
 		{
-			$lists = $departments = false;
+			$lists = $packsizes = $departments = false;
 
 			$item = $this->items_service->verifyItemRequest(['item_id' => $request]);
 
