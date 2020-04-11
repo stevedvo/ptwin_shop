@@ -15,13 +15,13 @@
 			$this->packsizes_service = new PackSizesService();
 		}
 
-		public function Index()
+		public function Index($request, $consumption_interval = 3, $consumption_period = "month")
 		{
 			$view_by = $all_items = $order = $items_in_order = $collection = false;
 
-			if (isset($_GET['view-by']))
+			if (isset($request['view-by']))
 			{
-				switch ($_GET['view-by'])
+				switch ($request['view-by'])
 				{
 					case 'department':
 						$view_by = "department";
@@ -63,29 +63,22 @@
 			}
 			elseif ($view_by == "suggestions")
 			{
-				$consumption_interval = $consumption_period = null;
-
-				if (isset($_GET['consumption_interval']) && is_numeric($_GET['consumption_interval']))
+				if (isset($request['consumption_interval']) && is_numeric($request['consumption_interval']))
 				{
-					$consumption_interval = intval($_GET['consumption_interval']);
+					$consumption_interval = intval($request['consumption_interval']);
 				}
 
-				if (isset($_GET['consumption_period']))
+				if (isset($request['consumption_period']))
 				{
 					$valid_periods = ['day', 'week', 'month', 'year'];
 
-					if (in_array($_GET['consumption_period'], $valid_periods))
+					if (in_array($request['consumption_period'], $valid_periods))
 					{
-						$consumption_period = $_GET['consumption_period'];
+						$consumption_period = $request['consumption_period'];
 					}
 				}
 
-				if (!is_null($consumption_interval) && !is_null($consumption_period))
-				{
-					$suggested_items = $this->items_service->getAllSuggestedItems($consumption_interval, $consumption_period);
-				}
-
-				$suggested_items = $this->items_service->getAllSuggestedItems();
+				$suggested_items = $this->items_service->getAllSuggestedItems($consumption_interval, $consumption_period);
 
 				$pageData =
 				[

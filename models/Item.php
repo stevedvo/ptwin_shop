@@ -399,8 +399,6 @@
 					}
 				}
 			}
-
-			var_debug($this->getRecentOrders());exit;
 		}
 
 		public function getPackSize()

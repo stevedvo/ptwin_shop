@@ -47,7 +47,7 @@
 			return $this->dal->getAllItems();
 		}
 
-		public function getAllSuggestedItems($interval = 3, $period = "month")
+		public function getAllSuggestedItems($interval, $period)
 		{
 			$suggested_items = [];
 
