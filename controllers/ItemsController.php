@@ -718,4 +718,52 @@
 
 			return $dalResult->jsonSerialize();
 		}
+
+		public function getItemsRecentOrderStatistics($request)
+		{
+			if (!(isset($request['consumption_interval']) && is_numeric($request['consumption_interval']) && intval($request['consumption_interval']) > 0))
+			{
+				return false;
+			}
+
+			if (!(isset($request['consumption_period']) && !empty($request['consumption_period']) && in_array($request['consumption_period'], CONSUMPTION_PERIODS)))
+			{
+				return false;
+			}
+
+			$item = $this->items_service->verifyItemRequest($request);
+
+			if (!$item)
+			{
+				return false;
+			}
+
+			$dalResult = $this->orders_service->getOrdersByItem($item);
+
+			if (!is_null($dalResult->getResult()))
+			{
+				$item->setOrders($dalResult->getResult());
+			}
+
+			$item->calculateRecentOrders(intval($request['consumption_interval']), $request['consumption_period']);
+
+			$result =
+			[
+				'itemDailyConsumptionRecent' => "N/A",
+				'itemStockNowRecent' => "N/A",
+				'itemStockFutureRecent' => "N/A"
+			];
+
+			if ($item->hasOrders())
+			{
+				$result['itemDailyConsumptionRecent'] = round($item->getDailyConsumptionRecent() * 7, 2);
+				$result['itemStockNowRecent'] = $item->getStockLevelPrediction(0, "recent");
+				$result['itemStockFutureRecent'] = $item->getStockLevelPrediction(7, "recent");
+			}
+
+			$this->items_service->closeConnexion();
+			$this->orders_service->closeConnexion();
+
+			return $result;
+		}
 	}

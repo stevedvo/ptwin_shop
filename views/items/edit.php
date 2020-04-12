@@ -254,7 +254,7 @@
 						</div>
 
 						<div class="row">
-							<div class="recent-consumption-form">
+							<div class="recent-consumption-form" data-item_id="<?= $item->getId(); ?>">
 								<div class="col-xs-6 consumption-interval-container">
 									<label>Interval:</label>&nbsp;
 									<input type="number" min="1" name="item_consumption_interval" value="<?= $consumption_interval; ?>" />
@@ -296,7 +296,7 @@
 							</div>
 
 							<div class="col-xs-4">
-								<p id="itemDailyConsumptionOverall"><?= $item->hasOrders() ? round($item->getDailyConsumptionOverall() * 7, 2) : 'N/A'; ?></p>
+								<p><?= $item->hasOrders() ? round($item->getDailyConsumptionOverall() * 7, 2) : 'N/A'; ?></p>
 							</div>
 
 							<div class="col-xs-4">
@@ -310,7 +310,7 @@
 							</div>
 
 							<div class="col-xs-4">
-								<p><span id="itemStockNowOverall"><?= $item->hasOrders() ? $item->getStockLevelPrediction(0, "overall") : 'N/A'; ?></span> <?= $item->getPackSizeShortName(); ?></p>
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(0, "overall") : 'N/A'; ?> <?= $item->getPackSizeShortName(); ?></p>
 							</div>
 
 							<div class="col-xs-4">
@@ -324,7 +324,7 @@
 							</div>
 
 							<div class="col-xs-4">
-								<p><span id="itemStockFutureOverall"><?= $item->hasOrders() ? $item->getStockLevelPrediction(7, "overall") : 'N/A'; ?></span> <?= $item->getPackSizeShortName(); ?></p>
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(7, "overall") : 'N/A'; ?> <?= $item->getPackSizeShortName(); ?></p>
 							</div>
 
 							<div class="col-xs-4">

@@ -2195,11 +2195,55 @@ function updateRecentConsumptionParameters()
 {
 	$(document).on("click", ".js-update-recent-consumption", function()
 	{
-		var $form = $(this).closest(".recent-consumption-form");
+		var $this = $(this);
+		var $form = $this.closest(".recent-consumption-form");
 		var interval = parseInt($form.find("input[name='item_consumption_interval']").val());
 		var period = $form.find("select[name='item_consumption_period'] option:selected").val();
 
-		console.log(interval);
-		console.log(period);
+		if ($this.data('ajax'))
+		{
+			var itemID = parseInt($form.data('item_id'));
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Items",
+					action     : "getItemsRecentOrderStatistics",
+					request    :
+					{
+						'item_id'              : itemID,
+						'consumption_interval' : interval,
+						'consumption_period'   : period
+					}
+				}
+			}).done(function(data)
+			{
+				if (data == false)
+				{
+					toastr.error("Invalid request.");
+					console.log(data);
+				}
+				else
+				{
+					$("#itemDailyConsumptionRecent").html(data.itemDailyConsumptionRecent);
+					$("#itemStockNowRecent").html(data.itemStockNowRecent);
+					$("#itemStockFutureRecent").html(data.itemStockFutureRecent);
+
+					toastr.success("Recent Consumption Updated");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+		else
+		{
+			console.log("do page refresh")
+		}
 	});
 }
