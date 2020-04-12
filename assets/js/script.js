@@ -12,6 +12,7 @@ $(function()
 	managePackSizes();
 	quickAdd();
 	adminFuncs();
+	updateRecentConsumptionParameters();
 });
 
 function initNavigation()
@@ -2188,4 +2189,17 @@ function ucWords(str)
 	}
 
 	return splitStr.join(' ');
+}
+
+function updateRecentConsumptionParameters()
+{
+	$(document).on("click", ".js-update-recent-consumption", function()
+	{
+		var $form = $(this).closest(".recent-consumption-form");
+		var interval = parseInt($form.find("input[name='item_consumption_interval']").val());
+		var period = $form.find("select[name='item_consumption_period'] option:selected").val();
+
+		console.log(interval);
+		console.log(period);
+	});
 }

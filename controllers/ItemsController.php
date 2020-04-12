@@ -15,7 +15,7 @@
 			$this->packsizes_service = new PackSizesService();
 		}
 
-		public function Index($request, $consumption_interval = 3, $consumption_period = "month")
+		public function Index($request, $consumption_interval = DEFAULT_CONSUMPTION_INTERVAL, $consumption_period = DEFAULT_CONSUMPTION_PERIOD)
 		{
 			$view_by = $all_items = $order = $items_in_order = $collection = false;
 
@@ -63,16 +63,14 @@
 			}
 			elseif ($view_by == "suggestions")
 			{
-				if (isset($request['consumption_interval']) && is_numeric($request['consumption_interval']))
+				if (isset($request['consumption_interval']) && is_numeric($request['consumption_interval']) && intval($request['consumption_interval']) > 0)
 				{
 					$consumption_interval = intval($request['consumption_interval']);
 				}
 
 				if (isset($request['consumption_period']))
 				{
-					$valid_periods = ['day', 'week', 'month', 'year'];
-
-					if (in_array($request['consumption_period'], $valid_periods))
+					if (in_array($request['consumption_period'], CONSUMPTION_PERIODS))
 					{
 						$consumption_period = $request['consumption_period'];
 					}
@@ -290,27 +288,23 @@
 				}
 			}
 
-			$consumption_interval = $consumption_period = null;
+			$consumption_interval = DEFAULT_CONSUMPTION_INTERVAL;
+			$consumption_period = DEFAULT_CONSUMPTION_PERIOD;
 
-			if (isset($_GET['consumption_interval']) && is_numeric($_GET['consumption_interval']))
+			if (isset($_GET['consumption_interval']) && is_numeric($_GET['consumption_interval']) && intval($_GET['consumption_interval']) > 0)
 			{
 				$consumption_interval = intval($_GET['consumption_interval']);
 			}
 
 			if (isset($_GET['consumption_period']))
 			{
-				$valid_periods = ['day', 'week', 'month', 'year'];
-
-				if (in_array($_GET['consumption_period'], $valid_periods))
+				if (in_array($_GET['consumption_period'], CONSUMPTION_PERIODS))
 				{
 					$consumption_period = $_GET['consumption_period'];
 				}
 			}
 
-			if (!is_null($consumption_interval) && !is_null($consumption_period))
-			{
-				$item->calculateRecentOrders($consumption_interval, $consumption_period);
-			}
+			$item->calculateRecentOrders($consumption_interval, $consumption_period);
 
 			$this->items_service->closeConnexion();
 			$this->lists_service->closeConnexion();
@@ -324,10 +318,12 @@
 				'template'   => 'views/items/edit.php',
 				'page_data'  =>
 				[
-					'item'            => $item,
-					'lists'           => $lists,
-					'all_departments' => $departments,
-					'packsizes'       => $packsizes
+					'item'                 => $item,
+					'lists'                => $lists,
+					'all_departments'      => $departments,
+					'packsizes'            => $packsizes,
+					'consumption_interval' => $consumption_interval,
+					'consumption_period'   => $consumption_period
 				]
 			];
 
