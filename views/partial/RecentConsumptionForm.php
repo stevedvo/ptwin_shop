@@ -26,6 +26,7 @@
 		</div>
 
 		<div class="col-xs-6 col-xs-offset-6 submit-container text-right">
+			<button class="btn btn-warning btn-sm js-update-recent-consumption" data-ajax="<?= $ajax ? 'true' : 'false'; ?>" data-reset="true">Reset</button>
 			<button class="btn btn-primary btn-sm js-update-recent-consumption" data-ajax="<?= $ajax ? 'true' : 'false'; ?>">Refresh</button>
 		</div>
 	</div>

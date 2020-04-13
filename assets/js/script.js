@@ -2232,19 +2232,30 @@ function updateRecentConsumptionParameters()
 	{
 		var $this = $(this);
 		var $form = $this.closest(".recent-consumption-form");
-		var interval = parseInt($form.find("input[name='consumption_interval']").val());
-		var period = $form.find("select[name='consumption_period'] option:selected").val();
+		var interval = 0;
+		var period = "";
 
-		if (interval < 1)
+		if ($this.data("reset"))
 		{
-			toastr.error("Invalid Interval.");
-			return false;
+			interval = constants.DEFAULT_CONSUMPTION_INTERVAL;
+			period = constants.DEFAULT_CONSUMPTION_PERIOD;
 		}
-
-		if (constants.CONSUMPTION_PERIODS.indexOf(period) == -1)
+		else
 		{
-			toastr.error("Invalid Period.");
-			return false;
+			interval = parseInt($form.find("input[name='consumption_interval']").val());
+			period = $form.find("select[name='consumption_period'] option:selected").val();
+
+			if (interval < 1)
+			{
+				toastr.error("Invalid Interval.");
+				return false;
+			}
+
+			if (constants.CONSUMPTION_PERIODS.indexOf(period) == -1)
+			{
+				toastr.error("Invalid Period.");
+				return false;
+			}
 		}
 
 		if ($this.data('ajax'))
@@ -2280,6 +2291,9 @@ function updateRecentConsumptionParameters()
 					$("#itemStockNowRecent").html(data.itemStockNowRecent);
 					$("#itemStockFutureRecent").html(data.itemStockFutureRecent);
 
+					$form.find("input[name='consumption_interval']").val(interval);
+					$form.find("select[name='consumption_period']").val(period);
+
 					toastr.success("Recent Consumption Updated");
 				}
 			}).fail(function(data)
@@ -2293,8 +2307,16 @@ function updateRecentConsumptionParameters()
 			var pathname = location.pathname;
 			var queryObject = getURLQueryStringAsObject(location.search);
 
-			queryObject["consumption_interval"] = interval;
-			queryObject["consumption_period"] = period;
+			if ($this.data("reset"))
+			{
+				delete queryObject.consumption_interval;
+				delete queryObject.consumption_period;
+			}
+			else
+			{
+				queryObject["consumption_interval"] = interval;
+				queryObject["consumption_period"] = period;
+			}
 
 			var newSearch = setURLQueryStringFromObject(queryObject);
 

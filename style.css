@@ -711,12 +711,12 @@ ul.ui-autocomplete li.ui-state-focus
 	.recent-consumption-form .consumption-interval-container,
 	.recent-consumption-form .consumption-period-container
 	{
-		width: calc(5 / 12 * 100%);
+		width: calc(4 / 12 * 100%);
 	}
 
 	.recent-consumption-form .submit-container
 	{
-		width: calc(2 / 12 * 100%);
+		width: calc(4 / 12 * 100%);
 		margin-left: 0px;
 	}
 }
