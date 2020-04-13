@@ -12,7 +12,43 @@ $(function()
 	managePackSizes();
 	quickAdd();
 	adminFuncs();
+	updateRecentConsumptionParameters();
 });
+
+function getURLQueryStringAsObject(queryString)
+{
+	var queryObject = {};
+
+	if (queryString.length > 0)
+	{
+		var queryArray = [];
+		var queryPart = [];
+
+		queryArray = queryString.substr(1).split("&");
+
+		for (var i = 0; i < queryArray.length; i++)
+		{
+			queryPart = queryArray[i].split("=");
+			queryObject[queryPart[0]] = queryPart[1];
+		}
+	}
+
+	return queryObject;
+}
+
+function setURLQueryStringFromObject(queryObject)
+{
+	var queryString = "?";
+
+	$.each(queryObject, function(key, value)
+	{
+		queryString+= key+"="+value+"&";
+	});
+
+	queryString = queryString.substr(0, queryString.length - 1);
+
+	return queryString;
+}
 
 function initNavigation()
 {
@@ -2188,4 +2224,103 @@ function ucWords(str)
 	}
 
 	return splitStr.join(' ');
+}
+
+function updateRecentConsumptionParameters()
+{
+	$(document).on("click", ".js-update-recent-consumption", function()
+	{
+		var $this = $(this);
+		var $form = $this.closest(".recent-consumption-form");
+		var interval = 0;
+		var period = "";
+
+		if ($this.data("reset"))
+		{
+			interval = constants.DEFAULT_CONSUMPTION_INTERVAL;
+			period = constants.DEFAULT_CONSUMPTION_PERIOD;
+		}
+		else
+		{
+			interval = parseInt($form.find("input[name='consumption_interval']").val());
+			period = $form.find("select[name='consumption_period'] option:selected").val();
+
+			if (interval < 1)
+			{
+				toastr.error("Invalid Interval.");
+				return false;
+			}
+
+			if (constants.CONSUMPTION_PERIODS.indexOf(period) == -1)
+			{
+				toastr.error("Invalid Period.");
+				return false;
+			}
+		}
+
+		if ($this.data('ajax'))
+		{
+			var itemID = parseInt($form.data('item_id'));
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Items",
+					action     : "getItemsRecentOrderStatistics",
+					request    :
+					{
+						'item_id'              : itemID,
+						'consumption_interval' : interval,
+						'consumption_period'   : period
+					}
+				}
+			}).done(function(data)
+			{
+				if (data == false)
+				{
+					toastr.error("Invalid request.");
+					console.log(data);
+				}
+				else
+				{
+					$("#itemDailyConsumptionRecent").html(data.itemDailyConsumptionRecent);
+					$("#itemStockNowRecent").html(data.itemStockNowRecent);
+					$("#itemStockFutureRecent").html(data.itemStockFutureRecent);
+
+					$form.find("input[name='consumption_interval']").val(interval);
+					$form.find("select[name='consumption_period']").val(period);
+
+					toastr.success("Recent Consumption Updated");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+		else
+		{
+			var pathname = location.pathname;
+			var queryObject = getURLQueryStringAsObject(location.search);
+
+			if ($this.data("reset"))
+			{
+				delete queryObject.consumption_interval;
+				delete queryObject.consumption_period;
+			}
+			else
+			{
+				queryObject["consumption_interval"] = interval;
+				queryObject["consumption_period"] = period;
+			}
+
+			var newSearch = setURLQueryStringFromObject(queryObject);
+
+			location.href = constants.SITEURL+pathname+newSearch;
+		}
+	});
 }

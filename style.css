@@ -448,6 +448,28 @@ ul.ui-autocomplete li.ui-state-focus
 	font-weight: 400;
 }
 
+.recent-consumption-form .consumption-interval-container,
+.recent-consumption-form .consumption-period-container,
+.recent-consumption-form .submit-container
+{
+	margin-bottom: 5px;
+}
+
+.recent-consumption-form .consumption-interval-container label,
+.recent-consumption-form .consumption-period-container label
+{
+	margin: 0px;
+	line-height: 25px;
+	width: 60px;
+}
+
+.recent-consumption-form .consumption-interval-container input,
+.recent-consumption-form .consumption-period-container select
+{
+	height: 25px;
+	width: calc(100% - 68px);
+}
+
 @media print, screen and (min-width: 576px)
 {
 	header .page-heading-container
@@ -684,6 +706,18 @@ ul.ui-autocomplete li.ui-state-focus
 	#add-packsize .shortname-container
 	{
 		width: 50%;
+	}
+
+	.recent-consumption-form .consumption-interval-container,
+	.recent-consumption-form .consumption-period-container
+	{
+		width: calc(4 / 12 * 100%);
+	}
+
+	.recent-consumption-form .submit-container
+	{
+		width: calc(4 / 12 * 100%);
+		margin-left: 0px;
 	}
 }
 

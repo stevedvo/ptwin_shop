@@ -2,6 +2,8 @@
 	$suggested_items = $response['suggested_items'];
 	$order = $response['order'];
 	$items_in_order = $response['items_in_order'];
+	$consumption_interval = $response['consumption_interval'];
+	$consumption_period = $response['consumption_period'];
 ?>
 <main class="wrapper">
 	<div class="container">
@@ -17,6 +19,9 @@
 					}
 					else
 					{
+						$response['ajax'] = false;
+
+						echo getPartialView("RecentConsumptionForm", $response);
 ?>
 						<div class="results-header">
 							<div class="row">

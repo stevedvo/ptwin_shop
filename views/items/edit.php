@@ -3,6 +3,8 @@
 	$lists = $response['lists'];
 	$packsizes = $response['packsizes'];
 	$all_departments = $response['all_departments'];
+	$consumption_interval = $response['consumption_interval'];
+	$consumption_period = $response['consumption_period'];
 ?>
 <main class="wrapper">
 	<div class="container">
@@ -250,7 +252,12 @@
 								<p><?= $item->getTotalOrdered()." ".$item->getPackSizeShortName(); ?></p>
 							</div>
 						</div>
+<?php
+						$response['ajax'] = true;
+						$response['item_id'] = $item->getId();
 
+						echo getPartialView("RecentConsumptionForm", $response);
+?>
 						<div class="row">
 							<div class="col-xs-4 col-xs-offset-4">
 								<p>Overall</p>
@@ -271,7 +278,7 @@
 							</div>
 
 							<div class="col-xs-4">
-								<p><?= $item->hasOrders() ? round($item->getDailyConsumptionRecent() * 7, 2) : 'N/A'; ?></p>
+								<p id="itemDailyConsumptionRecent"><?= $item->hasOrders() ? round($item->getDailyConsumptionRecent() * 7, 2) : 'N/A'; ?></p>
 							</div>
 						</div>
 
@@ -281,11 +288,11 @@
 							</div>
 
 							<div class="col-xs-4">
-								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(0, "overall")." ".$item->getPackSizeShortName() : 'N/A'; ?></p>
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(0, "overall") : 'N/A'; ?> <?= $item->getPackSizeShortName(); ?></p>
 							</div>
 
 							<div class="col-xs-4">
-								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(0, "recent")." ".$item->getPackSizeShortName() : 'N/A'; ?></p>
+								<p><span id="itemStockNowRecent"><?= $item->hasOrders() ? $item->getStockLevelPrediction(0, "recent") : 'N/A'; ?></span> <?= $item->getPackSizeShortName(); ?></p>
 							</div>
 						</div>
 
@@ -295,11 +302,11 @@
 							</div>
 
 							<div class="col-xs-4">
-								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(7, "overall")." ".$item->getPackSizeShortName() : 'N/A'; ?></p>
+								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(7, "overall") : 'N/A'; ?> <?= $item->getPackSizeShortName(); ?></p>
 							</div>
 
 							<div class="col-xs-4">
-								<p><?= $item->hasOrders() ? $item->getStockLevelPrediction(7, "recent")." ".$item->getPackSizeShortName() : 'N/A'; ?></p>
+								<p><span id="itemStockFutureRecent"><?= $item->hasOrders() ? $item->getStockLevelPrediction(7, "recent") : 'N/A'; ?></span> <?= $item->getPackSizeShortName(); ?></p>
 							</div>
 						</div>
 					</div>

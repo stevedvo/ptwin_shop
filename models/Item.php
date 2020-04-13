@@ -377,7 +377,7 @@
 			$this->recent_orders[$order->getId()] = $order;
 		}
 
-		public function calculateRecentOrders($interval = 3, $period = "month")
+		public function calculateRecentOrders($interval = DEFAULT_CONSUMPTION_INTERVAL, $period = DEFAULT_CONSUMPTION_PERIOD)
 		{
 			$cutoff_date = new DateTime();
 			$cutoff_date->modify("-".$interval." ".$period);
