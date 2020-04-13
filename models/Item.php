@@ -312,45 +312,45 @@
 			return $last_order;
 		}
 
-		public function getPenultimateOrder()
-		{
-			$penultimate_order = $last_order = false;
+		// public function getPenultimateOrder()
+		// {
+		// 	$penultimate_order = $last_order = false;
 
-			if (is_array($this->orders))
-			{
-				foreach ($this->orders as $order_id => $order)
-				{
-					if (!$last_order)
-					{
-						$last_order = $order;
-					}
-					else
-					{
-						if ($order->getDateOrdered() > $last_order->getDateOrdered())
-						{
-							$penultimate_order = $last_order;
-							$last_order = $order;
-						}
-						else
-						{
-							if (!$penultimate_order)
-							{
-								$penultimate_order = $order;
-							}
-							else
-							{
-								if ($order->getDateOrdered() > $penultimate_order->getDateOrdered())
-								{
-									$penultimate_order = $order;
-								}
-							}
-						}
-					}
-				}
-			}
+		// 	if (is_array($this->orders))
+		// 	{
+		// 		foreach ($this->orders as $order_id => $order)
+		// 		{
+		// 			if (!$last_order)
+		// 			{
+		// 				$last_order = $order;
+		// 			}
+		// 			else
+		// 			{
+		// 				if ($order->getDateOrdered() > $last_order->getDateOrdered())
+		// 				{
+		// 					$penultimate_order = $last_order;
+		// 					$last_order = $order;
+		// 				}
+		// 				else
+		// 				{
+		// 					if (!$penultimate_order)
+		// 					{
+		// 						$penultimate_order = $order;
+		// 					}
+		// 					else
+		// 					{
+		// 						if ($order->getDateOrdered() > $penultimate_order->getDateOrdered())
+		// 						{
+		// 							$penultimate_order = $order;
+		// 						}
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+		// 	}
 
-			return $penultimate_order;
-		}
+		// 	return $penultimate_order;
+		// }
 
 		public function getRecentOrders()
 		{
@@ -429,15 +429,18 @@
 			$consumption = $first_order = $last_order = false;
 
 			$first_order = $this->getFirstOrder();
-			$last_order = $this->getLastOrder();
+			// $last_order = $this->getLastOrder();
 
-			if ($first_order && $last_order)
+			// if ($first_order && $last_order)
+			if ($first_order)
 			{
-				$days = $first_order->getDateOrdered()->diff($last_order->getDateOrdered())->format('%a');
+				// $days = $first_order->getDateOrdered()->diff($last_order->getDateOrdered())->format('%a');
+				$days = $first_order->getDateOrdered()->diff(new DateTime)->format('%a');
 
 				if ($days != '0')
 				{
-					$total = $this->getTotalOrdered() - $last_order->getOrderItembyItemId($this->id)->getQuantity();
+					// $total = $this->getTotalOrdered() - $last_order->getOrderItembyItemId($this->id)->getQuantity();
+					$total = $this->getTotalOrdered();
 					$consumption = $total / $days;
 				}
 			}
@@ -486,11 +489,13 @@
 					}
 				}
 
-				$days = $from_date->diff($to_date)->format('%a');
+				// $days = $from_date->diff($to_date)->format('%a');
+				$days = $from_date->diff(new DateTime)->format('%a');
 
 				if ($days != '0')
 				{
-					$total = $total_recent_qty - $latest_recent_qty;
+					// $total = $total_recent_qty - $latest_recent_qty;
+					$total = $total_recent_qty;
 					$consumption = $total / $days;
 				}
 			}
