@@ -252,34 +252,12 @@
 								<p><?= $item->getTotalOrdered()." ".$item->getPackSizeShortName(); ?></p>
 							</div>
 						</div>
-
-						<div class="row">
-							<div class="recent-consumption-form" data-item_id="<?= $item->getId(); ?>">
-								<div class="col-xs-6 consumption-interval-container">
-									<label>Interval:</label>&nbsp;
-									<input type="number" min="1" name="item_consumption_interval" value="<?= $consumption_interval; ?>" />
-								</div>
-
-								<div class="col-xs-6 consumption-period-container">
-									<label>Period:</label>&nbsp;
-									<select name="item_consumption_period">
 <?php
-										foreach (CONSUMPTION_PERIODS as $period)
-										{
-?>
-											<option value="<?= $period; ?>" <?= $period == $consumption_period ? 'selected' : ''; ?>><?= ucwords($period); ?></option>
-<?php
-										}
-?>
-									</select>
-								</div>
+						$response['ajax'] = true;
+						$response['item_id'] = $item->getId();
 
-								<div class="col-xs-6 submit-container text-right">
-									<button class="btn btn-primary btn-sm js-update-recent-consumption" data-ajax="true">Refresh</button>
-								</div>
-							</div>
-						</div>
-
+						echo getPartialView("RecentConsumptionForm", $response);
+?>
 						<div class="row">
 							<div class="col-xs-4 col-xs-offset-4">
 								<p>Overall</p>

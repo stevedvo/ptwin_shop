@@ -82,7 +82,12 @@
 				[
 					'page_title' => 'Suggested Items',
 					'template'   => 'views/items/suggestions.php',
-					'page_data'  => ['suggested_items' => $suggested_items]
+					'page_data'  =>
+					[
+						'suggested_items'      => $suggested_items,
+						'consumption_interval' => $consumption_interval,
+						'consumption_period'   => $consumption_period
+					]
 				];
 			}
 			elseif ($view_by == "muted-suggestions")

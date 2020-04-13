@@ -15,6 +15,41 @@ $(function()
 	updateRecentConsumptionParameters();
 });
 
+function getURLQueryStringAsObject(queryString)
+{
+	var queryObject = {};
+
+	if (queryString.length > 0)
+	{
+		var queryArray = [];
+		var queryPart = [];
+
+		queryArray = queryString.substr(1).split("&");
+
+		for (var i = 0; i < queryArray.length; i++)
+		{
+			queryPart = queryArray[i].split("=");
+			queryObject[queryPart[0]] = queryPart[1];
+		}
+	}
+
+	return queryObject;
+}
+
+function setURLQueryStringFromObject(queryObject)
+{
+	var queryString = "?";
+
+	$.each(queryObject, function(key, value)
+	{
+		queryString+= key+"="+value+"&";
+	});
+
+	queryString = queryString.substr(0, queryString.length - 1);
+
+	return queryString;
+}
+
 function initNavigation()
 {
 	$(document).on("click", ".mobile-navigation-container", function()
@@ -2197,8 +2232,20 @@ function updateRecentConsumptionParameters()
 	{
 		var $this = $(this);
 		var $form = $this.closest(".recent-consumption-form");
-		var interval = parseInt($form.find("input[name='item_consumption_interval']").val());
-		var period = $form.find("select[name='item_consumption_period'] option:selected").val();
+		var interval = parseInt($form.find("input[name='consumption_interval']").val());
+		var period = $form.find("select[name='consumption_period'] option:selected").val();
+
+		if (interval < 1)
+		{
+			toastr.error("Invalid Interval.");
+			return false;
+		}
+
+		if (constants.CONSUMPTION_PERIODS.indexOf(period) == -1)
+		{
+			toastr.error("Invalid Period.");
+			return false;
+		}
 
 		if ($this.data('ajax'))
 		{
@@ -2243,7 +2290,15 @@ function updateRecentConsumptionParameters()
 		}
 		else
 		{
-			console.log("do page refresh")
+			var pathname = location.pathname;
+			var queryObject = getURLQueryStringAsObject(location.search);
+
+			queryObject["consumption_interval"] = interval;
+			queryObject["consumption_period"] = period;
+
+			var newSearch = setURLQueryStringFromObject(queryObject);
+
+			location.href = constants.SITEURL+pathname+newSearch;
 		}
 	});
 }
