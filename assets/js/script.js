@@ -2304,7 +2304,7 @@ function updateRecentConsumptionParameters()
 		}
 		else
 		{
-			var pathname = location.pathname;
+			var fullPathname = location.origin+location.pathname;
 			var queryObject = getURLQueryStringAsObject(location.search);
 
 			if ($this.data("reset"))
@@ -2320,7 +2320,7 @@ function updateRecentConsumptionParameters()
 
 			var newSearch = setURLQueryStringFromObject(queryObject);
 
-			location.href = constants.SITEURL+pathname+newSearch;
+			location.href = fullPathname+newSearch;
 		}
 	});
 }
