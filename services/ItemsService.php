@@ -65,7 +65,7 @@
 						$est_overall = $item->getStockLevelPrediction(7, 'overall');
 						$est_recent = $item->getStockLevelPrediction(7, 'recent');
 
-						if (($est_overall !== false && $est_overall < 1) || ($est_recent !== false && $est_recent < 1))
+						if (($est_overall !== false && $est_overall < 0) || ($est_recent !== false && $est_recent < 0))
 						{
 							$suggested_items[$item->getId()] = $item;
 						}
