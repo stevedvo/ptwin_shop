@@ -655,7 +655,6 @@ ul.ui-autocomplete li.ui-state-focus
 
 	.form#add-item label,
 	.form#edit-item label,
-	.add-department-to-item-container,
 	.move-items-to-list-container,
 	.add-item-to-list-container,
 	.add-item-to-department-container
@@ -667,7 +666,6 @@ ul.ui-autocomplete li.ui-state-focus
 	.form#add-item select,
 	.form#edit-item input:not([type='submit']),
 	.form#edit-item select,
-	.department-selection-container,
 	.list-selection-container,
 	.item-selection-container
 	{
@@ -735,6 +733,12 @@ ul.ui-autocomplete li.ui-state-focus
 	{
 		width: calc(4 / 12 * 100%);
 		margin-left: 0px;
+	}
+
+	.item-department-add-container,
+	.item-department-remove-container
+	{
+		width: calc(6 / 12 * 100%);
 	}
 }
 

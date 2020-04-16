@@ -137,7 +137,7 @@
 			</div>
 
 			<div class="row">
-				<div class="col-xs-12">
+				<div class="col-xs-12 item-department-add-container">
 					<h3>Add Department to Item</h3>
 					<div class="form">
 						<div class="row">
@@ -167,10 +167,8 @@
 						</div>
 					</div>
 				</div>
-			</div>
 
-			<div class="row">
-				<div class="col-xs-12">
+				<div class="col-xs-12 item-department-remove-container">
 					<h3>Remove</h3>
 					<div class="form">
 						<button class="btn btn-danger btn-sm js-remove-departments-from-item">Remove Selected Department(s) from Item</button>
