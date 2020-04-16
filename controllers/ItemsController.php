@@ -178,6 +178,16 @@
 			$pageData =
 			[
 				'page_title' => 'Add New Item',
+				'breadcrumb' =>
+				[
+					[
+						'link' => '/items/',
+						'text' => 'Items'
+					],
+					[
+						'text' => 'Create'
+					]
+				],
 				'template'   => 'views/items/create.php',
 				'page_data'  =>
 				[
@@ -320,6 +330,16 @@
 			$pageData =
 			[
 				'page_title' => 'Edit Item',
+				'breadcrumb' =>
+				[
+					[
+						'link' => '/items/',
+						'text' => 'Items'
+					],
+					[
+						'text' => 'Edit'
+					]
+				],
 				'template'   => 'views/items/edit.php',
 				'page_data'  =>
 				[

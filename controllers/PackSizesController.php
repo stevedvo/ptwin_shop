@@ -93,28 +93,23 @@
 				{
 					$packsize = $dalResult->getResult();
 				}
-
-				// $dalResult = $this->packsizes_service->getAllPackSizes();
-
-				// if (!is_null($dalResult->getResult()))
-				// {
-				// 	$all_packsizes = $dalResult->getResult();
-				// }
-
-				// $dalResult = $this->items_service->getAllItems();
-
-				// if (!is_null($dalResult->getResult()))
-				// {
-				// 	$all_items = $dalResult->getResult();
-				// }
 			}
 
 			$this->packsizes_service->closeConnexion();
-			// $this->items_service->closeConnexion();
 
 			$pageData =
 			[
-				'page_title' => 'Edit PackSize',
+				'page_title' => 'Edit Pack Size',
+				'breadcrumb' =>
+				[
+					[
+						'link' => '/packsizes/',
+						'text' => 'Pack Sizes'
+					],
+					[
+						'text' => 'Edit'
+					]
+				],
 				'template'   => 'views/packsizes/edit.php',
 				'page_data'  =>
 				[
@@ -125,7 +120,6 @@
 			];
 
 			renderPage($pageData);
-			include_once('views/packsizes/edit.php');
 		}
 
 		public function editPackSize($request)

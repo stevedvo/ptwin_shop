@@ -21,7 +21,7 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-xs-9 page-heading-container">
-						<h2 class="page-heading"><?= $page_title; ?></h2>
+						<h2 class="page-heading"><?= $breadcrumb; ?></h2>
 					</div>
 
 					<div class="home-link-container text-right">
