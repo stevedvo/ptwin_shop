@@ -7,7 +7,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-12">
-				<div class="results-container suggestions">
+				<div class="results-container suggestions muted striped">
 <?php
 					if (!is_array($muted_items) || sizeof($muted_items) == 0)
 					{

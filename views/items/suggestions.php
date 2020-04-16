@@ -9,7 +9,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-12">
-				<div class="results-container suggestions">
+				<div class="results-container suggestions striped">
 <?php
 					if (!is_array($suggested_items) || sizeof($suggested_items) == 0)
 					{
