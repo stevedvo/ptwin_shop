@@ -219,6 +219,13 @@ main
 	word-break: break-all;
 }
 
+.results-container.item-order-history
+{
+	max-width: 350px;
+	max-height: 260px;
+	overflow-y: auto;
+}
+
 .results-container.item-order-history .results-body a
 {
 	display: flex;
@@ -607,17 +614,6 @@ ul.ui-autocomplete li.ui-state-focus
 	}
 
 	.results-container.suggestions.muted .button-container.mute-button
-	{
-		width: calc(3 / 12 * 100%);
-	}
-
-	.results-container.item-order-history .order-id-container,
-	.results-container.item-order-history .order-quantity-container
-	{
-		width: calc(2 / 12 * 100%);
-	}
-
-	.results-container.item-order-history .order-date-container
 	{
 		width: calc(3 / 12 * 100%);
 	}
