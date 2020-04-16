@@ -152,6 +152,11 @@ main
 	display: none;
 }
 
+.results-container.striped .result-item.selected
+{
+	background-color: #afa;
+}
+
 .results-container .result-item.selected .button-container button.js-add-item-to-current-order
 {
 	display: none;
@@ -576,6 +581,11 @@ ul.ui-autocomplete li.ui-state-focus
 		width: calc(3 / 12 * 100%);
 	}
 
+	.results-container.suggestions.muted .description-container
+	{
+		width: calc(5 / 12 * 100%);
+	}
+
 	.results-container.suggestions .stock-level-container
 	{
 		width: calc(1.5 / 12 * 100%);
@@ -589,6 +599,16 @@ ul.ui-autocomplete li.ui-state-focus
 	.results-container.suggestions .button-container.mute-button
 	{
 		width: calc(2 / 12 * 100%);
+	}
+
+	.results-container.suggestions.muted .button-container
+	{
+		width: calc(1 / 12 * 100%);
+	}
+
+	.results-container.suggestions.muted .button-container.mute-button
+	{
+		width: calc(3 / 12 * 100%);
 	}
 
 	.results-container.item-order-history .order-id-container,
@@ -752,5 +772,15 @@ ul.ui-autocomplete li.ui-state-focus
 	.action-btns-container
 	{
 		width: 50%;
+	}
+
+	.results-container.suggestions.muted .description-container
+	{
+		width: calc(7 / 12 * 100%);
+	}
+
+	.results-container.suggestions.muted .button-container.mute-button
+	{
+		width: calc(2 / 12 * 100%);
 	}
 }

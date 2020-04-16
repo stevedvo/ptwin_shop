@@ -572,7 +572,10 @@ function manageItems()
 
 						if (form.hasClass("fade-on-mute"))
 						{
-							form.fadeOut();
+							form.fadeOut(function()
+							{
+								form.remove();
+							});
 						}
 						else
 						{
