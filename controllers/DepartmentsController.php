@@ -110,6 +110,16 @@
 			$pageData =
 			[
 				'page_title' => 'Edit Department',
+				'breadcrumb' =>
+				[
+					[
+						'link' => '/departments/',
+						'text' => 'Departments'
+					],
+					[
+						'text' => 'Edit'
+					]
+				],
 				'template'   => 'views/departments/edit.php',
 				'page_data'  =>
 				[

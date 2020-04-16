@@ -196,6 +196,7 @@
 	function renderPage($pageData)
 	{
 		$page_title = $pageData['page_title'];
+		$breadcrumb = (isset($pageData['breadcrumb']) && is_array($pageData['breadcrumb'])) ? renderBreadcrumb($pageData['breadcrumb']) : $page_title;
 		$template = $pageData['template'];
 		$response = $pageData['page_data'];
 		include_once('views/shared/header.php');
@@ -221,4 +222,23 @@
 		ob_end_clean();
 
 		return $partial_view;
+	}
+
+	function renderBreadcrumb($breadcrumb)
+	{
+		$breadcrumb_string = "";
+
+		foreach ($breadcrumb as $element)
+		{
+			if (isset($element['link']))
+			{
+				$breadcrumb_string.= "<a href='".SITEURL.$element['link']."'>".$element['text']."</a> > ";
+			}
+			else
+			{
+				$breadcrumb_string.= $element['text'];
+			}
+		}
+
+		return $breadcrumb_string;
 	}

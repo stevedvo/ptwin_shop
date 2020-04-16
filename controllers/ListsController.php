@@ -98,6 +98,16 @@
 			$pageData =
 			[
 				'page_title' => 'Edit List',
+				'breadcrumb' =>
+				[
+					[
+						'link' => '/lists/',
+						'text' => 'Lists'
+					],
+					[
+						'text' => 'Edit'
+					]
+				],
 				'template'   => 'views/lists/edit.php',
 				'page_data'  =>
 				[
@@ -108,7 +118,6 @@
 			];
 
 			renderPage($pageData);
-			include_once('views/lists/edit.php');
 		}
 
 		public function addItemToList($request)

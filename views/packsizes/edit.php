@@ -1,7 +1,5 @@
 <?php
 	$packsize = $response['packsize'];
-	// $all_packsizes = $response['all_packsizes'];
-	// $all_items = $response['all_items'];
 ?>
 <main class="wrapper">
 	<div class="container">
@@ -11,7 +9,7 @@
 ?>
 			<div class="row">
 				<div class="col-xs-12">
-					<p>Could not find packsize / invalid request</p>
+					<p>Could not find Pack Size / invalid request</p>
 				</div>
 			</div>
 <?php
@@ -35,7 +33,7 @@
 							</div>
 						</div>
 						<br />
-						<input type="submit" class="btn btn-primary js-edit-packsize" value="Edit packsize" />
+						<input type="submit" class="btn btn-primary js-edit-packsize" value="Edit Pack Size" />
 					</div>
 				</div>
 			</div>

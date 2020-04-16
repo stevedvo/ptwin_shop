@@ -202,6 +202,16 @@
 			$pageData =
 			[
 				'page_title' => 'View Order',
+				'breadcrumb' =>
+				[
+					[
+						'link' => '/orders/',
+						'text' => 'Orders'
+					],
+					[
+						'text' => 'View'
+					]
+				],
 				'template'   => 'views/orders/view.php',
 				'page_data'  =>
 				[
@@ -266,6 +276,16 @@
 			$pageData =
 			[
 				'page_title' => 'Edit Order',
+				'breadcrumb' =>
+				[
+					[
+						'link' => '/orders/',
+						'text' => 'Orders'
+					],
+					[
+						'text' => 'Edit'
+					]
+				],
 				'template'   => 'views/orders/edit.php',
 				'page_data'  =>
 				[
