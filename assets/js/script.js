@@ -454,11 +454,26 @@ function manageItems()
 			{
 				toastr.success("Item successfully added to Order");
 
-				$.each($(".result-item[data-item_id='"+itemID+"']"), function()
+				if ($(".result-item[data-item_id='"+itemID+"']").length > 0)
 				{
-					$(this).addClass("selected");
-					$(this).find("button.js-remove-item-from-current-order").data("order_item_id", data.id);
-				});
+					$.each($(".result-item[data-item_id='"+itemID+"']"), function()
+					{
+						$(this).addClass("selected");
+						$(this).find("button.js-remove-item-from-current-order").data("order_item_id", data.id);
+					});
+
+					return;
+				}
+
+				// adding Item from /items/edit/{id}/
+				if (form.hasClass("item-current_order-item"))
+				{
+					form.data("order_item_id", data.id);
+					form.find(".order-quantity-container").html('<input type="number" min="1" name="quantity" value="'+data.quantity+'" data-validation="{&quot;required&quot;:&quot;1&quot;,&quot;min-value&quot;:&quot;1&quot;}" />');
+					form.find(".order-buttons-container button").toggleClass("hidden");
+
+					return;
+				}
 			}
 			else
 			{
@@ -1769,6 +1784,17 @@ function manageOrders()
 					else
 					{
 						toastr.success("Order Item successfully removed");
+
+						// initiated from /items/edit/{id}/
+						if (form.hasClass("item-current_order-item"))
+						{
+							form.find(".order-quantity-container").empty();
+							form.find(".order-buttons-container button").toggleClass("hidden");
+							form.data("order_item_id", "");
+
+							return;
+						}
+
 						form.remove();
 
 						if ($(".current-order").find(".result-item").length == 0)

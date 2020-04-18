@@ -5,6 +5,9 @@
 	$all_departments = $response['all_departments'];
 	$consumption_interval = $response['consumption_interval'];
 	$consumption_period = $response['consumption_period'];
+	$currentOrder = $response['current_order'];
+	$currentOrderItems = $response['current_order_items'];
+	$itemInCurrentOrder = array_key_exists($item->getId(), $currentOrderItems) ? true : false;
 ?>
 <main class="wrapper">
 	<div class="container">
@@ -181,36 +184,60 @@
 					<h3>Orders</h3>
 					<div class="row">
 						<div class="results-container item-order-history">
-<?php
-							if (!is_array($item->getOrders()) || sizeof($item->getOrders()) < 1)
-							{
-?>
-								<div class="col-xs-12">
-									<p class="no-results">No Orders could be found for this Item.</p>
-								</div>
-<?php
-							}
-							else
-							{
-?>
-								<div class="results-header col-xs-12">
-									<div class="row">
-										<div class="col-xs-4 results-header-item order-id-container">
-											<p><strong>Order ID</strong></p>
-										</div>
+							<div class="results-header col-xs-12">
+								<div class="row">
+									<div class="col-xs-4 results-header-item order-id-container">
+										<p><strong>Order ID</strong></p>
+									</div>
 
-										<div class="col-xs-5 results-header-item order-date-container">
-											<p><strong>Date Ordered</strong></p>
-										</div>
+									<div class="col-xs-5 results-header-item order-date-container">
+										<p><strong>Date Ordered</strong></p>
+									</div>
 
-										<div class="col-xs-3 results-header-item order-quantity-container">
-											<p><strong>Quantity</strong></p>
-										</div>
+									<div class="col-xs-3 results-header-item order-quantity-container">
+										<p><strong>Quantity</strong></p>
 									</div>
 								</div>
+							</div>
 
-								<div class="results-body col-xs-12">
+							<div class="results-body col-xs-12">
 <?php
+								if ($currentOrder)
+								{
+?>
+									<div class="form item-current_order-item" data-item_id="<?= $item->getId(); ?>" data-order_item_id="<?= $itemInCurrentOrder ? $currentOrderItems[$item->getId()] : ''; ?>">
+										<div class="row">
+											<div class="col-xs-4 order-result-item order-id-container">
+												<p>#<?= $currentOrder->getId(); ?></p>
+											</div>
+
+											<div class="col-xs-5 order-result-item order-date-container">
+												<p></p>
+											</div>
+
+											<div class="col-xs-3 order-result-item order-quantity-container">
+<?php
+												if ($itemInCurrentOrder)
+												{
+?>
+													<input type="number" min="1" name="quantity" value="<?= $currentOrder->getOrderItembyItemId($item->getId())->getQuantity(); ?>" data-validation="<?= getValidationString($currentOrder->getOrderItembyItemId($item->getId()), 'Quantity'); ?>" />
+<?php
+												}
+?>
+											</div>
+
+											<div class="col-xs-12 text-right order-result-item order-buttons-container">
+												<button class="btn btn-primary btn-sm js-add-item-to-current-order <?= $itemInCurrentOrder ? 'hidden' : ''; ?>">Add</button>
+												<button class="btn btn-primary btn-sm js-update-order-item <?= $itemInCurrentOrder ? '' : 'hidden'; ?>">Update</button>
+												<button class="btn btn-danger btn-sm js-remove-order-item <?= $itemInCurrentOrder ? '' : 'hidden'; ?>">Remove</button>
+											</div>
+										</div>
+									</div>
+<?php
+								}
+
+								if ($item->hasOrders())
+								{
 									foreach ($item->getOrders() as $order_id => $order)
 									{
 ?>
@@ -231,11 +258,9 @@
 										</div>
 <?php
 									}
+								}
 ?>
-								</div>
-<?php
-							}
-?>
+							</div>
 						</div>
 					</div>
 

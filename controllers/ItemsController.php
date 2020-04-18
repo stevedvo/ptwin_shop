@@ -268,7 +268,23 @@
 
 		public function Edit($request = null)
 		{
-			$lists = $packsizes = $departments = false;
+			$lists = $packsizes = $departments = $currentOrder = $currentOrderItems = null;
+
+			$consumption_interval = DEFAULT_CONSUMPTION_INTERVAL;
+			$consumption_period = DEFAULT_CONSUMPTION_PERIOD;
+
+			if (isset($_GET['consumption_interval']) && is_numeric($_GET['consumption_interval']) && intval($_GET['consumption_interval']) > 0)
+			{
+				$consumption_interval = intval($_GET['consumption_interval']);
+			}
+
+			if (isset($_GET['consumption_period']))
+			{
+				if (in_array($_GET['consumption_period'], CONSUMPTION_PERIODS))
+				{
+					$consumption_period = $_GET['consumption_period'];
+				}
+			}
 
 			$item = $this->items_service->verifyItemRequest(['item_id' => $request]);
 
@@ -301,25 +317,16 @@
 				{
 					$item->setOrders($dalResult->getResult());
 				}
-			}
 
-			$consumption_interval = DEFAULT_CONSUMPTION_INTERVAL;
-			$consumption_period = DEFAULT_CONSUMPTION_PERIOD;
+				$currentOrder = $this->orders_service->getCurrentOrder();
 
-			if (isset($_GET['consumption_interval']) && is_numeric($_GET['consumption_interval']) && intval($_GET['consumption_interval']) > 0)
-			{
-				$consumption_interval = intval($_GET['consumption_interval']);
-			}
-
-			if (isset($_GET['consumption_period']))
-			{
-				if (in_array($_GET['consumption_period'], CONSUMPTION_PERIODS))
+				if ($currentOrder)
 				{
-					$consumption_period = $_GET['consumption_period'];
+					$currentOrderItems = $currentOrder->getItemIdsInOrder();
 				}
-			}
 
-			$item->calculateRecentOrders($consumption_interval, $consumption_period);
+				$item->calculateRecentOrders($consumption_interval, $consumption_period);
+			}
 
 			$this->items_service->closeConnexion();
 			$this->lists_service->closeConnexion();
@@ -348,7 +355,9 @@
 					'all_departments'      => $departments,
 					'packsizes'            => $packsizes,
 					'consumption_interval' => $consumption_interval,
-					'consumption_period'   => $consumption_period
+					'consumption_period'   => $consumption_period,
+					'current_order'        => $currentOrder,
+					'current_order_items'  => $currentOrderItems
 				]
 			];
 

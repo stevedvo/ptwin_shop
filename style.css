@@ -222,7 +222,7 @@ main
 
 .results-container.item-order-history
 {
-	max-width: 350px;
+	max-width: 520px;
 	max-height: 260px;
 	overflow-y: auto;
 }
@@ -739,6 +739,23 @@ ul.ui-autocomplete li.ui-state-focus
 	.item-department-remove-container
 	{
 		width: calc(6 / 12 * 100%);
+	}
+
+	.results-container.item-order-history .order-quantity-container
+	{
+		width: calc(2 / 12 * 100%);
+	}
+
+	.results-container.item-order-history .order-id-container,
+	.results-container.item-order-history .order-date-container
+	{
+		width: calc(3 / 12 * 100%);
+	}
+
+	.results-container.item-order-history .order-buttons-container
+	{
+		width: calc(4 / 12 * 100%);
+		text-align: left;
 	}
 }
 
