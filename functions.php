@@ -79,6 +79,16 @@
 		return $packsize;
 	}
 
+	function createLuckyDip($request) : LuckyDip
+	{
+		$id = isset($request['luckyDip_id']) ? intval($request['luckyDip_id']) : null;
+		$name = isset($request['luckyDip_name']) ? $request['luckyDip_name'] : null;
+
+		$luckyDip = new LuckyDip($id, $name);
+
+		return $luckyDip;
+	}
+
 	function getValidationString($object, $property)
 	{
 		if (is_null($object) || !is_object($object) || is_null($property) || empty($property))
