@@ -39,28 +39,28 @@
 			renderPage($pageData);
 		}
 
-		public function addDepartment($request)
+		public function addLuckyDip($request)
 		{
-			$department = createDepartment($request);
+			$luckyDip = createLuckyDip($request);
 
-			if (!entityIsValid($department))
+			if (!entityIsValid($luckyDip))
 			{
 				return false;
 			}
 
-			$dalResult = $this->departments_service->getDepartmentByName($department->getName());
+			$dalResult = $this->luckyDips_service->getLuckyDipByName($luckyDip->getName());
 
 			if (!is_null($dalResult->getException()))
 			{
 				return false;
 			}
 
-			if ($dalResult->getResult() instanceof Department)
+			if ($dalResult->getResult() instanceof LuckyDip)
 			{
 				return false;
 			}
 
-			$dalResult = $this->departments_service->addDepartment($department);
+			$dalResult = $this->luckyDips_service->addLuckyDip($luckyDip);
 
 			if (!is_null($dalResult->getException()))
 			{
@@ -69,33 +69,33 @@
 
 			if (!is_null($dalResult->getResult()))
 			{
-				$department->setId($dalResult->getResult());
-				$dalResult->setPartialView(getPartialView("DepartmentListItem", ['item' => $department]));
+				$luckyDip->setId($dalResult->getResult());
+				$dalResult->setPartialView(getPartialView("LuckyDipListItem", ['item' => $luckyDip]));
 			}
 
-			$this->departments_service->closeConnexion();
+			$this->luckyDips_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();
 		}
 
 		public function Edit($request = null)
 		{
-			$department = $all_departments = $all_items = false;
+			$luckyDip = $all_luckyDips = $all_items = false;
 
 			if (is_numeric($request))
 			{
-				$dalResult = $this->departments_service->getDepartmentById(intval($request));
+				$dalResult = $this->luckyDips_service->getLuckyDipById(intval($request));
 
 				if (!is_null($dalResult->getResult()))
 				{
-					$department = $dalResult->getResult();
+					$luckyDip = $dalResult->getResult();
 				}
 
-				$dalResult = $this->departments_service->getAllDepartments();
+				$dalResult = $this->luckyDips_service->getAllLuckyDips();
 
 				if (!is_null($dalResult->getResult()))
 				{
-					$all_departments = $dalResult->getResult();
+					$all_luckyDips = $dalResult->getResult();
 				}
 
 				$dalResult = $this->items_service->getAllItems();
@@ -106,27 +106,27 @@
 				}
 			}
 
-			$this->departments_service->closeConnexion();
+			$this->luckyDips_service->closeConnexion();
 			$this->items_service->closeConnexion();
 
 			$pageData =
 			[
-				'page_title' => 'Edit Department',
+				'page_title' => 'Edit LuckyDip',
 				'breadcrumb' =>
 				[
 					[
-						'link' => '/departments/',
-						'text' => 'Departments'
+						'link' => '/luckyDips/',
+						'text' => 'LuckyDips'
 					],
 					[
 						'text' => 'Edit'
 					]
 				],
-				'template'   => 'views/departments/edit.php',
+				'template'   => 'views/luckyDips/edit.php',
 				'page_data'  =>
 				[
-					'department'      => $department,
-					'all_departments' => $all_departments,
+					'luckyDip'      => $luckyDip,
+					'all_luckyDips' => $all_luckyDips,
 					'all_items'       => $all_items
 				]
 			];
@@ -134,30 +134,30 @@
 			renderPage($pageData);
 		}
 
-		public function addItemToDepartment($request)
+		public function addItemToLuckyDip($request)
 		{
 			$item = $this->items_service->verifyItemRequest($request);
-			$department = $this->items_service->verifyDepartmentRequest($request);
+			$luckyDip = $this->items_service->verifyLuckyDipRequest($request);
 
-			if (!$item || !$department)
+			if (!$item || !$luckyDip)
 			{
 				return false;
 			}
 
-			$dalResult = $this->departments_service->addItemToDepartment($item, $department);
+			$dalResult = $this->luckyDips_service->addItemToLuckyDip($item, $luckyDip);
 
 			if (!is_null($dalResult->getResult()))
 			{
-				$dalResult->setPartialView(getPartialView("DepartmentItem", ['item' => $item]));
+				$dalResult->setPartialView(getPartialView("LuckyDipItem", ['item' => $item]));
 			}
 
-			$this->departments_service->closeConnexion();
+			$this->luckyDips_service->closeConnexion();
 			$this->items_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();
 		}
 
-		public function removeItemsFromDepartment($request)
+		public function removeItemsFromLuckyDip($request)
 		{
 			$item_ids = [];
 
@@ -176,45 +176,44 @@
 				$item_ids[] = intval($item_id);
 			}
 
-			$dalResult = $this->departments_service->removeItemsFromDepartment($item_ids, intval($request['dept_id']));
-			$this->departments_service->closeConnexion();
+			$dalResult = $this->luckyDips_service->removeItemsFromLuckyDip($item_ids, intval($request['dept_id']));
+			$this->luckyDips_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();
 		}
 
-		public function editDepartment($request)
+		public function editLuckyDip($request)
 		{
-			$department = createDepartment($request);
+			$luckyDip = createLuckyDip($request);
 
-			if (!entityIsValid($department))
+			if (!entityIsValid($luckyDip))
 			{
 				return false;
 			}
 
-			$dept_update = $this->departments_service->verifyDepartmentRequest($request);
+			$luckyDipUpdate = $this->luckyDips_service->verifyLuckyDipRequest($request);
 
-			if (!$dept_update)
+			if (is_null($luckyDipUpdate))
 			{
 				return false;
 			}
 
-			$dept_update->setName($department->getName());
-			$dept_update->setSeq($department->getSeq());
+			$luckyDipUpdate->setName($luckyDip->getName());
 
-			$dalResult = $this->departments_service->updateDepartment($dept_update);
-			$this->departments_service->closeConnexion();
+			$dalResult = $this->luckyDips_service->updateLuckyDip($luckyDipUpdate);
+			$this->luckyDips_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();
 		}
 
-		public function removeDepartment($request)
+		public function removeLuckyDip($request)
 		{
 			if (!isset($request['dept_id']) || !is_numeric($request['dept_id']))
 			{
 				return false;
 			}
 
-			$dalResult = $this->items_service->getItemsByDepartmentId(intval($request['dept_id']));
+			$dalResult = $this->items_service->getItemsByLuckyDipId(intval($request['dept_id']));
 
 			if (!is_null($dalResult->getException()))
 			{
@@ -228,20 +227,20 @@
 				return false;
 			}
 
-			$dalResult = $this->departments_service->getDepartmentById(intval($request['dept_id']));
+			$dalResult = $this->luckyDips_service->getLuckyDipById(intval($request['dept_id']));
 
 			if (!is_null($dalResult->getResult()))
 			{
-				$department = $dalResult->getResult();
+				$luckyDip = $dalResult->getResult();
 			}
 
-			if (!$department)
+			if (!$luckyDip)
 			{
 				return false;
 			}
 
-			$dalResult = $this->departments_service->removeDepartment($department);
-			$this->departments_service->closeConnexion();
+			$dalResult = $this->luckyDips_service->removeLuckyDip($luckyDip);
+			$this->luckyDips_service->closeConnexion();
 			$this->items_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();

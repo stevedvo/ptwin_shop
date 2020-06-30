@@ -10,18 +10,18 @@
 			$this->dal = new LuckyDipsDAL();
 		}
 
-		public function closeConnexion()
+		public function closeConnexion() : void
 		{
 			$this->dal->closeConnexion();
 		}
 
-		public function verifyLuckyDipRequest($request)
+		public function verifyLuckyDipRequest($request) : ?LuckyDip
 		{
-			$luckyDip = false;
+			$luckyDip = null;
 
 			if (!is_numeric($request['luckyDip_id']))
 			{
-				return false;
+				return null;
 			}
 
 			$dalResult = $this->dal->getLuckyDipById(intval($request['luckyDip_id']));
@@ -31,15 +31,10 @@
 				$luckyDip = $dalResult->getResult();
 			}
 
-			if (!$luckyDip)
-			{
-				return false;
-			}
-
 			return $luckyDip;
 		}
 
-		public function addLuckyDip($luckyDip)
+		public function addLuckyDip(LuckyDip $luckyDip) : DalResult
 		{
 			return $this->dal->addLuckyDip($luckyDip);
 		}
@@ -59,9 +54,9 @@
 			return $this->dal->getLuckyDipById($dept_id);
 		}
 
-		public function getLuckyDipByName($dept_name)
+		public function getLuckyDipByName(string $luckyDip_name) : DalResult
 		{
-			return $this->dal->getLuckyDipByName($dept_name);
+			return $this->dal->getLuckyDipByName($luckyDip_name);
 		}
 
 		public function addItemToLuckyDip($item, $luckyDip)
@@ -74,7 +69,7 @@
 			return $this->dal->removeItemsFromLuckyDip($item_ids, $dept_id);
 		}
 
-		public function updateLuckyDip($luckyDip)
+		public function updateLuckyDip(LuckyDip $luckyDip) : DalResult
 		{
 			return $this->dal->updateLuckyDip($luckyDip);
 		}

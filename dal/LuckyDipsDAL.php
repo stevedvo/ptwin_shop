@@ -10,24 +10,20 @@
 			$this->ShopDb = new ShopDb();
 		}
 
-		public function closeConnexion()
+		public function closeConnexion() : void
 		{
 			$this->ShopDb = null;
 		}
 
-		public function addLuckyDip($luckyDip)
+		public function addLuckyDip(LuckyDip $luckyDip) : DalResult
 		{
 			$result = new DalResult();
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("INSERT INTO luckyDips (dept_name, seq) VALUES (:dept_name, :seq)");
-				$query->execute(
-				[
-					':dept_name' => $luckyDip->getName(),
-					':seq'       => $luckyDip->getSeq()
-				]);
-				$result->setResult($this->ShopDb->conn->lastInsertId());
+				$query = $this->ShopDb->conn->prepare("INSERT INTO lucky_dips (name) VALUES (:name)");
+				$query->execute([':name' => $luckyDip->getName()]);
+				$result->setResult(intval($this->ShopDb->conn->lastInsertId()));
 			}
 			catch(PDOException $e)
 			{
@@ -37,31 +33,24 @@
 			return $result;
 		}
 
-		public function getLuckyDipById($dept_id)
+		public function getLuckyDipById(int $luckyDip_id) : DalResult
 		{
 			$result = new DalResult();
-			$luckyDip = false;
+			$luckyDip = null;
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, d.seq, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM luckyDips AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE d.dept_id = :dept_id ORDER BY i.description");
-				$query->execute([':dept_id' => $dept_id]);
+				$query = $this->ShopDb->conn->prepare("SELECT id AS luckyDip_id, name AS luckyDip_name FROM lucky_dips WHERE id = :id ORDER BY name");
+				$query->execute([':id' => $luckyDip_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
 				if ($rows)
 				{
 					foreach ($rows as $row)
 					{
-						if (!$luckyDip)
+						if (is_null($luckyDip))
 						{
 							$luckyDip = createLuckyDip($row);
-						}
-
-						$item = createItem($row);
-
-						if (entityIsValid($item))
-						{
-							$luckyDip->addItem($item);
 						}
 					}
 				}
@@ -76,15 +65,15 @@
 			return $result;
 		}
 
-		public function getLuckyDipByName($dept_name)
+		public function getLuckyDipByName(string $luckyDip_name) : DalResult
 		{
 			$result = new DalResult();
 			$luckyDip = false;
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT dept_id, dept_name, seq FROM luckyDips WHERE dept_name = :name");
-				$query->execute([':name' => $dept_name]);
+				$query = $this->ShopDb->conn->prepare("SELECT id AS luckyDip_id, name AS luckyDip_name FROM lucky_dips WHERE name = :name");
+				$query->execute([':name' => $luckyDip_name]);
 				$row = $query->fetch(PDO::FETCH_ASSOC);
 
 				if ($row)
@@ -226,18 +215,17 @@
 			return $result;
 		}
 
-		public function updateLuckyDip($luckyDip)
+		public function updateLuckyDip(LuckyDip $luckyDip) : DalResult
 		{
 			$result = new DalResult();
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("UPDATE luckyDips SET dept_name = :dept_name, seq = :seq WHERE dept_id = :dept_id");
+				$query = $this->ShopDb->conn->prepare("UPDATE lucky_dips SET name = :name WHERE id = :id");
 				$result->setResult($query->execute(
 				[
-					':dept_name' => $luckyDip->getName(),
-					':seq'       => $luckyDip->getSeq(),
-					':dept_id'   => $luckyDip->getId()
+					':name' => $luckyDip->getName(),
+					':id'   => $luckyDip->getId()
 				]));
 			}
 			catch(PDOException $e)

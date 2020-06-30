@@ -212,6 +212,7 @@
 		include_once('views/shared/header.php');
 		include_once($template);
 		include_once('views/shared/footer.php');
+		exit;
 	}
 
 	function renderPrint($pageData)
@@ -224,7 +225,7 @@
 		include_once('views/shared/print-footer.php');
 	}
 
-	function getPartialView($template, $params)
+	function getPartialView(string $template, array $params) : string
 	{
 		ob_start();
 		include('views/partial/'.$template.'.php');
