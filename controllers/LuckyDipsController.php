@@ -12,7 +12,7 @@
 			$this->items_service = new ItemsService();
 		}
 
-		public function Index()
+		public function Index() : void
 		{
 			$luckyDipPrototype = new LuckyDip();
 			$dalResult = $this->luckyDips_service->getAllLuckyDips();
@@ -78,9 +78,9 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		public function Edit($request = null)
+		public function Edit($request = null) : void
 		{
-			$luckyDip = $all_luckyDips = $all_items = false;
+			$luckyDip = $all_items = null;
 
 			if (is_numeric($request))
 			{
@@ -89,13 +89,6 @@
 				if (!is_null($dalResult->getResult()))
 				{
 					$luckyDip = $dalResult->getResult();
-				}
-
-				$dalResult = $this->luckyDips_service->getAllLuckyDips();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$all_luckyDips = $dalResult->getResult();
 				}
 
 				$dalResult = $this->items_service->getAllItems();
@@ -111,12 +104,12 @@
 
 			$pageData =
 			[
-				'page_title' => 'Edit LuckyDip',
+				'page_title' => 'Edit Lucky Dip',
 				'breadcrumb' =>
 				[
 					[
-						'link' => '/luckyDips/',
-						'text' => 'LuckyDips'
+						'link' => '/luckydips/',
+						'text' => 'Lucky Dips'
 					],
 					[
 						'text' => 'Edit'
@@ -125,9 +118,8 @@
 				'template'   => 'views/luckyDips/edit.php',
 				'page_data'  =>
 				[
-					'luckyDip'      => $luckyDip,
-					'all_luckyDips' => $all_luckyDips,
-					'all_items'       => $all_items
+					'luckyDip'  => $luckyDip,
+					'all_items' => $all_items
 				]
 			];
 
@@ -137,9 +129,9 @@
 		public function addItemToLuckyDip($request)
 		{
 			$item = $this->items_service->verifyItemRequest($request);
-			$luckyDip = $this->items_service->verifyLuckyDipRequest($request);
+			$luckyDip = $this->luckyDips_service->verifyLuckyDipRequest($request);
 
-			if (!$item || !$luckyDip)
+			if (!($item instanceof Item) || !($luckyDip instanceof LuckyDip))
 			{
 				return false;
 			}
@@ -157,26 +149,18 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		public function removeItemsFromLuckyDip($request)
+		public function removeItemFromLuckyDip($request)
 		{
-			$item_ids = [];
+			$item = $this->items_service->verifyItemRequest($request);
+			$luckyDip = $this->luckyDips_service->verifyLuckyDipRequest($request);
 
-			if (!is_array($request['item_ids']) || !is_numeric($request['dept_id']))
+			if (!($item instanceof Item) || !($luckyDip instanceof LuckyDip))
 			{
 				return false;
 			}
 
-			foreach ($request['item_ids'] as $item_id)
-			{
-				if (!is_numeric($item_id))
-				{
-					return false;
-				}
+			$dalResult = $this->luckyDips_service->removeItemFromLuckyDip($item, $luckyDip);
 
-				$item_ids[] = intval($item_id);
-			}
-
-			$dalResult = $this->luckyDips_service->removeItemsFromLuckyDip($item_ids, intval($request['dept_id']));
 			$this->luckyDips_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();

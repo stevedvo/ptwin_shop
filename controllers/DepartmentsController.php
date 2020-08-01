@@ -78,7 +78,7 @@
 
 		public function Edit($request = null)
 		{
-			$department = $all_departments = $all_items = false;
+			$department = $all_items = false;
 
 			if (is_numeric($request))
 			{
@@ -87,13 +87,6 @@
 				if (!is_null($dalResult->getResult()))
 				{
 					$department = $dalResult->getResult();
-				}
-
-				$dalResult = $this->departments_service->getAllDepartments();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$all_departments = $dalResult->getResult();
 				}
 
 				$dalResult = $this->items_service->getAllItems();
@@ -124,7 +117,6 @@
 				'page_data'  =>
 				[
 					'department'      => $department,
-					'all_departments' => $all_departments,
 					'all_items'       => $all_items
 				]
 			];

@@ -59,14 +59,14 @@
 			return $this->dal->getLuckyDipByName($luckyDip_name);
 		}
 
-		public function addItemToLuckyDip($item, $luckyDip)
+		public function addItemToLuckyDip(Item $item, LuckyDip $luckyDip) : DalResult
 		{
 			return $this->dal->addItemToLuckyDip($item, $luckyDip);
 		}
 
-		public function removeItemsFromLuckyDip($item_ids, $dept_id)
+		public function removeItemFromLuckyDip(Item $item, LuckyDip $luckyDip) : DalResult
 		{
-			return $this->dal->removeItemsFromLuckyDip($item_ids, $dept_id);
+			return $this->dal->removeItemFromLuckyDip($item, $luckyDip);
 		}
 
 		public function updateLuckyDip(LuckyDip $luckyDip) : DalResult

@@ -1,6 +1,5 @@
 <?php
 	$department = $response['department'];
-	$all_departments = $response['all_departments'];
 	$all_items = $response['all_items'];
 ?>
 <main class="wrapper">

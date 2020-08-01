@@ -40,7 +40,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT id AS luckyDip_id, name AS luckyDip_name FROM lucky_dips WHERE id = :id ORDER BY name");
+				$query = $this->ShopDb->conn->prepare("SELECT ld.id AS luckyDip_id, ld.name AS luckyDip_name, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id FROM lucky_dips AS ld LEFT JOIN items AS i ON (i.luckydip_id = ld.id) WHERE ld.id = :id ORDER BY i.description");
 				$query->execute([':id' => $luckyDip_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -51,6 +51,13 @@
 						if (is_null($luckyDip))
 						{
 							$luckyDip = createLuckyDip($row);
+						}
+
+						$item = createItem($row);
+
+						if (entityIsValid($item))
+						{
+							$luckyDip->addItem($item);
 						}
 					}
 				}
@@ -166,17 +173,17 @@
 			return $result;
 		}
 
-		public function addItemToLuckyDip($item, $luckyDip)
+		public function addItemToLuckyDip(Item $item, LuckyDip $luckyDip) : DalResult
 		{
 			$result = new DalResult();
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("INSERT INTO item_dept_link (dept_id, item_id) VALUES (:dept_id, :item_id)");
+				$query = $this->ShopDb->conn->prepare("UPDATE items SET luckydip_id = :luckyDip_id WHERE item_id = :item_id");
 				$result->setResult($query->execute(
 				[
-					':dept_id' => $luckyDip->getId(),
-					':item_id' => $item->getId()
+					':luckyDip_id' => $luckyDip->getId(),
+					':item_id'     => $item->getId()
 				]));
 			}
 			catch(PDOException $e)
@@ -187,25 +194,17 @@
 			return $result;
 		}
 
-		public function removeItemsFromLuckyDip($item_ids, $dept_id)
+		public function removeItemFromLuckyDip(Item $item, LuckyDip $luckyDip) : DalResult
 		{
 			$result = new DalResult();
 
-			$query_string = "";
-			$query_values = [':dept_id' => $dept_id];
-
-			foreach ($item_ids as $key => $item_id)
-			{
-				$query_string.= ":item_id_".$key.", ";
-				$query_values[":item_id_".$key] = $item_id;
-			}
-
-			$query_string = rtrim($query_string, ", ");
-
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("DELETE FROM item_dept_link WHERE item_id IN (".$query_string.") AND dept_id = :dept_id");
-				$result->setResult($query->execute($query_values));
+				$query = $this->ShopDb->conn->prepare("UPDATE items SET luckydip_id = NULL WHERE item_id = :item_id");
+				$result->setResult($query->execute(
+				[
+					':item_id' => $item->getId()
+				]));
 			}
 			catch(PDOException $e)
 			{

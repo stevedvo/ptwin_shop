@@ -39,8 +39,9 @@
 		$mute_temp = isset($request['mute_temp']) ? intval($request['mute_temp']) : 0;
 		$mute_perm = isset($request['mute_perm']) ? intval($request['mute_perm']) : 0;
 		$packsize_id = isset($request['packsize_id']) ? intval($request['packsize_id']) : null;
+		$luckyDip_id = isset($request['luckydip_id']) ? intval($request['luckydip_id']) : null;
 
-		$item = new Item($id, $description, $comments, $default_qty, $list_id, $link, $primary_dept, $mute_temp, $mute_perm, $packsize_id);
+		$item = new Item($id, $description, $comments, $default_qty, $list_id, $link, $primary_dept, $mute_temp, $mute_perm, $packsize_id, $luckyDip_id);
 
 		return $item;
 	}
@@ -203,7 +204,7 @@
 		return $date;
 	}
 
-	function renderPage($pageData)
+	function renderPage($pageData) : void
 	{
 		$page_title = $pageData['page_title'];
 		$breadcrumb = (isset($pageData['breadcrumb']) && is_array($pageData['breadcrumb'])) ? renderBreadcrumb($pageData['breadcrumb']) : $page_title;
@@ -215,7 +216,7 @@
 		exit;
 	}
 
-	function renderPrint($pageData)
+	function renderPrint($pageData) : void
 	{
 		$page_title = $pageData['page_title'];
 		$template = $pageData['template'];
