@@ -235,14 +235,14 @@
 			return $result;
 		}
 
-		public function removeLuckyDip($luckyDip)
+		public function removeLuckyDip(LuckyDip $luckyDip) : DalResult
 		{
 			$result = new DalResult();
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("DELETE FROM luckyDips WHERE dept_id = :dept_id");
-				$result->setResult($query->execute([':dept_id' => $luckyDip->getId()]));
+				$query = $this->ShopDb->conn->prepare("DELETE FROM lucky_dips WHERE id = :id");
+				$result->setResult($query->execute([':id' => $luckyDip->getId()]));
 			}
 			catch(PDOException $e)
 			{

@@ -74,7 +74,7 @@
 			return $this->dal->updateLuckyDip($luckyDip);
 		}
 
-		public function removeLuckyDip($luckyDip)
+		public function removeLuckyDip(LuckyDip $luckyDip) : DalResult
 		{
 			return $this->dal->removeLuckyDip($luckyDip);
 		}

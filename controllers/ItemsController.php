@@ -516,6 +516,36 @@
 			return $dalResult->jsonSerialize();
 		}
 
+		public function getAllItemsNotInLuckyDip(array $request) : string
+		{
+			(string)$partial_view = "";
+
+			if (!isset($request['luckyDip_id']))
+			{
+				return $partial_view;
+			}
+
+			$luckyDip_id = $request['luckyDip_id'];
+
+			if (!is_numeric($luckyDip_id))
+			{
+				return $partial_view;
+			}
+
+			$dalResult = $this->items_service->getAllItemsNotInLuckyDip(intval($luckyDip_id));
+
+			$all_items = $dalResult->getResult();
+
+			if (is_array($all_items))
+			{
+				$partial_view = getPartialView("LuckyDipItemSelection", ['item_list' => $all_items]);
+			}
+
+			$this->items_service->closeConnexion();
+
+			return $partial_view;
+		}
+
 		public function quickAddItem($request)
 		{
 			if (!isset($request['description']) || empty($request['description']))

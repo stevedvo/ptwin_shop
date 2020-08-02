@@ -86,15 +86,12 @@
 			{
 				$dalResult = $this->luckyDips_service->getLuckyDipById(intval($request));
 
-				if (!is_null($dalResult->getResult()))
-				{
-					$luckyDip = $dalResult->getResult();
-				}
+				$luckyDip = $dalResult->getResult();
 
-				$dalResult = $this->items_service->getAllItems();
-
-				if (!is_null($dalResult->getResult()))
+				if (!is_null($luckyDip))
 				{
+					$dalResult = $this->items_service->getAllItemsNotInLuckyDip($luckyDip->getId());
+
 					$all_items = $dalResult->getResult();
 				}
 			}
@@ -192,40 +189,21 @@
 
 		public function removeLuckyDip($request)
 		{
-			if (!isset($request['dept_id']) || !is_numeric($request['dept_id']))
+			$luckyDip = $this->luckyDips_service->verifyLuckyDipRequest($request);
+
+			if (!($luckyDip instanceof LuckyDip))
 			{
 				return false;
 			}
 
-			$dalResult = $this->items_service->getItemsByLuckyDipId(intval($request['dept_id']));
-
-			if (!is_null($dalResult->getException()))
-			{
-				return false;
-			}
-
-			$items = $dalResult->getResult();
-
-			if (is_array($items) && sizeof($items) > 0)
-			{
-				return false;
-			}
-
-			$dalResult = $this->luckyDips_service->getLuckyDipById(intval($request['dept_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$luckyDip = $dalResult->getResult();
-			}
-
-			if (!$luckyDip)
+			if (sizeof($luckyDip->getItems()) > 0)
 			{
 				return false;
 			}
 
 			$dalResult = $this->luckyDips_service->removeLuckyDip($luckyDip);
+
 			$this->luckyDips_service->closeConnexion();
-			$this->items_service->closeConnexion();
 
 			return $dalResult->jsonSerialize();
 		}

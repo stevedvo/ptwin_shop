@@ -42,7 +42,7 @@
 						{
 ?>
 							<p class="no-results">No Items in this Lucky Dip</p>
-							<button class="btn btn-danger btn-sm no-results js-remove-luckyDip">Remove Lucky Dip</button>
+							<button class="btn btn-danger btn-sm no-results js-remove-luckyDip">Delete Lucky Dip</button>
 <?php
 						}
 						else
@@ -64,22 +64,11 @@
 						<div class="row">
 							<div class="col-xs-8 item-selection-container">
 								<input type="hidden" name="luckyDip_id" value="<?= $luckyDip->getId(); ?>" />
-								<select class="item-selection">
+								<div id="LuckyDipItemSelection">
 <?php
-									if (is_array($all_items))
-									{
-										foreach ($all_items as $item_id => $item)
-										{
-											if (!array_key_exists($item_id, $luckyDip->getItems()))
-											{
+									echo getPartialView("LuckyDipItemSelection", ['item_list' => $all_items]);
 ?>
-												<option value="<?= $item->getId(); ?>"><?= $item->getDescription(); ?></option>
-<?php
-											}
-										}
-									}
-?>
-								</select>
+								</div>
 							</div>
 
 							<div class="col-xs-4 add-item-to-luckyDip-container">

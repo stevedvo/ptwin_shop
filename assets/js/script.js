@@ -2512,10 +2512,12 @@ function manageLuckyDips()
 
 					if (luckyDipItemsContainer.find(".result-item").length == 0)
 					{
-						luckyDipItemsContainer.html('<p class="no-results">No Items in this Lucky Dip</p><button class="btn btn-danger btn-sm no-results js-remove-luckyDip">Remove Lucky Dip</button>');
+						luckyDipItemsContainer.html('<p class="no-results">No Items in this Lucky Dip</p><button class="btn btn-danger btn-sm no-results js-remove-luckyDip">Delete Lucky Dip</button>');
 					}
 
 					toastr.success("Item successfully removed from Lucky Dip");
+
+					reloadPartial("LuckyDipItemSelection", "Items", "getAllItemsNotInLuckyDip", { "luckyDip_id" : luckyDipID }, null, null, "POST");
 				}
 				else
 				{
@@ -2601,55 +2603,125 @@ function manageLuckyDips()
 		}
 	});
 
-	// $(document).on("click", ".js-remove-department", function()
-	// {
-	// 	var departmentID = parseInt($(this).closest(".department-items-container").data("department_id"));
+	$(document).on("click", ".js-remove-luckyDip", function()
+	{
+		var luckyDipID = parseInt($(this).closest(".luckyDip-items-container").data("luckydip_id"));
 
-	// 	$.ajax(
-	// 	{
-	// 		type     : "POST",
-	// 		url      : constants.SITEURL+"/ajax.php",
-	// 		dataType : "json",
-	// 		data     :
-	// 		{
-	// 			controller : "Departments",
-	// 			action     : "removeDepartment",
-	// 			request    : {'dept_id' : departmentID}
-	// 		}
-	// 	}).done(function(data)
-	// 	{
-	// 		if (data)
-	// 		{
-	// 			if (data.result == true)
-	// 			{
-	// 				toastr.success("Department successfully removed");
-	// 				var timer = setTimeout(function()
-	// 				{
-	// 					location.href = constants.SITEURL+"/departments/";
-	// 				}, 750);
-	// 			}
-	// 			else
-	// 			{
-	// 				if (data.exception != null)
-	// 				{
-	// 					toastr.error("PDOException");
-	// 					console.log(data.exception);
-	// 				}
-	// 				else
-	// 				{
-	// 					toastr.error("Unspecified error");
-	// 					console.log(data);
-	// 				}
-	// 			}
-	// 		}
-	// 		else
-	// 		{
-	// 			toastr.error("Could not remove Department");
-	// 		}
-	// 	}).fail(function(data)
-	// 	{
-	// 		toastr.error("Could not perform request");
-	// 		console.log(data);
-	// 	});
-	// });
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "LuckyDips",
+				action     : "removeLuckyDip",
+				request    : {'luckyDip_id' : luckyDipID}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				if (data.result == true)
+				{
+					toastr.success("Lucky Dip successfully removed");
+					var timer = setTimeout(function()
+					{
+						location.href = constants.SITEURL+"/luckydips/";
+					}, 750);
+				}
+				else
+				{
+					if (data.exception != null)
+					{
+						toastr.error("PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						toastr.error("Unspecified error");
+						console.log(data);
+					}
+				}
+			}
+			else
+			{
+				toastr.error("Could not remove Lucky Dip");
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+}
+
+function reloadPartial(id, controller, action, params, callback, onbeforeload, ajaxMethod)
+{
+	ajaxMethod = ajaxMethod || "GET";
+
+	let queryString = buildQueryString(params);
+	id = id.startsWith('#') ? id : "#" + id;
+
+	/// Before you load do this.
+	if (typeof (onbeforeload) == "function")
+	{
+		onbeforeload();
+	}
+
+	let target = $(id);
+
+	$.ajax(
+	{
+		url      : constants.SITEURL+"/ajax.php",
+		type     : ajaxMethod.toUpperCase(),
+		dataType : "json",
+		data     :
+		{
+			controller : controller,
+			action     : action,
+			request    : params
+		},
+		success : function(response)
+		{
+			target.html(response);
+			reloadSuccessFunction(id, params, callback);
+		}
+	});
+}
+
+function buildQueryString(params)
+{
+	let queryString = "";
+	let count = 0;
+
+	if (params)
+	{
+		Object.keys(params).forEach(function(key)
+		{
+			if (count == 0)
+			{
+				queryString+= key+"="+params[key];
+			}
+			else
+			{
+				queryString+= "&"+key+"="+params[key];
+			}
+
+			count++;
+		});
+	}
+
+	return queryString;
+}
+
+function reloadSuccessFunction(id, params, callback)
+{
+	id = id.startsWith('#') ? id : "#" + id;
+
+	/// Once you have loaded do this.
+	if (typeof (callback) == "function")
+	{
+		callback();
+	}
 }
