@@ -98,7 +98,7 @@
 			return $result;
 		}
 
-		public function getAllLuckyDips()
+		public function getAllLuckyDips() : DalResult
 		{
 			$result = new DalResult();
 			$luckyDips = false;
@@ -131,7 +131,7 @@
 			return $result;
 		}
 
-		public function getAllLuckyDipsWithItems()
+		public function getAllLuckyDipsWithItems() : DalResult
 		{
 			$result = new DalResult();
 			$luckyDips = false;

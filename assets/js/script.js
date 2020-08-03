@@ -1560,8 +1560,32 @@ function quickAdd()
 
 					var sortedItems = arraySort(availableItems);
 
-					$("#quick-add").autocomplete({source : sortedItems});
-					$("#add-item-to-previous-order").autocomplete({source : sortedItems});
+					if ($("#add-item-to-previous-order").length > 0)
+					{
+						$("#add-item-to-previous-order").autocomplete({source : sortedItems});
+					}
+
+					$.ajax(
+					{
+						type     : "POST",
+						url      : constants.SITEURL+"/ajax.php",
+						dataType : "json",
+						data     :
+						{
+							controller : "LuckyDips",
+							action     : "getAllLuckyDips",
+							request    : { }
+						}
+					}).done(function(data)
+					{
+						console.log(data);
+
+						$("#quick-add").autocomplete({source : sortedItems});
+					}).fail(function(data)
+					{
+						toastr.error("QuickAdd: Could not retrieve Lucky Dips");
+						console.log(data);
+					});
 				}
 			}
 		}

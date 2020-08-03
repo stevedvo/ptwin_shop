@@ -207,4 +207,26 @@
 
 			return $dalResult->jsonSerialize();
 		}
+
+		public function getAllLuckyDips()
+		{
+			$luckyDips = null;
+			$dalResult = $this->luckyDips_service->getAllLuckyDips();
+
+			if (is_array($dalResult->getResult()))
+			{
+				$luckyDips = [];
+
+				foreach ($dalResult->getResult() as $luckyDip_id => $luckyDip)
+				{
+					$luckyDips[$luckyDip->getId()] = $luckyDip->jsonSerialize();
+				}
+
+				$dalResult->setResult($luckyDips);
+			}
+
+			$this->luckyDips_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
 	}

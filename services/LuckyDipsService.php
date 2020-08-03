@@ -39,19 +39,19 @@
 			return $this->dal->addLuckyDip($luckyDip);
 		}
 
-		public function getAllLuckyDips()
+		public function getAllLuckyDips() : DalResult
 		{
 			return $this->dal->getAllLuckyDips();
 		}
 
-		public function getAllLuckyDipsWithItems()
+		public function getAllLuckyDipsWithItems() : DalResult
 		{
 			return $this->dal->getAllLuckyDipsWithItems();
 		}
 
-		public function getLuckyDipById($dept_id)
+		public function getLuckyDipById($luckyDip_id) : DalResult
 		{
-			return $this->dal->getLuckyDipById($dept_id);
+			return $this->dal->getLuckyDipById($luckyDip_id);
 		}
 
 		public function getLuckyDipByName(string $luckyDip_name) : DalResult
