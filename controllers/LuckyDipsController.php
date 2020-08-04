@@ -208,7 +208,7 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		public function getAllLuckyDips()
+		public function getAllLuckyDips($request)
 		{
 			$luckyDips = null;
 			$dalResult = $this->luckyDips_service->getAllLuckyDips();

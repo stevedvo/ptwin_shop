@@ -1574,11 +1574,16 @@ function quickAdd()
 						{
 							controller : "LuckyDips",
 							action     : "getAllLuckyDips",
-							request    : { }
+							request    : { 'key' : 'value' } // need to pass something!
 						}
 					}).done(function(data)
 					{
-						console.log(data);
+						$.each(data.result, function()
+						{
+							availableItems.push("[LuckyDip] "+this.name);
+						});
+
+						var sortedItems = arraySort(availableItems);
 
 						$("#quick-add").autocomplete({source : sortedItems});
 					}).fail(function(data)
@@ -1623,7 +1628,7 @@ function quickAdd()
 				{
 					if (data.description == itemDescription)
 					{
-						toastr.error("QuickAdd: Item not found... redirecting.");
+						toastr.error("QuickAdd: "+itemDescription+" not found... redirecting.");
 						var timer = setTimeout(function()
 						{
 							location.href = constants.SITEURL+"/items/create/?description="+itemDescription;
@@ -1632,7 +1637,7 @@ function quickAdd()
 					else
 					{
 						input.val("");
-						toastr.success("Item added to Current Order");
+						toastr.success(data.result.item.description+" added to Current Order");
 
 						if ($(".results-container.current-order").length > 0)
 						{

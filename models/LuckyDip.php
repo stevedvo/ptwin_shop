@@ -56,6 +56,13 @@
 			$this->items[$item->getId()] = $item;
 		}
 
+		public function getRandomItem() : ?Item
+		{
+			$random_key = array_rand($this->items);
+
+			return $this->items[$random_key];
+		}
+
 		public function getValidation($property = null)
 		{
 			if (is_null($property))
