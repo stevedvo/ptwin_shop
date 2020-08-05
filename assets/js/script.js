@@ -1673,33 +1673,66 @@ function quickAdd()
 
 		if (itemDescription != "")
 		{
-			$.ajax(
+			if (itemDescription.toLowerCase().indexOf("[luckydip]") > -1)
 			{
-				type     : "POST",
-				url      : constants.SITEURL+"/ajax.php",
-				dataType : "json",
-				data     :
+				$.ajax(
 				{
-					controller : "Items",
-					action     : "quickEditItem",
-					request    : {'description' : itemDescription}
-				}
-			}).done(function(data)
-			{
-				if (data)
+					type     : "POST",
+					url      : constants.SITEURL+"/ajax.php",
+					dataType : "json",
+					data     :
+					{
+						controller : "LuckyDips",
+						action     : "getLuckyDipByName",
+						request    : {'luckyDip_name' : itemDescription}
+					}
+				}).done(function(data)
 				{
-					location.href = constants.SITEURL+"/items/edit/"+data.id+"/";
-				}
-				else
+					if (data != null)
+					{
+						location.href = constants.SITEURL+"/luckydips/edit/"+data.id+"/";
+					}
+					else
+					{
+						toastr.error("QuickAdd: Could not edit Lucky Dip");
+						console.log(data);
+					}
+				}).fail(function(data)
 				{
-					toastr.error("QuickAdd: Could not edit Item");
+					toastr.error("QuickAdd: Could not perform request");
 					console.log(data);
-				}
-			}).fail(function(data)
+				});
+			}
+			else
 			{
-				toastr.error("QuickAdd: Could not perform request");
-				console.log(data);
-			});
+				$.ajax(
+				{
+					type     : "POST",
+					url      : constants.SITEURL+"/ajax.php",
+					dataType : "json",
+					data     :
+					{
+						controller : "Items",
+						action     : "quickEditItem",
+						request    : {'description' : itemDescription}
+					}
+				}).done(function(data)
+				{
+					if (data)
+					{
+						location.href = constants.SITEURL+"/items/edit/"+data.id+"/";
+					}
+					else
+					{
+						toastr.error("QuickAdd: Could not edit Item");
+						console.log(data);
+					}
+				}).fail(function(data)
+				{
+					toastr.error("QuickAdd: Could not perform request");
+					console.log(data);
+				});
+			}
 		}
 	});
 }

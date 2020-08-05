@@ -229,4 +229,31 @@
 
 			return $dalResult->jsonSerialize();
 		}
+
+		public function getLuckyDipByName($request) : ?array
+		{
+			if (!isset($request['luckyDip_name']) || empty($request['luckyDip_name']))
+			{
+				return null;
+			}
+
+			$luckyDip = null;
+			$luckyDip_name = $request['luckyDip_name'];
+
+			if (strpos(strtolower($luckyDip_name), "[luckydip]") !== false)
+			{
+				$luckyDip_name = substr($luckyDip_name, 11);
+
+				$dalResult = $this->luckyDips_service->getLuckyDipByName($luckyDip_name);
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$luckyDip = $dalResult->getResult();
+				}
+			}
+
+			$this->luckyDips_service->closeConnexion();
+
+			return $luckyDip->jsonSerialize();
+		}
 	}
