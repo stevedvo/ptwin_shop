@@ -44,10 +44,10 @@
 			return $this->dal->getAllLuckyDips();
 		}
 
-		public function getAllLuckyDipsWithItems() : DalResult
-		{
-			return $this->dal->getAllLuckyDipsWithItems();
-		}
+		// public function getAllLuckyDipsWithItems() : DalResult
+		// {
+		// 	return $this->dal->getAllLuckyDipsWithItems();
+		// }
 
 		public function getLuckyDipById($luckyDip_id) : DalResult
 		{
@@ -77,10 +77,5 @@
 		public function removeLuckyDip(LuckyDip $luckyDip) : DalResult
 		{
 			return $this->dal->removeLuckyDip($luckyDip);
-		}
-
-		public function getPrimaryLuckyDips()
-		{
-			return $this->dal->getPrimaryLuckyDips();
 		}
 	}

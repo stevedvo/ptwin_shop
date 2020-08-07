@@ -10,6 +10,7 @@
 		{
 			$this->luckyDips_service = new LuckyDipsService();
 			$this->items_service = new ItemsService();
+			$this->lists_service = new ListsService();
 		}
 
 		public function Index() : void
@@ -91,13 +92,16 @@
 				if (!is_null($luckyDip))
 				{
 					$dalResult = $this->items_service->getAllItemsNotInLuckyDip($luckyDip->getId());
-
 					$all_items = $dalResult->getResult();
+
+					$dalResult = $this->lists_service->getAllLists();
+					$lists = $dalResult->getResult();
 				}
 			}
 
 			$this->luckyDips_service->closeConnexion();
 			$this->items_service->closeConnexion();
+			$this->lists_service->closeConnexion();
 
 			$pageData =
 			[
@@ -116,7 +120,8 @@
 				'page_data'  =>
 				[
 					'luckyDip'  => $luckyDip,
-					'all_items' => $all_items
+					'all_items' => $all_items,
+					'lists'     => $lists
 				]
 			];
 
@@ -180,6 +185,7 @@
 			}
 
 			$luckyDipUpdate->setName($luckyDip->getName());
+			$luckyDipUpdate->setListId($luckyDip->getListId());
 
 			$dalResult = $this->luckyDips_service->updateLuckyDip($luckyDipUpdate);
 			$this->luckyDips_service->closeConnexion();

@@ -2626,8 +2626,9 @@ function manageLuckyDips()
 		}
 		else
 		{
-			var luckyDipId = parseInt(form.find("[name='luckyDip_id']").val());
+			var luckyDipID = parseInt(form.find("[name='luckyDip_id']").val());
 			var luckyDipName = form.find("[name='luckyDip_name']").val();
+			var luckyDipListID = form.find("[name='luckyDip_list']").val();
 
 			$.ajax(
 			{
@@ -2640,8 +2641,9 @@ function manageLuckyDips()
 					action     : "editLuckyDip",
 					request    :
 					{
-						'luckyDip_id'   : luckyDipId,
-						'luckyDip_name' : luckyDipName
+						'luckyDip_id'      : luckyDipID,
+						'luckyDip_name'    : luckyDipName,
+						'luckyDip_list_id' : luckyDipListID
 					}
 				}
 			}).done(function(data)

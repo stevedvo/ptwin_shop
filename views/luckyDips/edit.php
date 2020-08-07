@@ -1,6 +1,7 @@
 <?php
 	$luckyDip = $response['luckyDip'];
 	$all_items = $response['all_items'];
+	$lists = $response['lists'];
 ?>
 <main class="wrapper">
 	<div class="container">
@@ -22,12 +23,40 @@
 				<div class="col-xs-12">
 					<div id="edit-luckyDip" class="form luckyDip-container">
 						<input type="hidden" name="luckyDip_id" value="<?= $luckyDip->getId(); ?>" />
-						<div class="row">
-							<div class="col-xs-12">
-								<label for="luckyDip_name">Lucky Dip Name:</label>
-								<input type="text" id="luckyDip_name" name="luckyDip_name" placeholder="Required" data-validation="<?= getValidationString($luckyDip, "Name"); ?>" value="<?= $luckyDip->getName(); ?>" />
-								<button class="btn btn-primary btn-sm js-update-luckyDip">Update</button>
+
+						<div class="form-group">
+							<div class="row">
+								<label for="luckyDip_name" class="col-sm-3">Lucky Dip Name:</label>
+								<div class="col-sm-9">
+									<input type="text" id="luckyDip_name" name="luckyDip_name" placeholder="Required" data-validation="<?= getValidationString($luckyDip, "Name"); ?>" value="<?= $luckyDip->getName(); ?>" />
+								</div>
 							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="row">
+								<label for="luckyDip_list" class="col-sm-3">List:</label>
+								<div class="col-sm-3">
+									<select id="luckyDip_list" name="luckyDip_list">
+										<option value="" selected>Please select...</option>
+<?php
+										if (is_array($lists))
+										{
+											foreach ($lists as $list_id => $list)
+											{
+?>
+												<option value="<?= $list->getId(); ?>" <?= $list->getId() == $luckyDip->getListId() ? 'selected' : ''; ?>><?= $list->getName(); ?></option>
+<?php
+											}
+										}
+?>
+									</select>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<button class="btn btn-primary btn-sm js-update-luckyDip">Update</button>
 						</div>
 					</div>
 				</div>

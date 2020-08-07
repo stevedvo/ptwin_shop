@@ -84,8 +84,9 @@
 	{
 		$id = isset($request['luckyDip_id']) ? intval($request['luckyDip_id']) : null;
 		$name = isset($request['luckyDip_name']) ? $request['luckyDip_name'] : null;
+		$list_id = isset($request['luckyDip_list_id']) && !empty($request['luckyDip_list_id']) ? intval($request['luckyDip_list_id']) : null;
 
-		$luckyDip = new LuckyDip($id, $name);
+		$luckyDip = new LuckyDip($id, $name, $list_id);
 
 		return $luckyDip;
 	}
