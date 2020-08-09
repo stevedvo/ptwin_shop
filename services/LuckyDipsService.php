@@ -59,6 +59,11 @@
 			return $this->dal->getLuckyDipByName($luckyDip_name);
 		}
 
+		public function getLuckyDipsByListId(int $list_id) : DalResult
+		{
+			return $this->dal->getLuckyDipsByListId($list_id);
+		}
+
 		public function addItemToLuckyDip(Item $item, LuckyDip $luckyDip) : DalResult
 		{
 			return $this->dal->addItemToLuckyDip($item, $luckyDip);
