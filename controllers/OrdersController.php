@@ -362,22 +362,7 @@
 				return false;
 			}
 
-			$dalResult = $this->orders_service->getOrderItemsByOrderAndItems($order, $list->getItems());
-
-			if (!is_null($dalResult->getException()))
-			{
-				return false;
-			}
-
-			$items_in_order = [];
-
-			if (is_array($dalResult->getResult()))
-			{
-				foreach ($dalResult->getResult() as $order_item_id => $order_item)
-				{
-					$items_in_order[] = $order_item->getItemId();
-				}
-			}
+			$items_in_order = array_keys($order->getItemIdsInOrder());
 
 			$new_order_items = [];
 
