@@ -42,7 +42,7 @@
 			return $this->partial_view;
 		}
 
-		public function setPartialView($partial_view)
+		public function setPartialView(string $partial_view) : void
 		{
 			$this->partial_view = $partial_view;
 		}

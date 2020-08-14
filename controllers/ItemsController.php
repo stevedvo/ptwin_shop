@@ -5,6 +5,7 @@
 		private $lists_service;
 		private $departments_service;
 		private $orders_service;
+		private $luckyDips_service;
 
 		public function __construct()
 		{
@@ -13,6 +14,7 @@
 			$this->departments_service = new DepartmentsService();
 			$this->orders_service = new OrdersService();
 			$this->packsizes_service = new PackSizesService();
+			$this->luckyDips_service = new LuckyDipsService();
 		}
 
 		public function Index($request, $consumption_interval = DEFAULT_CONSUMPTION_INTERVAL, $consumption_period = DEFAULT_CONSUMPTION_PERIOD)
@@ -516,24 +518,74 @@
 			return $dalResult->jsonSerialize();
 		}
 
+		public function getAllItemsNotInLuckyDip(array $request) : string
+		{
+			(string)$partial_view = "";
+
+			if (!isset($request['luckyDip_id']))
+			{
+				return $partial_view;
+			}
+
+			$luckyDip_id = $request['luckyDip_id'];
+
+			if (!is_numeric($luckyDip_id))
+			{
+				return $partial_view;
+			}
+
+			$dalResult = $this->items_service->getAllItemsNotInLuckyDip(intval($luckyDip_id));
+
+			$all_items = $dalResult->getResult();
+
+			if (is_array($all_items))
+			{
+				$partial_view = getPartialView("LuckyDipItemSelection", ['item_list' => $all_items]);
+			}
+
+			$this->items_service->closeConnexion();
+
+			return $partial_view;
+		}
+
 		public function quickAddItem($request)
 		{
+			$item = null;
+
 			if (!isset($request['description']) || empty($request['description']))
 			{
 				return false;
 			}
 
-			$dalResult = $this->items_service->getItemByDescription($request['description']);
+			$description = $request['description'];
 
-			if (!is_null($dalResult->getResult()))
+			if (strpos(strtolower($description), "[luckydip]") !== false)
 			{
-				$item = $dalResult->getResult();
+				$luckyDip_name = substr($description, 11);
+
+				$dalResult = $this->luckyDips_service->getLuckyDipByName($luckyDip_name);
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$luckyDip = $dalResult->getResult();
+
+					$item = $luckyDip->getRandomItem();
+				}
+			}
+			else
+			{
+				$dalResult = $this->items_service->getItemByDescription($description);
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$item = $dalResult->getResult();
+				}
 			}
 
 			if (!$item)
 			{
 				$item = new Item();
-				$item->setDescription($request['description']);
+				$item->setDescription($description);
 				return $item->jsonSerialize();
 			}
 
@@ -562,6 +614,8 @@
 
 			$this->items_service->closeConnexion();
 			$this->orders_service->closeConnexion();
+
+			$dalResult->setResult($dalResult->getResult()->jsonSerialize());
 
 			return $dalResult->jsonSerialize();
 		}

@@ -5,6 +5,7 @@
 		private $lists_service;
 		private $departments_service;
 		private $items_service;
+		private $luckyDips_service;
 
 		public function __construct()
 		{
@@ -12,6 +13,7 @@
 			$this->lists_service = new ListsService();
 			$this->departments_service = new DepartmentsService();
 			$this->items_service = new ItemsService();
+			$this->luckyDips_service = new LuckyDipsService();
 		}
 
 		public function updateOrder($request)
@@ -360,46 +362,13 @@
 				return false;
 			}
 
-			$dalResult = $this->orders_service->getOrderItemsByOrderAndItems($order, $list->getItems());
-
-			if (!is_null($dalResult->getException()))
-			{
-				return false;
-			}
-
-			$items_in_order = false;
-
-			if (is_array($dalResult->getResult()))
-			{
-				$items_in_order = [];
-
-				foreach ($dalResult->getResult() as $order_item_id => $order_item)
-				{
-					$items_in_order[] = $order_item->getItemId();
-				}
-			}
+			$items_in_order = array_keys($order->getItemIdsInOrder());
 
 			$new_order_items = [];
 
 			foreach ($list->getItems() as $item_id => $item)
 			{
-				if (is_array($items_in_order))
-				{
-					if (array_search($item->getId(), $items_in_order) === false)
-					{
-						$add_item = true;
-					}
-					else
-					{
-						$add_item = false;
-					}
-				}
-				else
-				{
-					$add_item = true;
-				}
-
-				if ($add_item)
+				if (in_array($item->getId(), $items_in_order) === false)
 				{
 					$order_item = new OrderItem();
 					$order_item->setOrderId($order->getId());
@@ -409,6 +378,34 @@
 					$order_item->setItem($item);
 
 					$new_order_items[] = $order_item;
+					$items_in_order[] = $order_item->getItemId();
+				}
+			}
+
+			$dalResult = $this->luckyDips_service->getLuckyDipsByListId($list->getId());
+			$luckyDips = $dalResult->getResult();
+
+			if (is_array($luckyDips))
+			{
+				foreach ($luckyDips as $luckyDip_id => $luckyDip)
+				{
+					$item = $luckyDip->getRandomItem();
+
+					if ($item instanceof Item)
+					{
+						if (in_array($item->getId(), $items_in_order) === false)
+						{
+							$order_item = new OrderItem();
+							$order_item->setOrderId($order->getId());
+							$order_item->setItemId($item->getId());
+							$order_item->setQuantity($item->getDefaultQty());
+							$order_item->setChecked(0);
+							$order_item->setItem($item);
+
+							$new_order_items[] = $order_item;
+							$items_in_order[] = $order_item->getItemId();
+						}
+					}
 				}
 			}
 

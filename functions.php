@@ -39,8 +39,9 @@
 		$mute_temp = isset($request['mute_temp']) ? intval($request['mute_temp']) : 0;
 		$mute_perm = isset($request['mute_perm']) ? intval($request['mute_perm']) : 0;
 		$packsize_id = isset($request['packsize_id']) ? intval($request['packsize_id']) : null;
+		$luckyDip_id = isset($request['luckydip_id']) ? intval($request['luckydip_id']) : null;
 
-		$item = new Item($id, $description, $comments, $default_qty, $list_id, $link, $primary_dept, $mute_temp, $mute_perm, $packsize_id);
+		$item = new Item($id, $description, $comments, $default_qty, $list_id, $link, $primary_dept, $mute_temp, $mute_perm, $packsize_id, $luckyDip_id);
 
 		return $item;
 	}
@@ -77,6 +78,17 @@
 		$packsize = new PackSize($id, $name, $short_name);
 
 		return $packsize;
+	}
+
+	function createLuckyDip($request) : LuckyDip
+	{
+		$id = isset($request['luckyDip_id']) ? intval($request['luckyDip_id']) : null;
+		$name = isset($request['luckyDip_name']) ? $request['luckyDip_name'] : null;
+		$list_id = isset($request['luckyDip_list_id']) && !empty($request['luckyDip_list_id']) ? intval($request['luckyDip_list_id']) : null;
+
+		$luckyDip = new LuckyDip($id, $name, $list_id);
+
+		return $luckyDip;
 	}
 
 	function getValidationString($object, $property)
@@ -193,7 +205,7 @@
 		return $date;
 	}
 
-	function renderPage($pageData)
+	function renderPage($pageData) : void
 	{
 		$page_title = $pageData['page_title'];
 		$breadcrumb = (isset($pageData['breadcrumb']) && is_array($pageData['breadcrumb'])) ? renderBreadcrumb($pageData['breadcrumb']) : $page_title;
@@ -202,9 +214,10 @@
 		include_once('views/shared/header.php');
 		include_once($template);
 		include_once('views/shared/footer.php');
+		exit;
 	}
 
-	function renderPrint($pageData)
+	function renderPrint($pageData) : void
 	{
 		$page_title = $pageData['page_title'];
 		$template = $pageData['template'];
@@ -214,7 +227,7 @@
 		include_once('views/shared/print-footer.php');
 	}
 
-	function getPartialView($template, $params)
+	function getPartialView(string $template, array $params) : string
 	{
 		ob_start();
 		include('views/partial/'.$template.'.php');

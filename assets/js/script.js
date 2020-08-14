@@ -10,6 +10,7 @@ $(function()
 	manageDepts();
 	manageOrders();
 	managePackSizes();
+	manageLuckyDips();
 	quickAdd();
 	adminFuncs();
 	updateRecentConsumptionParameters();
@@ -1559,8 +1560,37 @@ function quickAdd()
 
 					var sortedItems = arraySort(availableItems);
 
-					$("#quick-add").autocomplete({source : sortedItems});
-					$("#add-item-to-previous-order").autocomplete({source : sortedItems});
+					if ($("#add-item-to-previous-order").length > 0)
+					{
+						$("#add-item-to-previous-order").autocomplete({source : sortedItems});
+					}
+
+					$.ajax(
+					{
+						type     : "POST",
+						url      : constants.SITEURL+"/ajax.php",
+						dataType : "json",
+						data     :
+						{
+							controller : "LuckyDips",
+							action     : "getAllLuckyDips",
+							request    : { 'key' : 'value' } // need to pass something!
+						}
+					}).done(function(data)
+					{
+						$.each(data.result, function()
+						{
+							availableItems.push("[LuckyDip] "+this.name);
+						});
+
+						var sortedItems = arraySort(availableItems);
+
+						$("#quick-add").autocomplete({source : sortedItems});
+					}).fail(function(data)
+					{
+						toastr.error("QuickAdd: Could not retrieve Lucky Dips");
+						console.log(data);
+					});
 				}
 			}
 		}
@@ -1598,7 +1628,7 @@ function quickAdd()
 				{
 					if (data.description == itemDescription)
 					{
-						toastr.error("QuickAdd: Item not found... redirecting.");
+						toastr.error("QuickAdd: "+itemDescription+" not found... redirecting.");
 						var timer = setTimeout(function()
 						{
 							location.href = constants.SITEURL+"/items/create/?description="+itemDescription;
@@ -1607,7 +1637,7 @@ function quickAdd()
 					else
 					{
 						input.val("");
-						toastr.success("Item added to Current Order");
+						toastr.success(data.result.item.description+" added to Current Order");
 
 						if ($(".results-container.current-order").length > 0)
 						{
@@ -1643,33 +1673,66 @@ function quickAdd()
 
 		if (itemDescription != "")
 		{
-			$.ajax(
+			if (itemDescription.toLowerCase().indexOf("[luckydip]") > -1)
 			{
-				type     : "POST",
-				url      : constants.SITEURL+"/ajax.php",
-				dataType : "json",
-				data     :
+				$.ajax(
 				{
-					controller : "Items",
-					action     : "quickEditItem",
-					request    : {'description' : itemDescription}
-				}
-			}).done(function(data)
-			{
-				if (data)
+					type     : "POST",
+					url      : constants.SITEURL+"/ajax.php",
+					dataType : "json",
+					data     :
+					{
+						controller : "LuckyDips",
+						action     : "getLuckyDipByName",
+						request    : {'luckyDip_name' : itemDescription}
+					}
+				}).done(function(data)
 				{
-					location.href = constants.SITEURL+"/items/edit/"+data.id+"/";
-				}
-				else
+					if (data != null)
+					{
+						location.href = constants.SITEURL+"/luckydips/edit/"+data.id+"/";
+					}
+					else
+					{
+						toastr.error("QuickAdd: Could not edit Lucky Dip");
+						console.log(data);
+					}
+				}).fail(function(data)
 				{
-					toastr.error("QuickAdd: Could not edit Item");
+					toastr.error("QuickAdd: Could not perform request");
 					console.log(data);
-				}
-			}).fail(function(data)
+				});
+			}
+			else
 			{
-				toastr.error("QuickAdd: Could not perform request");
-				console.log(data);
-			});
+				$.ajax(
+				{
+					type     : "POST",
+					url      : constants.SITEURL+"/ajax.php",
+					dataType : "json",
+					data     :
+					{
+						controller : "Items",
+						action     : "quickEditItem",
+						request    : {'description' : itemDescription}
+					}
+				}).done(function(data)
+				{
+					if (data)
+					{
+						location.href = constants.SITEURL+"/items/edit/"+data.id+"/";
+					}
+					else
+					{
+						toastr.error("QuickAdd: Could not edit Item");
+						console.log(data);
+					}
+				}).fail(function(data)
+				{
+					toastr.error("QuickAdd: Could not perform request");
+					console.log(data);
+				});
+			}
 		}
 	});
 }
@@ -2352,4 +2415,377 @@ function updateRecentConsumptionParameters()
 			location.href = fullPathname+newSearch;
 		}
 	});
+}
+
+function manageLuckyDips()
+{
+	$(document).on("click", ".js-add-luckyDip", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			var luckyDipName = form.find("[name='luckyDip_name']").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "LuckyDips",
+					action     : "addLuckyDip",
+					request    :
+					{
+						'luckyDip_name' : luckyDipName
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					var html = data.partial_view;
+
+					$(".results-container").append(html);
+					$(".results-container").find(".no-results").remove();
+					form.find(".input-error").removeClass("input-error");
+					form.find("[name='luckyDip_name']").val("");
+
+					toastr.success("New Lucky Dip successfully added");
+				}
+				else
+				{
+					toastr.error("Could not save Lucky Dip");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+
+	$(document).on("click", ".js-add-item-to-luckyDip", function()
+	{
+		var form = $(this).closest(".form");
+		var selectedOption = form.find("select option:selected");
+		var itemID = parseInt(selectedOption.val());
+		var luckyDipID = parseInt(form.find("[name='luckyDip_id']").val());
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "LuckyDips",
+				action     : "addItemToLuckyDip",
+				request    :
+				{
+					'item_id'     : itemID,
+					'luckyDip_id' : luckyDipID
+				}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				if (data.result == true)
+				{
+					var html = data.partial_view;
+
+					$(".luckyDip-items-container").append(html);
+					$(".luckyDip-items-container").find(".no-results").remove();
+					selectedOption.remove();
+
+					toastr.success("Item successfully added to Lucky Dip");
+				}
+				else
+				{
+					if (data.exception != null)
+					{
+						toastr.error("PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						toastr.error("Unspecified error");
+						console.log(data);
+					}
+				}
+			}
+			else
+			{
+				toastr.error("Could not add Item to Lucky Dip");
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+
+	$(document).on("click", ".js-remove-item-from-luckyDip", function()
+	{
+		var $this = $(this);
+		var form = $this.closest(".form");
+		var luckyDipItemsContainer = $this.closest(".luckyDip-items-container");
+		var luckyDipID = parseInt(luckyDipItemsContainer.data("luckydip_id"));
+		var itemID = parseInt(form.data("item_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "LuckyDips",
+				action     : "removeItemFromLuckyDip",
+				request    :
+				{
+					'item_id'     : itemID,
+					'luckyDip_id' : luckyDipID
+				}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				if (data.result == true)
+				{
+					form.remove();
+
+					if (luckyDipItemsContainer.find(".result-item").length == 0)
+					{
+						luckyDipItemsContainer.html('<p class="no-results">No Items in this Lucky Dip</p><button class="btn btn-danger btn-sm no-results js-remove-luckyDip">Delete Lucky Dip</button>');
+					}
+
+					toastr.success("Item successfully removed from Lucky Dip");
+
+					reloadPartial("LuckyDipItemSelection", "Items", "getAllItemsNotInLuckyDip", { "luckyDip_id" : luckyDipID }, null, null, "POST");
+				}
+				else
+				{
+					if (data.exception != null)
+					{
+						toastr.error("PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						toastr.error("Unspecified error");
+						console.log(data);
+					}
+				}
+			}
+			else
+			{
+				toastr.error("Could not remove Item from Lucky Dip");
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+
+	$(document).on("click", ".js-update-luckyDip", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			var luckyDipID = parseInt(form.find("[name='luckyDip_id']").val());
+			var luckyDipName = form.find("[name='luckyDip_name']").val();
+			var luckyDipListID = form.find("[name='luckyDip_list']").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "LuckyDips",
+					action     : "editLuckyDip",
+					request    :
+					{
+						'luckyDip_id'      : luckyDipID,
+						'luckyDip_name'    : luckyDipName,
+						'luckyDip_list_id' : luckyDipListID
+					}
+				}
+			}).done(function(data)
+			{
+				if (data)
+				{
+					if (data.exception == null)
+					{
+						toastr.success("Lucky Dip successfully updated");
+					}
+				}
+				else
+				{
+					toastr.error("Could not update Lucky Dip");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+
+	$(document).on("click", ".js-remove-luckyDip", function()
+	{
+		var luckyDipID = parseInt($(this).closest(".luckyDip-items-container").data("luckydip_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "LuckyDips",
+				action     : "removeLuckyDip",
+				request    : {'luckyDip_id' : luckyDipID}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				if (data.result == true)
+				{
+					toastr.success("Lucky Dip successfully removed");
+					var timer = setTimeout(function()
+					{
+						location.href = constants.SITEURL+"/luckydips/";
+					}, 750);
+				}
+				else
+				{
+					if (data.exception != null)
+					{
+						toastr.error("PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						toastr.error("Unspecified error");
+						console.log(data);
+					}
+				}
+			}
+			else
+			{
+				toastr.error("Could not remove Lucky Dip");
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+}
+
+function reloadPartial(id, controller, action, params, callback, onbeforeload, ajaxMethod)
+{
+	ajaxMethod = ajaxMethod || "GET";
+
+	let queryString = buildQueryString(params);
+	id = id.startsWith('#') ? id : "#" + id;
+
+	/// Before you load do this.
+	if (typeof (onbeforeload) == "function")
+	{
+		onbeforeload();
+	}
+
+	let target = $(id);
+
+	$.ajax(
+	{
+		url      : constants.SITEURL+"/ajax.php",
+		type     : ajaxMethod.toUpperCase(),
+		dataType : "json",
+		data     :
+		{
+			controller : controller,
+			action     : action,
+			request    : params
+		},
+		success : function(response)
+		{
+			target.html(response);
+			reloadSuccessFunction(id, params, callback);
+		}
+	});
+}
+
+function buildQueryString(params)
+{
+	let queryString = "";
+	let count = 0;
+
+	if (params)
+	{
+		Object.keys(params).forEach(function(key)
+		{
+			if (count == 0)
+			{
+				queryString+= key+"="+params[key];
+			}
+			else
+			{
+				queryString+= "&"+key+"="+params[key];
+			}
+
+			count++;
+		});
+	}
+
+	return queryString;
+}
+
+function reloadSuccessFunction(id, params, callback)
+{
+	id = id.startsWith('#') ? id : "#" + id;
+
+	/// Once you have loaded do this.
+	if (typeof (callback) == "function")
+	{
+		callback();
+	}
 }

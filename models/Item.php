@@ -11,6 +11,7 @@
 		private $mute_temp;
 		private $mute_perm;
 		private $packsize_id;
+		private $luckyDip_id;
 		private $validation;
 		private $departments;
 		private $orders;
@@ -19,7 +20,7 @@
 		private $daily_consumption_overall;
 		private $daily_consumption_recent;
 
-		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $mute_temp = null, $mute_perm = null, $packsize_id = null, $departments = null, $orders = null, $recent_orders = null, $packsize = null, $daily_consumption_overall = null, $daily_consumption_recent = null)
+		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $mute_temp = null, $mute_perm = null, $packsize_id = null, $luckyDip_id = null, $departments = null, $orders = null, $recent_orders = null, $packsize = null, $daily_consumption_overall = null, $daily_consumption_recent = null)
 		{
 			$this->id = $id;
 			$this->description = $description;
@@ -31,6 +32,7 @@
 			$this->mute_temp = $mute_temp;
 			$this->mute_perm = $mute_perm;
 			$this->packsize_id = $packsize_id;
+			$this->luckyDip_id = $luckyDip_id;
 			$this->validation =
 			[
 				'Description' => ['required' => true],
@@ -153,6 +155,16 @@
 		public function setPackSizeId($packsize_id)
 		{
 			$this->packsize_id = $packsize_id;
+		}
+
+		public function getLuckyDipId()
+		{
+			return $this->luckyDip_id;
+		}
+
+		public function setLuckyDipId($luckyDip_id)
+		{
+			$this->luckyDip_id = $luckyDip_id;
 		}
 
 		public function getValidation($property = null)

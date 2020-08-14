@@ -47,6 +47,11 @@
 			return $this->dal->getAllItems();
 		}
 
+		public function getAllItemsNotInLuckyDip(int $luckyDip_id) : DalResult
+		{
+			return $this->dal->getAllItemsNotInLuckyDip($luckyDip_id);
+		}
+
 		public function getAllSuggestedItems($interval, $period)
 		{
 			$suggested_items = [];
