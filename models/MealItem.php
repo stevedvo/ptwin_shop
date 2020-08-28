@@ -5,7 +5,9 @@
 	{
 		private ?int $id;
 		private ?int $mealId;
+		private ?Meal $meal;
 		private ?int $itemId;
+		private ?Item $item;
 		private ?int $quantity;
 		private array $validation;
 
@@ -48,6 +50,16 @@
 			$this->mealId = $mealId;
 		}
 
+		public function getMeal() : ?Meal
+		{
+			return $this->meal;
+		}
+
+		public function setMeal(Meal $meal) : void
+		{
+			$this->meal = $meal;
+		}
+
 		public function getItemId() : ?int
 		{
 			return $this->itemId;
@@ -56,6 +68,16 @@
 		public function setItemId(int $itemId) : void
 		{
 			$this->itemId = $itemId;
+		}
+
+		public function getItem() : ?Item
+		{
+			return $this->item;
+		}
+
+		public function setItem(Item $item) : void
+		{
+			$this->item = $item;
 		}
 
 		public function getQuantity() : ?int

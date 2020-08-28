@@ -5,6 +5,7 @@
 	{
 		private $luckyDips_service;
 		private $items_service;
+		private $lists_service;
 
 		public function __construct()
 		{

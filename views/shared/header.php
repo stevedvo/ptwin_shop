@@ -66,6 +66,7 @@
 						<li><a href="<?= SITEURL; ?>/departments/">Manage Depts</a></li>
 						<li><a href="<?= SITEURL; ?>/lists/">Manage Lists</a></li>
 						<li><a href="<?= SITEURL; ?>/luckydips/">Manage Lucky Dips</a></li>
+						<li><a href="<?= SITEURL; ?>/meals/">Manage Meals</a></li>
 						<li><a href="<?= SITEURL; ?>/orders/">Manage Orders</a></li>
 						<li><a href="<?= SITEURL; ?>/packsizes/">Manage PackSizes</a></li>
 					</ul>
