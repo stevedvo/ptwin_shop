@@ -21,7 +21,11 @@
 			[
 				'MealId'   => ['required' => true],
 				'ItemId'   => ['required' => true],
-				'Quantity' => ['required' => true]
+				'Quantity' =>
+				[
+					'required'  => true,
+					'min-value' => 1
+				]
 			];
 		}
 

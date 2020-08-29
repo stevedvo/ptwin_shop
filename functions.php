@@ -91,6 +91,16 @@
 		return $luckyDip;
 	}
 
+	function createMeal($request) : Meal
+	{
+		$id = isset($request['meal_id']) ? intval($request['meal_id']) : null;
+		$name = isset($request['meal_name']) ? $request['meal_name'] : null;
+
+		$meal = new Meal($id, $name);
+
+		return $meal;
+	}
+
 	function getValidationString($object, $property)
 	{
 		if (is_null($object) || !is_object($object) || is_null($property) || empty($property))

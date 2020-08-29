@@ -5,5 +5,6 @@
 	require_once('controllers/ItemsController.php');
 	require_once('controllers/ListsController.php');
 	require_once('controllers/LuckyDipsController.php');
+	require_once('controllers/MealsController.php');
 	require_once('controllers/OrdersController.php');
 	require_once('controllers/PackSizesController.php');
