@@ -106,49 +106,79 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		// public function Edit($request = null) : void
-		// {
-		// 	$meal = $all_items = null;
+		public function Edit($request = null) : void
+		{
+			$meal = $all_items = null;
+			$pageData = [];
 
-		// 	if (is_numeric($request))
-		// 	{
-		// 		$dalResult = $this->meals_service->getMealById(intval($request));
+			try
+			{
+				if (!is_numeric($request))
+				{
+					$pageData =
+					[
+						'page_title' => 'Not Found',
+						'template'   => 'views/404.php',
+						'page_data'  => []
+					];
 
-		// 		$meal = $dalResult->getResult();
+					renderPage($pageData);
+				}
 
-		// 		if (!is_null($meal))
-		// 		{
-		// 			$dalResult = $this->items_service->getAllItemsNotInMeal($meal->getId());
-		// 			$all_items = $dalResult->getResult();
-		// 		}
-		// 	}
+				$meal = $this->meals_service->getMealById(intval($request));
+				
+				if (is_null($meal))
+				{
+					$pageData =
+					[
+						'page_title' => 'Not Found',
+						'template'   => 'views/404.php',
+						'page_data'  => []
+					];
 
-		// 	$this->meals_service->closeConnexion();
-		// 	$this->items_service->closeConnexion();
+					renderPage($pageData);
+				}
 
-		// 	$pageData =
-		// 	[
-		// 		'page_title' => 'Edit Meal',
-		// 		'breadcrumb' =>
-		// 		[
-		// 			[
-		// 				'link' => '/meals/',
-		// 				'text' => 'Meals'
-		// 			],
-		// 			[
-		// 				'text' => 'Edit'
-		// 			]
-		// 		],
-		// 		'template'   => 'views/meals/edit.php',
-		// 		'page_data'  =>
-		// 		[
-		// 			'meal'      => $meal,
-		// 			'all_items' => $all_items
-		// 		]
-		// 	];
+				$all_items = $this->items_service->getAllItemsNotInMeal($meal->getId());
 
-		// 	renderPage($pageData);
-		// }
+				$pageData =
+				[
+					'page_title' => 'Edit '.$meal->getName(),
+					'breadcrumb' =>
+					[
+						[
+							'link' => '/meals/',
+							'text' => 'Meals'
+						],
+						[
+							'text' => 'Edit'
+						]
+					],
+					'template'   => 'views/meals/edit.php',
+					'page_data'  =>
+					[
+						'meal'      => $meal,
+						'all_items' => $all_items
+					]
+				];
+
+				$this->meals_service->closeConnexion();
+				$this->items_service->closeConnexion();
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData =
+				[
+					'page_title' => 'Not Found',
+					'template'   => 'views/404.php',
+					'page_data'  => []
+				];
+
+				renderPage($pageData);
+			}
+		}
 
 		// public function addItemToMeal($request) : ?string
 		// {

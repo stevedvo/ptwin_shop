@@ -52,6 +52,18 @@
 			return $this->dal->getAllItemsNotInLuckyDip($luckyDip_id);
 		}
 
+		public function getAllItemsNotInMeal(int $mealId) : array
+		{
+			try
+			{
+				return $this->dal->getAllItemsNotInMeal($mealId);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
 		public function getAllSuggestedItems($interval, $period)
 		{
 			$suggested_items = [];

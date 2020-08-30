@@ -217,10 +217,10 @@
 
 	function renderPage($pageData) : void
 	{
-		$page_title = $pageData['page_title'];
+		$page_title = isset($pageData['page_title']) ? $pageData['page_title'] : null;
 		$breadcrumb = (isset($pageData['breadcrumb']) && is_array($pageData['breadcrumb'])) ? renderBreadcrumb($pageData['breadcrumb']) : $page_title;
-		$template = $pageData['template'];
-		$response = $pageData['page_data'];
+		$template = isset($pageData['template']) ? $pageData['template'] : null;
+		$response = isset($pageData['page_data']) ? $pageData['page_data'] : null;
 		include_once('views/shared/header.php');
 		include_once($template);
 		include_once('views/shared/footer.php');
