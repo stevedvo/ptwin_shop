@@ -1278,7 +1278,7 @@ function validateForm(form)
 					{
 						case 'required':
 						{
-							if ($thisInput.val() == null || $thisInput.val().length == 0)
+							if ($thisInput.val() == null || $thisInput.val().trim().length == 0)
 							{
 								if (result[$thisInput.attr("name")] == undefined)
 								{
@@ -2743,7 +2743,7 @@ function manageMeals()
 		}
 		else
 		{
-			var mealName = form.find("[name='meal_name']").val();
+			var mealName = form.find("[name='meal_name']").val().trim();
 
 			$.ajax(
 			{
@@ -2766,12 +2766,73 @@ function manageMeals()
 				{
 					var html = data.partial_view;
 
-					$(".results-container").append(html);
-					$(".results-container").find(".no-results").remove();
+					$("#mealsListItems").html(html);
 					form.find(".input-error").removeClass("input-error");
 					form.find("[name='meal_name']").val("");
 
 					toastr.success("New Meal successfully added");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+
+	$(document).on("click", ".js-update-meal-name", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			var mealID = parseInt(form.find("[name='meal_id']").val());
+			var mealName = form.find("[name='meal_name']").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Meals",
+					action     : "editMeal",
+					request    :
+					{
+						'meal_id'      : mealID,
+						'meal_name'    : mealName
+					}
+				}
+			}).done(function(data)
+			{
+				if (data.exception != null)
+				{
+					toastr.error(`"Could not update Meal: ${data.exception}"`);
+				}
+				else
+				{
+					var html = data.partial_view;
+
+					$("#mealsListItems").html(html);
+					form.find(".input-error").removeClass("input-error");
+					form.find("[name='meal_name']").val("");
+
+					toastr.success("Meal successfully updated");
 				}
 			}).fail(function(data)
 			{
@@ -2905,67 +2966,6 @@ function manageMeals()
 	// 		toastr.error("Could not perform request");
 	// 		console.log(data);
 	// 	});
-	// });
-
-	// $(document).on("click", ".js-update-meal", function()
-	// {
-	// 	var form = $(this).closest(".form");
-
-	// 	form.find("p.error-message").remove();
-	// 	form.find(".input-error").removeClass("input-error");
-
-	// 	var validation = validateForm(form);
-
-	// 	if (Object.keys(validation).length > 0)
-	// 	{
-	// 		$.each(validation, function(field, errMsg)
-	// 		{
-	// 			form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
-	// 		});
-
-	// 		toastr.error("There were validation failures");
-	// 	}
-	// 	else
-	// 	{
-	// 		var mealID = parseInt(form.find("[name='meal_id']").val());
-	// 		var mealName = form.find("[name='meal_name']").val();
-	// 		var mealListID = form.find("[name='meal_list']").val();
-
-	// 		$.ajax(
-	// 		{
-	// 			type     : "POST",
-	// 			url      : constants.SITEURL+"/ajax.php",
-	// 			dataType : "json",
-	// 			data     :
-	// 			{
-	// 				controller : "Meals",
-	// 				action     : "editMeal",
-	// 				request    :
-	// 				{
-	// 					'meal_id'      : mealID,
-	// 					'meal_name'    : mealName,
-	// 					'meal_list_id' : mealListID
-	// 				}
-	// 			}
-	// 		}).done(function(data)
-	// 		{
-	// 			if (data)
-	// 			{
-	// 				if (data.exception == null)
-	// 				{
-	// 					toastr.success("Lucky Dip successfully updated");
-	// 				}
-	// 			}
-	// 			else
-	// 			{
-	// 				toastr.error("Could not update Lucky Dip");
-	// 			}
-	// 		}).fail(function(data)
-	// 		{
-	// 			toastr.error("Could not perform request");
-	// 			console.log(data);
-	// 		});
-	// 	}
 	// });
 
 	// $(document).on("click", ".js-remove-meal", function()

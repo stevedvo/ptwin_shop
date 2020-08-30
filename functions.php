@@ -94,7 +94,7 @@
 	function createMeal($request) : Meal
 	{
 		$id = isset($request['meal_id']) ? intval($request['meal_id']) : null;
-		$name = isset($request['meal_name']) ? $request['meal_name'] : null;
+		$name = isset($request['meal_name']) ? trim($request['meal_name']) : null;
 
 		$meal = new Meal($id, $name);
 
@@ -139,7 +139,7 @@
 					switch ($criterion)
 					{
 						case 'required':
-							if (is_null($property_value) || (is_string($property_value) && strlen($property_value) < 1))
+							if (is_null($property_value) || (is_string($property_value) && strlen(trim($property_value)) < 1))
 							{
 								return false;
 							}

@@ -60,8 +60,41 @@
 				}
 
 				$meal = $this->meals_service->addMeal($meal);
+				$meals = $this->meals_service->getAllMeals();
 
-				$dalResult->setPartialView(getPartialView("MealListItem", ['item' => $meal]));
+				$dalResult->setPartialView(getPartialView("MealListItems", ['items' => $meals]));
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e->getMessage());
+			}
+
+			$this->meals_service->closeConnexion();
+
+			return $dalResult->jsonSerialize();
+		}
+
+		public function editMeal(array $request) : ?array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$meal = createMeal($request);
+
+				if (!entityIsValid($meal))
+				{
+					$dalResult->setException(new Exception("Invalid Meal"));
+
+					$this->meals_service->closeConnexion();
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$meal = $this->meals_service->updateMeal($meal);
+				$meals = $this->meals_service->getAllMeals();
+
+				$dalResult->setPartialView(getPartialView("MealListItems", ['items' => $meals]));
 			}
 			catch (Exception $e)
 			{
@@ -221,31 +254,6 @@
 
 		// 	$dalResult = $this->meals_service->removeMealItem($mealItem);
 
-		// 	$this->meals_service->closeConnexion();
-
-		// 	return $dalResult->jsonSerialize();
-		// }
-
-		// public function editMeal($request)
-		// {
-		// 	$meal = createMeal($request);
-
-		// 	if (!entityIsValid($meal))
-		// 	{
-		// 		return false;
-		// 	}
-
-		// 	$mealUpdate = $this->meals_service->verifyMealRequest($request);
-
-		// 	if (is_null($mealUpdate))
-		// 	{
-		// 		return false;
-		// 	}
-
-		// 	$mealUpdate->setName($meal->getName());
-		// 	$mealUpdate->setListId($meal->getListId());
-
-		// 	$dalResult = $this->meals_service->updateMeal($mealUpdate);
 		// 	$this->meals_service->closeConnexion();
 
 		// 	return $dalResult->jsonSerialize();

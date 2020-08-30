@@ -32,44 +32,28 @@
 			return $meal;
 		}
 
-		// public function getMealById(int $meal_id) : DalResult
-		// {
-		// 	$result = new DalResult();
-		// 	$meal = null;
+		public function getMealById(int $mealId) : ?Meal
+		{
+			$meal = null;
 
-		// 	try
-		// 	{
-		// 		$query = $this->ShopDb->conn->prepare("SELECT ld.id AS meal_id, ld.name AS meal_name, ld.list_id AS meal_list_id, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM meals AS ld LEFT JOIN items AS i ON (i.luckydip_id = ld.id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE ld.id = :id ORDER BY i.description");
-		// 		$query->execute([':id' => $meal_id]);
-		// 		$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT id AS meal_id, name AS meal_name FROM meals WHERE id = :id LIMIT 1");
+				$query->execute([':id' => $mealId]);
+				$row = $query->fetch(PDO::FETCH_ASSOC);
 
-		// 		if ($rows)
-		// 		{
-		// 			foreach ($rows as $row)
-		// 			{
-		// 				if (is_null($meal))
-		// 				{
-		// 					$meal = createMeal($row);
-		// 				}
+				if ($row)
+				{
+					$meal = createMeal($row);
+				}
+			}
+			catch(PDOException $e)
+			{
+				throw $e;
+			}
 
-		// 				$item = createItem($row);
-
-		// 				if (entityIsValid($item))
-		// 				{
-		// 					$meal->addItem($item);
-		// 				}
-		// 			}
-		// 		}
-
-		// 		$result->setResult($meal);
-		// 	}
-		// 	catch(PDOException $e)
-		// 	{
-		// 		$result->setException($e);
-		// 	}
-
-		// 	return $result;
-		// }
+			return $meal;
+		}
 
 		public function getMealByName(string $mealName) : ?Meal
 		{
@@ -92,6 +76,53 @@
 			}
 
 			return $meal;
+		}
+
+		public function getAllMeals() : array
+		{
+			$meals = [];
+
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT id AS meal_id, name AS meal_name FROM meals ORDER BY meal_name");
+				$query->execute();
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if ($rows)
+				{
+					foreach ($rows as $row)
+					{
+						$meal = createMeal($row);
+
+						$meals[$meal->getId()] = $meal;
+					}
+				}
+			}
+			catch(PDOException $e)
+			{
+				throw $e;
+			}
+
+			return $meals;
+		}
+
+		public function updateMeal(Meal $meal) : Meal
+		{
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE meals SET name = :name WHERE id = :id");
+				$query->execute(
+				[
+					':name' => $meal->getName(),
+					':id'   => $meal->getId()
+				]);
+
+				return $meal;
+			}
+			catch(PDOException $e)
+			{
+				throw $e;
+			}
 		}
 
 		// public function getMealsByListId(int $list_id) : DalResult
@@ -138,34 +169,6 @@
 		// 	return $result;
 		// }
 
-		public function getAllMeals() : array
-		{
-			$meals = [];
-
-			try
-			{
-				$query = $this->ShopDb->conn->prepare("SELECT id AS meal_id, name AS meal_name FROM meals ORDER BY meal_name");
-				$query->execute();
-				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
-
-				if ($rows)
-				{
-					foreach ($rows as $row)
-					{
-						$meal = createMeal($row);
-
-						$meals[$meal->getId()] = $meal;
-					}
-				}
-			}
-			catch(PDOException $e)
-			{
-				throw $e;
-			}
-
-			return $meals;
-		}
-
 		// public function addItemToMeal(Item $item, Meal $meal) : DalResult
 		// {
 		// 	$result = new DalResult();
@@ -197,28 +200,6 @@
 		// 		$result->setResult($query->execute(
 		// 		[
 		// 			':item_id' => $item->getId()
-		// 		]));
-		// 	}
-		// 	catch(PDOException $e)
-		// 	{
-		// 		$result->setException($e);
-		// 	}
-
-		// 	return $result;
-		// }
-
-		// public function updateMeal(Meal $meal) : DalResult
-		// {
-		// 	$result = new DalResult();
-
-		// 	try
-		// 	{
-		// 		$query = $this->ShopDb->conn->prepare("UPDATE meals SET name = :name, list_id = :list_id WHERE id = :id");
-		// 		$result->setResult($query->execute(
-		// 		[
-		// 			':name'    => $meal->getName(),
-		// 			':list_id' => $meal->getListId(),
-		// 			':id'      => $meal->getId()
 		// 		]));
 		// 	}
 		// 	catch(PDOException $e)

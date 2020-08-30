@@ -19,6 +19,14 @@
 		// {
 		// 	$meal = null;
 
+		// 	try
+		// 	{
+				
+		// 	}
+		// 	catch (Exception $e)
+		// 	{
+				
+		// 	}
 		// 	if (!is_numeric($request['meal_id']))
 		// 	{
 		// 		return null;
@@ -48,10 +56,24 @@
 			}
 		}
 
-		// public function mealNameIsUnique() : bool
-		// {
-		// 	return false;
-		// }
+		public function mealNameIsUnique(string $mealName, int $mealId) : bool
+		{
+			try
+			{
+				$meal = $this->dal->getMealByName($mealName);
+
+				if (!$meal instanceof Meal)
+				{
+					return true;
+				}
+
+				return ($meal->getId() == $mealId);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
 
 		public function addMeal(Meal $meal) : Meal
 		{
@@ -59,7 +81,7 @@
 			{
 				if ($this->mealNameExists($meal->getName()))
 				{
-					throw new Exception("Meal Name already exists");
+					throw new Exception("Meal Name '".$meal->getName()."' already exists");
 				}
 
 				return $this->dal->addMeal($meal);
@@ -82,10 +104,43 @@
 			}
 		}
 
-		// public function getMealById($meal_id) : DalResult
-		// {
-		// 	return $this->dal->getMealById($meal_id);
-		// }
+		public function getMealById($mealId) : ?Meal
+		{
+			try
+			{
+				return $this->dal->getMealById($mealId);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function updateMeal(Meal $mealUpdate) : Meal
+		{
+			try
+			{
+				$meal = $this->getMealById($mealUpdate->getId());
+
+				if (is_null($meal))
+				{
+					throw new Exception("Cannot find Meal with ID '".$mealUpdate->getId()."'");
+				}
+
+				if (!$this->mealNameIsUnique($mealUpdate->getName(), $meal->getId()))
+				{
+					throw new Exception("A Meal with Name '".$mealUpdate->getName()."' already exists");
+				}
+
+				$meal->setName($mealUpdate->getName());
+
+				return $this->dal->updateMeal($meal);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
 
 		// public function getMealByName(string $meal_name) : DalResult
 		// {
@@ -105,11 +160,6 @@
 		// public function removeItemFromMeal(Item $item, Meal $meal) : DalResult
 		// {
 		// 	return $this->dal->removeItemFromMeal($item, $meal);
-		// }
-
-		// public function updateMeal(Meal $meal) : DalResult
-		// {
-		// 	return $this->dal->updateMeal($meal);
 		// }
 
 		// public function removeMeal(Meal $meal) : DalResult

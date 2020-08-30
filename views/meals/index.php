@@ -21,21 +21,9 @@
 		<div class="row">
 			<div class="col-xs-12">
 				<h3>Meals</h3>
-				<div class="results-container">
+				<div id="mealsListItems" class="results-container">
 <?php
-					if (sizeof($meals) < 1)
-					{
-?>
-						<p class="no-results">No Meals can be found</p>
-<?php
-					}
-					else
-					{
-						foreach ($meals as $id => $meal)
-						{
-							echo getPartialView("MealListItem", ['item' => $meal]);
-						}
-					}
+					echo getPartialView("MealListItems", ['items' => $meals]);
 ?>
 				</div>
 			</div>
