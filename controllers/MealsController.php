@@ -139,7 +139,7 @@
 					renderPage($pageData);
 				}
 
-				$all_items = $this->items_service->getAllItemsNotInMeal($meal->getId());
+				$item_list = $this->items_service->getAllItemsNotInMeal($meal->getId());
 
 				$pageData =
 				[
@@ -158,7 +158,7 @@
 					'page_data'  =>
 					[
 						'meal'      => $meal,
-						'all_items' => $all_items
+						'item_list' => $item_list
 					]
 				];
 
@@ -173,7 +173,7 @@
 				[
 					'page_title' => 'Not Found',
 					'template'   => 'views/404.php',
-					'page_data'  => []
+					'page_data'  => ['message' => $e->getMessage()]
 				];
 
 				renderPage($pageData);

@@ -93,12 +93,38 @@
 
 	function createMeal($request) : Meal
 	{
-		$id = isset($request['meal_id']) ? intval($request['meal_id']) : null;
-		$name = isset($request['meal_name']) ? trim($request['meal_name']) : null;
+		try
+		{
+			$id = isset($request['meal_id']) ? intval($request['meal_id']) : null;
+			$name = isset($request['meal_name']) ? trim($request['meal_name']) : null;
 
-		$meal = new Meal($id, $name);
+			$meal = new Meal($id, $name);
 
-		return $meal;
+			return $meal;
+		}
+		catch (Exception $e)
+		{
+			throw $e;
+		}
+	}
+
+	function createMealItem($request) : MealItem
+	{
+		try
+		{
+			$id = isset($request['meal_item_id']) ? intval($request['meal_item_id']) : null;
+			$mealId = isset($request['meal_id']) ? intval($request['meal_id']) : null;
+			$itemId = isset($request['item_id']) ? intval($request['item_id']) : null;
+			$quantity = isset($request['meal_item_quantity']) ? intval($request['meal_item_quantity']) : null;
+
+			$mealItem = new MealItem($id, $mealId, $itemId, $quantity);
+
+			return $mealItem;
+		}
+		catch (Exception $e)
+		{
+			throw $e;
+		}
 	}
 
 	function getValidationString($object, $property)
@@ -125,7 +151,7 @@
 		return $validation;
 	}
 
-	function entityIsValid($entity)
+	function entityIsValid($entity) : bool
 	{
 		if (is_array($entity->getValidation()))
 		{

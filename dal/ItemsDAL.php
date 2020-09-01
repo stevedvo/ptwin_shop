@@ -226,7 +226,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, mi.id AS meal_item_id, mi.meal_id, mi.item_id, mi.quantity FROM items AS i LEFT JOIN meal_items AS mi ON (i.item_id = mi.item_id) WHERE mi.meal_id IS NULL OR mi.meal_id != :meal_id ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, mi.id AS meal_item_id, mi.meal_id, mi.quantity FROM items AS i LEFT JOIN meal_items AS mi ON (i.item_id = mi.item_id) WHERE mi.meal_id IS NULL OR mi.meal_id != :meal_id ORDER BY i.description");
 				$query->execute([':meal_id' => $mealId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 

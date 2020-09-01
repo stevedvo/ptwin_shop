@@ -38,18 +38,48 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT id AS meal_id, name AS meal_name FROM meals WHERE id = :id LIMIT 1");
+				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, mi.id AS meal_item_id, mi.quantity AS meal_item_quantity, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id FROM meals AS m LEFT JOIN meal_items AS mi ON (mi.meal_id = m.id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) WHERE m.id = :id ORDER BY i.description");
 				$query->execute([':id' => $mealId]);
-				$row = $query->fetch(PDO::FETCH_ASSOC);
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($row)
+				if ($rows)
 				{
-					$meal = createMeal($row);
+					foreach ($rows as $row)
+					{
+						if (is_null($meal))
+						{
+							$meal = createMeal($row);
+						}
+
+						if (!is_null($row['meal_item_id']))
+						{
+							$item = createItem($row);
+
+							if (!entityIsValid($item))
+							{
+								throw new Exception("Invalid Item. Item ID #".$item->getId());
+							}
+
+							$mealItem = createMealItem($row);
+							$mealItem->setItem($item);
+
+							if (!entityIsValid($mealItem))
+							{
+								throw new Exception("Invalid MealItem. MealItem ID #".$mealItem->getId());
+							}
+
+							$meal->addMealItem($mealItem);
+						}
+					}
 				}
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				throw $e;
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
 			}
 
 			return $meal;

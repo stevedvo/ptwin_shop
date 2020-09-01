@@ -1,6 +1,6 @@
 <?php
 	$meal = $response['meal'];
-	$all_items = $response['all_items'];
+	$item_list = $response['item_list'];
 ?>
 <main class="wrapper">
 	<div class="container">
@@ -58,7 +58,7 @@
 							<input type="hidden" name="meal_id" value="<?= $meal->getId(); ?>" />
 							<div id="MealItemSelection">
 <?php
-								echo getPartialView("MealItemSelection", ['item_list' => $all_items]);
+								echo getPartialView("MealItemSelection", ['item_list' => $item_list]);
 ?>
 							</div>
 						</div>
