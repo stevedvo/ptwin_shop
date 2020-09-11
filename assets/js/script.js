@@ -2814,8 +2814,8 @@ function manageMeals()
 					action     : "editMeal",
 					request    :
 					{
-						'meal_id'      : mealID,
-						'meal_name'    : mealName
+						'meal_id'   : mealID,
+						'meal_name' : mealName
 					}
 				}
 			}).done(function(data)
@@ -2829,8 +2829,6 @@ function manageMeals()
 					var html = data.partial_view;
 
 					$("#mealsListItems").html(html);
-					form.find(".input-error").removeClass("input-error");
-					form.find("[name='meal_name']").val("");
 
 					toastr.success("Meal successfully updated");
 				}

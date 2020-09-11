@@ -19,7 +19,7 @@
 					</div>
 
 					<div class="form-group">
-						<button class="btn btn-primary btn-sm js-update-meal">Update</button>
+						<button class="btn btn-primary btn-sm js-update-meal-name">Update</button>
 					</div>
 				</div>
 			</div>

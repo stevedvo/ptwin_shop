@@ -109,19 +109,17 @@
 		public function Edit($request = null) : void
 		{
 			$meal = $all_items = null;
-			$pageData = [];
+			$pageData =
+			[
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
+			];
 
 			try
 			{
 				if (!is_numeric($request))
 				{
-					$pageData =
-					[
-						'page_title' => 'Not Found',
-						'template'   => 'views/404.php',
-						'page_data'  => []
-					];
-
 					renderPage($pageData);
 				}
 
@@ -129,13 +127,6 @@
 				
 				if (is_null($meal))
 				{
-					$pageData =
-					[
-						'page_title' => 'Not Found',
-						'template'   => 'views/404.php',
-						'page_data'  => []
-					];
-
 					renderPage($pageData);
 				}
 
@@ -169,12 +160,7 @@
 			}
 			catch (Exception $e)
 			{
-				$pageData =
-				[
-					'page_title' => 'Not Found',
-					'template'   => 'views/404.php',
-					'page_data'  => ['message' => $e->getMessage()]
-				];
+				$pageData['page_data'] = ['message' => $e->getMessage()];
 
 				renderPage($pageData);
 			}
