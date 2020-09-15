@@ -2840,66 +2840,66 @@ function manageMeals()
 		}
 	});
 
-	// $(document).on("click", ".js-add-item-to-meal", function()
-	// {
-	// 	var form = $(this).closest(".form");
-	// 	var selectedOption = form.find("select option:selected");
-	// 	var itemID = parseInt(selectedOption.val());
-	// 	var mealID = parseInt(form.find("[name='meal_id']").val());
+	$(document).on("click", ".js-add-item-to-meal", function()
+	{
+		var form = $(this).closest(".form");
+		var selectedOption = form.find("select option:selected");
+		var itemID = parseInt(selectedOption.val());
+		var mealID = parseInt(form.find("[name='meal_id']").val());
 
-	// 	$.ajax(
-	// 	{
-	// 		type     : "POST",
-	// 		url      : constants.SITEURL+"/ajax.php",
-	// 		dataType : "json",
-	// 		data     :
-	// 		{
-	// 			controller : "Meals",
-	// 			action     : "addItemToMeal",
-	// 			request    :
-	// 			{
-	// 				'item_id'     : itemID,
-	// 				'meal_id' : mealID
-	// 			}
-	// 		}
-	// 	}).done(function(data)
-	// 	{
-	// 		if (data)
-	// 		{
-	// 			if (data.result == true)
-	// 			{
-	// 				var html = data.partial_view;
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Meals",
+				action     : "addItemToMeal",
+				request    :
+				{
+					'item_id' : itemID,
+					'meal_id' : mealID
+				}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				if (data.result == true)
+				{
+					var html = data.partial_view;
 
-	// 				$(".meal-items-container").append(html);
-	// 				$(".meal-items-container").find(".no-results").remove();
-	// 				selectedOption.remove();
+					$(".meal-items-container").append(html);
+					$(".meal-items-container").find(".no-results").remove();
+					selectedOption.remove();
 
-	// 				toastr.success("Item successfully added to Lucky Dip");
-	// 			}
-	// 			else
-	// 			{
-	// 				if (data.exception != null)
-	// 				{
-	// 					toastr.error("PDOException");
-	// 					console.log(data.exception);
-	// 				}
-	// 				else
-	// 				{
-	// 					toastr.error("Unspecified error");
-	// 					console.log(data);
-	// 				}
-	// 			}
-	// 		}
-	// 		else
-	// 		{
-	// 			toastr.error("Could not add Item to Lucky Dip");
-	// 		}
-	// 	}).fail(function(data)
-	// 	{
-	// 		toastr.error("Could not perform request");
-	// 		console.log(data);
-	// 	});
-	// });
+					toastr.success("Item successfully added to Lucky Dip");
+				}
+				else
+				{
+					if (data.exception != null)
+					{
+						toastr.error("PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						toastr.error("Unspecified error");
+						console.log(data);
+					}
+				}
+			}
+			else
+			{
+				toastr.error("Could not add Item to Lucky Dip");
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
 
 	// $(document).on("click", ".js-remove-item-from-meal", function()
 	// {

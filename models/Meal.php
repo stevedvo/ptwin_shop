@@ -70,4 +70,17 @@
 
 			return getValidationString($this, $property);
 		}
+
+		public function getMealItemByItemId(int $itemId) : ?MealItem
+		{
+			foreach ($this->mealItems as $mealItemId => $mealItem)
+			{
+				if ($mealItem->getItemId() == $itemId)
+				{
+					return $mealItem;
+				}
+			}
+
+			return null;
+		}
 	}

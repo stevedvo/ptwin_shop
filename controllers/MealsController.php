@@ -166,73 +166,38 @@
 			}
 		}
 
-		// public function addItemToMeal($request) : ?string
-		// {
-		// 	$dalResult = new DalResult();
+		public function addItemToMeal($request) : ?string
+		{
+			$dalResult = new DalResult();
 
-		// 	try
-		// 	{
-		// 		$item = $this->items_service->verifyItemRequest($request);
+			try
+			{
+				if (!is_numeric($request['meal_id']) || !is_numeric($request['item_id']))
+				{
+					$dalResult->setException(new Exception("Invalid Request"));
 
-		// 		if (!($item instanceof Item))
-		// 		{
-		// 			$dalResult->setException(new Exception("Invalid Item"));
+					return $dalResult->jsonSerialize();
+				}
 
-		// 			return $dalResult->jsonSerialize();
-		// 		}
+				$mealItem = $this->meals_service->addItemToMeal(intval($request['meal_id']), intval($request['item_id']));
 
-		// 		$meal = $this->meals_service->verifyMealRequest($request);
+				if (!is_null($mealItem))
+				{
+					$dalResult->setPartialView(getPartialView("MealItem", ['mealItem' => $mealItem]));
+				}
 
-		// 		if (!($meal instanceof Meal))
-		// 		{
-		// 			$dalResult->setException(new Exception("Invalid Meal"));
+				$this->meals_service->closeConnexion();
+				$this->items_service->closeConnexion();
 
-		// 			return $dalResult->jsonSerialize();
-		// 		}
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
 
-		// 		$quantity = isset($request['quantity']) && is_numeric($request['quantity']) ? intval($request['quantity']) : null;
-
-		// 		if (is_null($quantity))
-		// 		{
-		// 			$dalResult->setException(new Exception("Invalid Quantity"));
-
-		// 			return $dalResult->jsonSerialize();
-		// 		}
-
-		// 		$mealItem = createMealItem(
-		// 		[
-		// 			'mealId' => $meal->getId(),
-		// 			'itemId' => $item->getId(),
-		// 			'quantity' => $quantity
-		// 		]);
-
-		// 		if (!entityIsValid($mealItem))
-		// 		{
-		// 			$dalResult->setException(new Exception("Invalid MealItem"));
-
-		// 			return $dalResult->jsonSerialize();
-		// 		}
-
-		// 		$mealItem->setItem($item);
-		// 		$mealItem->setMeal($meal);
-
-		// 		$mealItem = $this->meals_service->addMealItem($mealItem);
-
-		// 		if (!is_null($mealItem))
-		// 		{
-		// 			$dalResult->setPartialView(getPartialView("MealItem", ['mealItem' => $mealItem]));
-		// 		}
-
-		// 		$this->meals_service->closeConnexion();
-		// 		$this->items_service->closeConnexion();
-
-		// 		return $dalResult->jsonSerialize();
-		// 	}
-		// 	catch (Exception $e)
-		// 	{
-				
-		// 	}
-		// }
+				return $dalResult->jsonSerialize();
+			}
+		}
 
 		// public function updateMealItem($request) : ?string
 		// {

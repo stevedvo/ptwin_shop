@@ -19,8 +19,16 @@
 			$this->quantity = $quantity;
 			$this->validation =
 			[
-				'MealId'   => ['required' => true],
-				'ItemId'   => ['required' => true],
+				'MealId'   =>
+				[
+					'required'  => true,
+					'min-value' => 1
+				],
+				'ItemId'   =>
+				[
+					'required'  => true,
+					'min-value' => 1
+				],
 				'Quantity' =>
 				[
 					'required'  => true,

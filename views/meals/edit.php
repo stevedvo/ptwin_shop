@@ -28,22 +28,9 @@
 		<div class="row">
 			<div class="col-xs-12">
 				<h3>Current Items in Meal</h3>
-				<div class="meal-items-container results-container" data-meal_id="<?= $meal->getId(); ?>">
+				<div id="MealItemListItems">
 <?php
-					if (sizeof($meal->getMealItems()) == 0)
-					{
-?>
-						<p class="no-results">No Items in this Meal</p>
-						<button class="btn btn-danger btn-sm no-results js-remove-meal">Delete Meal</button>
-<?php
-					}
-					else
-					{
-						foreach ($meal->getMealItems() as $meal_item_id => $meal_item)
-						{
-							echo getPartialView("MealItem", ['item' => $meal_item]);
-						}
-					}
+					echo getPartialView("MealItemListitems", ['mealId' => $meal->getId(), 'mealItems' => $meal->getMealItems()]);
 ?>
 				</div>
 			</div>
