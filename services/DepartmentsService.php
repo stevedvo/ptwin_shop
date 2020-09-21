@@ -13,28 +13,30 @@
 			$this->dal->closeConnexion();
 		}
 
-		public function verifyDepartmentRequest($request)
+		public function verifyDepartmentRequest($request) : Department
 		{
-			$department = false;
-
-			if (!is_numeric($request['dept_id']))
+			try
 			{
-				return false;
+				$department = null;
+
+				if (!is_numeric($request['dept_id']))
+				{
+					throw new Exception("Invalid Department ID");
+				}
+
+				$department = $this->dal->getDepartmentById(intval($request['dept_id']));
+
+				if (!($department instanceof Department))
+				{
+					throw new Exception("Department not found");
+				}
+
+				return $department;
 			}
-
-			$dalResult = $this->dal->getDepartmentById(intval($request['dept_id']));
-
-			if ($dalResult->getResult() instanceof Department)
+			catch (Exception $e)
 			{
-				$department = $dalResult->getResult();
+				throw $e;
 			}
-
-			if (!$department)
-			{
-				return false;
-			}
-
-			return $department;
 		}
 
 		public function addDepartment($department)

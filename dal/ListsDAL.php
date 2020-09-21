@@ -106,13 +106,12 @@
 			return $result;
 		}
 
-		public function getListById($list_id)
+		public function getListById($list_id) : ?List
 		{
-			$result = new DalResult();
-			$list = false;
-
 			try
 			{
+				$list = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT l.list_id, l.name AS list_name, i.item_id, i.description, i.comments, i.default_qty, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM lists AS l LEFT JOIN items AS i ON (l.list_id = i.list_id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE l.list_id = :list_id ORDER BY i.description");
 				$query->execute([':list_id' => $list_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -121,7 +120,7 @@
 				{
 					foreach ($rows as $row)
 					{
-						if (!$list)
+						if (!($list instanceof List))
 						{
 							$list = createList($row);
 						}
@@ -137,14 +136,16 @@
 					}
 				}
 
-				$result->setResult($list);
+				return $list;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getListByName($list_name)

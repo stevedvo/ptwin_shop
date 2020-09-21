@@ -13,28 +13,30 @@
 			$this->dal->closeConnexion();
 		}
 
-		public function verifyListRequest($request)
+		public function verifyListRequest($request) : List
 		{
-			$list = false;
-
-			if (!is_numeric($request['list_id']))
+			try
 			{
-				return false;
+				$list = null;
+
+				if (!is_numeric($request['list_id']))
+				{
+					throw new Exception("Invalid List ID");
+				}
+
+				$list = $this->dal->getListById(intval($request['list_id']));
+
+				if (!($list instanceof List))
+				{
+					throw new Exception("List not found");
+				}
+
+				return $list;
 			}
-
-			$dalResult = $this->dal->getListById(intval($request['list_id']));
-
-			if (!is_null($dalResult->getResult()))
+			catch (Exception $e)
 			{
-				$list = $dalResult->getResult();
+				throw $e;
 			}
-
-			if (!$list)
-			{
-				return false;
-			}
-
-			return $list;
 		}
 
 		public function addList($list)

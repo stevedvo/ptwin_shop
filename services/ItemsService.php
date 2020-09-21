@@ -13,28 +13,30 @@
 			$this->dal->closeConnexion();
 		}
 
-		public function verifyItemRequest($request)
+		public function verifyItemRequest($request) : Item
 		{
-			$item = false;
-
-			if (!is_numeric($request['item_id']))
+			try
 			{
-				return false;
+				$item = null;
+
+				if (!is_numeric($request['item_id']))
+				{
+					throw new Exception("Invalid Item ID");
+				}
+
+				$item = $this->dal->getItemById(intval($request['item_id']));
+
+				if (!($item instanceof Item))
+				{
+					throw new Exception("Item not found");
+				}
+
+				return $item;
 			}
-
-			$dalResult = $this->dal->getItemById(intval($request['item_id']));
-
-			if (!is_null($dalResult->getResult()))
+			catch (Exception $e)
 			{
-				$item = $dalResult->getResult();
+				throw $e;
 			}
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			return $item;
 		}
 
 		public function addItem($item)
@@ -107,9 +109,16 @@
 			return $muted_items;
 		}
 
-		public function getItemById($item_id)
+		public function getItemById($item_id) : ?Item
 		{
-			return $this->dal->getItemById($item_id);
+			try
+			{
+				return $this->dal->getItemById($item_id);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getItemsById($item_ids)

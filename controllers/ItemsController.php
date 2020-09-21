@@ -268,30 +268,37 @@
 			return $item->jsonSerialize();
 		}
 
-		public function Edit($request = null)
+		public function Edit($request = null) : void
 		{
 			$lists = $packsizes = $departments = $currentOrder = $currentOrderItems = null;
 
-			$consumption_interval = DEFAULT_CONSUMPTION_INTERVAL;
-			$consumption_period = DEFAULT_CONSUMPTION_PERIOD;
+			$pageData =
+			[
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
+			];
 
-			if (isset($_GET['consumption_interval']) && is_numeric($_GET['consumption_interval']) && intval($_GET['consumption_interval']) > 0)
+			try
 			{
-				$consumption_interval = intval($_GET['consumption_interval']);
-			}
+				$consumption_interval = DEFAULT_CONSUMPTION_INTERVAL;
+				$consumption_period = DEFAULT_CONSUMPTION_PERIOD;
 
-			if (isset($_GET['consumption_period']))
-			{
-				if (in_array($_GET['consumption_period'], CONSUMPTION_PERIODS))
+				if (isset($_GET['consumption_interval']) && is_numeric($_GET['consumption_interval']) && intval($_GET['consumption_interval']) > 0)
 				{
-					$consumption_period = $_GET['consumption_period'];
+					$consumption_interval = intval($_GET['consumption_interval']);
 				}
-			}
 
-			$item = $this->items_service->verifyItemRequest(['item_id' => $request]);
+				if (isset($_GET['consumption_period']))
+				{
+					if (in_array($_GET['consumption_period'], CONSUMPTION_PERIODS))
+					{
+						$consumption_period = $_GET['consumption_period'];
+					}
+				}
 
-			if ($item)
-			{
+				$item = $this->items_service->verifyItemRequest(['item_id' => $request]);
+
 				$dalResult = $this->lists_service->getAllLists();
 
 				if (!is_null($dalResult->getResult()))
@@ -328,173 +335,168 @@
 				}
 
 				$item->calculateRecentOrders($consumption_interval, $consumption_period);
-			}
 
-			$this->items_service->closeConnexion();
-			$this->lists_service->closeConnexion();
-			$this->departments_service->closeConnexion();
-			$this->orders_service->closeConnexion();
-			$this->packsizes_service->closeConnexion();
+				$this->items_service->closeConnexion();
+				$this->lists_service->closeConnexion();
+				$this->departments_service->closeConnexion();
+				$this->orders_service->closeConnexion();
+				$this->packsizes_service->closeConnexion();
 
-			$pageData =
-			[
-				'page_title' => 'Edit Item',
-				'breadcrumb' =>
+				$pageData =
 				[
+					'page_title' => 'Edit Item',
+					'breadcrumb' =>
 					[
-						'link' => '/items/',
-						'text' => 'Items'
+						[
+							'link' => '/items/',
+							'text' => 'Items'
+						],
+						[
+							'text' => 'Edit'
+						]
 					],
+					'template'   => 'views/items/edit.php',
+					'page_data'  =>
 					[
-						'text' => 'Edit'
+						'item'                 => $item,
+						'lists'                => $lists,
+						'all_departments'      => $departments,
+						'packsizes'            => $packsizes,
+						'consumption_interval' => $consumption_interval,
+						'consumption_period'   => $consumption_period,
+						'current_order'        => $currentOrder,
+						'current_order_items'  => $currentOrderItems
 					]
-				],
-				'template'   => 'views/items/edit.php',
-				'page_data'  =>
-				[
-					'item'                 => $item,
-					'lists'                => $lists,
-					'all_departments'      => $departments,
-					'packsizes'            => $packsizes,
-					'consumption_interval' => $consumption_interval,
-					'consumption_period'   => $consumption_period,
-					'current_order'        => $currentOrder,
-					'current_order_items'  => $currentOrderItems
-				]
-			];
+				];
 
-			renderPage($pageData);
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
-		public function editItem($request)
+		public function editItem($request) : string
 		{
-			$item_update = createItem($request);
+			$dalResult = new DalResult();
 
-			if (!entityIsValid($item_update))
+			try
 			{
-				return false;
-			}
+				$item_update = createItem($request);
 
-			$item = $this->items_service->verifyItemRequest($request);
-
-			$item->setDescription($item_update->getDescription());
-			$item->setComments($item_update->getComments());
-			$item->setDefaultQty($item_update->getDefaultQty());
-			$item->setListId($item_update->getListId());
-			$item->setLink($item_update->getLink());
-			$item->setPackSizeId($item_update->getPackSizeId());
-			$item->setMuteTemp($item_update->getMuteTemp());
-			$item->setMutePerm($item_update->getMutePerm());
-
-			$dalResult = $this->items_service->updateItem($item);
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
-		}
-
-		public function removeItem($request)
-		{
-			if (!isset($request['item_id']) || !is_numeric($request['item_id']))
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->getItemsByItemId(intval($request['item_id']));
-
-			if (!is_null($dalResult->getException()))
-			{
-				return false;
-			}
-
-			$items = $dalResult->getResult();
-
-			if (is_array($items) && sizeof($items) > 0)
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->getItemById(intval($request['item_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$item = $dalResult->getResult();
-			}
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->removeItem($item);
-			$this->items_service->closeConnexion();
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
-		}
-
-		public function addDepartmentToItem($request)
-		{
-			$item = $this->items_service->verifyItemRequest($request);
-			$department = $this->departments_service->verifyDepartmentRequest($request);
-
-			if (!$item || !$department)
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->addDepartmentToItem($department, $item);
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$dalResult->setPartialView(getPartialView("ItemDepartment", ['department' => $department]));
-			}
-
-			$this->departments_service->closeConnexion();
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
-		}
-
-		public function removeDepartmentsFromItem($request)
-		{
-			$dept_ids = [];
-
-			$item = $this->items_service->verifyItemRequest($request);
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			if (!is_array($request['dept_ids']))
-			{
-				return false;
-			}
-
-			foreach ($request['dept_ids'] as $dept_id)
-			{
-				if (!is_numeric($dept_id))
+				if (!entityIsValid($item_update))
 				{
-					return false;
+					$dalResult->setException(new Exception("Item is not valid"));
+
+					return $dalResult->jsonSerialize();
 				}
 
-				$dept_ids[] = intval($dept_id);
+				$item = $this->items_service->verifyItemRequest($request);
+
+				$item->setDescription($item_update->getDescription());
+				$item->setComments($item_update->getComments());
+				$item->setDefaultQty($item_update->getDefaultQty());
+				$item->setListId($item_update->getListId());
+				$item->setLink($item_update->getLink());
+				$item->setPackSizeId($item_update->getPackSizeId());
+				$item->setMuteTemp($item_update->getMuteTemp());
+				$item->setMutePerm($item_update->getMutePerm());
+
+				$dalResult = $this->items_service->updateItem($item);
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->items_service->removeDepartmentsFromItem($dept_ids, $item->getId());
-
-			if (!is_null($dalResult->getResult()))
+			catch (Exception $e)
 			{
-				if (array_search($item->getPrimaryDept(), $dept_ids) !== false)
-				{
-					$item->setPrimaryDept(null);
-					$dalResult = $this->items_service->updateItem($item);
-				}
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
+		}
 
-			$this->items_service->closeConnexion();
+		public function addDepartmentToItem($request) : string
+		{
+			$dalResult = new DalResult();
 
-			return $dalResult->jsonSerialize();
+			try
+			{
+				$item = $this->items_service->verifyItemRequest($request);
+				$department = $this->departments_service->verifyDepartmentRequest($request);
+
+				$dalResult = $this->items_service->addDepartmentToItem($department, $item);
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$dalResult->setPartialView(getPartialView("ItemDepartment", ['department' => $department]));
+				}
+
+				$this->departments_service->closeConnexion();
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
+		public function removeDepartmentsFromItem($request) : string
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$dept_ids = [];
+
+				$item = $this->items_service->verifyItemRequest($request);
+
+				if (!is_array($request['dept_ids']))
+				{
+					$dalResult->setException(new Exception("Invalid Dept IDs request"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				foreach ($request['dept_ids'] as $dept_id)
+				{
+					if (!is_numeric($dept_id))
+					{
+						$dalResult->setException(new Exception("Invalid Dept ID: ".$dept_id));
+
+						return $dalResult->jsonSerialize();
+					}
+
+					$dept_ids[] = intval($dept_id);
+				}
+
+				$dalResult = $this->items_service->removeDepartmentsFromItem($dept_ids, $item->getId());
+
+				if (!is_null($dalResult->getResult()))
+				{
+					if (array_search($item->getPrimaryDept(), $dept_ids) !== false)
+					{
+						$item->setPrimaryDept(null);
+						$dalResult = $this->items_service->updateItem($item);
+					}
+				}
+
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
 		}
 
 		public function getAllItems($request)
@@ -644,41 +646,48 @@
 			return $item->jsonSerialize();
 		}
 
-		public function addItemToCurrentOrder($request)
+		public function addItemToCurrentOrder($request) : string
 		{
-			$item = $this->items_service->verifyItemRequest($request);
-
-			if (!$item)
+			try
 			{
-				return false;
+				$item = $this->items_service->verifyItemRequest($request);
+
+				if (!$item)
+				{
+					return false;
+				}
+
+				$order = $this->orders_service->getCurrentOrder();
+
+				if (!$order)
+				{
+					return false;
+				}
+
+				$order_item = new OrderItem();
+				$order_item->setOrderId($order->getId());
+				$order_item->setItemId($item->getId());
+				$order_item->setQuantity($item->getDefaultQty());
+				$order_item->setChecked(0);
+
+				$dalResult = $this->orders_service->addOrderItem($order_item);
+
+				if (!$dalResult->getResult())
+				{
+					return false;
+				}
+
+				$dalResult->getResult()->setItem($item);
+
+				$this->items_service->closeConnexion();
+				$this->orders_service->closeConnexion();
+
+				return $dalResult->getResult()->jsonSerialize();
 			}
-
-			$order = $this->orders_service->getCurrentOrder();
-
-			if (!$order)
+			catch (Exception $e)
 			{
-				return false;
+				
 			}
-
-			$order_item = new OrderItem();
-			$order_item->setOrderId($order->getId());
-			$order_item->setItemId($item->getId());
-			$order_item->setQuantity($item->getDefaultQty());
-			$order_item->setChecked(0);
-
-			$dalResult = $this->orders_service->addOrderItem($order_item);
-
-			if (!$dalResult->getResult())
-			{
-				return false;
-			}
-
-			$dalResult->getResult()->setItem($item);
-
-			$this->items_service->closeConnexion();
-			$this->orders_service->closeConnexion();
-
-			return $dalResult->getResult()->jsonSerialize();
 		}
 
 		public function removeItemFromCurrentOrder($request)

@@ -41,13 +41,12 @@
 			return $result;
 		}
 
-		public function getItemById($item_id)
+		public function getItemById($item_id) : ?Item
 		{
-			$result = new DalResult();
-			$item = false;
-
 			try
 			{
+				$item = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name, idl.dept_id, d.dept_name, d.seq FROM items AS i LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) WHERE i.item_id = :item_id ORDER BY d.seq, d.dept_name");
 				$query->execute([':item_id' => $item_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -58,7 +57,7 @@
 
 					foreach ($rows as $row)
 					{
-						if (!$item)
+						if (!($item instanceof Item))
 						{
 							$item = createItem($row);
 							$packsize = createPackSize($row);
@@ -74,14 +73,16 @@
 					}
 				}
 
-				$result->setResult($item);
+				return $item;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getItemsById($item_ids)

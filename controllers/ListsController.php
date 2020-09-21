@@ -122,48 +122,33 @@
 
 		public function addItemToList($request)
 		{
-			$item = $list = false;
+			$dalResult = new DalResult();
 
-			if (!is_numeric($request['item_id']) || !is_numeric($request['list_id']))
+			try
 			{
-				return false;
+				$item = $list = null;
+
+				$item = $this->items_service->verifyItemRequest($request);
+				$list = $this->lists_service->verifyListRequest($request);
+
+				$dalResult = $this->lists_service->addItemToList($item, $list);
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$dalResult->setPartialView(getPartialView("ListItem", ['item' => $item]));
+				}
+
+				$this->lists_service->closeConnexion();
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->items_service->getItemById(intval($request['item_id']));
-
-			if (!is_null($dalResult->getResult()))
+			catch (Exception $e)
 			{
-				$item = $dalResult->getResult();
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			$dalResult = $this->lists_service->getListById(intval($request['list_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$list = $dalResult->getResult();
-			}
-
-			if (!$list)
-			{
-				return false;
-			}
-
-			$dalResult = $this->lists_service->addItemToList($item, $list);
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$dalResult->setPartialView(getPartialView("ListItem", ['item' => $item]));
-			}
-
-			$this->lists_service->closeConnexion();
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 
 		public function editList($request)

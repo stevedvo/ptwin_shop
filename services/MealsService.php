@@ -153,20 +153,11 @@
 					throw new Exception("Invalid Meal");
 				}
 
-				$item = $this->items_service->getItemById($itemId); // TODO: UPDATE THIS METHOD TO RETURN A NULLABLE Item OR THROW EXCEPTION; UPDATE ALL REFERENCES TO THIS METHOD
+				$item = $this->items_service->getItemById($itemId);
 
 				if (!($item instanceof Item))
 				{
 					throw new Exception("Invalid Item");
-				}
-
-				$item = $this->items_service->verifyItemRequest($request);
-
-				if (!($item instanceof Item))
-				{
-					$dalResult->setException(new Exception("Invalid Item"));
-
-					return $dalResult->jsonSerialize();
 				}
 
 				if ($meal->getMealItemByItemId($item->getId()) instanceof MealItem)
