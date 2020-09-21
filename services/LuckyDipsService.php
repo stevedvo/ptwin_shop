@@ -15,23 +15,30 @@
 			$this->dal->closeConnexion();
 		}
 
-		public function verifyLuckyDipRequest($request) : ?LuckyDip
+		public function verifyLuckyDipRequest($request) : LuckyDip
 		{
-			$luckyDip = null;
-
-			if (!is_numeric($request['luckyDip_id']))
+			try
 			{
-				return null;
+				$luckyDip = null;
+
+				if (!is_numeric($request['luckyDip_id']))
+				{
+					throw new Exception("Invalid LuckyDip ID");
+				}
+
+				$luckyDip = $this->dal->getLuckyDipById(intval($request['luckyDip_id']));
+
+				if (!($luckyDip instanceof LuckyDip))
+				{
+					throw new Exception("LuckyDip not found");
+				}
+
+				return $luckyDip;
 			}
-
-			$dalResult = $this->dal->getLuckyDipById(intval($request['luckyDip_id']));
-
-			if ($dalResult->getResult() instanceof LuckyDip)
+			catch (Exception $e)
 			{
-				$luckyDip = $dalResult->getResult();
+				throw $e;
 			}
-
-			return $luckyDip;
 		}
 
 		public function addLuckyDip(LuckyDip $luckyDip) : DalResult

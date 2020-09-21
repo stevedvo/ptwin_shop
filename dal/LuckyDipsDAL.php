@@ -38,9 +38,8 @@
 			return $result;
 		}
 
-		public function getLuckyDipById(int $luckyDip_id) : DalResult
+		public function getLuckyDipById(int $luckyDip_id) : ?LuckyDip
 		{
-			$result = new DalResult();
 			$luckyDip = null;
 
 			try
@@ -67,14 +66,16 @@
 					}
 				}
 
-				$result->setResult($luckyDip);
+				return $luckyDip;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getLuckyDipByName(string $luckyDip_name) : DalResult

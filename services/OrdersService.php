@@ -101,12 +101,12 @@
 
 			if ($dalResult->getResult())
 			{
-				return $dalResult;
+				return $dalResult->getResult();
 			}
 
 			if (!is_null($dalResult->getException()))
 			{
-				return false;
+				throw $dalResult->getException();
 			}
 
 			$dalResult = $this->dal->addOrderItem($order_item);
@@ -116,10 +116,10 @@
 				$order_item->setId($dalResult->getResult());
 				$dalResult->setResult($order_item);
 
-				return $dalResult;
+				return $dalResult->getResult();
 			}
 
-			return false;
+			throw new Exception("Error adding Order Item");
 		}
 
 		public function addOrderItems($order_items)
