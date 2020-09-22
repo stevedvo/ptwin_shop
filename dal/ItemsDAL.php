@@ -504,20 +504,22 @@
 			return $result;
 		}
 
-		public function resetMuteTemps()
+		public function resetMuteTemps() : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("UPDATE items SET mute_temp = :mute_temp");
-				$result->setResult($query->execute(['mute_temp' => 0]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				$success = $query->execute(['mute_temp' => 0]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 	}

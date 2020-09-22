@@ -762,7 +762,11 @@ function manageLists()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (data.exception)
+			{
+				toastr.error("Could not add Item to List: "+data.exception.message);
+			}
+			else
 			{
 				var html = data.partial_view;
 
@@ -771,10 +775,6 @@ function manageLists()
 				selectedOption.remove();
 
 				toastr.success("Item successfully added to List");
-			}
-			else
-			{
-				toastr.error("Could not add Item to List");
 			}
 		}).fail(function(data)
 		{

@@ -66,9 +66,23 @@
 			return $this->dal->getLuckyDipByName($luckyDip_name);
 		}
 
-		public function getLuckyDipsByListId(int $list_id) : DalResult
+		public function getLuckyDipsByListId(int $list_id) : array
 		{
-			return $this->dal->getLuckyDipsByListId($list_id);
+			try
+			{
+				$luckyDips = $this->dal->getLuckyDipsByListId($list_id);
+
+				if (!is_array($luckyDips))
+				{
+					throw new Exception("Lucky Dips not found");
+				}
+
+				return $luckyDips;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function addItemToLuckyDip(Item $item, LuckyDip $luckyDip) : DalResult

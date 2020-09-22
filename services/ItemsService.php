@@ -13,7 +13,7 @@
 			$this->dal->closeConnexion();
 		}
 
-		public function verifyItemRequest($request) : Item
+		public function verifyItemRequest(array $request) : Item
 		{
 			try
 			{
@@ -168,8 +168,15 @@
 			return $this->dal->getItemDepartmentLookupArray();
 		}
 
-		public function resetMuteTemps()
+		public function resetMuteTemps() : bool
 		{
-			return $this->dal->resetMuteTemps();
+			try
+			{
+				return $this->dal->resetMuteTemps();
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 	}

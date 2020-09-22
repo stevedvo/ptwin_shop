@@ -13,7 +13,7 @@
 			$this->dal->closeConnexion();
 		}
 
-		public function verifyListRequest($request) : List
+		public function verifyListRequest(array $request) : ShopList
 		{
 			try
 			{
@@ -26,7 +26,7 @@
 
 				$list = $this->dal->getListById(intval($request['list_id']));
 
-				if (!($list instanceof List))
+				if (!($list instanceof ShopList))
 				{
 					throw new Exception("List not found");
 				}
@@ -64,9 +64,16 @@
 			return $this->dal->getListByName($list_name);
 		}
 
-		public function addItemToList($item, $list)
+		public function addItemToList(Item $item, ShopList $list) : bool
 		{
-			return $this->dal->addItemToList($item, $list);
+			try
+			{
+				return $this->dal->addItemToList($item, $list);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function updateList($list)

@@ -120,7 +120,7 @@
 			renderPage($pageData);
 		}
 
-		public function addItemToList($request)
+		public function addItemToList(array $request) : string
 		{
 			$dalResult = new DalResult();
 
@@ -131,12 +131,16 @@
 				$item = $this->items_service->verifyItemRequest($request);
 				$list = $this->lists_service->verifyListRequest($request);
 
-				$dalResult = $this->lists_service->addItemToList($item, $list);
+				$success = $this->lists_service->addItemToList($item, $list);
 
-				if (!is_null($dalResult->getResult()))
+				if (!$success)
 				{
-					$dalResult->setPartialView(getPartialView("ListItem", ['item' => $item]));
+					$dalResult->setException(new Exception("Error adding Item to List"));
+
+					return $dalResult->jsonSerialize();
 				}
+				
+				$dalResult->setPartialView(getPartialView("ListItem", ['item' => $item]));
 
 				$this->lists_service->closeConnexion();
 				$this->items_service->closeConnexion();

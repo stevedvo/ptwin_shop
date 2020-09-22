@@ -106,7 +106,7 @@
 			return $result;
 		}
 
-		public function getListById($list_id) : ?List
+		public function getListById($list_id) : ?ShopList
 		{
 			try
 			{
@@ -120,7 +120,7 @@
 				{
 					foreach ($rows as $row)
 					{
-						if (!($list instanceof List))
+						if (!($list instanceof ShopList))
 						{
 							$list = createList($row);
 						}
@@ -174,25 +174,29 @@
 			return $result;
 		}
 
-		public function addItemToList($item, $list)
+		public function addItemToList(Item $item, ShopList $list) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
+				$success = false;
+
 				$query = $this->ShopDb->conn->prepare("UPDATE items SET list_id = :list_id WHERE item_id = :item_id");
-				$result->setResult($query->execute(
+				$success = $query->execute(
 				[
 					':list_id' => $list->getId(),
 					':item_id' => $item->getId()
-				]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function updateList($list)
