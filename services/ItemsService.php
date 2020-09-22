@@ -126,9 +126,23 @@
 			return $this->dal->getItemsById($item_ids);
 		}
 
-		public function getItemByDescription($description)
+		public function getItemByDescription(string $description) : Item
 		{
-			return $this->dal->getItemByDescription($description);
+			try
+			{
+				$item = $this->dal->getItemByDescription($description);
+
+				if (!($item instanceof Item))
+				{
+					throw new Exception("Item not found");
+				}
+
+				return $item;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getItemsByDepartmentId($dept_id)

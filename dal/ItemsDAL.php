@@ -129,13 +129,12 @@
 			return $result;
 		}
 
-		public function getItemByDescription($description)
+		public function getItemByDescription(string $description) : ?Item
 		{
-			$result = new DalResult();
-			$item = false;
-
 			try
 			{
+				$item = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM items AS i LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE i.description = :description");
 				$query->execute([':description' => $description]);
 				$row = $query->fetch(PDO::FETCH_ASSOC);
@@ -147,14 +146,16 @@
 					$item->setPackSize($packsize);
 				}
 
-				$result->setResult($item);
+				return $item;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getAllItems()

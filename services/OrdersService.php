@@ -99,31 +99,25 @@
 			return $this->dal->addOrder($order);
 		}
 
-		public function addOrderItem($order_item)
+		public function addOrderItem(OrderItem $orderItem) : OrderItem
 		{
-			$dalResult = $this->dal->getOrderItemByOrderAndItem($order_item->getOrderId(), $order_item->getItemId());
-
-			if ($dalResult->getResult())
+			try
 			{
-				return $dalResult->getResult();
-			}
+				$existingOrderItem = $this->dal->getOrderItemByOrderAndItem($orderItem->getOrderId(), $orderItem->getItemId());
 
-			if (!is_null($dalResult->getException()))
+				if ($existingOrderItem instanceof OrderItem)
+				{
+					return $existingOrderItem;
+				}
+
+				$orderItem = $this->dal->addOrderItem($orderItem);
+
+				return $orderItem;
+			}
+			catch (Exception $e)
 			{
-				throw $dalResult->getException();
+				throw $e;
 			}
-
-			$dalResult = $this->dal->addOrderItem($order_item);
-
-			if ($dalResult->getResult())
-			{
-				$order_item->setId($dalResult->getResult());
-				$dalResult->setResult($order_item);
-
-				return $dalResult->getResult();
-			}
-
-			throw new Exception("Error adding Order Item");
 		}
 
 		public function addOrderItems(array $order_items) : array
@@ -172,11 +166,11 @@
 			}
 		}
 
-		public function getOrderById(int $order_id) : ?Order
+		public function getOrderById(int $orderId) : ?Order
 		{
 			try
 			{
-				return $this->dal->getOrderById($order_id);
+				return $this->dal->getOrderById($orderId);
 			}
 			catch (Exception $e)
 			{
@@ -189,9 +183,16 @@
 			return $this->dal->getOrdersByItem($item);
 		}
 
-		public function removeAllOrderItemsFromOrder($order)
+		public function removeAllOrderItemsFromOrder(Order $order) : bool
 		{
-			return $this->dal->removeAllOrderItemsFromOrder($order);
+			try
+			{
+				return $this->dal->removeAllOrderItemsFromOrder($order);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function updateOrder(Order $order) : bool
