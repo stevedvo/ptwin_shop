@@ -514,7 +514,7 @@ function manageItems()
 				{
 					if (data.exception != null)
 					{
-						toastr.error("Could not remove Item from Order: PDOException");
+						toastr.error(`Could not remove Item from Order: ${data.exception.message}`);
 						console.log(data.exception);
 					}
 					else
@@ -1835,7 +1835,7 @@ function manageOrders()
 			{
 				if (data.exception != null)
 				{
-					toastr.error("Could not remove Order Item: PDOException");
+					toastr.error(`Could not remove Order Item: ${data.exception.message}`);
 					console.log(data.exception);
 				}
 				else
@@ -2167,7 +2167,7 @@ function manageOrders()
 				{
 					if (data.exception != null)
 					{
-						toastr.error("Could not update Order: PDOException");
+						toastr.error(`Could not update Order: ${data.exception.message}`);
 						console.log(data.exception);
 					}
 					else

@@ -51,6 +51,8 @@
 					return $dalResult->jsonSerialize();
 				}
 
+				$dalResult->setResult($success);
+
 				$this->orders_service->closeConnexion();
 
 				return $dalResult->jsonSerialize();
@@ -95,28 +97,45 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		public function checkOrderItem($request)
+		public function checkOrderItem(array $request) : string
 		{
-			$order_item = $this->orders_service->verifyOrderItemRequest($request);
+			$dalResult = new DalResult();
 
-			if (!$order_item)
+			try
 			{
-				return false;
+				$orderItem = $this->orders_service->verifyOrderItemRequest($request);
+
+				$orderItemUpdate = createOrderItem($request);
+				$orderItem->setChecked($orderItemUpdate->getChecked());
+
+				if (!entityIsValid($orderItem))
+				{
+					$dalResult->setException(new Exception("Invalid Order Item"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$success = $this->orders_service->updateOrderItem($orderItem);
+
+				if (!$success)
+				{
+					$dalResult->setException(new Exception("Error updating Order Item #".$orderItem->getId()));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$this->orders_service->closeConnexion();
+
+				$dalResult->setResult($success);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$order_item_update = createOrderItem($request);
-			$order_item->setChecked($order_item_update->getChecked());
-
-			if (!entityIsValid($order_item))
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->orders_service->updateOrderItem($order_item);
-
-			$this->orders_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 
 		public function removeOrderItem(array $request) : string
@@ -349,7 +368,7 @@
 				$this->orders_service->closeConnexion();
 				$this->items_service->closeConnexion();
 
-				$dalResult->setResult(true);
+				$dalResult->setResult($success);
 
 				return $dalResult->jsonSerialize();
 			}

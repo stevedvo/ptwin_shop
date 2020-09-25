@@ -149,9 +149,16 @@
 			return $this->dal->getOrderItemById($order_item_id);
 		}
 
-		public function updateOrderItem($order_item)
+		public function updateOrderItem(OrderItem $orderItem) : bool
 		{
-			return $this->dal->updateOrderItem($order_item);
+			try
+			{
+				return $this->dal->updateOrderItem($orderItem);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function removeOrderItem(OrderItem $orderItem) : bool

@@ -684,30 +684,34 @@
 			}
 		}
 
-		public function removeItemFromCurrentOrder($request)
+		public function removeItemFromCurrentOrder($request) : string
 		{
-			if (!isset($request['order_item_id']) || !is_numeric($request['order_item_id']))
+			$dalResult = new DalResult();
+
+			try
 			{
-				return false;
+				$orderItem = $this->orders_service->verifyOrderItemRequest($request);
+				$success = $this->orders_service->removeOrderItem($orderItem);
+
+				if (!$success)
+				{
+					$dalResult->setException(new Exception("Error removing Order Item #".$orderItem->getId()));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$dalResult->setResult($success);
+
+				$this->orders_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$order_item = false;
-			$dalResult = $this->orders_service->getOrderItemById(intval($request['order_item_id']));
-
-			if (!is_null($dalResult->getResult()))
+			catch (Exception $e)
 			{
-				$order_item = $dalResult->getResult();
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			if (!$order_item)
-			{
-				return false;
-			}
-
-			$dalResult = $this->orders_service->removeOrderItem($order_item);
-			$this->orders_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 
 		public function setItemPrimaryDepartment($request) : string

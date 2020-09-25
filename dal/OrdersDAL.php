@@ -351,28 +351,30 @@
 			return $result;
 		}
 
-		public function updateOrderItem($order_item)
+		public function updateOrderItem(OrderItem $orderItem) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("UPDATE order_items SET order_id = :order_id, item_id = :item_id, quantity = :quantity, checked = :checked WHERE id = :id");
-				$result->setResult($query->execute(
+				$success = $query->execute(
 				[
-					':order_id' => $order_item->getOrderId(),
-					':item_id'  => $order_item->getItemId(),
-					':quantity' => $order_item->getQuantity(),
-					':checked'  => $order_item->getChecked(),
-					':id'       => $order_item->getId()
-				]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+					':order_id' => $orderItem->getOrderId(),
+					':item_id'  => $orderItem->getItemId(),
+					':quantity' => $orderItem->getQuantity(),
+					':checked'  => $orderItem->getChecked(),
+					':id'       => $orderItem->getId()
+				]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function removeOrderItem(OrderItem $orderItem) : bool

@@ -56,17 +56,17 @@
 		return $order;
 	}
 
-	function createOrderItem($request)
+	function createOrderItem(array $request) : OrderItem
 	{
 		$id = isset($request['order_item_id']) ? intval($request['order_item_id']) : null;
-		$order_id = isset($request['order_id']) ? $request['order_id'] : null;
-		$item_id = isset($request['item_id']) ? $request['item_id'] : null;
+		$orderId = isset($request['order_id']) ? $request['order_id'] : null;
+		$itemId = isset($request['item_id']) ? $request['item_id'] : null;
 		$quantity = isset($request['quantity']) ? intval($request['quantity']) : null;
 		$checked = isset($request['checked']) ? intval($request['checked']) : null;
 
-		$order_item = new OrderItem($id, $order_id, $item_id, $quantity, $checked);
+		$orderItem = new OrderItem($id, $order_id, $item_id, $quantity, $checked);
 
-		return $order_item;
+		return $orderItem;
 	}
 
 	function createPackSize($request)
