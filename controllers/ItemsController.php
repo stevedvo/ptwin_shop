@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class ItemsController
 	{
 		private $items_service;
@@ -202,70 +204,60 @@
 			renderPage($pageData);
 		}
 
-		public function addItem($request)
+		public function addItem(array $request) : string // returns either a serialised DalResult Exception, serialised Item, or serialised OrderItem. Mental!
 		{
-			$item = createItem($request);
+			$dalResult = new DalResult();
 
-			if (!entityIsValid($item))
+			try
 			{
-				return false;
-			}
+				$item = createItem($request);
 
-			$dalResult = $this->items_service->getItemByDescription($item->getDescription());
-
-			if (!is_null($dalResult->getException()))
-			{
-				return false;
-			}
-
-			if ($dalResult->getResult() instanceof Item)
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->addItem($item);
-
-			if (!is_null($dalResult->getException()))
-			{
-				return false;
-			}
-
-			$item_id = $dalResult->getResult();
-			$item->setId($item_id);
-
-			if (isset($request['add_to_order']) && $request['add_to_order'] != false)
-			{
-				$order = $this->orders_service->getCurrentOrder();
-
-				if (!$order)
+				if (!entityIsValid($item))
 				{
-					return false;
+					$dalResult->setException(new Exception("Item is not valid"));
+
+					return $dalResult->jsonSerialize();
 				}
 
-				$order_item = new OrderItem();
-				$order_item->setOrderId($order->getId());
-				$order_item->setItemId($item->getId());
-				$order_item->setQuantity($item->getDefaultQty());
-				$order_item->setChecked(0);
-
-				$dalResult = $this->orders_service->addOrderItem($order_item);
-
-				if (!$dalResult->getResult())
+				if (!$this->items_service->itemDoesNotExist($item->getDescription()))
 				{
-					return false;
+					$dalResult->setException(new Exception("Item '".$item->getDescription()."' already exists"));
+
+					return $dalResult->jsonSerialize();
 				}
 
-				$dalResult->getResult()->setItem($item);
+				$item = $this->items_service->addItem($item);
+
+				if (isset($request['add_to_order']) && $request['add_to_order'] != false)
+				{
+					$order = $this->orders_service->getCurrentOrder();
+
+					$orderItem = new OrderItem();
+					$orderItem->setOrderId($order->getId());
+					$orderItem->setItemId($item->getId());
+					$orderItem->setQuantity($item->getDefaultQty());
+					$orderItem->setChecked(0);
+
+					$orderItem = $this->orders_service->addOrderItem($orderItem);
+
+					$orderItem->setItem($item);
+
+					$this->items_service->closeConnexion();
+					$this->orders_service->closeConnexion();
+
+					return $orderItem->jsonSerialize();
+				}
 
 				$this->items_service->closeConnexion();
-				$this->orders_service->closeConnexion();
 
-				return $dalResult->getResult()->jsonSerialize();
+				return $item->jsonSerialize();
 			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
 
-			$this->items_service->closeConnexion();
-
-			return $item->jsonSerialize();
+				return $dalResult->jsonSerialize();
+			}
 		}
 
 		public function Edit($request = null) : void

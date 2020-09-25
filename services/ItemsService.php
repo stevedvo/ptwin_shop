@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class ItemsService
 	{
 		private $dal;
@@ -39,9 +41,16 @@
 			}
 		}
 
-		public function addItem($item)
+		public function addItem(Item $item) : Item
 		{
-			return $this->dal->addItem($item);
+			try
+			{
+				return $this->dal->addItem($item);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getAllItems()
@@ -138,6 +147,20 @@
 				}
 
 				return $item;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function itemDoesNotExist(string $description) : bool
+		{
+			try
+			{
+				$item = $this->dal->getItemByDescription($description);
+
+				return !($item instanceof Item);
 			}
 			catch (Exception $e)
 			{

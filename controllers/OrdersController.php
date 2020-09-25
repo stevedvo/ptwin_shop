@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class OrdersController
 	{
 		private $orders_service;
@@ -65,36 +67,46 @@
 			}
 		}
 
-		public function updateOrderItem($request)
+		public function updateOrderItem(array $request) : string
 		{
-			$order_item_update = createOrderItem($request);
+			$dalResult = new DalResult();
 
-			if (!entityIsValid($order_item_update))
+			try
 			{
-				return false;
+				$orderItemUpdate = createOrderItem($request);
+
+				if (!entityIsValid($orderItemUpdate))
+				{
+					$dalResult->setException(new Exception("Invalid Order Item"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$orderItem = $this->orders_service->verifyOrderItemRequest($request);
+
+				$orderItem->setQuantity($orderItemUpdate->getQuantity());
+
+				$success = $this->orders_service->updateOrderItem($orderItem);
+
+				if (!$success)
+				{
+					$dalResult->setException(new Exception("Error updating Order Item #".$orderItem->getId()));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$this->orders_service->closeConnexion();
+
+				$dalResult->setResult($success);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->orders_service->getOrderItemById($order_item_update->getId());
-
-			if (!is_null($dalResult->getException()))
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$order_item = $dalResult->getResult();
-
-			if (!$order_item)
-			{
-				return false;
-			}
-
-			$order_item->setQuantity($order_item_update->getQuantity());
-
-			$dalResult = $this->orders_service->updateOrderItem($order_item);
-
-			$this->orders_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 
 		public function checkOrderItem(array $request) : string

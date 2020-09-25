@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class OrdersDAL
 	{
 		private $ShopDb;
@@ -13,32 +15,30 @@
 			$this->ShopDb = null;
 		}
 
-		public function addOrder($order)
+		public function addOrder(Order $order) : Order
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("INSERT INTO orders (date_ordered) VALUES (:date_ordered)");
-				$query->execute(
-				[
-					':date_ordered' => !is_null($order->getDateOrdered()) ? $order->getDateOrdered()->format('Y-m-d') : null
-				]);
+				$query->execute([':date_ordered' => !is_null($order->getDateOrdered()) ? $order->getDateOrdered()->format('Y-m-d') : null]);
 
-				$result->setResult($this->ShopDb->conn->lastInsertId());
+				$order->setId($this->ShopDb->conn->lastInsertId());
+
+				return $order;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function getCurrentOrder()
+		public function getCurrentOrder() : ?Order
 		{
-			$result = new DalResult();
-			$order = false;
+			$order = null;
 
 			try
 			{
@@ -50,32 +50,34 @@
 				{
 					foreach ($rows as $row)
 					{
-						if (!$order)
+						if (!($order instanceof Order))
 						{
 							$order = createOrder($row);
 						}
 
-						$order_item = createOrderItem($row);
+						$orderItem = createOrderItem($row);
 						$item = createItem($row);
 						$packsize = createPackSize($row);
 						$item->setPackSize($packsize);
-						$order_item->setItem($item);
+						$orderItem->setItem($item);
 
-						if (entityIsValid($order_item))
+						if (entityIsValid($orderItem))
 						{
-							$order->addOrderItem($order_item);
+							$order->addOrderItem($orderItem);
 						}
 					}
 				}
 
-				$result->setResult($order);
+				return $order;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getAllOrders()
@@ -280,23 +282,23 @@
 			}
 		}
 
-		public function getOrderItemById(int $order_item_id) : ?OrderItem
+		public function getOrderItemById(int $orderItemId) : ?OrderItem
 		{
 			try
 			{
-				$order_item = null;
+				$orderItem = null;
 
 				$query = $this->ShopDb->conn->prepare("SELECT oi.id AS order_item_id, oi.order_id, oi.item_id, oi.quantity, oi.checked FROM order_items AS oi WHERE oi.id = :order_item_id");
-				$query->execute([':order_item_id' => $order_item_id]);
+				$query->execute([':order_item_id' => $orderItemId]);
 
 				$row = $query->fetch(PDO::FETCH_ASSOC);
 
 				if ($row)
 				{
-					$order_item = createOrderItem($row);
+					$orderItem = createOrderItem($row);
 				}
 
-				return $order_item;
+				return $orderItem;
 			}
 			catch(PDOException $PdoException)
 			{

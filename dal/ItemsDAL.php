@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class ItemsDAL
 	{
 		private $ShopDb;
@@ -13,10 +15,8 @@
 			$this->ShopDb = null;
 		}
 
-		public function addItem($item)
+		public function addItem(Item $item) : Item
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("INSERT INTO items (description, comments, default_qty, list_id, link, primary_dept, packsize_id) VALUES (:description, :comments, :default_qty, :list_id, :link, :primary_dept, :packsize_id)");
@@ -28,17 +28,21 @@
 					':list_id'      => $item->getListId(),
 					':primary_dept' => $item->getPrimaryDept(),
 					':link'         => $item->getLink(),
-					':packsize_id'  => $item->getPackSizeId(),
+					':packsize_id'  => $item->getPackSizeId()
 				]);
 
-				$result->setResult($this->ShopDb->conn->lastInsertId());
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				$item->setId($this->ShopDb->conn->lastInsertId());
 
-			return $result;
+				return $item;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getItemById($item_id) : ?Item

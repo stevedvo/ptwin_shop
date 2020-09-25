@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class OrdersService
 	{
 		private $dal;
@@ -65,28 +67,25 @@
 			}
 		}
 
-		public function getCurrentOrder()
+		public function getCurrentOrder() : Order
 		{
-			$order = false;
-			$dalResult = $this->dal->getCurrentOrder();
-
-			if ($dalResult->getResult() instanceof Order)
+			try
 			{
-				$order = $dalResult->getResult();
-			}
+				$order = $this->dal->getCurrentOrder();
 
-			if (!$order)
-			{
-				$order = new Order();
-				$dalResult = $this->dal->addOrder($order);
-
-				if (!is_null($dalResult->getResult()))
+				if ($order instanceof Order)
 				{
-					$order->setId($dalResult->getResult());
+					return $order;
 				}
-			}
 
-			return $order;
+				$order = $this->dal->addOrder(new Order());
+
+				return $order;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getAllOrders()
@@ -144,9 +143,16 @@
 			}
 		}
 
-		public function getOrderItemById($order_item_id)
+		public function getOrderItemById(int $orderItemId) : ?OrderItem
 		{
-			return $this->dal->getOrderItemById($order_item_id);
+			try
+			{
+				return $this->dal->getOrderItemById($orderItemId);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function updateOrderItem(OrderItem $orderItem) : bool

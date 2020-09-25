@@ -27,7 +27,7 @@
 		return $department;
 	}
 
-	function createItem($request)
+	function createItem(array $request) : Item
 	{
 		$id = isset($request['item_id']) ? intval($request['item_id']) : null;
 		$description = isset($request['description']) ? $request['description'] : null;

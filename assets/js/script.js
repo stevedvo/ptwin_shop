@@ -1914,7 +1914,7 @@ function manageOrders()
 				{
 					if (data.exception != null)
 					{
-						toastr.error("Could not update Order Item: PDOException");
+						toastr.error(`Could not update Order Item: ${data.exception.message}`);
 						console.log(data.exception);
 					}
 					else
@@ -2043,7 +2043,7 @@ function manageOrders()
 			{
 				if (data.exception != null)
 				{
-					toastr.error("Could not confirm Order: PDOException");
+					toastr.error(`Could not confirm Order: ${data.exception.message}`);
 					console.log(data.exception);
 				}
 				else
@@ -2223,6 +2223,22 @@ function manageOrders()
 			{
 				if (data)
 				{
+					if (data.exception != null)
+					{
+						toastr.error(`Could not add Item to Order: ${data.exception.message}`);
+						console.log(data.exception);
+
+						return false;
+					}
+
+					if (data.partial_view == null || data.result == null)
+					{
+						toastr.error(`Could not add Item to Order: Unspecified error`);
+						console.log(data);
+
+						return false;
+					}
+
 					input.val("");
 					toastr.success("Item added to Order");
 
@@ -2233,9 +2249,7 @@ function manageOrders()
 
 						if (order.find(".form[data-order_item_id='"+data.result.id+"']").length == 0)
 						{
-							var html = data.partial_view;
-
-							order.append(html);
+							order.append(data.partial_view);
 						}
 					}
 				}
