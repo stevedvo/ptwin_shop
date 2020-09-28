@@ -133,28 +133,19 @@ function manageItems()
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (data.exception != null)
 				{
-					toastr.success("New Item successfully added");
-
-					if (data.item == undefined)
-					{
-						var timer = setTimeout(function()
-						{
-							location.href = constants.SITEURL+"/items/edit/"+data.id+"/";
-						}, 750);
-					}
-					else
-					{
-						var timer = setTimeout(function()
-						{
-							location.href = constants.SITEURL+"/items/edit/"+data.item.id+"/";
-						}, 750);
-					}
+					toastr.error(`Could not add Item: ${data.exception.message}`);
+					console.log(data.exception);
 				}
 				else
 				{
-					toastr.error("Could not save Item");
+					toastr.success("New Item successfully added");
+
+					var timer = setTimeout(function()
+					{
+						location.href = constants.SITEURL+"/items/edit/"+data.item.id+"/";
+					}, 750);
 				}
 			}).fail(function(data)
 			{

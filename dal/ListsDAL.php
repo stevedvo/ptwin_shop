@@ -31,13 +31,12 @@
 			return $result;
 		}
 
-		public function getAllLists()
+		public function getAllLists() : ?array
 		{
-			$result = new DalResult();
-			$lists = false;
-
 			try
 			{
+				$lists = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT list_id, name AS list_name FROM lists");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -54,14 +53,16 @@
 					}
 				}
 
-				$result->setResult($lists);
+				return $lists;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getAllListsWithItems()

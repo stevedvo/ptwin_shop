@@ -44,9 +44,21 @@
 			return $this->dal->addList($list);
 		}
 
-		public function getAllLists()
+		public function getAllLists() : array
 		{
-			return $this->dal->getAllLists();
+			try
+			{
+				$lists = $this->dal->getAllLists();
+
+				if (!is_array($lists))
+				{
+					throw new Exception("Could not find Lists");
+				}
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getAllListsWithItems()

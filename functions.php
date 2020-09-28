@@ -6,7 +6,7 @@
 		echo "</pre>";
 	}
 
-	function createList($request)
+	function createList(array $request) : ShopList
 	{
 		$id = isset($request['list_id']) ? $request['list_id'] : null;
 		$name = isset($request['list_name']) ? $request['list_name'] : null;

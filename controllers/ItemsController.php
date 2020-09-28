@@ -204,7 +204,7 @@
 			renderPage($pageData);
 		}
 
-		public function addItem(array $request) : string // returns either a serialised DalResult Exception, serialised Item, or serialised OrderItem. Mental!
+		public function addItem(array $request) : string // returns either a serialised DalResult Exception or serialised Item
 		{
 			$dalResult = new DalResult();
 
@@ -240,12 +240,7 @@
 
 					$orderItem = $this->orders_service->addOrderItem($orderItem);
 
-					$orderItem->setItem($item);
-
-					$this->items_service->closeConnexion();
 					$this->orders_service->closeConnexion();
-
-					return $orderItem->jsonSerialize();
 				}
 
 				$this->items_service->closeConnexion();
@@ -542,100 +537,99 @@
 			return $partial_view;
 		}
 
-		public function quickAddItem($request)
+		public function quickAddItem(array $request) : string
 		{
-			$item = null;
+			$dalResult = new DalResult();
 
-			if (!isset($request['description']) || empty($request['description']))
+			try
 			{
-				return false;
-			}
+				$item = null;
 
-			$description = $request['description'];
-
-			if (strpos(strtolower($description), "[luckydip]") !== false)
-			{
-				$luckyDip_name = substr($description, 11);
-
-				$dalResult = $this->luckyDips_service->getLuckyDipByName($luckyDip_name);
-
-				if (!is_null($dalResult->getResult()))
+				if (!isset($request['description']) || empty($request['description']))
 				{
-					$luckyDip = $dalResult->getResult();
+					$dalResult->setException(new Exception("Invalid Item description"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$description = $request['description'];
+
+				if (strpos(strtolower($description), "[luckydip]") !== false)
+				{
+					$luckyDipName = substr($description, 11);
+
+					$luckyDip = $this->luckyDips_service->getLuckyDipByName($luckyDipName);
 
 					$item = $luckyDip->getRandomItem();
 				}
-			}
-			else
-			{
-				$dalResult = $this->items_service->getItemByDescription($description);
-
-				if (!is_null($dalResult->getResult()))
+				else
 				{
-					$item = $dalResult->getResult();
+					$item = $this->items_service->getItemByDescription($description);
 				}
-			}
 
-			if (!$item)
+				if (!($item instanceof Item))
+				{
+					$item = new Item();
+					$item->setDescription($description);
+
+					return $item->jsonSerialize();
+				}
+
+				$order = $this->orders_service->getCurrentOrder();
+
+				$orderItem = new OrderItem();
+				$orderItem->setOrderId($order->getId());
+				$orderItem->setItemId($item->getId());
+				$orderItem->setQuantity($item->getDefaultQty());
+				$orderItem->setChecked(0);
+
+				$orderItem = $this->orders_service->addOrderItem($orderItem);
+
+				$orderItem->setItem($item);
+				$dalResult->setPartialView(getPartialView("CurrentOrderItem", ['order_item' => $orderItem]));
+
+				$this->items_service->closeConnexion();
+				$this->orders_service->closeConnexion();
+
+				$dalResult->setResult($orderItem->jsonSerialize());
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
 			{
-				$item = new Item();
-				$item->setDescription($description);
-				return $item->jsonSerialize();
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$order = $this->orders_service->getCurrentOrder();
-
-			if (!$order)
-			{
-				return false;
-			}
-
-			$order_item = new OrderItem();
-			$order_item->setOrderId($order->getId());
-			$order_item->setItemId($item->getId());
-			$order_item->setQuantity($item->getDefaultQty());
-			$order_item->setChecked(0);
-
-			$dalResult = $this->orders_service->addOrderItem($order_item);
-
-			if (!$dalResult->getResult())
-			{
-				return false;
-			}
-
-			$dalResult->getResult()->setItem($item);
-			$dalResult->setPartialView(getPartialView("CurrentOrderItem", ['order_item' => $dalResult->getResult()]));
-
-			$this->items_service->closeConnexion();
-			$this->orders_service->closeConnexion();
-
-			$dalResult->setResult($dalResult->getResult()->jsonSerialize());
-
-			return $dalResult->jsonSerialize();
 		}
 
-		public function quickEditItem($request)
+		public function quickEditItem(array $request) : string
 		{
-			if (!isset($request['description']) || empty($request['description']))
+			$dalResult = new DalResult();
+
+			try
 			{
-				return false;
+				if (!isset($request['description']) || empty($request['description']))
+				{
+					$dalResult->setException(new Exception("Invalid Item description"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$description = $request['description'];
+
+				$item = $this->items_service->getItemByDescription($description);
+
+				$this->items_service->closeConnexion();
+
+				return $item->jsonSerialize();
 			}
-
-			$dalResult = $this->items_service->getItemByDescription($request['description']);
-
-			if (!is_null($dalResult->getResult()))
+			catch (Exception $e)
 			{
-				$item = $dalResult->getResult();
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			$this->items_service->closeConnexion();
-
-			return $item->jsonSerialize();
 		}
 
 		public function addItemToCurrentOrder($request) : string

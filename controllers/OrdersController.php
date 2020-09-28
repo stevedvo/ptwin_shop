@@ -476,7 +476,7 @@
 			}
 		}
 
-		public function addItemToPreviousOrder($request) : string
+		public function addItemToPreviousOrder(array $request) : string
 		{
 			$dalResult = new DalResult();
 

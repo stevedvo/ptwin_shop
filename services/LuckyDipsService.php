@@ -61,9 +61,23 @@
 			return $this->dal->getLuckyDipById($luckyDip_id);
 		}
 
-		public function getLuckyDipByName(string $luckyDip_name) : DalResult
+		public function getLuckyDipByName(string $luckyDipName) : LuckyDip
 		{
-			return $this->dal->getLuckyDipByName($luckyDip_name);
+			try
+			{
+				$luckyDip = $this->dal->getLuckyDipByName($luckyDipName);
+
+				if (!($luckyDip instanceof LuckyDip))
+				{
+					throw new Exception("LuckyDip not found");
+				}
+
+				return $luckyDip;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getLuckyDipsByListId(int $list_id) : array

@@ -78,22 +78,21 @@
 			}
 		}
 
-		public function getLuckyDipByName(string $luckyDip_name) : DalResult
+		public function getLuckyDipByName(string $luckyDipName) : ?LuckyDip
 		{
-			$result = new DalResult();
-			$luckyDip = null;
-
 			try
 			{
+				$luckyDip = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT ld.id AS luckyDip_id, ld.name AS luckyDip_name, ld.list_id AS luckyDip_list_id, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM lucky_dips AS ld LEFT JOIN items AS i ON (i.luckydip_id = ld.id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE ld.name = :name ORDER BY i.description");
-				$query->execute([':name' => $luckyDip_name]);
+				$query->execute([':name' => $luckyDipName]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
 				if ($rows)
 				{
 					foreach ($rows as $row)
 					{
-						if (is_null($luckyDip))
+						if (!($luckyDip instanceof LuckyDip))
 						{
 							$luckyDip = createLuckyDip($row);
 						}
@@ -109,14 +108,16 @@
 					}
 				}
 
-				$result->setResult($luckyDip);
+				return $luckyDip;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getLuckyDipsByListId(int $list_id) : ?array
