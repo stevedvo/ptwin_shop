@@ -53,9 +53,23 @@
 			}
 		}
 
-		public function getAllItems()
+		public function getAllItems() : array
 		{
-			return $this->dal->getAllItems();
+			try
+			{
+				$items = $this->dal->getAllItems();
+
+				if (!is_array($items))
+				{
+					throw new Exception("Items not found");
+				}
+
+				return $items;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getAllItemsNotInLuckyDip(int $luckyDip_id) : DalResult
@@ -75,47 +89,54 @@
 			}
 		}
 
-		public function getAllSuggestedItems($interval, $period)
+		public function getAllSuggestedItems(int $interval, string $period) : array
 		{
-			$suggested_items = [];
-
-			$dalResult = $this->dal->getAllSuggestedItems();
-
-			if (!is_null($dalResult->getResult()))
+			try
 			{
-				$all_items = $dalResult->getResult();
+				$suggestedItems = [];
 
-				if (is_array($all_items))
+				$allItems = $this->dal->getAllSuggestedItems();
+
+				if (is_array($allItems))
 				{
-					foreach ($all_items as $item_id => $item)
+					foreach ($allItems as $itemId => $item)
 					{
 						$item->calculateRecentOrders($interval, $period);
-						$est_overall = $item->getStockLevelPrediction(7, 'overall');
-						$est_recent = $item->getStockLevelPrediction(7, 'recent');
+						$estOverall = $item->getStockLevelPrediction(7, 'overall');
+						$estRecent = $item->getStockLevelPrediction(7, 'recent');
 
-						if (($est_overall !== false && $est_overall < 0) || ($est_recent !== false && $est_recent < 0))
+						if ((is_int($estOverall) && $estOverall < 1) || (is_int($estRecent) && $estRecent < 1))
 						{
-							$suggested_items[$item->getId()] = $item;
+							$suggestedItems[$item->getId()] = $item;
 						}
 					}
 				}
-			}
 
-			return $suggested_items;
+				return $suggestedItems;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function getAllMutedSuggestedItems()
+		public function getAllMutedSuggestedItems() : array
 		{
-			$muted_items = [];
-
-			$dalResult = $this->dal->getAllMutedSuggestedItems();
-
-			if (!is_null($dalResult->getResult()))
+			try
 			{
-				$muted_items = $dalResult->getResult();
-			}
+				$mutedItems = $this->dal->getAllMutedSuggestedItems();
 
-			return $muted_items;
+				if (!is_array($mutedItems))
+				{
+					throw new Exception("Muted Suggestions not found");
+				}
+
+				return $mutedItems;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getItemById($item_id) : ?Item

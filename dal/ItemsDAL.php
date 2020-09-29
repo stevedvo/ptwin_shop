@@ -162,13 +162,12 @@
 			}
 		}
 
-		public function getAllItems()
+		public function getAllItems() : ?array
 		{
-			$result = new DalResult();
-			$items = false;
-
 			try
 			{
+				$items = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM items AS i ORDER BY i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -184,14 +183,16 @@
 					}
 				}
 
-				$result->setResult($items);
+				return $items;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getAllItemsNotInLuckyDip(int $luckyDip_id) : DalResult
@@ -253,13 +254,12 @@
 			return $items;
 		}
 
-		public function getAllSuggestedItems()
+		public function getAllSuggestedItems() : ?array
 		{
-			$result = new DalResult();
-			$items = false;
-
 			try
 			{
+				$items = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT oi.id AS order_item_id, oi.order_id, oi.item_id, i.description, oi.quantity, oi.checked, o.date_ordered FROM order_items AS oi LEFT JOIN orders AS o ON (o.id = oi.order_id) LEFT JOIN items AS i ON (i.item_id = oi.item_id) WHERE o.date_ordered IS NOT NULL AND i.mute_temp != 1 AND i.mute_perm != 1 ORDER BY i.description, o.date_ordered DESC");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -287,23 +287,24 @@
 					}
 				}
 
-				$result->setResult($items);
+				return $items;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function getAllMutedSuggestedItems()
+		public function getAllMutedSuggestedItems() : ?array
 		{
-			$result = new DalResult();
-			$items = false;
-
 			try
 			{
+				$items = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM items AS i WHERE i.mute_temp = 1 OR i.mute_perm = 1 ORDER BY i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -322,14 +323,16 @@
 					}
 				}
 
-				$result->setResult($items);
+				return $items;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getItemsByDepartmentId($dept_id)

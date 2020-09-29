@@ -46,7 +46,7 @@
 		return $item;
 	}
 
-	function createOrder($request)
+	function createOrder(array $request) : Order
 	{
 		$id = isset($request['order_id']) ? intval($request['order_id']) : null;
 		$date_ordered = isset($request['date_ordered']) ? sanitiseDate($request['date_ordered']) : null;

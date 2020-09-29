@@ -19,138 +19,142 @@
 			$this->luckyDips_service = new LuckyDipsService();
 		}
 
-		public function Index($request, $consumption_interval = DEFAULT_CONSUMPTION_INTERVAL, $consumption_period = DEFAULT_CONSUMPTION_PERIOD)
+		public function Index(array $request, int $consumptionInterval = DEFAULT_CONSUMPTION_INTERVAL, string $consumptionPeriod = DEFAULT_CONSUMPTION_PERIOD) : void
 		{
-			$view_by = $all_items = $order = $items_in_order = $collection = false;
+			$dalResult = new DalResult();
 
-			if (isset($request['view-by']))
+			$pageData =
+			[
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
+			];
+
+			try
 			{
-				switch ($request['view-by'])
+				$viewBy = $allItems = $order = $itemsInOrder = $collection = null;
+
+				if (isset($request['view-by']))
 				{
-					case 'department':
-						$view_by = "department";
-						break;
-
-					case 'list':
-						$view_by = "list";
-						break;
-
-					case 'primary_dept':
-						$view_by = "primary department";
-						break;
-
-					case 'suggestions':
-						$view_by = "suggestions";
-						break;
-
-					case 'muted-suggestions':
-						$view_by = "muted-suggestions";
-						break;
-				}
-			}
-
-			if (!$view_by)
-			{
-				$dalResult = $this->items_service->getAllItems();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$all_items = $dalResult->getResult();
-				}
-
-				$pageData =
-				[
-					'page_title' => 'Manage Items',
-					'template'   => 'views/items/index.php',
-					'page_data'  => ['all_items' => $all_items]
-				];
-			}
-			elseif ($view_by == "suggestions")
-			{
-				if (isset($request['consumption_interval']) && is_numeric($request['consumption_interval']) && intval($request['consumption_interval']) > 0)
-				{
-					$consumption_interval = intval($request['consumption_interval']);
-				}
-
-				if (isset($request['consumption_period']))
-				{
-					if (in_array($request['consumption_period'], CONSUMPTION_PERIODS))
+					switch ($request['view-by'])
 					{
-						$consumption_period = $request['consumption_period'];
+						case 'department':
+						case 'list':
+						case 'suggestions':
+						case 'muted-suggestions':
+							$viewBy = $request['view-by'];
+							break;
+
+						case 'primary_dept':
+							$viewBy = "primary department";
+							break;
 					}
 				}
 
-				$suggested_items = $this->items_service->getAllSuggestedItems($consumption_interval, $consumption_period);
+				if (is_null($viewBy))
+				{
+					$items = $this->items_service->getAllItems();
 
-				$pageData =
-				[
-					'page_title' => 'Suggested Items',
-					'template'   => 'views/items/suggestions.php',
-					'page_data'  =>
+					$pageData =
 					[
-						'suggested_items'      => $suggested_items,
-						'consumption_interval' => $consumption_interval,
-						'consumption_period'   => $consumption_period
-					]
-				];
-			}
-			elseif ($view_by == "muted-suggestions")
-			{
-				$muted_items = $this->items_service->getAllMutedSuggestedItems();
-
-				$pageData =
-				[
-					'page_title' => 'Muted Suggestions',
-					'template'   => 'views/items/muted-suggestions.php',
-					'page_data'  => ['muted_items' => $muted_items]
-				];
-			}
-			else
-			{
-				switch ($view_by)
+						'page_title' => 'Manage Items',
+						'template'   => 'views/items/index.php',
+						'page_data'  => ['all_items' => $allItems]
+					];
+				}
+				elseif ($viewBy == "suggestions")
 				{
-					case 'department':
-						$dalResult = $this->departments_service->getAllDepartmentsWithItems();
-						break;
+					if (isset($request['consumption_interval']) && is_numeric($request['consumption_interval']) && intval($request['consumption_interval']) > 0)
+					{
+						$consumptionInterval = intval($request['consumption_interval']);
+					}
 
-					case 'list':
-						$dalResult = $this->lists_service->getAllListsWithItems();
-						break;
+					if (isset($request['consumption_period']))
+					{
+						if (in_array($request['consumption_period'], CONSUMPTION_PERIODS))
+						{
+							$consumptionPeriod = $request['consumption_period'];
+						}
+					}
 
-					case 'primary department':
-						$dalResult = $this->departments_service->getPrimaryDepartments();
-						break;
+					$suggestedItems = $this->items_service->getAllSuggestedItems($consumptionInterval, $consumptionPeriod);
+
+					$pageData =
+					[
+						'page_title' => 'Suggested Items',
+						'template'   => 'views/items/suggestions.php',
+						'page_data'  =>
+						[
+							'suggested_items'      => $suggestedItems,
+							'consumption_interval' => $consumptionInterval,
+							'consumption_period'   => $consumptionPeriod
+						]
+					];
+				}
+				elseif ($viewBy == "muted-suggestions")
+				{
+					$mutedItems = $this->items_service->getAllMutedSuggestedItems();
+
+					$pageData =
+					[
+						'page_title' => 'Muted Suggestions',
+						'template'   => 'views/items/muted-suggestions.php',
+						'page_data'  => ['muted_items' => $mutedItems]
+					];
+				}
+				else
+				{
+					switch ($viewBy)
+					{
+						case 'department':
+							$dalResult = $this->departments_service->getAllDepartmentsWithItems();
+							break;
+
+						case 'list':
+							$dalResult = $this->lists_service->getAllListsWithItems();
+							break;
+
+						case 'primary department':
+							$dalResult = $this->departments_service->getPrimaryDepartments();
+							break;
+					} // $dalResult is a nullable array in each of these three cases
+
+					if (!is_null($dalResult->getResult()))
+					{
+						$collection = $dalResult->getResult();
+					}
+
+					$pageData =
+					[
+						'page_title' => 'View Items By '.ucwords($viewBy),
+						'template'   => 'views/items/view-by-collection.php',
+						'page_data'  => ['collection' => $collection]
+					];
 				}
 
-				if (!is_null($dalResult->getResult()))
+				$order = $this->orders_service->getCurrentOrder();
+
+				if ($order)
 				{
-					$collection = $dalResult->getResult();
+					$itemsInOrder = $order->getItemIdsInOrder();
 				}
 
-				$pageData =
-				[
-					'page_title' => 'View Items By '.ucwords($view_by),
-					'template'   => 'views/items/view-by-collection.php',
-					'page_data'  => ['collection' => $collection]
-				];
+				$pageData['page_data']['order'] = $order;
+				$pageData['page_data']['items_in_order'] = $itemsInOrder;
+
+				$this->items_service->closeConnexion();
+				$this->orders_service->closeConnexion();
+				$this->departments_service->closeConnexion();
+				$this->lists_service->closeConnexion();
+
+				renderPage($pageData);
 			}
-
-			$order = $this->orders_service->getCurrentOrder();
-
-			if ($order)
+			catch (Exception $e)
 			{
-				$items_in_order = $order->getItemIdsInOrder();
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
 			}
-
-			$pageData['page_data']['order'] = $order;
-			$pageData['page_data']['items_in_order'] = $items_in_order;
-
-			$this->items_service->closeConnexion();
-			$this->orders_service->closeConnexion();
-			$this->departments_service->closeConnexion();
-			$this->lists_service->closeConnexion();
-
-			renderPage($pageData);
 		}
 
 		public function Create($request)
