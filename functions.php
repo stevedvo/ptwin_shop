@@ -16,7 +16,7 @@
 		return $list;
 	}
 
-	function createDepartment($request)
+	function createDepartment(array $request) : Department
 	{
 		$id = isset($request['dept_id']) ? intval($request['dept_id']) : null;
 		$name = isset($request['dept_name']) ? $request['dept_name'] : null;
@@ -69,7 +69,7 @@
 		return $orderItem;
 	}
 
-	function createPackSize($request)
+	function createPackSize(array $request) : PackSize
 	{
 		$id = isset($request['packsize_id']) ? intval($request['packsize_id']) : null;
 		$name = isset($request['packsize_name']) ? $request['packsize_name'] : null;

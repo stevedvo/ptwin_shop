@@ -57,8 +57,8 @@
 
 						$orderItem = createOrderItem($row);
 						$item = createItem($row);
-						$packsize = createPackSize($row);
-						$item->setPackSize($packsize);
+						$packSize = createPackSize($row);
+						$item->setPackSize($packSize);
 						$orderItem->setItem($item);
 
 						if (entityIsValid($orderItem))
@@ -156,13 +156,12 @@
 			}
 		}
 
-		public function getOrdersByItem($item)
+		public function getOrdersByItem(Item $item) : ?array
 		{
-			$result = new DalResult();
-			$orders = false;
-
 			try
 			{
+				$orders = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT oi.id AS order_item_id, oi.order_id, oi.item_id, oi.quantity, oi.checked, o.date_ordered FROM order_items AS oi LEFT JOIN orders AS o ON (o.id = oi.order_id) WHERE item_id = :item_id AND o.date_ordered IS NOT NULL ORDER BY o.date_ordered DESC");
 				$query->execute([':item_id' => $item->getId()]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -188,14 +187,16 @@
 					}
 				}
 
-				$result->setResult($orders);
+				return $orders;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function updateOrder(Order $order) : bool

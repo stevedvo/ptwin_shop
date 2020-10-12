@@ -191,9 +191,23 @@
 			}
 		}
 
-		public function getOrdersByItem($item)
+		public function getOrdersByItem(Item $item) : array
 		{
-			return $this->dal->getOrdersByItem($item);
+			try
+			{
+				$orders = $this->dal->getOrdersByItem($item);
+
+				if (!is_array($orders))
+				{
+					throw new Exception("Orders not found for Item.");
+				}
+
+				return $orders;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function removeAllOrderItemsFromOrder(Order $order) : bool

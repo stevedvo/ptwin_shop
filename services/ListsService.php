@@ -61,9 +61,21 @@
 			}
 		}
 
-		public function getAllListsWithItems()
+		public function getAllListsWithItems() : array
 		{
-			return $this->dal->getAllListsWithItems();
+			try
+			{
+				$lists = $this->dal->getAllListsWithItems();
+
+				if (!is_array($lists))
+				{
+					throw new Exception("Could not find Lists");
+				}
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getListById($list_id)

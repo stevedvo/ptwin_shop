@@ -37,9 +37,23 @@
 			return $packsize;
 		}
 
-		public function getAllPackSizes()
+		public function getAllPackSizes() : array
 		{
-			return $this->dal->getAllPackSizes();
+			try
+			{
+				$packSizes = $this->dal->getAllPackSizes();
+
+				if (!is_array($packSizes))
+				{
+					throw new Exception("PackSizes not found.");
+				}
+
+				return $packSizes;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getPackSizeByName($packsize_name)

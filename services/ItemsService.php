@@ -19,8 +19,6 @@
 		{
 			try
 			{
-				$item = null;
-
 				if (!is_numeric($request['item_id']))
 				{
 					throw new Exception("Invalid Item ID");

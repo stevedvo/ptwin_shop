@@ -8,42 +8,43 @@
 			$this->ShopDb = new ShopDb();
 		}
 
-		public function closeConnexion()
+		public function closeConnexion() : void
 		{
 			$this->ShopDb = null;
 		}
 
-		public function getAllPackSizes()
+		public function getAllPackSizes() : ?array
 		{
-			$result = new DalResult();
-			$packsizes = false;
-
 			try
 			{
+				$packSizes = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT id AS packsize_id, name AS packsize_name, short_name AS packsize_short_name FROM pack_sizes ORDER BY packsize_name");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
 				if ($rows)
 				{
-					$packsizes = [];
+					$packSizes = [];
 
 					foreach ($rows as $row)
 					{
-						$packsize = createPackSize($row);
+						$packSize = createPackSize($row);
 
-						$packsizes[$packsize->getId()] = $packsize;
+						$packSizes[$packSize->getId()] = $packSize;
 					}
 				}
 
-				$result->setResult($packsizes);
+				return $packSizes;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getPackSizeByName($packsize_name)

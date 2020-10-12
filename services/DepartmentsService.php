@@ -44,14 +44,42 @@
 			return $this->dal->addDepartment($department);
 		}
 
-		public function getAllDepartments()
+		public function getAllDepartments() : array
 		{
-			return $this->dal->getAllDepartments();
+			try
+			{
+				$departments = $this->dal->getAllDepartments();
+
+				if (!is_array($departments))
+				{
+					throw new Exception("Departments not found");
+				}
+
+				return $departments;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function getAllDepartmentsWithItems()
+		public function getAllDepartmentsWithItems() : array
 		{
-			return $this->dal->getAllDepartmentsWithItems();
+			try
+			{
+				$departments = $this->dal->getAllDepartmentsWithItems();
+
+				if (!is_array($departments))
+				{
+					throw new Exception("Departments not found");
+				}
+
+				return $departments;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getDepartmentById($dept_id)
@@ -84,8 +112,22 @@
 			return $this->dal->removeDepartment($department);
 		}
 
-		public function getPrimaryDepartments()
+		public function getPrimaryDepartments() : array
 		{
-			return $this->dal->getPrimaryDepartments();
+			try
+			{
+				$departments = $this->dal->getPrimaryDepartments();
+
+				if (!is_array($departments))
+				{
+					throw new Exception("Primary Departments not found");
+				}
+
+				return $departments;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 	}

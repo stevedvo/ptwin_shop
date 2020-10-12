@@ -101,13 +101,12 @@
 			return $result;
 		}
 
-		public function getAllDepartments()
+		public function getAllDepartments() : ?array
 		{
-			$result = new DalResult();
-			$departments = false;
-
 			try
 			{
+				$departments = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT dept_id, dept_name, seq FROM departments ORDER BY seq, dept_name");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -124,23 +123,24 @@
 					}
 				}
 
-				$result->setResult($departments);
+				return $departments;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function getAllDepartmentsWithItems()
+		public function getAllDepartmentsWithItems() : ?array
 		{
-			$result = new DalResult();
-			$departments = false;
-
 			try
 			{
+				$departments = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, d.seq, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) ORDER BY d.seq, d.dept_name, i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -166,14 +166,16 @@
 					}
 				}
 
-				$result->setResult($departments);
+				return $departments;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function addItemToDepartment($item, $department)
@@ -264,13 +266,12 @@
 			return $result;
 		}
 
-		public function getPrimaryDepartments()
+		public function getPrimaryDepartments() : ?array
 		{
-			$result = new DalResult();
-			$departments = false;
-
 			try
 			{
+				$departments = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, idl.dept_id, d.dept_name, d.seq FROM items AS i LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) ORDER BY ISNULL(i.primary_dept), d.seq, d.dept_name, i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -312,13 +313,15 @@
 					}
 				}
 
-				$result->setResult($departments);
+				return $departments;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 	}

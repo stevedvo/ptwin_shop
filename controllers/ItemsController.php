@@ -107,22 +107,17 @@
 					switch ($viewBy)
 					{
 						case 'department':
-							$dalResult = $this->departments_service->getAllDepartmentsWithItems();
+							$collection = $this->departments_service->getAllDepartmentsWithItems();
 							break;
 
 						case 'list':
-							$dalResult = $this->lists_service->getAllListsWithItems();
+							$collection = $this->lists_service->getAllListsWithItems();
 							break;
 
 						case 'primary department':
-							$dalResult = $this->departments_service->getPrimaryDepartments();
+							$collection = $this->departments_service->getPrimaryDepartments();
 							break;
 					} // $dalResult is a nullable array in each of these three cases
-
-					if (!is_null($dalResult->getResult()))
-					{
-						$collection = $dalResult->getResult();
-					}
 
 					$pageData =
 					[
@@ -134,10 +129,7 @@
 
 				$order = $this->orders_service->getCurrentOrder();
 
-				if ($order)
-				{
-					$itemsInOrder = $order->getItemIdsInOrder();
-				}
+				$itemsInOrder = $order->getItemIdsInOrder();
 
 				$pageData['page_data']['order'] = $order;
 				$pageData['page_data']['items_in_order'] = $itemsInOrder;
@@ -272,60 +264,34 @@
 
 			try
 			{
-				$consumption_interval = DEFAULT_CONSUMPTION_INTERVAL;
-				$consumption_period = DEFAULT_CONSUMPTION_PERIOD;
+				$consumptionInterval = DEFAULT_CONSUMPTION_INTERVAL;
+				$consumptionPeriod = DEFAULT_CONSUMPTION_PERIOD;
 
 				if (isset($_GET['consumption_interval']) && is_numeric($_GET['consumption_interval']) && intval($_GET['consumption_interval']) > 0)
 				{
-					$consumption_interval = intval($_GET['consumption_interval']);
+					$consumptionInterval = intval($_GET['consumption_interval']);
 				}
 
 				if (isset($_GET['consumption_period']))
 				{
 					if (in_array($_GET['consumption_period'], CONSUMPTION_PERIODS))
 					{
-						$consumption_period = $_GET['consumption_period'];
+						$consumptionPeriod = $_GET['consumption_period'];
 					}
 				}
 
 				$item = $this->items_service->verifyItemRequest(['item_id' => $request]);
+				$lists = $this->lists_service->getAllLists();
+				$packSizes = $this->packsizes_service->getAllPackSizes();
+				$departments = $this->departments_service->getAllDepartments();
+				$itemOrders = $this->orders_service->getOrdersByItem($item);
 
-				$dalResult = $this->lists_service->getAllLists();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$lists = $dalResult->getResult();
-				}
-
-				$dalResult = $this->packsizes_service->getAllPackSizes();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$packsizes = $dalResult->getResult();
-				}
-
-				$dalResult = $this->departments_service->getAllDepartments();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$departments = $dalResult->getResult();
-				}
-
-				$dalResult = $this->orders_service->getOrdersByItem($item);
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$item->setOrders($dalResult->getResult());
-				}
+				$item->setOrders($itemOrders);
 
 				$currentOrder = $this->orders_service->getCurrentOrder();
+				$currentOrderItems = $currentOrder->getItemIdsInOrder();
 
-				if ($currentOrder)
-				{
-					$currentOrderItems = $currentOrder->getItemIdsInOrder();
-				}
-
-				$item->calculateRecentOrders($consumption_interval, $consumption_period);
+				$item->calculateRecentOrders($consumptionInterval, $consumptionPeriod);
 
 				$this->items_service->closeConnexion();
 				$this->lists_service->closeConnexion();
@@ -352,9 +318,9 @@
 						'item'                 => $item,
 						'lists'                => $lists,
 						'all_departments'      => $departments,
-						'packsizes'            => $packsizes,
-						'consumption_interval' => $consumption_interval,
-						'consumption_period'   => $consumption_period,
+						'packSizes'            => $packSizes,
+						'consumption_interval' => $consumptionInterval,
+						'consumption_period'   => $consumptionPeriod,
 						'current_order'        => $currentOrder,
 						'current_order_items'  => $currentOrderItems
 					]
