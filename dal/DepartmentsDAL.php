@@ -35,7 +35,7 @@
 			return $result;
 		}
 
-		public function getDepartmentById($dept_id) : ?Department
+		public function getDepartmentById(int $dept_id) : ?Department
 		{
 			try
 			{

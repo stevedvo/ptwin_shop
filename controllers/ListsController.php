@@ -64,60 +64,56 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		public function Edit($request = null)
+		public function Edit(?int $request = null) : void
 		{
-			$list = $all_lists = $all_items = false;
-
-			if (is_numeric($request))
-			{
-				$dalResult = $this->lists_service->getListById(intval($request));
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$list = $dalResult->getResult();
-				}
-
-				$dalResult = $this->lists_service->getAllLists();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$all_lists = $dalResult->getResult();
-				}
-
-				$dalResult = $this->items_service->getAllItems();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$all_items = $dalResult->getResult();
-				}
-			}
-
-			$this->lists_service->closeConnexion();
-			$this->items_service->closeConnexion();
+			$list = $allLists = $allItems = null;
 
 			$pageData =
 			[
-				'page_title' => 'Edit List',
-				'breadcrumb' =>
-				[
-					[
-						'link' => '/lists/',
-						'text' => 'Lists'
-					],
-					[
-						'text' => 'Edit'
-					]
-				],
-				'template'   => 'views/lists/edit.php',
-				'page_data'  =>
-				[
-					'list'      => $list,
-					'all_lists' => $all_lists,
-					'all_items' => $all_items
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$list = $this->lists_service->verifyListRequest(['list_id' => $request]);
+				$allLists = $this->lists_service->getAllLists();
+				$allItems = $this->items_service->getAllItems();
+
+				$this->lists_service->closeConnexion();
+				$this->items_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Edit List',
+					'breadcrumb' =>
+					[
+						[
+							'link' => '/lists/',
+							'text' => 'Lists'
+						],
+						[
+							'text' => 'Edit'
+						]
+					],
+					'template'   => 'views/lists/edit.php',
+					'page_data'  =>
+					[
+						'list'      => $list,
+						'all_lists' => $allLists,
+						'all_items' => $allItems
+					]
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
 		public function addItemToList(array $request) : string

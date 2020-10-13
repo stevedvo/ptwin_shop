@@ -76,52 +76,54 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		public function Edit($request = null)
+		public function Edit(?int $request = null) : void
 		{
-			$department = $all_items = false;
-
-			if (is_numeric($request))
-			{
-				$dalResult = $this->departments_service->getDepartmentById(intval($request));
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$department = $dalResult->getResult();
-				}
-
-				$dalResult = $this->items_service->getAllItems();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$all_items = $dalResult->getResult();
-				}
-			}
-
-			$this->departments_service->closeConnexion();
-			$this->items_service->closeConnexion();
+			$department = $allItems = null;
 
 			$pageData =
 			[
-				'page_title' => 'Edit Department',
-				'breadcrumb' =>
-				[
-					[
-						'link' => '/departments/',
-						'text' => 'Departments'
-					],
-					[
-						'text' => 'Edit'
-					]
-				],
-				'template'   => 'views/departments/edit.php',
-				'page_data'  =>
-				[
-					'department'      => $department,
-					'all_items'       => $all_items
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$department = $this->departments_service->verifyDepartmentRequest(['dept_id' => $request]);
+				$allItems = $this->items_service->getAllItems();
+
+				$this->departments_service->closeConnexion();
+				$this->items_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Edit Department',
+					'breadcrumb' =>
+					[
+						[
+							'link' => '/departments/',
+							'text' => 'Departments'
+						],
+						[
+							'text' => 'Edit'
+						]
+					],
+					'template'   => 'views/departments/edit.php',
+					'page_data'  =>
+					[
+						'department' => $department,
+						'all_items'  => $allItems
+					]
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
 		public function addItemToDepartment($request) : string

@@ -1531,7 +1531,7 @@ function quickAdd()
 		{
 			if (data.exception != null)
 			{
-				toastr.error("QuickAdd: PDOException");
+				toastr.error(`Could not get Items for QuickAdd: ${data.exception.message}`);
 				console.log(data.exception);
 			}
 			else

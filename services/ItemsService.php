@@ -95,18 +95,20 @@
 
 				$allItems = $this->dal->getAllSuggestedItems();
 
-				if (is_array($allItems))
+				if (!is_array($allItems))
 				{
-					foreach ($allItems as $itemId => $item)
-					{
-						$item->calculateRecentOrders($interval, $period);
-						$estOverall = $item->getStockLevelPrediction(7, 'overall');
-						$estRecent = $item->getStockLevelPrediction(7, 'recent');
+					throw new Exception("Suggested Items not found.");
+				}
 
-						if ((is_int($estOverall) && $estOverall < 1) || (is_int($estRecent) && $estRecent < 1))
-						{
-							$suggestedItems[$item->getId()] = $item;
-						}
+				foreach ($allItems as $itemId => $item)
+				{
+					$item->calculateRecentOrders($interval, $period);
+					$estOverall = $item->getStockLevelPrediction(7, 'overall');
+					$estRecent = $item->getStockLevelPrediction(7, 'recent');
+
+					if ((is_int($estOverall) && $estOverall < 1) || (is_int($estRecent) && $estRecent < 1))
+					{
+						$suggestedItems[$item->getId()] = $item;
 					}
 				}
 

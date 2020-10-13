@@ -21,8 +21,6 @@
 
 		public function Index(array $request, int $consumptionInterval = DEFAULT_CONSUMPTION_INTERVAL, string $consumptionPeriod = DEFAULT_CONSUMPTION_PERIOD) : void
 		{
-			$dalResult = new DalResult();
-
 			$pageData =
 			[
 				'page_title' => 'Not Found',
@@ -117,7 +115,7 @@
 						case 'primary department':
 							$collection = $this->departments_service->getPrimaryDepartments();
 							break;
-					} // $dalResult is a nullable array in each of these three cases
+					}
 
 					$pageData =
 					[
@@ -149,55 +147,60 @@
 			}
 		}
 
-		public function Create($request)
+		public function Create(array $request) : void
 		{
-			$item = new Item();
-
-			if (isset($request['description']) && !empty($request['description']))
-			{
-				$item->setDescription($request['description']);
-			}
-
-			$dalResult = $this->lists_service->getAllLists();
-
-			if (is_null($dalResult->getException()))
-			{
-				$lists = $dalResult->getResult();
-			}
-
-			$dalResult = $this->packsizes_service->getAllPackSizes();
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$packsizes = $dalResult->getResult();
-			}
-
-			$this->lists_service->closeConnexion();
-			$this->packsizes_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'Add New Item',
-				'breadcrumb' =>
-				[
-					[
-						'link' => '/items/',
-						'text' => 'Items'
-					],
-					[
-						'text' => 'Create'
-					]
-				],
-				'template'   => 'views/items/create.php',
-				'page_data'  =>
-				[
-					'item' 	    => $item,
-					'lists'     => $lists,
-					'packsizes' => $packsizes
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$item = new Item();
+
+				if (isset($request['description']) && !empty($request['description']))
+				{
+					$item->setDescription($request['description']);
+				}
+
+				$lists = $this->lists_service->getAllLists();
+				$packSizes = $this->packsizes_service->getAllPackSizes();
+
+				$this->lists_service->closeConnexion();
+				$this->packsizes_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Add New Item',
+					'breadcrumb' =>
+					[
+						[
+							'link' => '/items/',
+							'text' => 'Items'
+						],
+						[
+							'text' => 'Create'
+						]
+					],
+					'template'   => 'views/items/create.php',
+					'page_data'  =>
+					[
+						'item' 	    => $item,
+						'lists'     => $lists,
+						'packSizes' => $packSizes
+					]
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
 		public function addItem(array $request) : string // returns either a serialised DalResult Exception or serialised Item
@@ -251,9 +254,9 @@
 			}
 		}
 
-		public function Edit($request = null) : void
+		public function Edit(?int $request = null) : void
 		{
-			$lists = $packsizes = $departments = $currentOrder = $currentOrderItems = null;
+			$lists = $packSizes = $departments = $currentOrder = $currentOrderItems = null;
 
 			$pageData =
 			[
@@ -456,25 +459,32 @@
 			}
 		}
 
-		public function getAllItems($request)
+		public function getAllItems(array $request) : string
 		{
-			$dalResult = $this->items_service->getAllItems();
+			$dalResult = new DalResult();
 
-			if (is_array($dalResult->getResult()))
+			try
 			{
-				$items = [];
+				$items = $this->items_service->getAllItems();
+				$itemsJSON = [];
 
-				foreach ($dalResult->getResult() as $item_id => $item)
+				foreach ($items as $item_id => $item)
 				{
-					$items[$item->getId()] = $item->jsonSerialize();
+					$itemsJSON[$item->getId()] = $item->jsonSerialize();
 				}
 
-				$dalResult->setResult($items);
+				$dalResult->setResult($itemsJSON);
+
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
 
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
+				return $dalResult->jsonSerialize();
+			}
 		}
 
 		public function getAllItemsNotInLuckyDip(array $request) : string
@@ -789,7 +799,7 @@
 			}
 		}
 
-		public function getItemsRecentOrderStatistics($request) : array
+		public function getItemsRecentOrderStatistics(array $request) : array
 		{
 			$result =
 			[
@@ -811,18 +821,9 @@
 				}
 
 				$item = $this->items_service->verifyItemRequest($request);
+				$itemOrders = $this->orders_service->getOrdersByItem($item);
 
-				$dalResult = $this->orders_service->getOrdersByItem($item);
-
-				if (!is_null($dalResult->getException()))
-				{
-					throw $dalResult->getException();
-				}
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$item->setOrders($dalResult->getResult());
-				}
+				$item->setOrders($itemOrders);
 
 				$item->calculateRecentOrders(intval($request['consumption_interval']), $request['consumption_period']);
 

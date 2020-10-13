@@ -207,7 +207,7 @@
 			return $this->orders;
 		}
 
-		public function setOrders($orders)
+		public function setOrders(array $orders) : void
 		{
 			$this->orders = $orders;
 		}
@@ -239,7 +239,7 @@
 			}
 		}
 
-		public function hasOrders()
+		public function hasOrders() : bool
 		{
 			if (!is_array($this->orders))
 			{
@@ -274,15 +274,15 @@
 			return $total;
 		}
 
-		public function getFirstOrder()
+		public function getFirstOrder() : Order
 		{
-			$first_order = false;
+			$first_order = null;
 
-			if (is_array($this->orders))
+			if ($this->hasOrders())
 			{
 				foreach ($this->orders as $order_id => $order)
 				{
-					if (!$first_order)
+					if (!($first_order instanceof Order))
 					{
 						$first_order = $order;
 					}
@@ -303,11 +303,11 @@
 		{
 			$last_order = null;
 
-			if (is_array($this->orders))
+			if ($this->hasOrders())
 			{
 				foreach ($this->orders as $order_id => $order)
 				{
-					if (!$last_order)
+					if (!($last_order instanceof Order))
 					{
 						$last_order = $order;
 					}
@@ -436,13 +436,13 @@
 			return $packSizeShortName;
 		}
 
-		public function calculateDailyConsumptionOverall()
+		public function calculateDailyConsumptionOverall() : void
 		{
-			$consumption = $first_order = $last_order = false;
+			$consumption = $first_order = $last_order = null;
 
 			$first_order = $this->getFirstOrder();
 
-			if ($first_order)
+			if ($first_order instanceof Order)
 			{
 				$days = $first_order->getDateOrdered()->diff(new DateTime)->format('%a');
 
@@ -456,7 +456,7 @@
 			$this->daily_consumption_overall = $consumption;
 		}
 
-		public function getDailyConsumptionOverall()
+		public function getDailyConsumptionOverall() : ?flaot
 		{
 			if (!$this->daily_consumption_overall)
 			{
@@ -466,7 +466,7 @@
 			return $this->daily_consumption_overall;
 		}
 
-		public function calculateDailyConsumptionRecent()
+		public function calculateDailyConsumptionRecent() : void
 		{
 			$from_date = $to_date = $total_recent_qty = $latest_recent_qty = $consumption = null;
 
@@ -511,7 +511,7 @@
 			$this->daily_consumption_recent = $consumption;
 		}
 
-		public function getDailyConsumptionRecent()
+		public function getDailyConsumptionRecent() : ?float
 		{
 			if (!$this->daily_consumption_recent)
 			{
@@ -547,7 +547,7 @@
 				return null;
 			}
 
-			$lastOrderQuantity = $lastOrder->getOrderItembyItemId($this->id)->getQuantity();
+			$lastOrderQuantity = intval($lastOrder->getOrderItembyItemId($this->id)->getQuantity());
 			$daysElapsed = $lastOrder->getDateOrdered()->diff(new DateTime())->format('%a');
 			$days = $daysElapsed + $daysAhead;
 			$estConsumption = intval(round($dailyConsumption * $days));

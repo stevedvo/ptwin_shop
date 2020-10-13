@@ -93,9 +93,18 @@
 			return $this->dal->getAllOrders();
 		}
 
-		public function addOrder($order)
+		public function addOrder(Order $order) : Order
 		{
-			return $this->dal->addOrder($order);
+			try
+			{
+				$order = $this->dal->addOrder($order);
+
+				return $order;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function addOrderItem(OrderItem $orderItem) : OrderItem

@@ -13,7 +13,7 @@
 			$this->dal->closeConnexion();
 		}
 
-		public function verifyDepartmentRequest($request) : Department
+		public function verifyDepartmentRequest(array $request) : Department
 		{
 			try
 			{
