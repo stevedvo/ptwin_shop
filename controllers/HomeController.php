@@ -41,7 +41,6 @@
 				];
 
 				renderPage($pageData);
-				
 			}
 			catch (Exception $e)
 			{

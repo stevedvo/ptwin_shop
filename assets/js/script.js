@@ -2378,16 +2378,32 @@ function updateRecentConsumptionParameters()
 				}
 			}).done(function(data)
 			{
-				if (data == false)
+				if (!data)
 				{
 					toastr.error("Invalid request.");
 					console.log(data);
 				}
 				else
 				{
-					$("#itemDailyConsumptionRecent").html(data.itemDailyConsumptionRecent);
-					$("#itemStockNowRecent").html(data.itemStockNowRecent);
-					$("#itemStockFutureRecent").html(data.itemStockFutureRecent);
+					if (data.exception != null)
+					{
+						toastr.error(`Could not get recent Order statistics: ${data.exception.message}`);
+						console.log(data.exception);
+
+						return false;
+					}
+
+					if (data.result == null)
+					{
+						toastr.error(`Could not get recent Order statistics`);
+						console.log(data);
+
+						return false;
+					}
+
+					$("#itemDailyConsumptionRecent").html(data.result.itemDailyConsumptionRecent);
+					$("#itemStockNowRecent").html(data.result.itemStockNowRecent);
+					$("#itemStockFutureRecent").html(data.result.itemStockFutureRecent);
 
 					$form.find("input[name='consumption_interval']").val(interval);
 					$form.find("select[name='consumption_period']").val(period);

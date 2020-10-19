@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class PackSizesController
 	{
 		private $packsizes_service;
@@ -8,31 +10,47 @@
 			$this->packsizes_service = new PackSizesService();
 		}
 
-		public function Index()
+		public function Index() : void
 		{
-			$packsizePrototype = new PackSize();
-			$dalResult = $this->packsizes_service->getAllPackSizes();
-			$packsizes = false;
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$packsizes = $dalResult->getResult();
-			}
-
-			$this->packsizes_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'Manage Pack Sizes',
-				'template'   => 'views/packsizes/index.php',
-				'page_data'  =>
-				[
-					'packsize_prototype' => $packsizePrototype,
-					'packsizes'          => $packsizes
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$packSizePrototype = new PackSize();
+				$packSizes = $this->packsizes_service->getAllPackSizes();
+				$packsizes = false;
+
+				if (!is_null($dalResult->getResult()))
+				{
+					$packsizes = $dalResult->getResult();
+				}
+
+				$this->packsizes_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Manage Pack Sizes',
+					'template'   => 'views/packsizes/index.php',
+					'page_data'  =>
+					[
+						'packsize_prototype' => $packSizePrototype,
+						'packsizes'          => $packSizes
+					]
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
 		public function addPackSize($request)

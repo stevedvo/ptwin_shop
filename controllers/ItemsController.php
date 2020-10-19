@@ -799,25 +799,31 @@
 			}
 		}
 
-		public function getItemsRecentOrderStatistics(array $request) : array
+		public function getItemsRecentOrderStatistics(array $request) : string
 		{
-			$result =
-			[
-				'itemDailyConsumptionRecent' => "N/A",
-				'itemStockNowRecent' => "N/A",
-				'itemStockFutureRecent' => "N/A"
-			];
+			$dalResult = new DalResult();
 
 			try
 			{
+				$result =
+				[
+					'itemDailyConsumptionRecent' => "N/A",
+					'itemStockNowRecent' => "N/A",
+					'itemStockFutureRecent' => "N/A"
+				];
+
 				if (!(isset($request['consumption_interval']) && is_numeric($request['consumption_interval']) && intval($request['consumption_interval']) > 0))
 				{
-					throw new Exception("Invalid Consumption Interval");
+					$dalResult->setException(new Exception("Invalid Consumption Interval"));
+
+					return $dalResult->jsonSerialize();
 				}
 
 				if (!(isset($request['consumption_period']) && !empty($request['consumption_period']) && in_array($request['consumption_period'], CONSUMPTION_PERIODS)))
 				{
-					throw new Exception("Invalid Consumption Period");
+					$dalResult->setException(new Exception("Invalid Consumption Period"));
+
+					return $dalResult->jsonSerialize();
 				}
 
 				$item = $this->items_service->verifyItemRequest($request);
@@ -837,11 +843,15 @@
 				$this->items_service->closeConnexion();
 				$this->orders_service->closeConnexion();
 
-				return $result;
+				$dalResult->setResult($result);
+
+				return $dalResult->jsonSerialize();
 			}
 			catch (Exception $e)
 			{
-				throw $e;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
 		}
 	}
