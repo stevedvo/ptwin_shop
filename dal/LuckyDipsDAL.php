@@ -15,10 +15,8 @@
 			$this->ShopDb = null;
 		}
 
-		public function addLuckyDip(LuckyDip $luckyDip) : DalResult
+		public function addLuckyDip(LuckyDip $luckyDip) : LuckyDip
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("INSERT INTO lucky_dips (name, list_id) VALUES (:name, :list_id)");
@@ -28,14 +26,18 @@
 					':list_id' => $luckyDip->getListId()
 				]);
 
-				$result->setResult(intval($this->ShopDb->conn->lastInsertId()));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				$luckyDip->setId($this->ShopDb->conn->lastInsertId());
 
-			return $result;
+				return $luckyDip;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getLuckyDipById(int $luckyDip_id) : ?LuckyDip

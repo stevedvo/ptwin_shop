@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class DepartmentsController
 	{
 		private $departments_service;
@@ -10,31 +12,41 @@
 			$this->items_service = new ItemsService();
 		}
 
-		public function Index()
+		public function Index() : void
 		{
-			$deptPrototype = new Department();
-			$dalResult = $this->departments_service->getAllDepartments();
-			$departments = false;
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$departments = $dalResult->getResult();
-			}
-
-			$this->departments_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'Manage Departments',
-				'template'   => 'views/departments/index.php',
-				'page_data'  =>
-				[
-					'deptPrototype' => $deptPrototype,
-					'departments'   => $departments
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$deptPrototype = new Department();
+				$departments = $this->departments_service->getAllDepartments();
+
+				$this->departments_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Manage Departments',
+					'template'   => 'views/departments/index.php',
+					'page_data'  =>
+					[
+						'deptPrototype' => $deptPrototype,
+						'departments'   => $departments
+					]
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
 		public function addDepartment($request)

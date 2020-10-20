@@ -1616,39 +1616,55 @@ function quickAdd()
 				}
 			}).done(function(data)
 			{
-				if (data)
-				{
-					if (data.description == itemDescription)
-					{
-						toastr.error("QuickAdd: "+itemDescription+" not found... redirecting.");
-						var timer = setTimeout(function()
-						{
-							location.href = constants.SITEURL+"/items/create/?description="+itemDescription;
-						}, 750);
-					}
-					else
-					{
-						input.val("");
-						toastr.success(data.result.item.description+" added to Current Order");
-
-						if ($(".results-container.current-order").length > 0)
-						{
-							var currentOrder = $(".results-container.current-order");
-							currentOrder.find(".no-results").remove();
-
-							if (currentOrder.find(".form[data-order_item_id='"+data.id+"']").length == 0)
-							{
-								var html = data.partial_view;
-
-								currentOrder.append(html);
-							}
-						}
-					}
-				}
-				else
+				if (!data)
 				{
 					toastr.error("QuickAdd: Could not add Item");
 					console.log(data);
+
+					return false;
+				}
+
+				if (data.description == itemDescription)
+				{
+					toastr.error("QuickAdd: "+itemDescription+" not found... redirecting.");
+					var timer = setTimeout(function()
+					{
+						location.href = constants.SITEURL+"/items/create/?description="+itemDescription;
+					}, 750);
+
+					return;
+				}
+
+				if (data.exception != null)
+				{
+					toastr.error(`QuickAdd - error adding Item: ${data.exception.message}`);
+					console.log(data.exception);
+
+					return false;
+				}
+
+				if (data.result == null)
+				{
+					toastr.error(`QuickAdd - error adding Item`);
+					console.log(data);
+
+					return false;
+				}
+
+				input.val("");
+				toastr.success(data.result.item.description+" added to Current Order");
+
+				if ($(".results-container.current-order").length > 0)
+				{
+					var currentOrder = $(".results-container.current-order");
+					currentOrder.find(".no-results").remove();
+
+					if (currentOrder.find(".form[data-order_item_id='"+data.result.id+"']").length == 0)
+					{
+						var html = data.partial_view;
+
+						currentOrder.append(html);
+					}
 				}
 			}).fail(function(data)
 			{
@@ -1680,15 +1696,33 @@ function quickAdd()
 					}
 				}).done(function(data)
 				{
-					if (data != null)
-					{
-						location.href = constants.SITEURL+"/luckydips/edit/"+data.id+"/";
-					}
-					else
+					if (!data)
 					{
 						toastr.error("QuickAdd: Could not edit Lucky Dip");
 						console.log(data);
+
+						return false;
 					}
+
+					if (data.exception != null)
+					{
+						toastr.error(`QuickAdd - Could not edit Lucky Dip: ${data.exception.message}`);
+						console.log(data);
+
+						return false;
+					}
+
+					if (data.result == null)
+					{
+						toastr.error("QuickAdd: Could not edit Lucky Dip");
+						console.log(data);
+
+						return false;
+					}
+
+					location.href = constants.SITEURL+"/luckydips/edit/"+data.result.id+"/";
+
+					return;
 				}).fail(function(data)
 				{
 					toastr.error("QuickAdd: Could not perform request");

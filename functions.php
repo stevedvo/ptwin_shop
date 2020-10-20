@@ -80,7 +80,7 @@
 		return $packsize;
 	}
 
-	function createLuckyDip($request) : LuckyDip
+	function createLuckyDip(array $request) : LuckyDip
 	{
 		$id = isset($request['luckyDip_id']) ? intval($request['luckyDip_id']) : null;
 		$name = isset($request['luckyDip_name']) ? $request['luckyDip_name'] : null;

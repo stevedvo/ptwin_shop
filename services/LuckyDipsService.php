@@ -41,9 +41,16 @@
 			}
 		}
 
-		public function addLuckyDip(LuckyDip $luckyDip) : DalResult
+		public function addLuckyDip(LuckyDip $luckyDip) : LuckyDip
 		{
-			return $this->dal->addLuckyDip($luckyDip);
+			try
+			{
+				return $this->dal->addLuckyDip($luckyDip);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getAllLuckyDips() : DalResult
@@ -73,6 +80,20 @@
 				}
 
 				return $luckyDip;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function luckyDipDoesNotExist(string $luckyDipName) : bool
+		{
+			try
+			{
+				$luckyDip = $this->dal->getLuckyDipByName($luckyDipName);
+
+				return !($luckyDip instanceof LuckyDip);
 			}
 			catch (Exception $e)
 			{

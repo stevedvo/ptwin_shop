@@ -233,120 +233,138 @@
 			renderPage($pageData);
 		}
 
-		public function View($request = null)
+		public function View(int? $request = null) : void
 		{
-			$departments = false;
-			$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
-
-			if ($order)
-			{
-				$dalResult = $this->departments_service->getAllDepartments();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$departments = $dalResult->getResult();
-				}
-			}
-
-			$this->orders_service->closeConnexion();
-			$this->departments_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'View Order',
-				'breadcrumb' =>
-				[
-					[
-						'link' => '/orders/',
-						'text' => 'Orders'
-					],
-					[
-						'text' => 'View'
-					]
-				],
-				'template'   => 'views/orders/view.php',
-				'page_data'  =>
-				[
-					'order'       => $order,
-					'departments' => $departments
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
+				$departments = $this->departments_service->getAllDepartments();
+
+				$this->orders_service->closeConnexion();
+				$this->departments_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'View Order',
+					'breadcrumb' =>
+					[
+						[
+							'link' => '/orders/',
+							'text' => 'Orders'
+						],
+						[
+							'text' => 'View'
+						]
+					],
+					'template'   => 'views/orders/view.php',
+					'page_data'  =>
+					[
+						'order'       => $order,
+						'departments' => $departments
+					]
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
-		public function Print($request = null)
+		public function Print(int? $request = null) : void
 		{
-			$departments = false;
-			$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
-
-			if ($order)
-			{
-				$dalResult = $this->departments_service->getAllDepartments();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$departments = $dalResult->getResult();
-				}
-			}
-
-			$this->orders_service->closeConnexion();
-			$this->departments_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'Print Order',
-				'template'   => 'views/orders/print.php',
-				'page_data'  =>
-				[
-					'order'       => $order,
-					'departments' => $departments
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
 			];
 
-			renderPrint($pageData);
+			try
+			{
+				$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
+				$departments = $this->departments_service->getAllDepartments();
+
+				$this->orders_service->closeConnexion();
+				$this->departments_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Print Order',
+					'template'   => 'views/orders/print.php',
+					'page_data'  =>
+					[
+						'order'       => $order,
+						'departments' => $departments
+					]
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
-		public function Edit($request = null)
+		public function Edit(int? $request = null) : void
 		{
-			$departments = false;
-			$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
-
-			if ($order)
-			{
-				$dalResult = $this->departments_service->getAllDepartments();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$departments = $dalResult->getResult();
-				}
-			}
-
-			$this->orders_service->closeConnexion();
-			$this->departments_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'Edit Order',
-				'breadcrumb' =>
-				[
-					[
-						'link' => '/orders/',
-						'text' => 'Orders'
-					],
-					[
-						'text' => 'Edit'
-					]
-				],
-				'template'   => 'views/orders/edit.php',
-				'page_data'  =>
-				[
-					'order'       => $order,
-					'departments' => $departments
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
+				$departments = $this->departments_service->getAllDepartments();
+
+				$this->orders_service->closeConnexion();
+				$this->departments_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Edit Order',
+					'breadcrumb' =>
+					[
+						[
+							'link' => '/orders/',
+							'text' => 'Orders'
+						],
+						[
+							'text' => 'Edit'
+						]
+					],
+					'template'   => 'views/orders/edit.php',
+					'page_data'  =>
+					[
+						'order'       => $order,
+						'departments' => $departments
+					]
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
 		public function confirmOrder(array $request) : string

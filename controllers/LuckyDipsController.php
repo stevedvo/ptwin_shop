@@ -41,43 +41,42 @@
 			renderPage($pageData);
 		}
 
-		public function addLuckyDip($request)
+		public function addLuckyDip(array $request) : string
 		{
-			$luckyDip = createLuckyDip($request);
+			$dalResult = new DalResult();
 
-			if (!entityIsValid($luckyDip))
+			try
 			{
-				return false;
-			}
+				$luckyDip = createLuckyDip($request);
 
-			$dalResult = $this->luckyDips_service->getLuckyDipByName($luckyDip->getName());
+				if (!entityIsValid($luckyDip))
+				{
+					$dalResult->setException(new Exception("Invalid LuckyDip"));
 
-			if (!is_null($dalResult->getException()))
-			{
-				return false;
-			}
+					return $dalResult->jsonSerialize();
+				}
 
-			if ($dalResult->getResult() instanceof LuckyDip)
-			{
-				return false;
-			}
+				if (!$this->luckyDips_service->luckyDipDoesNotExist($luckyDip->getName()))
+				{
+					$dalResult->setException(new Exception("LuckyDip '".$luckyDip->getName()."' already exists"));
 
-			$dalResult = $this->luckyDips_service->addLuckyDip($luckyDip);
+					return $dalResult->jsonSerialize();
+				}
 
-			if (!is_null($dalResult->getException()))
-			{
-				return false;
-			}
+				$luckyDip = $this->luckyDips_service->addLuckyDip($luckyDip);
 
-			if (!is_null($dalResult->getResult()))
-			{
-				$luckyDip->setId($dalResult->getResult());
 				$dalResult->setPartialView(getPartialView("LuckyDipListItem", ['item' => $luckyDip]));
+
+				$this->luckyDips_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
 
-			$this->luckyDips_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
+				return $dalResult->jsonSerialize();
+			}
 		}
 
 		public function Edit($request = null) : void
@@ -129,7 +128,7 @@
 			renderPage($pageData);
 		}
 
-		public function addItemToLuckyDip($request) : string
+		public function addItemToLuckyDip(array $request) : string
 		{
 			$dalResult = new DalResult();
 
@@ -243,30 +242,43 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		public function getLuckyDipByName($request) : ?array
+		public function getLuckyDipByName(array $request) : string
 		{
-			if (!isset($request['luckyDip_name']) || empty($request['luckyDip_name']))
+			$dalResult = new DalResult();
+
+			try
 			{
-				return null;
-			}
-
-			$luckyDip = null;
-			$luckyDip_name = $request['luckyDip_name'];
-
-			if (strpos(strtolower($luckyDip_name), "[luckydip]") !== false)
-			{
-				$luckyDip_name = substr($luckyDip_name, 11);
-
-				$dalResult = $this->luckyDips_service->getLuckyDipByName($luckyDip_name);
-
-				if (!is_null($dalResult->getResult()))
+				if (!isset($request['luckyDip_name']) || empty($request['luckyDip_name']))
 				{
-					$luckyDip = $dalResult->getResult();
+					$dalResult->setException(new Exception("LuckyDip Name not set"));
+
+					return $dalResult->jsonSerialize();
 				}
+
+				$luckyDipName = $request['luckyDip_name'];
+
+				if (strpos(strtolower($luckyDipName), "[luckydip]") === false)
+				{
+					$dalResult->setException(new Exception("Invalid LuckyDip Name"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$luckyDipName = substr($luckyDipName, 11);
+
+				$luckyDip = $this->luckyDips_service->getLuckyDipByName($luckyDipName);
+
+				$this->luckyDips_service->closeConnexion();
+
+				$dalResult->setResult($luckydip->jsonSerialize());
+
+				return $dalResult->jsonSerialize();
 			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
 
-			$this->luckyDips_service->closeConnexion();
-
-			return $luckyDip->jsonSerialize();
+				return $dalResult->jsonSerialize();
+			}
 		}
 	}

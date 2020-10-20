@@ -23,12 +23,6 @@
 			{
 				$packSizePrototype = new PackSize();
 				$packSizes = $this->packsizes_service->getAllPackSizes();
-				$packsizes = false;
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$packsizes = $dalResult->getResult();
-				}
 
 				$this->packsizes_service->closeConnexion();
 
