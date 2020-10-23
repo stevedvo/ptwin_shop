@@ -602,7 +602,9 @@
 
 				$this->items_service->closeConnexion();
 
-				return $item->jsonSerialize();
+				$dalResult->setResult($item->jsonSerialize());
+
+				return $dalResult->jsonSerialize();
 			}
 			catch (Exception $e)
 			{
@@ -612,7 +614,7 @@
 			}
 		}
 
-		public function addItemToCurrentOrder($request) : string
+		public function addItemToCurrentOrder(array $request) : string
 		{
 			$dalResult = new DalResult();
 
@@ -628,19 +630,21 @@
 					return $dalResult->jsonSerialize();
 				}
 
-				$order_item = new OrderItem();
-				$order_item->setOrderId($order->getId());
-				$order_item->setItemId($item->getId());
-				$order_item->setQuantity($item->getDefaultQty());
-				$order_item->setChecked(0);
+				$orderItem = new OrderItem();
+				$orderItem->setOrderId($order->getId());
+				$orderItem->setItemId($item->getId());
+				$orderItem->setQuantity($item->getDefaultQty());
+				$orderItem->setChecked(0);
 
-				$order_item = $this->orders_service->addOrderItem($order_item);
-				$order_item->setItem($item);
+				$orderItem = $this->orders_service->addOrderItem($orderItem);
+				$orderItem->setItem($item);
 
 				$this->items_service->closeConnexion();
 				$this->orders_service->closeConnexion();
 
-				return $order_item->jsonSerialize();
+				$dalResult->setResult($orderItem->jsonSerialize());
+
+				return $dalResult->jsonSerialize();
 			}
 			catch (Exception $e)
 			{

@@ -282,8 +282,8 @@
 							$items[$row['item_id']]->addOrder($order);
 						}
 
-						$order_item = createOrderItem($row);
-						$items[$row['item_id']]->getOrders()[$row['order_id']]->addOrderItem($order_item);
+						$orderItem = createOrderItem($row);
+						$items[$row['item_id']]->getOrders()[$row['order_id']]->addOrderItem($orderItem);
 					}
 				}
 

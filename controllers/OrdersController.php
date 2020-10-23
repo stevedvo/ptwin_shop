@@ -427,59 +427,59 @@
 
 				$order = $this->orders_service->verifyOrderRequest($request);
 
-				$items_in_order = array_keys($order->getItemIdsInOrder());
+				$itemsInOrder = array_keys($order->getItemIdsInOrder());
 
-				$new_order_items = [];
+				$newOrderItems = [];
 
-				foreach ($list->getItems() as $item_id => $item)
+				foreach ($list->getItems() as $itemId => $item)
 				{
-					if (in_array($item->getId(), $items_in_order) === false)
+					if (in_array($item->getId(), $itemsInOrder) === false)
 					{
-						$order_item = new OrderItem();
-						$order_item->setOrderId($order->getId());
-						$order_item->setItemId($item->getId());
-						$order_item->setQuantity($item->getDefaultQty());
-						$order_item->setChecked(0);
-						$order_item->setItem($item);
+						$orderItem = new OrderItem();
+						$orderItem->setOrderId($order->getId());
+						$orderItem->setItemId($item->getId());
+						$orderItem->setQuantity($item->getDefaultQty());
+						$orderItem->setChecked(0);
+						$orderItem->setItem($item);
 
-						$new_order_items[] = $order_item;
-						$items_in_order[] = $order_item->getItemId();
+						$newOrderItems[] = $orderItem;
+						$itemsInOrder[] = $orderItem->getItemId();
 					}
 				}
 
 				$luckyDips = $this->luckyDips_service->getLuckyDipsByListId($list->getId());
 
-				foreach ($luckyDips as $luckyDip_id => $luckyDip)
+				foreach ($luckyDips as $luckyDipId => $luckyDip)
 				{
 					$item = $luckyDip->getRandomItem();
 
 					if ($item instanceof Item)
 					{
-						if (in_array($item->getId(), $items_in_order) === false)
+						if (in_array($item->getId(), $itemsInOrder) === false)
 						{
-							$order_item = new OrderItem();
-							$order_item->setOrderId($order->getId());
-							$order_item->setItemId($item->getId());
-							$order_item->setQuantity($item->getDefaultQty());
-							$order_item->setChecked(0);
-							$order_item->setItem($item);
+							$orderItem = new OrderItem();
+							$orderItem->setOrderId($order->getId());
+							$orderItem->setItemId($item->getId());
+							$orderItem->setQuantity($item->getDefaultQty());
+							$orderItem->setChecked(0);
+							$orderItem->setItem($item);
 
-							$new_order_items[] = $order_item;
-							$items_in_order[] = $order_item->getItemId();
+							$newOrderItems[] = $orderItem;
+							$itemsInOrder[] = $orderItem->getItemId();
 						}
 					}
 				}
 
-				$order_items = $this->orders_service->addOrderItems($new_order_items);
+				$orderItems = $this->orders_service->addOrderItems($newOrderItems);
 
-				$partial_view = "";
+				$partialView = "";
 
-				foreach ($order_items as $order_item)
+				foreach ($orderItems as $orderItem)
 				{
-					$partial_view.= getPartialView("CurrentOrderItem", ['order_item' => $order_item]);
+					$partialView.= getPartialView("CurrentOrderItem", ['orderItem' => $orderItem]);
 				}
 
-				$dalResult->setPartialView($partial_view);
+				$dalResult->setPartialView($partialView);
 
 				$this->lists_service->closeConnexion();
 				$this->orders_service->closeConnexion();

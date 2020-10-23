@@ -443,35 +443,51 @@ function manageItems()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				toastr.success("Item successfully added to Order");
-
-				if ($(".result-item[data-item_id='"+itemID+"']").length > 0)
-				{
-					$.each($(".result-item[data-item_id='"+itemID+"']"), function()
-					{
-						$(this).addClass("selected");
-						$(this).find("button.js-remove-item-from-current-order").data("order_item_id", data.id);
-					});
-
-					return;
-				}
-
-				// adding Item from /items/edit/{id}/
-				if (form.hasClass("item-current_order-item"))
-				{
-					form.data("order_item_id", data.id);
-					form.find(".order-quantity-container").html('<input type="number" min="1" name="quantity" value="'+data.quantity+'" data-validation="{&quot;required&quot;:&quot;1&quot;,&quot;min-value&quot;:&quot;1&quot;}" />');
-					form.find(".order-buttons-container button").toggleClass("hidden");
-
-					return;
-				}
-			}
-			else
-			{
-				toastr.error("Could not add Item to Order");
+				toastr.error("Could not add Item to Order: unknown error");
 				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not add Item to Order: ${data.exception.message}`);
+				console.log(data.exception);
+
+				return false;
+			}
+
+			if (data.result == null)
+			{
+				toastr.error("Could not add Item to Order: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Item successfully added to Order");
+
+			if ($(".result-item[data-item_id='"+data.result.item.id+"']").length > 0)
+			{
+				$.each($(".result-item[data-item_id='"+data.result.item.id+"']"), function()
+				{
+					$(this).addClass("selected");
+					$(this).find("button.js-remove-item-from-current-order").data("order_item_id", data.result.id);
+				});
+
+				return;
+			}
+
+			// adding Item from /items/edit/{id}/
+			if (form.hasClass("item-current_order-item"))
+			{
+				form.data("order_item_id", data.result.id);
+				form.find(".order-quantity-container").html('<input type="number" min="1" name="quantity" value="'+data.result.quantity+'" data-validation="{&quot;required&quot;:&quot;1&quot;,&quot;min-value&quot;:&quot;1&quot;}" />');
+				form.find(".order-buttons-container button").toggleClass("hidden");
+
+				return;
 			}
 		}).fail(function(data)
 		{
@@ -1698,7 +1714,7 @@ function quickAdd()
 				{
 					if (!data)
 					{
-						toastr.error("QuickAdd: Could not edit Lucky Dip");
+						toastr.error("QuickEdit: Could not edit Lucky Dip");
 						console.log(data);
 
 						return false;
@@ -1706,7 +1722,7 @@ function quickAdd()
 
 					if (data.exception != null)
 					{
-						toastr.error(`QuickAdd - Could not edit Lucky Dip: ${data.exception.message}`);
+						toastr.error(`QuickEdit - Could not edit Lucky Dip: ${data.exception.message}`);
 						console.log(data);
 
 						return false;
@@ -1714,7 +1730,7 @@ function quickAdd()
 
 					if (data.result == null)
 					{
-						toastr.error("QuickAdd: Could not edit Lucky Dip");
+						toastr.error("QuickEdit: Could not edit Lucky Dip");
 						console.log(data);
 
 						return false;
@@ -1725,7 +1741,7 @@ function quickAdd()
 					return;
 				}).fail(function(data)
 				{
-					toastr.error("QuickAdd: Could not perform request");
+					toastr.error("QuickEdit: Could not perform request");
 					console.log(data);
 				});
 			}
@@ -1744,18 +1760,36 @@ function quickAdd()
 					}
 				}).done(function(data)
 				{
-					if (data)
+					if (!data)
 					{
-						location.href = constants.SITEURL+"/items/edit/"+data.id+"/";
-					}
-					else
-					{
-						toastr.error("QuickAdd: Could not edit Item");
+						toastr.error("QuickEdit: Could not edit Item");
 						console.log(data);
+
+						return false;
 					}
+
+					if (data.exception != null)
+					{
+						toastr.error(`QuickEdit - Could not edit Item: ${data.exception.message}`);
+						console.log(data);
+
+						return false;
+					}
+
+					if (data.result == null)
+					{
+						toastr.error("QuickEdit: Could not edit Item");
+						console.log(data);
+
+						return false;
+					}
+
+					location.href = constants.SITEURL+"/items/edit/"+data.result.id+"/";
+
+					return;
 				}).fail(function(data)
 				{
-					toastr.error("QuickAdd: Could not perform request");
+					toastr.error("QuickEdit: Could not perform request");
 					console.log(data);
 				});
 			}
@@ -2013,32 +2047,34 @@ function manageOrders()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.exception != null)
-				{
-					toastr.error("Could not remove Order Items: PDOException");
-					console.log(data.exception);
-				}
-				else
-				{
-					if (!data.result)
-					{
-						toastr.error("Could not remove Order Items: Unspecified error");
-						console.log(data);
-					}
-					else
-					{
-						$(".current-order").empty().append('<p class="no-results">No Items added to Order yet</p>');
-						toastr.success("Order Items successfully removed");
-					}
-				}
-			}
-			else
-			{
-				toastr.error("Could not remove Order Items");
+				toastr.error("Could not remove Order Items: Unspecified error");
 				console.log(data);
+
+				return false;
 			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not remove Order Items: ${data.exception.message}`);
+				console.log(data.exception);
+
+				return false;
+			}
+
+			if (data.result == null)
+			{
+				toastr.error("Could not remove Order Items: Unspecified error");
+				console.log(data);
+
+				return false;
+			}
+
+			$(".current-order").empty().append('<p class="no-results">No Items added to Order yet</p>');
+			toastr.success("Order Items successfully removed");
+
+			return;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -2506,28 +2542,42 @@ function manageLuckyDips()
 				{
 					controller : "LuckyDips",
 					action     : "addLuckyDip",
-					request    :
-					{
-						'luckyDip_name' : luckyDipName
-					}
+					request    : {'luckyDip_name' : luckyDipName}
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (!data)
 				{
-					var html = data.partial_view;
+					toastr.error("Could not save Lucky Dip: unknown error");
+					console.log(data);
 
-					$(".results-container").append(html);
-					$(".results-container").find(".no-results").remove();
-					form.find(".input-error").removeClass("input-error");
-					form.find("[name='luckyDip_name']").val("");
-
-					toastr.success("New Lucky Dip successfully added");
+					return false;
 				}
-				else
+
+				if (data.exception != null)
 				{
-					toastr.error("Could not save Lucky Dip");
+					toastr.error(`Could not save Lucky Dip: ${data.exception.message}`);
+					console.log(data.exception);
+
+					return false;
 				}
+
+				if (data.partial_view == null)
+				{
+					toastr.error("Could not save Lucky Dip: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				var html = data.partial_view;
+
+				$(".results-container").append(html);
+				$(".results-container").find(".no-results").remove();
+				form.find(".input-error").removeClass("input-error");
+				form.find("[name='luckyDip_name']").val("");
+
+				toastr.success("New Lucky Dip successfully added");
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");

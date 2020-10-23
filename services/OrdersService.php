@@ -128,23 +128,16 @@
 			}
 		}
 
-		public function addOrderItems(array $order_items) : array
+		public function addOrderItems(array $orderItems) : array
 		{
 			try
 			{
-				foreach ($order_items as $order_item)
+				foreach ($orderItems as $orderItem)
 				{
-					$orderItemId = $this->dal->addOrderItem($order_item);
-
-					if (is_null($orderItemId))
-					{
-						throw new Exception("Error adding Order Item");
-					}
-
-					$order_item->setId($dalResult->getResult());
+					$orderItem = $this->dal->addOrderItem($orderItem);
 				}
 
-				return $order_items;
+				return $orderItems;
 			}
 			catch (Exception $e)
 			{
