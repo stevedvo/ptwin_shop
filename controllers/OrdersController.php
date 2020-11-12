@@ -35,13 +35,6 @@
 
 				$order = $this->orders_service->getOrderById($orderUpdate->getId());
 
-				if (!($order instanceof Order))
-				{
-					$dalResult->setException(new Exception("Cannot find Order with ID ".$orderUpdate->getId()));
-
-					return $dalResult->jsonSerialize();
-				}
-
 				$order->setDateOrdered($orderUpdate->getDateOrdered());
 
 				$success = $this->orders_service->updateOrder($order);

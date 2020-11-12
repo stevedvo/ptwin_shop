@@ -122,8 +122,6 @@
 
 			try
 			{
-				$item = $list = null;
-
 				$item = $this->items_service->verifyItemRequest($request);
 				$list = $this->lists_service->verifyListRequest($request);
 

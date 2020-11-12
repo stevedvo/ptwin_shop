@@ -92,9 +92,16 @@
 			return $this->dal->getDepartmentByName($dept_name);
 		}
 
-		public function addItemToDepartment($item, $department)
+		public function addItemToDepartment(Item $item, Department $department) : bool
 		{
-			return $this->dal->addItemToDepartment($item, $department);
+			try
+			{
+				return $this->dal->addItemToDepartment($item, $department);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function removeItemsFromDepartment($item_ids, $dept_id)

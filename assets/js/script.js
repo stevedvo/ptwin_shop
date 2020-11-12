@@ -769,20 +769,39 @@ function manageLists()
 			}
 		}).done(function(data)
 		{
-			if (data.exception)
+			if (!data)
 			{
-				toastr.error("Could not add Item to List: "+data.exception.message);
+				toastr.error(`Could not add Item to List: unknown error`);
+				console.log(data);
+
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				var html = data.partial_view;
+				toastr.error(`Could not add Item to List: ${data.exception.message}`);
+				console.log(data.exception);
 
-				$(".list-items-container").append(html);
-				$(".list-items-container").find(".no-results").remove();
-				selectedOption.remove();
-
-				toastr.success("Item successfully added to List");
+				return false;
 			}
+
+			let html = data.partial_view;
+
+			if (html == null)
+			{
+				toastr.error(`Could not add Item to List: unknown error`);
+				console.log(data);
+
+				return false;
+			}
+
+			$(".list-items-container").append(html);
+			$(".list-items-container").find(".no-results").remove();
+			selectedOption.remove();
+
+			toastr.success("Item successfully added to List");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -1041,36 +1060,39 @@ function manageDepts()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					var html = data.partial_view;
+				toastr.error("Could not add Item to Department: unknown error");
+				console.log(data);
 
-					$(".department-items-container").append(html);
-					$(".department-items-container").find(".no-results").remove();
-					selectedOption.remove();
-
-					toastr.success("Item successfully added to Department");
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not add Item to Department");
+				toastr.error(`Could not add Item to Department: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			let html = data.partial_view;
+
+			if (html == null)
+			{
+				toastr.error("Could not add Item to Department: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$(".department-items-container").append(html);
+			$(".department-items-container").find(".no-results").remove();
+			selectedOption.remove();
+
+			toastr.success("Item successfully added to Department");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");

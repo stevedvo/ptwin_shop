@@ -138,7 +138,7 @@
 			}
 		}
 
-		public function addItemToDepartment($request) : string
+		public function addItemToDepartment(array $request) : string
 		{
 			$dalResult = new DalResult();
 
@@ -147,12 +147,16 @@
 				$item = $this->items_service->verifyItemRequest($request);
 				$department = $this->departments_service->verifyDepartmentRequest($request);
 
-				$dalResult = $this->departments_service->addItemToDepartment($item, $department);
+				$success = $this->departments_service->addItemToDepartment($item, $department);
 
-				if (!is_null($dalResult->getResult()))
+				if (!$success)
 				{
-					$dalResult->setPartialView(getPartialView("DepartmentItem", ['item' => $item]));
+					$dalResult->setException(new Exception("Error adding Item to Department"));
+
+					return $dalResult->jsonSerialize();
 				}
+
+				$dalResult->setPartialView(getPartialView("DepartmentItem", ['item' => $item]));
 
 				$this->departments_service->closeConnexion();
 				$this->items_service->closeConnexion();

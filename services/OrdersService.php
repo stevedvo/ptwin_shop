@@ -185,7 +185,12 @@
 		{
 			try
 			{
-				return $this->dal->getOrderById($orderId);
+				$order = $this->dal->getOrderById($orderId);
+
+				if (!($order instanceof Order))
+				{
+					throw new Exception("Cannot find Order with ID ".$orderId);
+				}
 			}
 			catch (Exception $e)
 			{

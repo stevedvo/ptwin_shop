@@ -178,25 +178,29 @@
 			}
 		}
 
-		public function addItemToDepartment($item, $department)
+		public function addItemToDepartment(Item $item, Department $department) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
+				$success = false;
+
 				$query = $this->ShopDb->conn->prepare("INSERT INTO item_dept_link (dept_id, item_id) VALUES (:dept_id, :item_id)");
-				$result->setResult($query->execute(
+				$success = $query->execute(
 				[
 					':dept_id' => $department->getId(),
 					':item_id' => $item->getId()
-				]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function removeItemsFromDepartment($item_ids, $dept_id)
