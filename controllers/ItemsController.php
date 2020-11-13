@@ -339,7 +339,7 @@
 			}
 		}
 
-		public function editItem($request) : string
+		public function editItem(array $request) : string
 		{
 			$dalResult = new DalResult();
 
@@ -365,7 +365,10 @@
 				$item->setMuteTemp($item_update->getMuteTemp());
 				$item->setMutePerm($item_update->getMutePerm());
 
-				$dalResult = $this->items_service->updateItem($item);
+				$success = $this->items_service->updateItem($item);
+
+				$dalResult->setResult($success);
+
 				$this->items_service->closeConnexion();
 
 				return $dalResult->jsonSerialize();
@@ -378,7 +381,7 @@
 			}
 		}
 
-		public function addDepartmentToItem($request) : string
+		public function addDepartmentToItem(array $request) : string
 		{
 			$dalResult = new DalResult();
 
@@ -387,12 +390,9 @@
 				$item = $this->items_service->verifyItemRequest($request);
 				$department = $this->departments_service->verifyDepartmentRequest($request);
 
-				$dalResult = $this->items_service->addDepartmentToItem($department, $item);
+				$result = $this->items_service->addDepartmentToItem($department, $item);
 
-				if (!is_null($dalResult->getResult()))
-				{
-					$dalResult->setPartialView(getPartialView("ItemDepartment", ['department' => $department]));
-				}
+				$dalResult->setPartialView(getPartialView("ItemDepartment", ['department' => $department]));
 
 				$this->departments_service->closeConnexion();
 				$this->items_service->closeConnexion();
@@ -407,13 +407,13 @@
 			}
 		}
 
-		public function removeDepartmentsFromItem($request) : string
+		public function removeDepartmentsFromItem(array $request) : string
 		{
 			$dalResult = new DalResult();
 
 			try
 			{
-				$dept_ids = [];
+				$deptIds = [];
 
 				$item = $this->items_service->verifyItemRequest($request);
 
@@ -424,28 +424,27 @@
 					return $dalResult->jsonSerialize();
 				}
 
-				foreach ($request['dept_ids'] as $dept_id)
+				foreach ($request['dept_ids'] as $deptId)
 				{
-					if (!is_numeric($dept_id))
+					if (!is_numeric($deptId))
 					{
-						$dalResult->setException(new Exception("Invalid Dept ID: ".$dept_id));
+						$dalResult->setException(new Exception("Invalid Dept ID: ".$deptId));
 
 						return $dalResult->jsonSerialize();
 					}
 
-					$dept_ids[] = intval($dept_id);
+					$deptIds[] = intval($deptId);
 				}
 
-				$dalResult = $this->items_service->removeDepartmentsFromItem($dept_ids, $item->getId());
+				$success = $this->items_service->removeDepartmentsFromItem($deptIds, $item->getId());
 
-				if (!is_null($dalResult->getResult()))
+				if (array_search($item->getPrimaryDept(), $deptIds) !== false)
 				{
-					if (array_search($item->getPrimaryDept(), $dept_ids) !== false)
-					{
-						$item->setPrimaryDept(null);
-						$dalResult = $this->items_service->updateItem($item);
-					}
+					$item->setPrimaryDept(null);
+					$success = $this->items_service->updateItem($item);
 				}
+
+				$dalResult->setResult($success);
 
 				$this->items_service->closeConnexion();
 
@@ -684,7 +683,7 @@
 			}
 		}
 
-		public function setItemPrimaryDepartment($request) : string
+		public function setItemPrimaryDepartment(array $request) : string
 		{
 			$dalResult = new DalResult();
 
@@ -693,7 +692,10 @@
 				$item = $this->items_service->verifyItemRequest($request);
 				$department = $this->departments_service->verifyDepartmentRequest($request);
 
-				$dalResult = $this->items_service->setItemPrimaryDepartment($department, $item);
+				$success = $this->items_service->setItemPrimaryDepartment($department, $item);
+
+				$dalResult->setResult($success);
+
 				$this->departments_service->closeConnexion();
 				$this->items_service->closeConnexion();
 
@@ -707,27 +709,13 @@
 			}
 		}
 
-		public function resetPrimaryDepartments($request) : string
+		public function resetPrimaryDepartments(array $request) : string
 		{
 			$dalResult = new DalResult();
 
 			try
 			{
-				$dalResult = $this->items_service->getItemDepartmentLookupArray();
-
-				if (!is_null($dalResult->getException()))
-				{
-					return $dalResult->jsonSerialize();
-				}
-
-				$departments_lookup = $dalResult->getResult();
-
-				if (!is_array($departments_lookup))
-				{
-					$dalResult->setException(new Exception("Error in getItemDepartmentLookupArray result"));
-
-					return $dalResult->jsonSerialize();
-				}
+				$departments_lookup = $this->items_service->getItemDepartmentLookupArray();
 
 				foreach ($departments_lookup as $item_id => $dept_id)
 				{
@@ -740,12 +728,7 @@
 					$item = $this->items_service->verifyItemRequest($request);
 					$department = $this->departments_service->verifyDepartmentRequest($request);
 
-					$dalResult = $this->items_service->setItemPrimaryDepartment($department, $item);
-
-					if (!is_null($dalResult->getException()))
-					{
-						return $dalResult->jsonSerialize();
-					}
+					$success = $this->items_service->setItemPrimaryDepartment($department, $item);
 				}
 
 				$this->items_service->closeConnexion();
@@ -763,7 +746,7 @@
 			}
 		}
 
-		public function updateItemMuteSetting($request) : string
+		public function updateItemMuteSetting(array $request) : string
 		{
 			$dalResult = new DalResult();
 
@@ -790,7 +773,8 @@
 						break;
 				}
 
-				$dalResult = $this->items_service->updateItem($item);
+				$dalResult->setResult($this->items_service->updateItem($item));
+
 				$this->items_service->closeConnexion();
 
 				return $dalResult->jsonSerialize();

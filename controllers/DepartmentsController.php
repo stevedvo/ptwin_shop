@@ -90,8 +90,6 @@
 
 		public function Edit(?int $request = null) : void
 		{
-			$department = $allItems = null;
-
 			$pageData =
 			[
 				'page_title' => 'Not Found',
@@ -196,29 +194,47 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		public function editDepartment($request)
+		public function editDepartment(array $request) : string
 		{
-			$department = createDepartment($request);
+			$dalResult = new DalResult();
 
-			if (!entityIsValid($department))
+			try
 			{
-				return false;
+				$dept_update = createDepartment($request);
+
+				if (!entityIsValid($dept_update))
+				{
+					$dalResult->setException(new Exception("Department is not valid"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$department = $this->departments_service->verifyDepartmentRequest($request);
+
+				$department->setName($dept_update->getName());
+				$department->setSeq($dept_update->getSeq());
+
+				$success = $this->departments_service->updateDepartment($department);
+
+				if (!$success)
+				{
+					$dalResult->setException(new Exception("Error updating Deprtment"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$dalResult->setResult($success);
+
+				$this->departments_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dept_update = $this->departments_service->verifyDepartmentRequest($request);
-
-			if (!$dept_update)
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dept_update->setName($department->getName());
-			$dept_update->setSeq($department->getSeq());
-
-			$dalResult = $this->departments_service->updateDepartment($dept_update);
-			$this->departments_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 
 		public function removeDepartment($request)

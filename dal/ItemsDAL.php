@@ -400,14 +400,12 @@
 			return $result;
 		}
 
-		public function updateItem($item)
+		public function updateItem(Item $item) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("UPDATE items SET description = :description, comments = :comments, default_qty = :default_qty, list_id = :list_id, link = :link, primary_dept = :primary_dept, mute_temp = :mute_temp, mute_perm = :mute_perm, packsize_id = :packsize_id WHERE item_id = :item_id");
-				$result->setResult($query->execute(
+				$success = $query->execute(
 				[
 					':item_id'      => $item->getId(),
 					':description'  => $item->getDescription(),
@@ -419,72 +417,83 @@
 					':mute_temp'    => $item->getMuteTemp(),
 					':mute_perm'    => $item->getMutePerm(),
 					':packsize_id'  => $item->getPackSizeId()
-				]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function addDepartmentToItem($department, $item)
+		public function addDepartmentToItem(Department $department, Item $item) : ?int
 		{
-			$result = new DalResult();
-
 			try
 			{
+				$result = null;
+
 				$query = $this->ShopDb->conn->prepare("INSERT INTO item_dept_link (dept_id, item_id) VALUES (:dept_id, :item_id)");
-				$result->setResult($query->execute(
+				$query->execute(
 				[
 					':dept_id' => $department->getId(),
 					':item_id' => $item->getId()
-				]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				]);
 
-			return $result;
+				$result = $this->ShopDb->conn->lastInsertId();
+
+				return $result;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function removeDepartmentsFromItem($dept_ids, $item_id)
+		public function removeDepartmentsFromItem(array $deptIds, int $itemId) : bool
 		{
-			$result = new DalResult();
+			$queryString = "";
+			$queryValues = [':item_id' => $itemId];
 
-			$query_string = "";
-			$query_values = [':item_id' => $item_id];
-
-			foreach ($dept_ids as $key => $dept_id)
+			foreach ($deptIds as $key => $deptId)
 			{
-				$query_string.= ":dept_id".$key.", ";
-				$query_values[":dept_id".$key] = $dept_id;
+				$queryString.= ":dept_id".$key.", ";
+				$queryValues[":dept_id".$key] = $deptId;
 			}
 
-			$query_string = rtrim($query_string, ", ");
+			$queryString = rtrim($queryString, ", ");
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("DELETE FROM item_dept_link WHERE dept_id IN (".$query_string.") AND item_id = :item_id");
-				$result->setResult($query->execute($query_values));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				$query = $this->ShopDb->conn->prepare("DELETE FROM item_dept_link WHERE dept_id IN (".$queryString.") AND item_id = :item_id");
+				$success = $query->execute($queryValues);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function getItemDepartmentLookupArray()
+		public function getItemDepartmentLookupArray() : ?array
 		{
-			$result = new DalResult();
-			$departments_lookup = false;
-
 			try
 			{
+				$departments_lookup = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT idl.dept_id, idl.item_id FROM item_dept_link AS idl");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -502,14 +511,16 @@
 					}
 				}
 
-				$result->setResult($departments_lookup);
+				return $departments_lookup;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function resetMuteTemps() : bool

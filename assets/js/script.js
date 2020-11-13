@@ -257,36 +257,39 @@ function manageItems()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					var html = data.partial_view;
+				toastr.error("Could not add Department to Item: unknown error");
+				console.log(data);
 
-					$(".department-items-container").append(html);
-					$(".department-items-container").find(".no-results").remove();
-					selectedOption.remove();
-
-					toastr.success("Department successfully added to Item");
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not add Department to Item");
+				toastr.error(`Could not add Department to Item: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			let html = data.partial_view;
+
+			if (html == null)
+			{
+				toastr.error("Could not add Department to Item: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$(".department-items-container").append(html);
+			$(".department-items-container").find(".no-results").remove();
+			selectedOption.remove();
+
+			toastr.success("Department successfully added to Item");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -391,33 +394,36 @@ function manageItems()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					departmentItemsContainer.find(".primary-dept").removeClass("primary-dept");
-					form.addClass("primary-dept");
+				toastr.error("Could not set Primary Department: unknown error");
+				console.log(data);
 
-					toastr.success("Primary Department successfully set");
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not set Primary Department");
+				toastr.error(`Could not set Primary Department: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			if (data.result == null)
+			{
+				toastr.error("Could not set Primary Department: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			departmentItemsContainer.find(".primary-dept").removeClass("primary-dept");
+			form.addClass("primary-dept");
+
+			toastr.success("Primary Department successfully set");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -1215,17 +1221,31 @@ function manageDepts()
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (!data)
 				{
-					if (data.exception == null)
-					{
-						toastr.success("Department successfully updated");
-					}
+					toastr.error("Could not update Department: unknown error");
+					console.log(data);
+
+					return false;
 				}
-				else
+
+				if (data.exception != null)
 				{
-					toastr.error("Could not update Department");
+					toastr.error(`Could not update Department: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
 				}
+
+				if (data.result == null)
+				{
+					toastr.error("Could not update Department: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				toastr.success("Department successfully updated");
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");

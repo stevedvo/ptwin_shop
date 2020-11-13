@@ -231,26 +231,28 @@
 			return $result;
 		}
 
-		public function updateDepartment($department)
+		public function updateDepartment(Department $department) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("UPDATE departments SET dept_name = :dept_name, seq = :seq WHERE dept_id = :dept_id");
-				$result->setResult($query->execute(
+				$success = $query->execute(
 				[
 					':dept_name' => $department->getName(),
 					':seq'       => $department->getSeq(),
 					':dept_id'   => $department->getId()
-				]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function removeDepartment($department)

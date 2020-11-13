@@ -199,31 +199,101 @@
 			return $this->dal->getItemsByListId($list_id);
 		}
 
-		public function updateItem($item)
+		public function updateItem(Item $item) : bool
 		{
-			return $this->dal->updateItem($item);
+			try
+			{
+				$success = $this->dal->updateItem($item);
+
+				if (!$success)
+				{
+					throw new Exception("Error updating Item");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function addDepartmentToItem($department, $item)
+		public function addDepartmentToItem(Department $department, Item $item) : int
 		{
-			return $this->dal->addDepartmentToItem($department, $item);
+			try
+			{
+				$result = $this->dal->addDepartmentToItem($department, $item);
+
+				if (!is_numeric($result))
+				{
+					throw new Exception("Error adding Department to Item");
+				}
+
+				return $result;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function setItemPrimaryDepartment($department, $item)
+		public function setItemPrimaryDepartment(Department $department, Item $item) : bool
 		{
-			$item->setPrimaryDept($department->getId());
+			try
+			{
+				$item->setPrimaryDept($department->getId());
 
-			return $this->dal->updateItem($item);
+				$success = $this->dal->updateItem($item);
+
+				if (!$success)
+				{
+					throw new Exception("Error setting Primary Department to Item");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function removeDepartmentsFromItem($dept_ids, $item_id)
+		public function removeDepartmentsFromItem(array $deptIds, int $itemId) : bool
 		{
-			return $this->dal->removeDepartmentsFromItem($dept_ids, $item_id);
+			try
+			{
+				$success = $this->dal->removeDepartmentsFromItem($deptIds, $itemId);
+
+				if (!$success)
+				{
+					throw new Exception("Error removing Departments from Item");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function getItemDepartmentLookupArray()
+		public function getItemDepartmentLookupArray() : array
 		{
-			return $this->dal->getItemDepartmentLookupArray();
+			try
+			{
+				$departments_lookup = $this->dal->getItemDepartmentLookupArray();
+
+				if (!is_array($departments_lookup))
+				{
+					throw new Exception("Error getting Item/Department lookups");
+				}
+
+				return $departments_lookup;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function resetMuteTemps() : bool

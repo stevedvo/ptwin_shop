@@ -109,9 +109,16 @@
 			return $this->dal->removeItemsFromDepartment($item_ids, $dept_id);
 		}
 
-		public function updateDepartment($department)
+		public function updateDepartment(Department $department) : bool
 		{
-			return $this->dal->updateDepartment($department);
+			try
+			{
+				return $this->dal->updateDepartment($department);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function removeDepartment($department)
