@@ -186,7 +186,7 @@
 				$success = $query->execute(
 				[
 					':list_id' => $list->getId(),
-					':item_id' => $item->getId()
+					':item_id' => $item->getId(),
 				]);
 
 				return $success;
@@ -201,25 +201,25 @@
 			}
 		}
 
-		public function updateList($list)
+		public function updateList(ShopList $list) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("UPDATE lists SET name = :name WHERE list_id = :list_id");
-				$result->setResult($query->execute(
+				$success = $query->execute(
 				[
 					':name'    => $list->getName(),
-					':list_id' => $list->getId()
-				]));
+					':list_id' => $list->getId(),
+				]);
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function removeList($list)

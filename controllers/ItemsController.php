@@ -365,9 +365,7 @@
 				$item->setMuteTemp($item_update->getMuteTemp());
 				$item->setMutePerm($item_update->getMutePerm());
 
-				$success = $this->items_service->updateItem($item);
-
-				$dalResult->setResult($success);
+				$dalResult->setResult($this->items_service->updateItem($item));
 
 				$this->items_service->closeConnexion();
 

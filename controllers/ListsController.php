@@ -149,35 +149,37 @@
 			}
 		}
 
-		public function editList($request)
+		public function editList(array $request) : string
 		{
-			$list = createList($request);
+			$dalResult = new DalResult();
 
-			if (!entityIsValid($list))
+			try
 			{
-				return false;
-			}
+				$list_update = createList($request);
 
-			if (is_null($list->getId()))
+				if (!entityIsValid($list_update))
+				{
+					$dalResult->setException(new Exception("List is not valid"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$list = $this->lists_service->verifyListRequest($request);
+
+				$list->setName($list_update->getName());
+
+				$dalResult->setResult($this->lists_service->updateList($list));
+
+				$this->lists_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->lists_service->getListById($list->getId());
-
-			if (!$dalResult->getResult() instanceof ShopList)
-			{
-				return false;
-			}
-
-			$list_update = $dalResult->getResult();
-
-			$list_update->setName($list->getName());
-
-			$dalResult = $this->lists_service->updateList($list_update);
-			$this->lists_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 
 		public function removeList($request)

@@ -209,22 +209,33 @@ function manageItems()
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (!data)
 				{
-					if (data.exception == null)
-					{
-						toastr.success("Item successfully updated");
-					}
-					else
-					{
-						toastr.error("PDOException");
-						console.log(data);
-					}
+					toastr.error("Could not save Item: unknown error");
+					console.log(data);
+
+					return false;
 				}
-				else
+
+				if (data.exception != null)
 				{
-					toastr.error("Could not save Item");
+					toastr.error(`Could not save Item: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
 				}
+
+				if (!data.result)
+				{
+					toastr.error("Could not save Item: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				toastr.success("Item successfully updated");
+
+				return true;
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");
@@ -328,40 +339,43 @@ function manageItems()
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (!data)
 				{
-					if (data.result == true)
-					{
-						$.each(selectedItems, function()
-						{
-							$(this).remove();
-						});
+					toastr.error("Could not remove Department(s) from Item: unknown error");
+					console.log(data);
 
-						if (departmentItemsContainer.find(".result-item").length == 0)
-						{
-							departmentItemsContainer.html('<p class="no-results">Not added to any Departments.</p>');
-						}
-
-						toastr.success("Department(s) successfully detached from Item");
-					}
-					else
-					{
-						if (data.exception != null)
-						{
-							toastr.error("PDOException");
-							console.log(data.exception);
-						}
-						else
-						{
-							toastr.error("Unspecified error");
-							console.log(data);
-						}
-					}
+					return false;
 				}
-				else
+
+				if (data.exception != null)
 				{
-					toastr.error("Could not remove Department(s) from Item");
+					toastr.error(`Could not remove Department(s) from Item: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
 				}
+
+				if (!data.result)
+				{
+					toastr.error("Could not remove Department(s) from Item: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				$.each(selectedItems, function()
+				{
+					$(this).remove();
+				});
+
+				if (departmentItemsContainer.find(".result-item").length == 0)
+				{
+					departmentItemsContainer.html('<p class="no-results">Not added to any Departments.</p>');
+				}
+
+				toastr.success("Department(s) successfully detached from Item");
+
+				return true;
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");
@@ -582,44 +596,46 @@ function manageItems()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.exception != null)
-				{
-					toastr.error("Could not update Item: PDOException");
-					console.log(data.exception);
-				}
-				else
-				{
-					if (!data.result)
-					{
-						toastr.error("Could not update Item: Unspecified error");
-						console.log(data);
-					}
-					else
-					{
-						toastr.success("Item suggestion successfully muted");
+				toastr.error("Could not mute Item: unknown error");
+				console.log(data);
 
-						if (form.hasClass("fade-on-mute"))
-						{
-							form.fadeOut(function()
-							{
-								form.remove();
-							});
-						}
-						else
-						{
-							form.removeClass("unmuted-"+muteBasis);
-							form.addClass("muted-"+muteBasis);
-						}
-					}
-				}
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not mute Item: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
+			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not mute Item: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Item suggestion successfully muted");
+
+			if (form.hasClass("fade-on-mute"))
+			{
+				form.fadeOut(function()
+				{
+					form.remove();
+				});
 			}
 			else
 			{
-				toastr.error("Could not mute Item");
-				console.log(data);
+				form.removeClass("unmuted-"+muteBasis);
+				form.addClass("muted-"+muteBasis);
 			}
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -652,34 +668,36 @@ function manageItems()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.exception != null)
-				{
-					toastr.error("Could not update Item: PDOException");
-					console.log(data.exception);
-				}
-				else
-				{
-					if (!data.result)
-					{
-						toastr.error("Could not update Item: Unspecified error");
-						console.log(data);
-					}
-					else
-					{
-						toastr.success("Item successfully unmuted");
-
-						form.removeClass("muted-"+muteBasis);
-						form.addClass("unmuted-"+muteBasis);
-					}
-				}
-			}
-			else
-			{
-				toastr.error("Could not unmute Item");
+				toastr.error("Could not unmute Item: unknown error");
 				console.log(data);
+
+				return false;
 			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not unmute Item: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
+			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not unmute Item: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Item successfully unmuted");
+
+			form.removeClass("muted-"+muteBasis);
+			form.addClass("unmuted-"+muteBasis);
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -2387,15 +2405,33 @@ function adminFuncs()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				toastr.success("Done");
-			}
-			else
-			{
-				toastr.error("Fail");
+				toastr.error("Could not reset Primary Departments: unknown error");
 				console.log(data);
+
+				return false;
 			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not reset Primary Departments: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
+			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not reset Primary Departments: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Done");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");

@@ -100,9 +100,23 @@
 			}
 		}
 
-		public function updateList($list)
+		public function updateList(ShopList $list) : bool
 		{
-			return $this->dal->updateList($list);
+			try
+			{
+				$success = $this->dal->updateList($list);
+
+				if (!$success)
+				{
+					throw new Exception("Error updating List");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function removeList($list)
