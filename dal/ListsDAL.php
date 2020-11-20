@@ -180,8 +180,6 @@
 		{
 			try
 			{
-				$success = false;
-
 				$query = $this->ShopDb->conn->prepare("UPDATE items SET list_id = :list_id WHERE item_id = :item_id");
 				$success = $query->execute(
 				[
@@ -211,6 +209,8 @@
 					':name'    => $list->getName(),
 					':list_id' => $list->getId(),
 				]);
+
+				return $success;
 			}
 			catch(PDOException $PdoException)
 			{
@@ -222,48 +222,52 @@
 			}
 		}
 
-		public function removeList($list)
+		public function removeList(ShopList $list) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("DELETE FROM lists WHERE list_id = :list_id");
-				$result->setResult($query->execute([':list_id' => $list->getId()]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				$success = $query->execute([':list_id' => $list->getId()]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function moveItemsToList($items, $list)
+		public function moveItemsToList(array $items, ShopList $list) : bool
 		{
-			$result = new DalResult();
-
-			$query_string = "";
-			$query_values = [':list_id' => $list->getId()];
-
-			foreach ($items as $key => $item)
-			{
-				$query_string.= ":id_".$key.", ";
-				$query_values[":id_".$key] = $item->getId();
-			}
-
-			$query_string = rtrim($query_string, ", ");
-
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("UPDATE items SET list_id = :list_id WHERE item_id IN (".$query_string.")");
-				$result->setResult($query->execute($query_values));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				$query_string = "";
+				$query_values = [':list_id' => $list->getId()];
 
-			return $result;
+				foreach ($items as $key => $item)
+				{
+					$query_string.= ":id_".$key.", ";
+					$query_values[":id_".$key] = $item->getId();
+				}
+
+				$query_string = rtrim($query_string, ", ");
+
+				$query = $this->ShopDb->conn->prepare("UPDATE items SET list_id = :list_id WHERE item_id IN (".$query_string.")");
+				$success = $query->execute($query_values);
+
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 	}

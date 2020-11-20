@@ -89,24 +89,23 @@
 			}
 		}
 
-		public function getItemsById($item_ids)
+		public function getItemsById(array $item_ids) : ?array
 		{
-			$result = new DalResult();
-			$items = false;
-
-			$query_string = "";
-			$query_values = [];
-
-			foreach ($item_ids as $key => $item_id)
-			{
-				$query_string.= ":id_".$key.", ";
-				$query_values[":id_".$key] = $item_id;
-			}
-
-			$query_string = rtrim($query_string, ", ");
-
 			try
 			{
+				$items = null;
+
+				$query_string = "";
+				$query_values = [];
+
+				foreach ($item_ids as $key => $item_id)
+				{
+					$query_string.= ":id_".$key.", ";
+					$query_values[":id_".$key] = $item_id;
+				}
+
+				$query_string = rtrim($query_string, ", ");
+
 				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM items AS i WHERE i.item_id IN (".$query_string.")");
 				$query->execute($query_values);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -123,14 +122,16 @@
 					}
 				}
 
-				$result->setResult($items);
+				return $items;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getItemByDescription(string $description) : ?Item

@@ -866,29 +866,48 @@ function manageLists()
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (!data)
 				{
-					var options = "";
+					toastr.error("Could not add Items to List: unknown error");
+					console.log(data);
 
-					$.each(selectedItems, function()
-					{
-						options+= '<option data-item_id="'+$(this).data("item_id")+'">'+$(this).data("description")+'</option>'
-					});
-
-					$("select.item-selection").append(options);
-					selectedItems.remove();
-
-					if (listItemsContainer.find("p").length == 0)
-					{
-						listItemsContainer.append('<button class="btn btn-danger btn-sm no-results js-remove-list">Remove List</button>');
-					}
-
-					toastr.success("Items successfully added to List");
+					return false;
 				}
-				else
+
+				if (data.exception != null)
 				{
-					toastr.error("Could not add Items to List");
+					toastr.error(`Could not add Items to List: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
 				}
+
+				if (!data.result)
+				{
+					toastr.error("Could not add Items to List: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				let options = "";
+
+				$.each(selectedItems, function()
+				{
+					options+= '<option data-item_id="'+$(this).data("item_id")+'">'+$(this).data("description")+'</option>'
+				});
+
+				$("select.item-selection").append(options);
+				selectedItems.remove();
+
+				if (listItemsContainer.find("p").length == 0)
+				{
+					listItemsContainer.append('<button class="btn btn-danger btn-sm no-results js-remove-list">Remove List</button>');
+				}
+
+				toastr.success("Items successfully added to List");
+
+				return true;
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");
@@ -937,17 +956,33 @@ function manageLists()
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (!data)
 				{
-					if (data.exception == null)
-					{
-						toastr.success("List successfully updated");
-					}
+					toastr.error("Could not update List: unknown error");
+					console.log(data);
+
+					return false;
 				}
-				else
+
+				if (data.exception != null)
 				{
-					toastr.error("Could not update List");
+					toastr.error(`Could not update List: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
 				}
+
+				if (!data.result)
+				{
+					toastr.error("Could not update List: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				toastr.success("List successfully updated");
+
+				return true;
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");
@@ -973,21 +1008,38 @@ function manageLists()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.exception == null)
-				{
-					toastr.success("List successfully removed");
-					var timer = setTimeout(function()
-					{
-						location.href = constants.SITEURL+"/lists/";
-					}, 750);
-				}
+				toastr.error("Could not remove List: unknown error");
+				console.log(data);
+
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not remove List");
+				toastr.error(`Could not remove List: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not remove List: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("List successfully removed");
+
+			var timer = setTimeout(function()
+			{
+				location.href = constants.SITEURL+"/lists/";
+			}, 750);
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");

@@ -151,9 +151,23 @@
 			}
 		}
 
-		public function getItemsById($item_ids)
+		public function getItemsById(array $item_ids) : array
 		{
-			return $this->dal->getItemsById($item_ids);
+			try
+			{
+				$items = $this->dal->getItemsById($item_ids);
+
+				if (!is_array($items))
+				{
+					throw new Exception("Items not found");
+				}
+
+				return $items;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getItemByDescription(string $description) : Item

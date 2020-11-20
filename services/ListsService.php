@@ -17,19 +17,12 @@
 		{
 			try
 			{
-				$list = null;
-
 				if (!is_numeric($request['list_id']))
 				{
 					throw new Exception("Invalid List ID");
 				}
 
-				$list = $this->dal->getListById(intval($request['list_id']));
-
-				if (!($list instanceof ShopList))
-				{
-					throw new Exception("List not found");
-				}
+				$list = $this->getListById(intval($request['list_id']));
 
 				return $list;
 			}
@@ -78,9 +71,23 @@
 			}
 		}
 
-		public function getListById($list_id)
+		public function getListById(int $list_id) : ShopList
 		{
-			return $this->dal->getListById($list_id);
+			try
+			{
+				$list = $this->dal->getListById($list_id);
+
+				if (!($list instanceof ShopList))
+				{
+					throw new Exception("List not found");
+				}
+
+				return $list;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getListByName($list_name)
@@ -119,13 +126,41 @@
 			}
 		}
 
-		public function removeList($list)
+		public function removeList(ShopList $list) : bool
 		{
-			return $this->dal->removeList($list);
+			try
+			{
+				$success = $this->dal->removeList($list);
+
+				if (!$success)
+				{
+					throw new Exception("Error removing List");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function moveItemsToList($items, $list)
+		public function moveItemsToList(array $items, ShopList $list) : bool
 		{
-			return $this->dal->moveItemsToList($items, $list);
+			try
+			{
+				$success = $this->dal->moveItemsToList($items, $list);
+
+				if (!$success)
+				{
+					throw new Exception("Error moving Items to List");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 	}

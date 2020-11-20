@@ -182,97 +182,98 @@
 			}
 		}
 
-		public function removeList($request)
+		public function removeList(array $request) : string
 		{
-			if (!isset($request['list_id']) || !is_numeric($request['list_id']))
+			$dalResult = new DalResult();
+
+			try
 			{
-				return false;
+				$list = $this->lists_service->verifyListRequest($request);
+
+				if (sizeof($list->getItems()) > 0)
+				{
+					$dalResult->setException(new Exception("Cannot remove List whilst it has Items in it"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$dalResult->setResult($this->lists_service->removeList($list));
+
+				$this->lists_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->items_service->getItemsByListId(intval($request['list_id']));
-
-			if (!is_null($dalResult->getException()))
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$items = $dalResult->getResult();
-
-			if (is_array($items) && sizeof($items) > 0)
-			{
-				return false;
-			}
-
-			$dalResult = $this->lists_service->getListById(intval($request['list_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$list = $dalResult->getResult();
-			}
-
-			if (!$list)
-			{
-				return false;
-			}
-
-			$dalResult = $this->lists_service->removeList($list);
-			$this->lists_service->closeConnexion();
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 
-		public function moveItemsToList($request)
+		public function moveItemsToList(array $request) : string
 		{
-			$item_ids = (isset($request['item_ids']) && is_array($request['item_ids'])) ? $request['item_ids'] : null;
-			$list_id = (isset($request['list_id']) && is_numeric($request['list_id'])) ? intval($request['list_id']) : null;
+			$dalResult = new DalResult();
 
-			if (is_null($item_ids) || is_null($list_id))
+			try
 			{
-				return false;
-			}
+				$item_ids = (isset($request['item_ids']) && is_array($request['item_ids'])) ? $request['item_ids'] : null;
 
-			if (sizeof($item_ids) == 0)
+				if (!is_array($item_ids))
+				{
+					$dalResult->setException(new Exception("Item IDs is not a valid array"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				if (sizeof($item_ids) == 0)
+				{
+					$dalResult->setException(new Exception("No Items to move"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$sanitised_ids = [];
+
+				foreach ($item_ids as $item_id)
+				{
+					$sanitised_id = intval($item_id);
+
+					if ($sanitised_id === 0)
+					{
+						$dalResult->setException(new Exception($item_id." is not a valid Item ID"));
+
+						return $dalResult->jsonSerialize();
+					}
+
+					$sanitised_ids[] = $sanitised_id;
+				}
+
+				sort($sanitised_ids);
+
+				$items = $this->items_service->getItemsById($sanitised_ids);
+
+				if ($sanitised_ids !== array_keys($items))
+				{
+					$dalResult->setException(new Exception("Item IDs in request not matched with Item IDs pulled from DB"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$list = $this->lists_service->verifyListRequest($request);
+
+				$dalResult->setResult($this->lists_service->moveItemsToList($items, $list));
+
+				$this->lists_service->closeConnexion();
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$sanitised_ids = [];
-
-			foreach ($item_ids as $item_id)
-			{
-				$sanitised_ids[] = intval($item_id);
-			}
-
-			sort($sanitised_ids);
-
-			$dalResult = $this->items_service->getItemsById($sanitised_ids);
-
-			if (is_null($dalResult->getResult()))
-			{
-				return false;
-			}
-
-			$items = $dalResult->getResult();
-
-			if ($sanitised_ids !== array_keys($items))
-			{
-				return false;
-			}
-
-			$dalResult = $this->lists_service->getListById($list_id);
-
-			if (is_null($dalResult->getResult()))
-			{
-				return false;
-			}
-
-			$list = $dalResult->getResult();
-
-			$dalResult = $this->lists_service->moveItemsToList($items, $list);
-			$this->lists_service->closeConnexion();
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 	}
