@@ -22,9 +22,7 @@
 					throw new Exception("Invalid List ID");
 				}
 
-				$list = $this->getListById(intval($request['list_id']));
-
-				return $list;
+				return $this->getListById(intval($request['list_id']));
 			}
 			catch (Exception $e)
 			{

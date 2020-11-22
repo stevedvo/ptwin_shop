@@ -40,14 +40,14 @@
 			}
 		}
 
-		public function getLuckyDipById(int $luckyDip_id) : ?LuckyDip
+		public function getLuckyDipById(int $luckyDipId) : ?LuckyDip
 		{
 			$luckyDip = null;
 
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("SELECT ld.id AS luckyDip_id, ld.name AS luckyDip_name, ld.list_id AS luckyDip_list_id, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM lucky_dips AS ld LEFT JOIN items AS i ON (i.luckydip_id = ld.id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE ld.id = :id ORDER BY i.description");
-				$query->execute([':id' => $luckyDip_id]);
+				$query->execute([':id' => $luckyDipId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
 				if ($rows)
@@ -242,25 +242,27 @@
 		// 	return $result;
 		// }
 
-		public function addItemToLuckyDip(Item $item, LuckyDip $luckyDip) : DalResult
+		public function addItemToLuckyDip(Item $item, LuckyDip $luckyDip) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("UPDATE items SET luckydip_id = :luckyDip_id WHERE item_id = :item_id");
-				$result->setResult($query->execute(
+				$success = $query->execute(
 				[
 					':luckyDip_id' => $luckyDip->getId(),
 					':item_id'     => $item->getId()
-				]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function removeItemFromLuckyDip(Item $item, LuckyDip $luckyDip) : DalResult

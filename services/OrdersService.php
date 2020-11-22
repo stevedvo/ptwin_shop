@@ -118,9 +118,7 @@
 					return $existingOrderItem;
 				}
 
-				$orderItem = $this->dal->addOrderItem($orderItem);
-
-				return $orderItem;
+				return $this->dal->addOrderItem($orderItem);
 			}
 			catch (Exception $e)
 			{

@@ -255,21 +255,23 @@
 			}
 		}
 
-		public function removeDepartment($department)
+		public function removeDepartment(Department $department) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("DELETE FROM departments WHERE dept_id = :dept_id");
-				$result->setResult($query->execute([':dept_id' => $department->getId()]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				$success = $query->execute([':dept_id' => $department->getId()]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getPrimaryDepartments() : ?array

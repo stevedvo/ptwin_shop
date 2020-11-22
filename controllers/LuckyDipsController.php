@@ -137,12 +137,8 @@
 				$item = $this->items_service->verifyItemRequest($request);
 				$luckyDip = $this->luckyDips_service->verifyLuckyDipRequest($request);
 
-				$dalResult = $this->luckyDips_service->addItemToLuckyDip($item, $luckyDip);
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$dalResult->setPartialView(getPartialView("LuckyDipItem", ['item' => $item]));
-				}
+				$dalResult->setResult($this->luckyDips_service->addItemToLuckyDip($item, $luckyDip));
+				$dalResult->setPartialView(getPartialView("LuckyDipItem", ['item' => $item]));
 
 				$this->luckyDips_service->closeConnexion();
 				$this->items_service->closeConnexion();

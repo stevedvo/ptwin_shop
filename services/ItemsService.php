@@ -24,14 +24,7 @@
 					throw new Exception("Invalid Item ID");
 				}
 
-				$item = $this->dal->getItemById(intval($request['item_id']));
-
-				if (!($item instanceof Item))
-				{
-					throw new Exception("Item not found");
-				}
-
-				return $item;
+				return $this->getItemById(intval($request['item_id']));
 			}
 			catch (Exception $e)
 			{
@@ -139,11 +132,18 @@
 			}
 		}
 
-		public function getItemById($item_id) : ?Item
+		public function getItemById($itemId) : Item
 		{
 			try
 			{
-				return $this->dal->getItemById($item_id);
+				$item = $this->dal->getItemById($itemId);
+
+				if (!($item instanceof Item))
+				{
+					throw new Exception("Item not found");
+				}
+
+				return $item;
 			}
 			catch (Exception $e)
 			{

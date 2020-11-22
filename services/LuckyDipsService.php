@@ -26,14 +26,7 @@
 					throw new Exception("Invalid LuckyDip ID");
 				}
 
-				$luckyDip = $this->dal->getLuckyDipById(intval($request['luckyDip_id']));
-
-				if (!($luckyDip instanceof LuckyDip))
-				{
-					throw new Exception("LuckyDip not found");
-				}
-
-				return $luckyDip;
+				return $this->getLuckyDipById(intval($request['luckyDip_id']));
 			}
 			catch (Exception $e)
 			{
@@ -63,9 +56,23 @@
 		// 	return $this->dal->getAllLuckyDipsWithItems();
 		// }
 
-		public function getLuckyDipById($luckyDip_id) : DalResult
+		public function getLuckyDipById(int $luckyDipId) : LuckyDip
 		{
-			return $this->dal->getLuckyDipById($luckyDip_id);
+			try
+			{
+				$luckyDip = $this->dal->getLuckyDipById($luckyDipId);
+
+				if (!($luckyDip instanceof LuckyDip))
+				{
+					throw new Exception("LuckyDip not found");
+				}
+
+				return $luckyDip;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getLuckyDipByName(string $luckyDipName) : LuckyDip
@@ -120,9 +127,23 @@
 			}
 		}
 
-		public function addItemToLuckyDip(Item $item, LuckyDip $luckyDip) : DalResult
+		public function addItemToLuckyDip(Item $item, LuckyDip $luckyDip) : bool
 		{
-			return $this->dal->addItemToLuckyDip($item, $luckyDip);
+			try
+			{
+				$success = $this->dal->addItemToLuckyDip($item, $luckyDip);
+
+				if (!$success)
+				{
+					throw new Exception("Error adding Item to LuckyDip");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function removeItemFromLuckyDip(Item $item, LuckyDip $luckyDip) : DalResult

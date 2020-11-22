@@ -24,14 +24,7 @@
 					throw new Exception("Invalid Department ID");
 				}
 
-				$department = $this->dal->getDepartmentById(intval($request['dept_id']));
-
-				if (!($department instanceof Department))
-				{
-					throw new Exception("Department not found");
-				}
-
-				return $department;
+				return $this->getDepartmentById(intval($request['dept_id']));
 			}
 			catch (Exception $e)
 			{
@@ -82,9 +75,23 @@
 			}
 		}
 
-		public function getDepartmentById($dept_id)
+		public function getDepartmentById(int $dept_id) : Department
 		{
-			return $this->dal->getDepartmentById($dept_id);
+			try
+			{
+				$department = $this->dal->getDepartmentById($dept_id);
+
+				if (!($department instanceof Department))
+				{
+					throw new Exception("Department not found");
+				}
+
+				return $department;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getDepartmentByName($dept_name)
@@ -121,9 +128,23 @@
 			}
 		}
 
-		public function removeDepartment($department)
+		public function removeDepartment(Department $department) : bool
 		{
-			return $this->dal->removeDepartment($department);
+			try
+			{
+				$success = $this->dal->removeDepartment($department);
+
+				if (!$success)
+				{
+					throw new Exception("Unable to remove Department")
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getPrimaryDepartments() : array

@@ -237,43 +237,32 @@
 			}
 		}
 
-		public function removeDepartment($request)
+		public function removeDepartment(array $request) : string
 		{
-			if (!isset($request['dept_id']) || !is_numeric($request['dept_id']))
+			$dalResult = new DalResult();
+
+			try
 			{
-				return false;
+				$department = $this->departments_service->verifyDepartmentRequest($request);
+
+				if (sizeof($department->getItems()) > 0)
+				{
+					$dalResult->setException(new Exception("Cannot remove Department whilst it has Items in it"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$dalResult->setResult($this->departments_service->removeDepartment($department));
+
+				$this->departments_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->items_service->getItemsByDepartmentId(intval($request['dept_id']));
-
-			if (!is_null($dalResult->getException()))
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$items = $dalResult->getResult();
-
-			if (is_array($items) && sizeof($items) > 0)
-			{
-				return false;
-			}
-
-			$dalResult = $this->departments_service->getDepartmentById(intval($request['dept_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$department = $dalResult->getResult();
-			}
-
-			if (!$department)
-			{
-				return false;
-			}
-
-			$dalResult = $this->departments_service->removeDepartment($department);
-			$this->departments_service->closeConnexion();
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 	}

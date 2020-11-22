@@ -1316,6 +1316,8 @@ function manageDepts()
 				}
 
 				toastr.success("Department successfully updated");
+
+				return true;
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");
@@ -1341,34 +1343,38 @@ function manageDepts()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					toastr.success("Department successfully removed");
-					var timer = setTimeout(function()
-					{
-						location.href = constants.SITEURL+"/departments/";
-					}, 750);
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				toastr.error("Could not remove Department: unknown error");
+				console.log(data);
+
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not remove Department");
+				toastr.error(`Could not remove Department: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not remove Department: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Department successfully removed");
+
+			var timer = setTimeout(function()
+			{
+				location.href = constants.SITEURL+"/departments/";
+			}, 750);
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -2740,36 +2746,39 @@ function manageLuckyDips()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					var html = data.partial_view;
+				toastr.error("Could not add Item to Lucky Dip: unknown error");
+				console.log(data);
 
-					$(".luckyDip-items-container").append(html);
-					$(".luckyDip-items-container").find(".no-results").remove();
-					selectedOption.remove();
-
-					toastr.success("Item successfully added to Lucky Dip");
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not add Item to Lucky Dip");
+				toastr.error(`Could not add Item to Lucky Dip: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			let html = data.partial_view;
+
+			if (html == null)
+			{
+				toastr.error("Could not add Item to Lucky Dip: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$(".luckyDip-items-container").append(html);
+			$(".luckyDip-items-container").find(".no-results").remove();
+			selectedOption.remove();
+
+			toastr.success("Item successfully added to Lucky Dip");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
