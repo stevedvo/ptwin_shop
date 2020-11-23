@@ -63,9 +63,23 @@
 			}
 		}
 
-		public function getAllItemsNotInLuckyDip(int $luckyDip_id) : DalResult
+		public function getAllItemsNotInLuckyDip(int $luckyDipId) : array
 		{
-			return $this->dal->getAllItemsNotInLuckyDip($luckyDip_id);
+			try
+			{
+				$items = $this->dal->getAllItemsNotInLuckyDip($luckyDipId);
+
+				if (!is_array($items))
+				{
+					throw new Exception("Items not found");
+				}
+
+				return $items;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getAllItemsNotInMeal(int $mealId) : array

@@ -312,7 +312,7 @@
 			}
 		}
 
-		public function Edit(int? $request = null) : void
+		public function Edit(?int $request = null) : void
 		{
 			$pageData =
 			[

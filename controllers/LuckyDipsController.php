@@ -79,53 +79,55 @@
 			}
 		}
 
-		public function Edit($request = null) : void
+		public function Edit(?int $request = null) : void
 		{
-			$luckyDip = $all_items = null;
-
-			if (is_numeric($request))
-			{
-				$dalResult = $this->luckyDips_service->getLuckyDipById(intval($request));
-
-				$luckyDip = $dalResult->getResult();
-
-				if (!is_null($luckyDip))
-				{
-					$dalResult = $this->items_service->getAllItemsNotInLuckyDip($luckyDip->getId());
-					$all_items = $dalResult->getResult();
-
-					$dalResult = $this->lists_service->getAllLists();
-					$lists = $dalResult->getResult();
-				}
-			}
-
-			$this->luckyDips_service->closeConnexion();
-			$this->items_service->closeConnexion();
-			$this->lists_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'Edit Lucky Dip',
-				'breadcrumb' =>
-				[
-					[
-						'link' => '/luckydips/',
-						'text' => 'Lucky Dips'
-					],
-					[
-						'text' => 'Edit'
-					]
-				],
-				'template'   => 'views/luckyDips/edit.php',
-				'page_data'  =>
-				[
-					'luckyDip'  => $luckyDip,
-					'all_items' => $all_items,
-					'lists'     => $lists
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => [],
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$luckyDip = $this->luckyDips_service->verifyLuckyDipRequest(['luckyDip_id' => $request]);
+				$allItems = $this->items_service->getAllItemsNotInLuckyDip($luckyDip->getId());
+				$lists = $this->lists_service->getAllLists();
+
+				$this->luckyDips_service->closeConnexion();
+				$this->items_service->closeConnexion();
+				$this->lists_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Edit Lucky Dip',
+					'breadcrumb' =>
+					[
+						[
+							'link' => '/luckydips/',
+							'text' => 'Lucky Dips'
+						],
+						[
+							'text' => 'Edit'
+						],
+					],
+					'template'   => 'views/luckyDips/edit.php',
+					'page_data'  =>
+					[
+						'luckyDip'  => $luckyDip,
+						'all_items' => $allItems,
+						'lists'     => $lists,
+					],
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
 		public function addItemToLuckyDip(array $request) : string
@@ -153,21 +155,27 @@
 			}
 		}
 
-		public function removeItemFromLuckyDip($request)
+		public function removeItemFromLuckyDip(array $request) : string
 		{
-			$item = $this->items_service->verifyItemRequest($request);
-			$luckyDip = $this->luckyDips_service->verifyLuckyDipRequest($request);
+			$dalResult = new DalResult();
 
-			if (!($item instanceof Item) || !($luckyDip instanceof LuckyDip))
+			try
 			{
-				return false;
+				$item = $this->items_service->verifyItemRequest($request);
+				$luckyDip = $this->luckyDips_service->verifyLuckyDipRequest($request);
+
+				$dalResult->setResult($this->luckyDips_service->removeItemFromLuckyDip($item));
+
+				$this->luckyDips_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
 
-			$dalResult = $this->luckyDips_service->removeItemFromLuckyDip($item, $luckyDip);
-
-			$this->luckyDips_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
+				return $dalResult->jsonSerialize();
+			}
 		}
 
 		public function editLuckyDip($request)

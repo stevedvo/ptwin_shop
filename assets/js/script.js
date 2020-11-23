@@ -2806,44 +2806,47 @@ function manageLuckyDips()
 				request    :
 				{
 					'item_id'     : itemID,
-					'luckyDip_id' : luckyDipID
-				}
+					'luckyDip_id' : luckyDipID,
+				},
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					form.remove();
+				toastr.error("Could not remove Item from Lucky Dip: unknown error");
+				console.log(data);
 
-					if (luckyDipItemsContainer.find(".result-item").length == 0)
-					{
-						luckyDipItemsContainer.html('<p class="no-results">No Items in this Lucky Dip</p><button class="btn btn-danger btn-sm no-results js-remove-luckyDip">Delete Lucky Dip</button>');
-					}
-
-					toastr.success("Item successfully removed from Lucky Dip");
-
-					reloadPartial("LuckyDipItemSelection", "Items", "getAllItemsNotInLuckyDip", { "luckyDip_id" : luckyDipID }, null, null, "POST");
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not remove Item from Lucky Dip");
+				toastr.error(`Could not remove Item from Lucky Dip: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not remove Item from Lucky Dip: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			form.remove();
+
+			if (luckyDipItemsContainer.find(".result-item").length == 0)
+			{
+				luckyDipItemsContainer.html('<p class="no-results">No Items in this Lucky Dip</p><button class="btn btn-danger btn-sm no-results js-remove-luckyDip">Delete Lucky Dip</button>');
+			}
+
+			toastr.success("Item successfully removed from Lucky Dip");
+
+			reloadPartial("LuckyDipItemSelection", "Items", "getAllItemsNotInLuckyDip", { "luckyDip_id" : luckyDipID }, null, null, "POST");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -3287,13 +3290,39 @@ function reloadPartial(id, controller, action, params, callback, onbeforeload, a
 		{
 			controller : controller,
 			action     : action,
-			request    : params
+			request    : params,
 		},
 		success : function(response)
 		{
-			target.html(response);
+			if (!response)
+			{
+				toastr.error("Could not reload Partial: unknown error");
+				console.log(response);
+
+				return false;
+			}
+
+			if (response.exception != null)
+			{
+				toastr.error(`Could not reload Partial: ${response.exception.message}`);
+				console.log(response);
+
+				return false;
+			}
+
+			let html = data.partial_view;
+
+			if (html == null)
+			{
+				toastr.error("Could not reload Partial: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			target.html(html);
 			reloadSuccessFunction(id, params, callback);
-		}
+		},
 	});
 }
 

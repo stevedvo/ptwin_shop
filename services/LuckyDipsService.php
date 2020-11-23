@@ -15,7 +15,7 @@
 			$this->dal->closeConnexion();
 		}
 
-		public function verifyLuckyDipRequest($request) : LuckyDip
+		public function verifyLuckyDipRequest(array $request) : LuckyDip
 		{
 			try
 			{
@@ -146,9 +146,23 @@
 			}
 		}
 
-		public function removeItemFromLuckyDip(Item $item, LuckyDip $luckyDip) : DalResult
+		public function removeItemFromLuckyDip(Item $item) : bool
 		{
-			return $this->dal->removeItemFromLuckyDip($item, $luckyDip);
+			try
+			{
+				$success = $this->dal->removeItemFromLuckyDip($item);
+
+				if (!$success)
+				{
+					throw new Exception("Error removing Item from LuckyDip");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function updateLuckyDip(LuckyDip $luckyDip) : DalResult

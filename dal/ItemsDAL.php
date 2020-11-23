@@ -196,15 +196,14 @@
 			}
 		}
 
-		public function getAllItemsNotInLuckyDip(int $luckyDip_id) : DalResult
+		public function getAllItemsNotInLuckyDip(int $luckyDipId) : ?array
 		{
-			$result = new DalResult();
-			$items = null;
-
 			try
 			{
+				$items = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id FROM items AS i WHERE i.luckydip_id != :luckydip_id OR luckydip_id IS NULL ORDER BY i.description");
-				$query->execute([':luckydip_id' => $luckyDip_id]);
+				$query->execute([':luckydip_id' => $luckyDipId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
 				if ($rows)
@@ -218,14 +217,16 @@
 					}
 				}
 
-				$result->setResult($items);
+				return $items;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getAllItemsNotInMeal(int $mealId) : array

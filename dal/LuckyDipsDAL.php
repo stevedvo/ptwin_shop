@@ -265,17 +265,14 @@
 			}
 		}
 
-		public function removeItemFromLuckyDip(Item $item, LuckyDip $luckyDip) : DalResult
+		public function removeItemFromLuckyDip(Item $item) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("UPDATE items SET luckydip_id = NULL WHERE item_id = :item_id");
-				$result->setResult($query->execute(
-				[
-					':item_id' => $item->getId()
-				]));
+				$success = $query->execute([':item_id' => $item->getId()]);
+
+				return $success;
 			}
 			catch(PDOException $e)
 			{

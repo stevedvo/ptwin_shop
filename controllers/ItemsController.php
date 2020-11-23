@@ -486,32 +486,26 @@
 
 		public function getAllItemsNotInLuckyDip(array $request) : string
 		{
-			(string)$partial_view = "";
+			$dalResult = new DalResult();
+			$dalResult->setPartialView("");
 
-			if (!isset($request['luckyDip_id']))
+			try
 			{
-				return $partial_view;
+				$luckyDip = $this->luckyDips_service->verifyLuckyDipRequest($request);
+				$items = $this->items_service->getAllItemsNotInLuckyDip($luckyDip->getId());
+
+				$dalResult->setPartialView(getPartialView("LuckyDipItemSelection", ['item_list' => $all_items]));
+
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$luckyDip_id = $request['luckyDip_id'];
-
-			if (!is_numeric($luckyDip_id))
+			catch (Exception $e)
 			{
-				return $partial_view;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->items_service->getAllItemsNotInLuckyDip(intval($luckyDip_id));
-
-			$all_items = $dalResult->getResult();
-
-			if (is_array($all_items))
-			{
-				$partial_view = getPartialView("LuckyDipItemSelection", ['item_list' => $all_items]);
-			}
-
-			$this->items_service->closeConnexion();
-
-			return $partial_view;
 		}
 
 		public function quickAddItem(array $request) : string
