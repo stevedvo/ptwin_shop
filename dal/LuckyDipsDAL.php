@@ -282,42 +282,46 @@
 			return $result;
 		}
 
-		public function updateLuckyDip(LuckyDip $luckyDip) : DalResult
+		public function updateLuckyDip(LuckyDip $luckyDip) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("UPDATE lucky_dips SET name = :name, list_id = :list_id WHERE id = :id");
-				$result->setResult($query->execute(
+				$success = $query->execute(
 				[
 					':name'    => $luckyDip->getName(),
 					':list_id' => $luckyDip->getListId(),
-					':id'      => $luckyDip->getId()
-				]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+					':id'      => $luckyDip->getId(),
+				]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function removeLuckyDip(LuckyDip $luckyDip) : DalResult
+		public function removeLuckyDip(LuckyDip $luckyDip) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("DELETE FROM lucky_dips WHERE id = :id");
-				$result->setResult($query->execute([':id' => $luckyDip->getId()]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				$success = $query->execute([':id' => $luckyDip->getId()]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 	}

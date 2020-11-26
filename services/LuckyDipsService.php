@@ -165,13 +165,41 @@
 			}
 		}
 
-		public function updateLuckyDip(LuckyDip $luckyDip) : DalResult
+		public function updateLuckyDip(LuckyDip $luckyDip) : bool
 		{
-			return $this->dal->updateLuckyDip($luckyDip);
+			try
+			{
+				$success = $this->dal->updateLuckyDip($luckyDip);
+
+				if (!$success)
+				{
+					throw new Exception("Error updating LuckyDip");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function removeLuckyDip(LuckyDip $luckyDip) : DalResult
+		public function removeLuckyDip(LuckyDip $luckyDip) : bool
 		{
-			return $this->dal->removeLuckyDip($luckyDip);
+			try
+			{
+				$success = $this->dal->removeLuckyDip($luckyDip);
+
+				if (!$success)
+				{
+					throw new Exception("Error removing LuckyDip");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 	}

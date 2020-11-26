@@ -2896,17 +2896,33 @@ function manageLuckyDips()
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (!data)
 				{
-					if (data.exception == null)
-					{
-						toastr.success("Lucky Dip successfully updated");
-					}
+					toastr.error("Could not update Lucky Dip: unknown error");
+					console.log(data);
+
+					return false;
 				}
-				else
+
+				if (data.exception == null)
 				{
-					toastr.error("Could not update Lucky Dip");
+					toastr.error(`Could not update Lucky Dip: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
 				}
+
+				if (!data.result)
+				{
+					toastr.error("Could not update Lucky Dip: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				toastr.success("Lucky Dip successfully updated");
+
+				return true;
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");
@@ -2932,34 +2948,38 @@ function manageLuckyDips()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					toastr.success("Lucky Dip successfully removed");
-					var timer = setTimeout(function()
-					{
-						location.href = constants.SITEURL+"/luckydips/";
-					}, 750);
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				toastr.error("Could not remove Lucky Dip: unknown error");
+				console.log(data);
+
+				return false;
 			}
-			else
+
+			if (data.exception == null)
 			{
-				toastr.error("Could not remove Lucky Dip");
+				toastr.error(`Could not remove Lucky Dip: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not remove Lucky Dip: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Lucky Dip successfully removed");
+
+			let timer = setTimeout(function()
+			{
+				location.href = constants.SITEURL+"/luckydips/";
+			}, 750);
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
