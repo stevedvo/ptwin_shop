@@ -25,7 +25,7 @@
 			[
 				'page_title' => 'Not Found',
 				'template'   => 'views/404.php',
-				'page_data'  => []
+				'page_data'  => [],
 			];
 
 			try
@@ -57,7 +57,7 @@
 					[
 						'page_title' => 'Manage Items',
 						'template'   => 'views/items/index.php',
-						'page_data'  => ['all_items' => $allItems]
+						'page_data'  => ['all_items' => $allItems],
 					];
 				}
 				elseif ($viewBy == "suggestions")
@@ -86,7 +86,7 @@
 							'suggested_items'      => $suggestedItems,
 							'consumption_interval' => $consumptionInterval,
 							'consumption_period'   => $consumptionPeriod
-						]
+						],
 					];
 				}
 				elseif ($viewBy == "muted-suggestions")
@@ -97,7 +97,7 @@
 					[
 						'page_title' => 'Muted Suggestions',
 						'template'   => 'views/items/muted-suggestions.php',
-						'page_data'  => ['muted_items' => $mutedItems]
+						'page_data'  => ['muted_items' => $mutedItems],
 					];
 				}
 				else
@@ -121,7 +121,7 @@
 					[
 						'page_title' => 'View Items By '.ucwords($viewBy),
 						'template'   => 'views/items/view-by-collection.php',
-						'page_data'  => ['collection' => $collection]
+						'page_data'  => ['collection' => $collection],
 					];
 				}
 
@@ -153,7 +153,7 @@
 			[
 				'page_title' => 'Not Found',
 				'template'   => 'views/404.php',
-				'page_data'  => []
+				'page_data'  => [],
 			];
 
 			try
@@ -178,7 +178,7 @@
 					[
 						[
 							'link' => '/items/',
-							'text' => 'Items'
+							'text' => 'Items',
 						],
 						[
 							'text' => 'Create'
@@ -189,8 +189,8 @@
 					[
 						'item' 	    => $item,
 						'lists'     => $lists,
-						'packSizes' => $packSizes
-					]
+						'packSizes' => $packSizes,
+					],
 				];
 
 				renderPage($pageData);
@@ -262,7 +262,7 @@
 			[
 				'page_title' => 'Not Found',
 				'template'   => 'views/404.php',
-				'page_data'  => []
+				'page_data'  => [],
 			];
 
 			try
@@ -309,7 +309,7 @@
 					[
 						[
 							'link' => '/items/',
-							'text' => 'Items'
+							'text' => 'Items',
 						],
 						[
 							'text' => 'Edit'
@@ -325,8 +325,8 @@
 						'consumption_interval' => $consumptionInterval,
 						'consumption_period'   => $consumptionPeriod,
 						'current_order'        => $currentOrder,
-						'current_order_items'  => $currentOrderItems
-					]
+						'current_order_items'  => $currentOrderItems,
+					],
 				];
 
 				renderPage($pageData);

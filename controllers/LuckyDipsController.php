@@ -16,29 +16,39 @@
 
 		public function Index() : void
 		{
-			$luckyDipPrototype = new LuckyDip();
-			$dalResult = $this->luckyDips_service->getAllLuckyDips();
-			$luckyDips = false;
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$luckyDips = $dalResult->getResult();
-			}
-
-			$this->luckyDips_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'Manage Lucky Dips',
-				'template'   => 'views/luckyDips/index.php',
-				'page_data'  =>
-				[
-					'luckyDipPrototype' => $luckyDipPrototype,
-					'luckyDips'         => $luckyDips
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => [],
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$luckyDipPrototype = new LuckyDip();
+				$luckyDips = $this->luckyDips_service->getAllLuckyDips();
+
+				$this->luckyDips_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Manage Lucky Dips',
+					'template'   => 'views/luckyDips/index.php',
+					'page_data'  =>
+					[
+						'luckyDipPrototype' => $luckyDipPrototype,
+						'luckyDips'         => $luckyDips,
+					],
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
 		public function addLuckyDip(array $request) : string
@@ -241,26 +251,31 @@
 			}
 		}
 
-		public function getAllLuckyDips($request)
+		public function getAllLuckyDips(array $request) : string
 		{
-			$luckyDips = null;
-			$dalResult = $this->luckyDips_service->getAllLuckyDips();
+			$dalResult = new DalResult();
 
-			if (is_array($dalResult->getResult()))
+			try
 			{
-				$luckyDips = [];
+				$luckyDips = $this->luckyDips_service->getAllLuckyDips();
 
-				foreach ($dalResult->getResult() as $luckyDip_id => $luckyDip)
+				foreach ($luckyDips as $luckyDipId => $luckyDip)
 				{
 					$luckyDips[$luckyDip->getId()] = $luckyDip->jsonSerialize();
 				}
 
 				$dalResult->setResult($luckyDips);
+
+				$this->luckyDips_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
 
-			$this->luckyDips_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
+				return $dalResult->jsonSerialize();
+			}
 		}
 
 		public function getLuckyDipByName(array $request) : string

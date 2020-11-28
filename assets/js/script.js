@@ -1704,14 +1704,40 @@ function quickAdd()
 						}
 					}).done(function(data)
 					{
+						if (!data)
+						{
+							toastr.error("QuickAdd: Could not retrieve Lucky Dips - unknown error");
+							console.log(data);
+
+							return false;
+						}
+
+						if (data.exception != null)
+						{
+							toastr.error(`QuickAdd: Could not retrieve Lucky Dips - ${data.exception.message}`);
+							console.log(data);
+
+							return false;
+						}
+
+						if (data.result == null)
+						{
+							toastr.error("QuickAdd: Could not retrieve Lucky Dips - unknown error");
+							console.log(data);
+
+							return false;
+						}
+
 						$.each(data.result, function()
 						{
 							availableItems.push("[LuckyDip] "+this.name);
 						});
 
-						var sortedItems = arraySort(availableItems);
+						let sortedItems = arraySort(availableItems);
 
 						$("#quick-add").autocomplete({source : sortedItems});
+
+						return true;
 					}).fail(function(data)
 					{
 						toastr.error("QuickAdd: Could not retrieve Lucky Dips");

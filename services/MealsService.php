@@ -96,7 +96,14 @@
 		{
 			try
 			{
-				return $this->dal->getAllMeals();
+				$meals = $this->dal->getAllMeals();
+
+				if (!is_array($meals))
+				{
+					throw new Exception("Meals not found");
+				}
+
+				return $meals;
 			}
 			catch (Exception $e)
 			{

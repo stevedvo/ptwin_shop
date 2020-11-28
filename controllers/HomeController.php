@@ -18,7 +18,7 @@
 			[
 				'page_title' => 'Not Found',
 				'template'   => 'views/404.php',
-				'page_data'  => []
+				'page_data'  => [],
 			];
 
 			try
@@ -36,8 +36,8 @@
 					'page_data'  =>
 					[
 						'current_order' => $order,
-						'all_lists'     => $allLists
-					]
+						'all_lists'     => $allLists,
+					],
 				];
 
 				renderPage($pageData);

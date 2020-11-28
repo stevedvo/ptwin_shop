@@ -108,18 +108,20 @@
 			return $meal;
 		}
 
-		public function getAllMeals() : array
+		public function getAllMeals() : ?array
 		{
-			$meals = [];
-
 			try
 			{
+				$meals = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT id AS meal_id, name AS meal_name FROM meals ORDER BY meal_name");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
 				if ($rows)
 				{
+					$meals = [];
+
 					foreach ($rows as $row)
 					{
 						$meal = createMeal($row);
@@ -127,13 +129,17 @@
 						$meals[$meal->getId()] = $meal;
 					}
 				}
-			}
-			catch(PDOException $e)
-			{
-				throw $e;
-			}
 
-			return $meals;
+				return $meals;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function updateMeal(Meal $meal) : Meal

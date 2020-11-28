@@ -203,27 +203,36 @@
 			}
 		}
 
-		public function Index()
+		public function Index() : void
 		{
-			$orders = false;
-
-			$dalResult = $this->orders_service->getAllOrders();
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$orders = $dalResult->getResult();
-			}
-
-			$this->orders_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'Manage Orders',
-				'template'   => 'views/orders/index.php',
-				'page_data'  => ['orders' => $orders]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => [],
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$orders = $this->orders_service->getAllOrders();
+
+				$this->orders_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Manage Orders',
+					'template'   => 'views/orders/index.php',
+					'page_data'  => ['orders' => $orders],
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
 		public function View(int? $request = null) : void

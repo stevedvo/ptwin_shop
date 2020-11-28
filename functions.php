@@ -91,7 +91,7 @@
 		return $luckyDip;
 	}
 
-	function createMeal($request) : Meal
+	function createMeal(array $request) : Meal
 	{
 		try
 		{
@@ -241,7 +241,7 @@
 		return $date;
 	}
 
-	function renderPage($pageData) : void
+	function renderPage(array $pageData) : void
 	{
 		$page_title = isset($pageData['page_title']) ? $pageData['page_title'] : null;
 		$breadcrumb = (isset($pageData['breadcrumb']) && is_array($pageData['breadcrumb'])) ? renderBreadcrumb($pageData['breadcrumb']) : $page_title;
@@ -253,7 +253,7 @@
 		exit;
 	}
 
-	function renderPrint($pageData) : void
+	function renderPrint(array $pageData) : void
 	{
 		$page_title = $pageData['page_title'];
 		$template = $pageData['template'];

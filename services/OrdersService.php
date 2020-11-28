@@ -88,9 +88,23 @@
 			}
 		}
 
-		public function getAllOrders()
+		public function getAllOrders() : array
 		{
-			return $this->dal->getAllOrders();
+			try
+			{
+				$orders = $this->dal->getAllOrders();
+
+				if (!is_array($order))
+				{
+					throw new Exception("Orders not found");
+				}
+
+				return $orders;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function addOrder(Order $order) : Order

@@ -122,14 +122,14 @@
 			}
 		}
 
-		public function getLuckyDipsByListId(int $list_id) : ?array
+		public function getLuckyDipsByListId(int $listId) : ?array
 		{
 			try
 			{
 				$luckyDips = null;
 
 				$query = $this->ShopDb->conn->prepare("SELECT ld.id AS luckyDip_id, ld.name AS luckyDip_name, ld.list_id AS luckyDip_list_id, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM lucky_dips AS ld LEFT JOIN items AS i ON (i.luckydip_id = ld.id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE ld.list_id = :list_id ORDER BY ld.id, i.description");
-				$query->execute([':list_id' => $list_id]);
+				$query->execute([':list_id' => $listId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
 				if ($rows)
@@ -167,13 +167,12 @@
 			}
 		}
 
-		public function getAllLuckyDips() : DalResult
+		public function getAllLuckyDips() : ?array
 		{
-			$result = new DalResult();
-			$luckyDips = false;
-
 			try
 			{
+				$luckyDips = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT id AS luckyDip_id, name AS luckyDip_name, list_id AS luckyDip_list_id FROM lucky_dips ORDER BY luckyDip_name");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -190,14 +189,16 @@
 					}
 				}
 
-				$result->setResult($luckyDips);
+				return $luckyDips;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		// public function getAllLuckyDipsWithItems() : DalResult

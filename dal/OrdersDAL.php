@@ -80,13 +80,12 @@
 			}
 		}
 
-		public function getAllOrders()
+		public function getAllOrders() : ?array
 		{
-			$result = new DalResult();
-			$orders = false;
-
 			try
 			{
+				$orders = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT o.id AS order_id, o.date_ordered FROM orders AS o ORDER BY ISNULL(o.date_ordered) DESC, o.date_ordered DESC");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -102,14 +101,16 @@
 					}
 				}
 
-				$result->setResult($orders);
+				return $orders;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getOrderById(int $orderId) : ?Order

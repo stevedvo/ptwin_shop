@@ -18,7 +18,7 @@
 			[
 				'page_title' => 'Not Found',
 				'template'   => 'views/404.php',
-				'page_data'  => []
+				'page_data'  => [],
 			];
 
 			try
@@ -35,8 +35,8 @@
 					'page_data'  =>
 					[
 						'deptPrototype' => $deptPrototype,
-						'departments'   => $departments
-					]
+						'departments'   => $departments,
+					],
 				];
 
 				renderPage($pageData);

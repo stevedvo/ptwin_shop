@@ -46,9 +46,23 @@
 			}
 		}
 
-		public function getAllLuckyDips() : DalResult
+		public function getAllLuckyDips() : array
 		{
-			return $this->dal->getAllLuckyDips();
+			try
+			{
+				$luckyDips = $this->dal->getAllLuckyDips();
+
+				if (!is_array($luckyDips))
+				{
+					throw new Exception("Could not find Lucky Dips");
+				}
+
+				return $luckyDips;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		// public function getAllLuckyDipsWithItems() : DalResult
@@ -108,11 +122,11 @@
 			}
 		}
 
-		public function getLuckyDipsByListId(int $list_id) : array
+		public function getLuckyDipsByListId(int $listId) : array
 		{
 			try
 			{
-				$luckyDips = $this->dal->getLuckyDipsByListId($list_id);
+				$luckyDips = $this->dal->getLuckyDipsByListId($listId);
 
 				if (!is_array($luckyDips))
 				{

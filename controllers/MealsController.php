@@ -14,32 +14,39 @@
 
 		public function Index() : void
 		{
-			$mealPrototype = new Meal();
-			$meals = [];
+			$pageData =
+			[
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => [],
+			];
 
 			try
 			{
+				$mealPrototype = new Meal();
 				$meals = $this->meals_service->getAllMeals();
+
+				$this->meals_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Manage Meals',
+					'template'   => 'views/meals/index.php',
+					'page_data'  =>
+					[
+						'mealPrototype' => $mealPrototype,
+						'meals'         => $meals,
+					],
+				];
+
+				renderPage($pageData);
 			}
 			catch (Exception $e)
 			{
-				throw $e;
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
 			}
-
-			$this->meals_service->closeConnexion();
-
-			$pageData =
-			[
-				'page_title' => 'Manage Meals',
-				'template'   => 'views/meals/index.php',
-				'page_data'  =>
-				[
-					'mealPrototype' => $mealPrototype,
-					'meals'         => $meals
-				]
-			];
-
-			renderPage($pageData);
 		}
 
 		public function addMeal(array $request) : ?array

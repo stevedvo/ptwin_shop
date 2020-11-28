@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class ListsController
 	{
 		private $lists_service;
@@ -10,31 +12,41 @@
 			$this->items_service = new ItemsService();
 		}
 
-		public function Index()
+		public function Index() : void
 		{
-			$listPrototype = new ShopList();
-			$dalResult = $this->lists_service->getAllLists();
-			$lists = false;
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$lists = $dalResult->getResult();
-			}
-
-			$this->lists_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'Manage Lists',
-				'template'   => 'views/lists/index.php',
-				'page_data'  =>
-				[
-					'list_prototype' => $listPrototype,
-					'lists'          => $lists
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => [],
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$listPrototype = new ShopList();
+				$lists = $this->lists_service->getAllLists();
+
+				$this->lists_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Manage Lists',
+					'template'   => 'views/lists/index.php',
+					'page_data'  =>
+					[
+						'list_prototype' => $listPrototype,
+						'lists'          => $lists,
+					],
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
 		public function addList($request)
@@ -72,7 +84,7 @@
 			[
 				'page_title' => 'Not Found',
 				'template'   => 'views/404.php',
-				'page_data'  => []
+				'page_data'  => [],
 			];
 
 			try
@@ -91,7 +103,7 @@
 					[
 						[
 							'link' => '/lists/',
-							'text' => 'Lists'
+							'text' => 'Lists',
 						],
 						[
 							'text' => 'Edit'
@@ -102,8 +114,8 @@
 					[
 						'list'      => $list,
 						'all_lists' => $allLists,
-						'all_items' => $allItems
-					]
+						'all_items' => $allItems,
+					],
 				];
 
 				renderPage($pageData);
