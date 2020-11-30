@@ -456,7 +456,7 @@
 			}
 		}
 
-		public function getAllItems(array $request) : string
+		public function getAllItems(array $request) : array
 		{
 			$dalResult = new DalResult();
 

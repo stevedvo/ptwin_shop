@@ -235,7 +235,7 @@
 			}
 		}
 
-		public function View(int? $request = null) : void
+		public function View(?int $request = null) : void
 		{
 			$pageData =
 			[
@@ -283,7 +283,7 @@
 			}
 		}
 
-		public function Print(int? $request = null) : void
+		public function Print(?int $request = null) : void
 		{
 			$pageData =
 			[
@@ -420,7 +420,7 @@
 			{
 				$list = $this->lists_service->verifyListRequest($request);
 
-				if (!is_array($list->getItems()) || sizeof($list->getItems()) == 0)
+				if (sizeof($list->getItems()) == 0)
 				{
 					$dalResult->setException(new Exception("List does not contain any Items"));
 

@@ -107,7 +107,7 @@
 						],
 						[
 							'text' => 'Edit'
-						]
+						],
 					],
 					'template'   => 'views/lists/edit.php',
 					'page_data'  =>

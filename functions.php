@@ -64,7 +64,7 @@
 		$quantity = isset($request['quantity']) ? intval($request['quantity']) : null;
 		$checked = isset($request['checked']) ? intval($request['checked']) : null;
 
-		$orderItem = new OrderItem($id, $order_id, $item_id, $quantity, $checked);
+		$orderItem = new OrderItem($id, $orderId, $itemId, $quantity, $checked);
 
 		return $orderItem;
 	}

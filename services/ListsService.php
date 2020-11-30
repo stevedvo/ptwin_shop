@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class ListsService
 	{
 		private $dal;
@@ -45,6 +47,8 @@
 				{
 					throw new Exception("Could not find Lists");
 				}
+
+				return $lists;
 			}
 			catch (Exception $e)
 			{

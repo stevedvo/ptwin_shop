@@ -251,7 +251,7 @@
 			}
 		}
 
-		public function getAllLuckyDips(array $request) : string
+		public function getAllLuckyDips(array $request) : array
 		{
 			$dalResult = new DalResult();
 

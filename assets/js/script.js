@@ -2303,24 +2303,42 @@ function manageOrders()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				toastr.success("List successfully added to Order");
-
-				if ($(".results-container.current-order").length > 0)
-				{
-					var currentOrder = $(".results-container.current-order");
-					var html = data.partial_view;
-					currentOrder.find(".no-results").remove();
-
-					currentOrder.append(html);
-				}
-			}
-			else
-			{
-				toastr.error("Could not add List to Order");
+				toastr.error("Could not add List to Order: unknown error");
 				console.log(data);
+
+				return false;
 			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not add List to Order: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.partial_view == null)
+			{
+				toastr.error("Could not add List to Order: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("List successfully added to Order");
+
+			if ($(".results-container.current-order").length > 0)
+			{
+				let currentOrder = $(".results-container.current-order");
+				let html = data.partial_view;
+				currentOrder.find(".no-results").remove();
+
+				currentOrder.append(html);
+			}
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");

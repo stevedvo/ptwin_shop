@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class DepartmentsService
 	{
 		private $dal;
@@ -136,7 +138,7 @@
 
 				if (!$success)
 				{
-					throw new Exception("Unable to remove Department")
+					throw new Exception("Unable to remove Department");
 				}
 
 				return $success;
