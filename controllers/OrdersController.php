@@ -18,7 +18,7 @@
 			$this->luckyDips_service = new LuckyDipsService();
 		}
 
-		public function updateOrder(array $request) : string
+		public function updateOrder(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -60,7 +60,7 @@
 			}
 		}
 
-		public function updateOrderItem(array $request) : string
+		public function updateOrderItem(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -102,7 +102,7 @@
 			}
 		}
 
-		public function checkOrderItem(array $request) : string
+		public function checkOrderItem(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -143,7 +143,7 @@
 			}
 		}
 
-		public function removeOrderItem(array $request) : string
+		public function removeOrderItem(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -173,7 +173,7 @@
 			}
 		}
 
-		public function removeAllOrderItemsFromOrder(array $request) : string
+		public function removeAllOrderItemsFromOrder(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -369,7 +369,7 @@
 			}
 		}
 
-		public function confirmOrder(array $request) : string
+		public function confirmOrder(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -412,7 +412,7 @@
 			}
 		}
 
-		public function addListToOrder(array $request) : string
+		public function addListToOrder(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -496,7 +496,7 @@
 			}
 		}
 
-		public function addItemToPreviousOrder(array $request) : string
+		public function addItemToPreviousOrder(array $request) : array
 		{
 			$dalResult = new DalResult();
 

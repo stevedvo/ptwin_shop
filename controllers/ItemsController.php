@@ -203,7 +203,7 @@
 			}
 		}
 
-		public function addItem(array $request) : string // returns either a serialised DalResult Exception or serialised Item
+		public function addItem(array $request) : array // returns either a serialised DalResult Exception or serialised Item
 		{
 			$dalResult = new DalResult();
 
@@ -339,7 +339,7 @@
 			}
 		}
 
-		public function editItem(array $request) : string
+		public function editItem(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -379,7 +379,7 @@
 			}
 		}
 
-		public function addDepartmentToItem(array $request) : string
+		public function addDepartmentToItem(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -405,7 +405,7 @@
 			}
 		}
 
-		public function removeDepartmentsFromItem(array $request) : string
+		public function removeDepartmentsFromItem(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -484,7 +484,7 @@
 			}
 		}
 
-		public function getAllItemsNotInLuckyDip(array $request) : string
+		public function getAllItemsNotInLuckyDip(array $request) : array
 		{
 			$dalResult = new DalResult();
 			$dalResult->setPartialView("");
@@ -508,7 +508,7 @@
 			}
 		}
 
-		public function quickAddItem(array $request) : string
+		public function quickAddItem(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -574,7 +574,7 @@
 			}
 		}
 
-		public function quickEditItem(array $request) : string
+		public function quickEditItem(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -605,7 +605,7 @@
 			}
 		}
 
-		public function addItemToCurrentOrder(array $request) : string
+		public function addItemToCurrentOrder(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -645,7 +645,7 @@
 			}
 		}
 
-		public function removeItemFromCurrentOrder($request) : string
+		public function removeItemFromCurrentOrder($request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -675,7 +675,7 @@
 			}
 		}
 
-		public function setItemPrimaryDepartment(array $request) : string
+		public function setItemPrimaryDepartment(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -701,7 +701,7 @@
 			}
 		}
 
-		public function resetPrimaryDepartments(array $request) : string
+		public function resetPrimaryDepartments(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -738,7 +738,7 @@
 			}
 		}
 
-		public function updateItemMuteSetting(array $request) : string
+		public function updateItemMuteSetting(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -779,7 +779,7 @@
 			}
 		}
 
-		public function getItemsRecentOrderStatistics(array $request) : string
+		public function getItemsRecentOrderStatistics(array $request) : array
 		{
 			$dalResult = new DalResult();
 

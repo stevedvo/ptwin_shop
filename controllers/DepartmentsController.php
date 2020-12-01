@@ -136,7 +136,7 @@
 			}
 		}
 
-		public function addItemToDepartment(array $request) : string
+		public function addItemToDepartment(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -194,7 +194,7 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		public function editDepartment(array $request) : string
+		public function editDepartment(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -237,7 +237,7 @@
 			}
 		}
 
-		public function removeDepartment(array $request) : string
+		public function removeDepartment(array $request) : array
 		{
 			$dalResult = new DalResult();
 

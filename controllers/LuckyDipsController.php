@@ -51,7 +51,7 @@
 			}
 		}
 
-		public function addLuckyDip(array $request) : string
+		public function addLuckyDip(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -140,7 +140,7 @@
 			}
 		}
 
-		public function addItemToLuckyDip(array $request) : string
+		public function addItemToLuckyDip(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -165,7 +165,7 @@
 			}
 		}
 
-		public function removeItemFromLuckyDip(array $request) : string
+		public function removeItemFromLuckyDip(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -188,7 +188,7 @@
 			}
 		}
 
-		public function editLuckyDip(array $request) : string
+		public function editLuckyDip(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -222,7 +222,7 @@
 			}
 		}
 
-		public function removeLuckyDip(array $request) : string
+		public function removeLuckyDip(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -278,7 +278,7 @@
 			}
 		}
 
-		public function getLuckyDipByName(array $request) : string
+		public function getLuckyDipByName(array $request) : array
 		{
 			$dalResult = new DalResult();
 

@@ -128,7 +128,7 @@
 			}
 		}
 
-		public function addItemToList(array $request) : string
+		public function addItemToList(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -161,7 +161,7 @@
 			}
 		}
 
-		public function editList(array $request) : string
+		public function editList(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -194,7 +194,7 @@
 			}
 		}
 
-		public function removeList(array $request) : string
+		public function removeList(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -223,7 +223,7 @@
 			}
 		}
 
-		public function moveItemsToList(array $request) : string
+		public function moveItemsToList(array $request) : array
 		{
 			$dalResult = new DalResult();
 
