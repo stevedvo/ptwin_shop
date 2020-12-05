@@ -22,7 +22,7 @@
 				$query = $this->ShopDb->conn->prepare("INSERT INTO orders (date_ordered) VALUES (:date_ordered)");
 				$query->execute([':date_ordered' => !is_null($order->getDateOrdered()) ? $order->getDateOrdered()->format('Y-m-d') : null]);
 
-				$order->setId($this->ShopDb->conn->lastInsertId());
+				$order->setId(intval($this->ShopDb->conn->lastInsertId()));
 
 				return $order;
 			}
@@ -46,7 +46,7 @@
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					foreach ($rows as $row)
 					{
@@ -90,7 +90,7 @@
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$orders = [];
 
@@ -123,7 +123,7 @@
 				$query->execute([':order_id' => $orderId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					foreach ($rows as $row)
 					{
@@ -167,7 +167,7 @@
 				$query->execute([':item_id' => $item->getId()]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$orders = [];
 
@@ -334,7 +334,7 @@
 				$query->execute($query_values);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$order_items = [];
 

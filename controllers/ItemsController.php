@@ -30,7 +30,7 @@
 
 			try
 			{
-				$viewBy = $allItems = $order = $itemsInOrder = $collection = null;
+				$viewBy = $items = $order = $itemsInOrder = $collection = null;
 
 				if (isset($request['view-by']))
 				{
@@ -57,7 +57,7 @@
 					[
 						'page_title' => 'Manage Items',
 						'template'   => 'views/items/index.php',
-						'page_data'  => ['all_items' => $allItems],
+						'page_data'  => ['all_items' => $items],
 					];
 				}
 				elseif ($viewBy == "suggestions")
@@ -321,7 +321,7 @@
 						'item'                 => $item,
 						'lists'                => $lists,
 						'all_departments'      => $departments,
-						'packSizes'            => $packSizes,
+						'packsizes'            => $packSizes,
 						'consumption_interval' => $consumptionInterval,
 						'consumption_period'   => $consumptionPeriod,
 						'current_order'        => $currentOrder,

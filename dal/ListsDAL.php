@@ -23,7 +23,7 @@
 			{
 				$query = $this->ShopDb->conn->prepare("INSERT INTO lists (name) VALUES (:name)");
 				$query->execute([':name' => $list->getName()]);
-				$result->setResult($this->ShopDb->conn->lastInsertId());
+				$result->setResult(intval($this->ShopDb->conn->lastInsertId()));
 			}
 			catch(PDOException $e)
 			{
@@ -43,7 +43,7 @@
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$lists = [];
 
@@ -77,7 +77,7 @@
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$lists = [];
 
@@ -120,7 +120,7 @@
 				$query->execute([':list_id' => $list_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					foreach ($rows as $row)
 					{

@@ -456,7 +456,7 @@
 			$this->daily_consumption_overall = $consumption;
 		}
 
-		public function getDailyConsumptionOverall() : ?flaot
+		public function getDailyConsumptionOverall() : ?float
 		{
 			if (!$this->daily_consumption_overall)
 			{

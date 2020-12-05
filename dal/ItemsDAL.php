@@ -31,7 +31,7 @@
 					':packsize_id'  => $item->getPackSizeId()
 				]);
 
-				$item->setId($this->ShopDb->conn->lastInsertId());
+				$item->setId(intval($this->ShopDb->conn->lastInsertId()));
 
 				return $item;
 			}
@@ -55,7 +55,7 @@
 				$query->execute([':item_id' => $item_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$departments = [];
 
@@ -110,7 +110,7 @@
 				$query->execute($query_values);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$items = [];
 
@@ -173,7 +173,7 @@
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$items = [];
 
@@ -206,7 +206,7 @@
 				$query->execute([':luckydip_id' => $luckyDipId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$items = [];
 
@@ -239,7 +239,7 @@
 				$query->execute([':meal_id' => $mealId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					foreach ($rows as $row)
 					{
@@ -266,7 +266,7 @@
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$items = [];
 
@@ -311,7 +311,7 @@
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$items = [];
 
@@ -348,7 +348,7 @@
 				$query->execute([':dept_id' => $dept_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$items = [];
 
@@ -380,7 +380,7 @@
 				$query->execute([':list_id' => $list_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$items = [];
 
@@ -446,7 +446,7 @@
 					':item_id' => $item->getId()
 				]);
 
-				$result = $this->ShopDb->conn->lastInsertId();
+				$result = intval($this->ShopDb->conn->lastInsertId());
 
 				return $result;
 			}
@@ -500,7 +500,7 @@
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$departments_lookup = [];
 

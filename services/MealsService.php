@@ -149,7 +149,7 @@
 			}
 		}
 
-		public function addItemToMeal(int $mealId, int $itemId) : ?MealItem
+		public function addItemToMeal(int $mealId, int $itemId) : MealItem
 		{
 			try
 			{
@@ -169,9 +169,7 @@
 
 				if ($meal->getMealItemByItemId($item->getId()) instanceof MealItem)
 				{
-					$dalResult->setException(new Exception("MealItem already exists"));
-
-					return $dalResult->jsonSerialize();
+					throw new Exception("MealItem already exists");
 				}
 
 				$mealItem = createMealItem(
@@ -183,26 +181,38 @@
 
 				if (!entityIsValid($mealItem))
 				{
-					$dalResult->setException(new Exception("Invalid MealItem"));
-
-					return $dalResult->jsonSerialize();
+					throw new Exception("Invalid MealItem");
 				}
 
 				$mealItem->setMeal($meal);
 				$mealItem->setItem($item);
 
-				$mealItem = $this->meals_service->addMealItem($mealItem);
-				
+				$mealItem = $this->addMealItem($mealItem);
+
+				return $mealItem;
 			}
 			catch (Exception $e)
 			{
-				
+				throw $e;
 			}
 		}
 
-		public function addMealItem(MealItem $mealItem) : ?MealItem
+		public function addMealItem(MealItem $mealItem) : MealItem
 		{
-			return $this->dal->addMealItem($mealItem);
+			try
+			{
+				throw new Exception("Not implemented yet");
+				$mealItem = $this->dal->addMealItem($mealItem);
+
+				if (!($mealItem instanceof MealItem))
+				{
+					throw new Exception("MealItem could not be added to DB");
+				}
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		// public function getMealByName(string $meal_name) : DalResult

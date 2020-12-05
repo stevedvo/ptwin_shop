@@ -2948,7 +2948,7 @@ function manageLuckyDips()
 					return false;
 				}
 
-				if (data.exception == null)
+				if (data.exception != null)
 				{
 					toastr.error(`Could not update Lucky Dip: ${data.exception.message}`);
 					console.log(data);
@@ -3000,7 +3000,7 @@ function manageLuckyDips()
 				return false;
 			}
 
-			if (data.exception == null)
+			if (data.exception != null)
 			{
 				toastr.error(`Could not remove Lucky Dip: ${data.exception.message}`);
 				console.log(data);
@@ -3175,36 +3175,39 @@ function manageMeals()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					var html = data.partial_view;
+				toastr.error("Could not add Item to Meal: unknown error");
+				console.log(data);
 
-					$(".meal-items-container").append(html);
-					$(".meal-items-container").find(".no-results").remove();
-					selectedOption.remove();
-
-					toastr.success("Item successfully added to Lucky Dip");
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not add Item to Lucky Dip");
+				toastr.error(`Could not add Item to Meal: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			let html = data.partial_view;
+
+			if (!html)
+			{
+				toastr.error("Could not add Item to Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$(".meal-items-container").append(html);
+			$(".meal-items-container").find(".no-results").remove();
+			selectedOption.remove();
+
+			toastr.success("Item successfully added to Meal");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");

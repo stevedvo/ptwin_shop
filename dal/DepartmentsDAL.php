@@ -27,7 +27,7 @@
 					':dept_name' => $department->getName(),
 					':seq'       => $department->getSeq()
 				]);
-				$result->setResult($this->ShopDb->conn->lastInsertId());
+				$result->setResult(intval($this->ShopDb->conn->lastInsertId()));
 			}
 			catch(PDOException $e)
 			{
@@ -47,7 +47,7 @@
 				$query->execute([':dept_id' => $dept_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					foreach ($rows as $row)
 					{
@@ -113,7 +113,7 @@
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$departments = [];
 
@@ -147,7 +147,7 @@
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$departments = [];
 
@@ -286,7 +286,7 @@
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$departments = [];
 

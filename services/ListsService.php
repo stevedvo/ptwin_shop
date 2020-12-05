@@ -66,6 +66,8 @@
 				{
 					throw new Exception("Could not find Lists");
 				}
+
+				return $lists;
 			}
 			catch (Exception $e)
 			{

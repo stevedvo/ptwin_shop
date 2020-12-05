@@ -26,7 +26,7 @@
 					':list_id' => $luckyDip->getListId()
 				]);
 
-				$luckyDip->setId($this->ShopDb->conn->lastInsertId());
+				$luckyDip->setId(intval($this->ShopDb->conn->lastInsertId()));
 
 				return $luckyDip;
 			}
@@ -50,7 +50,7 @@
 				$query->execute([':id' => $luckyDipId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					foreach ($rows as $row)
 					{
@@ -90,7 +90,7 @@
 				$query->execute([':name' => $luckyDipName]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					foreach ($rows as $row)
 					{
@@ -132,7 +132,7 @@
 				$query->execute([':list_id' => $listId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$luckyDips = [];
 
@@ -177,7 +177,7 @@
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$luckyDips = [];
 
@@ -212,7 +212,7 @@
 		// 		$query->execute();
 		// 		$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-		// 		if ($rows)
+		// 		if (is_array($rows))
 		// 		{
 		// 			$luckyDips = [];
 

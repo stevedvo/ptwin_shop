@@ -42,7 +42,7 @@
 				$query->execute([':id' => $mealId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					foreach ($rows as $row)
 					{
@@ -118,7 +118,7 @@
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$meals = [];
 
@@ -172,7 +172,7 @@
 		// 		$query->execute([':list_id' => $list_id]);
 		// 		$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-		// 		if ($rows)
+		// 		if (is_array($rows))
 		// 		{
 		// 			$meals = [];
 

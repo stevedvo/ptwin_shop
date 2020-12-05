@@ -173,7 +173,7 @@
 			}
 		}
 
-		public function addItemToMeal($request) : ?string
+		public function addItemToMeal(array $request) : array
 		{
 			$dalResult = new DalResult();
 

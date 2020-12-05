@@ -25,7 +25,7 @@
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$packSizes = [];
 
@@ -101,7 +101,7 @@
 			return $result;
 		}
 
-		public function addPackSize($packsize)
+		public function addPackSize($packSize)
 		{
 			$result = new DalResult();
 
@@ -110,13 +110,13 @@
 				$query = $this->ShopDb->conn->prepare("INSERT INTO pack_sizes (name, short_name) VALUES (:name, :short_name)");
 				$query->execute(
 				[
-					':name'       => $packsize->getName(),
-					':short_name' => $packsize->getShortName()
+					':name'       => $packSize->getName(),
+					':short_name' => $packSize->getShortName()
 				]);
 
-				$packsize->setId($this->ShopDb->conn->lastInsertId());
+				$packSize->setId(intval($this->ShopDb->conn->lastInsertId()));
 
-				$result->setResult($packsize);
+				$result->setResult($packSize);
 			}
 			catch(PDOException $e)
 			{
