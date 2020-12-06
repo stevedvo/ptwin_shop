@@ -94,7 +94,7 @@
 			{
 				$orders = $this->dal->getAllOrders();
 
-				if (!is_array($order))
+				if (!is_array($orders))
 				{
 					throw new Exception("Orders not found");
 				}

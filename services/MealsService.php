@@ -16,10 +16,8 @@
 			$this->dal->closeConnexion();
 		}
 
-		public function verifyMealRequest($request) : ?Meal
+		public function verifyMealRequest(array $request) : Meal
 		{
-			$meal = null;
-
 			try
 			{
 				if (!is_numeric($request['meal_id']))
@@ -27,19 +25,14 @@
 					throw new Exception("Invalid Meal ID");
 				}
 
-				$meal = $this->dal->getMealById(intval($request['meal_id']));
+				$meal = $this->getMealById(intval($request['meal_id']));
 
-				if (!($meal instanceof Meal))
-				{
-					throw new Exception("Invalid Meal");
-				}
+				return $meal;
 			}
 			catch (Exception $e)
 			{
 				throw $e;
 			}
-
-			return $meal;
 		}
 
 		public function mealNameExists(string $mealName) : bool
@@ -111,11 +104,18 @@
 			}
 		}
 
-		public function getMealById($mealId) : ?Meal
+		public function getMealById($mealId) : Meal
 		{
 			try
 			{
-				return $this->dal->getMealById($mealId);
+				$meal = $this->dal->getMealById($mealId);
+
+				if (!($meal instanceof Meal))
+				{
+					throw new Exception("Meal not found");
+				}
+
+				return $meal;
 			}
 			catch (Exception $e)
 			{
@@ -149,34 +149,15 @@
 			}
 		}
 
-		public function addItemToMeal(int $mealId, int $itemId) : MealItem
+		public function addItemToMeal(Meal $meal, Item $item) : MealItem
 		{
 			try
 			{
-				$meal = $this->dal->getMealById($mealId);
-
-				if (!($meal instanceof Meal))
-				{
-					throw new Exception("Invalid Meal");
-				}
-
-				$item = $this->items_service->getItemById($itemId);
-
-				if (!($item instanceof Item))
-				{
-					throw new Exception("Invalid Item");
-				}
-
-				if ($meal->getMealItemByItemId($item->getId()) instanceof MealItem)
-				{
-					throw new Exception("MealItem already exists");
-				}
-
 				$mealItem = createMealItem(
 				[
 					'meal_id'            => $meal->getId(),
 					'item_id'            => $item->getId(),
-					'meal_item_quantity' => $item->getDefaultQty()
+					'meal_item_quantity' => $item->getDefaultQty(),
 				]);
 
 				if (!entityIsValid($mealItem))

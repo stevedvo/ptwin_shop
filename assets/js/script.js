@@ -135,7 +135,7 @@ function manageItems()
 			{
 				if (data.exception != null)
 				{
-					toastr.error(`Could not add Item: ${data.exception.message}`);
+					toastr.error(`Could not add Item: ${data.exceptionMessage}`);
 					console.log(data.exception);
 				}
 				else
@@ -219,7 +219,7 @@ function manageItems()
 
 				if (data.exception != null)
 				{
-					toastr.error(`Could not save Item: ${data.exception.message}`);
+					toastr.error(`Could not save Item: ${data.exceptionMessage}`);
 					console.log(data);
 
 					return false;
@@ -278,7 +278,7 @@ function manageItems()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not add Department to Item: ${data.exception.message}`);
+				toastr.error(`Could not add Department to Item: ${data.exceptionMessage}`);
 				console.log(data);
 
 				return false;
@@ -349,7 +349,7 @@ function manageItems()
 
 				if (data.exception != null)
 				{
-					toastr.error(`Could not remove Department(s) from Item: ${data.exception.message}`);
+					toastr.error(`Could not remove Department(s) from Item: ${data.exceptionMessage}`);
 					console.log(data);
 
 					return false;
@@ -418,7 +418,7 @@ function manageItems()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not set Primary Department: ${data.exception.message}`);
+				toastr.error(`Could not set Primary Department: ${data.exceptionMessage}`);
 				console.log(data);
 
 				return false;
@@ -473,7 +473,7 @@ function manageItems()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not add Item to Order: ${data.exception.message}`);
+				toastr.error(`Could not add Item to Order: ${data.exceptionMessage}`);
 				console.log(data.exception);
 
 				return false;
@@ -541,7 +541,7 @@ function manageItems()
 				{
 					if (data.exception != null)
 					{
-						toastr.error(`Could not remove Item from Order: ${data.exception.message}`);
+						toastr.error(`Could not remove Item from Order: ${data.exceptionMessage}`);
 						console.log(data.exception);
 					}
 					else
@@ -606,7 +606,7 @@ function manageItems()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not mute Item: ${data.exception.message}`);
+				toastr.error(`Could not mute Item: ${data.exceptionMessage}`);
 				console.log(data);
 
 				return false;
@@ -678,7 +678,7 @@ function manageItems()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not unmute Item: ${data.exception.message}`);
+				toastr.error(`Could not unmute Item: ${data.exceptionMessage}`);
 				console.log(data);
 
 				return false;
@@ -803,7 +803,7 @@ function manageLists()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not add Item to List: ${data.exception.message}`);
+				toastr.error(`Could not add Item to List: ${data.exceptionMessage}`);
 				console.log(data.exception);
 
 				return false;
@@ -876,7 +876,7 @@ function manageLists()
 
 				if (data.exception != null)
 				{
-					toastr.error(`Could not add Items to List: ${data.exception.message}`);
+					toastr.error(`Could not add Items to List: ${data.exceptionMessage}`);
 					console.log(data);
 
 					return false;
@@ -966,7 +966,7 @@ function manageLists()
 
 				if (data.exception != null)
 				{
-					toastr.error(`Could not update List: ${data.exception.message}`);
+					toastr.error(`Could not update List: ${data.exceptionMessage}`);
 					console.log(data);
 
 					return false;
@@ -1018,7 +1018,7 @@ function manageLists()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not remove List: ${data.exception.message}`);
+				toastr.error(`Could not remove List: ${data.exceptionMessage}`);
 				console.log(data);
 
 				return false;
@@ -1146,7 +1146,7 @@ function manageDepts()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not add Item to Department: ${data.exception.message}`);
+				toastr.error(`Could not add Item to Department: ${data.exceptionMessage}`);
 				console.log(data);
 
 				return false;
@@ -1301,7 +1301,7 @@ function manageDepts()
 
 				if (data.exception != null)
 				{
-					toastr.error(`Could not update Department: ${data.exception.message}`);
+					toastr.error(`Could not update Department: ${data.exceptionMessage}`);
 					console.log(data);
 
 					return false;
@@ -1353,7 +1353,7 @@ function manageDepts()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not remove Department: ${data.exception.message}`);
+				toastr.error(`Could not remove Department: ${data.exceptionMessage}`);
 				console.log(data);
 
 				return false;
@@ -1665,7 +1665,7 @@ function quickAdd()
 		{
 			if (data.exception != null)
 			{
-				toastr.error(`Could not get Items for QuickAdd: ${data.exception.message}`);
+				toastr.error(`Could not get Items for QuickAdd: ${data.exceptionMessage}`);
 				console.log(data.exception);
 			}
 			else
@@ -1714,7 +1714,7 @@ function quickAdd()
 
 						if (data.exception != null)
 						{
-							toastr.error(`QuickAdd: Could not retrieve Lucky Dips - ${data.exception.message}`);
+							toastr.error(`QuickAdd: Could not retrieve Lucky Dips - ${data.exceptionMessage}`);
 							console.log(data);
 
 							return false;
@@ -1797,7 +1797,7 @@ function quickAdd()
 
 				if (data.exception != null)
 				{
-					toastr.error(`QuickAdd - error adding Item: ${data.exception.message}`);
+					toastr.error(`QuickAdd - error adding Item: ${data.exceptionMessage}`);
 					console.log(data.exception);
 
 					return false;
@@ -1866,7 +1866,7 @@ function quickAdd()
 
 					if (data.exception != null)
 					{
-						toastr.error(`QuickEdit - Could not edit Lucky Dip: ${data.exception.message}`);
+						toastr.error(`QuickEdit - Could not edit Lucky Dip: ${data.exceptionMessage}`);
 						console.log(data);
 
 						return false;
@@ -1914,7 +1914,7 @@ function quickAdd()
 
 					if (data.exception != null)
 					{
-						toastr.error(`QuickEdit - Could not edit Item: ${data.exception.message}`);
+						toastr.error(`QuickEdit - Could not edit Item: ${data.exceptionMessage}`);
 						console.log(data);
 
 						return false;
@@ -2038,7 +2038,7 @@ function manageOrders()
 			{
 				if (data.exception != null)
 				{
-					toastr.error(`Could not remove Order Item: ${data.exception.message}`);
+					toastr.error(`Could not remove Order Item: ${data.exceptionMessage}`);
 					console.log(data.exception);
 				}
 				else
@@ -2117,7 +2117,7 @@ function manageOrders()
 				{
 					if (data.exception != null)
 					{
-						toastr.error(`Could not update Order Item: ${data.exception.message}`);
+						toastr.error(`Could not update Order Item: ${data.exceptionMessage}`);
 						console.log(data.exception);
 					}
 					else
@@ -2201,7 +2201,7 @@ function manageOrders()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not remove Order Items: ${data.exception.message}`);
+				toastr.error(`Could not remove Order Items: ${data.exceptionMessage}`);
 				console.log(data.exception);
 
 				return false;
@@ -2248,7 +2248,7 @@ function manageOrders()
 			{
 				if (data.exception != null)
 				{
-					toastr.error(`Could not confirm Order: ${data.exception.message}`);
+					toastr.error(`Could not confirm Order: ${data.exceptionMessage}`);
 					console.log(data.exception);
 				}
 				else
@@ -2313,7 +2313,7 @@ function manageOrders()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not add List to Order: ${data.exception.message}`);
+				toastr.error(`Could not add List to Order: ${data.exceptionMessage}`);
 				console.log(data);
 
 				return false;
@@ -2390,7 +2390,7 @@ function manageOrders()
 				{
 					if (data.exception != null)
 					{
-						toastr.error(`Could not update Order: ${data.exception.message}`);
+						toastr.error(`Could not update Order: ${data.exceptionMessage}`);
 						console.log(data.exception);
 					}
 					else
@@ -2448,7 +2448,7 @@ function manageOrders()
 				{
 					if (data.exception != null)
 					{
-						toastr.error(`Could not add Item to Order: ${data.exception.message}`);
+						toastr.error(`Could not add Item to Order: ${data.exceptionMessage}`);
 						console.log(data.exception);
 
 						return false;
@@ -2517,7 +2517,7 @@ function adminFuncs()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not reset Primary Departments: ${data.exception.message}`);
+				toastr.error(`Could not reset Primary Departments: ${data.exceptionMessage}`);
 				console.log(data);
 
 				return false;
@@ -2637,7 +2637,7 @@ function updateRecentConsumptionParameters()
 				{
 					if (data.exception != null)
 					{
-						toastr.error(`Could not get recent Order statistics: ${data.exception.message}`);
+						toastr.error(`Could not get recent Order statistics: ${data.exceptionMessage}`);
 						console.log(data.exception);
 
 						return false;
@@ -2736,7 +2736,7 @@ function manageLuckyDips()
 
 				if (data.exception != null)
 				{
-					toastr.error(`Could not save Lucky Dip: ${data.exception.message}`);
+					toastr.error(`Could not save Lucky Dip: ${data.exceptionMessage}`);
 					console.log(data.exception);
 
 					return false;
@@ -2800,7 +2800,7 @@ function manageLuckyDips()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not add Item to Lucky Dip: ${data.exception.message}`);
+				toastr.error(`Could not add Item to Lucky Dip: ${data.exceptionMessage}`);
 				console.log(data);
 
 				return false;
@@ -2865,7 +2865,7 @@ function manageLuckyDips()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not remove Item from Lucky Dip: ${data.exception.message}`);
+				toastr.error(`Could not remove Item from Lucky Dip: ${data.exceptionMessage}`);
 				console.log(data);
 
 				return false;
@@ -2950,7 +2950,7 @@ function manageLuckyDips()
 
 				if (data.exception != null)
 				{
-					toastr.error(`Could not update Lucky Dip: ${data.exception.message}`);
+					toastr.error(`Could not update Lucky Dip: ${data.exceptionMessage}`);
 					console.log(data);
 
 					return false;
@@ -3002,7 +3002,7 @@ function manageLuckyDips()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not remove Lucky Dip: ${data.exception.message}`);
+				toastr.error(`Could not remove Lucky Dip: ${data.exceptionMessage}`);
 				console.log(data);
 
 				return false;
@@ -3185,7 +3185,7 @@ function manageMeals()
 
 			if (data.exception != null)
 			{
-				toastr.error(`Could not add Item to Meal: ${data.exception.message}`);
+				toastr.error(`Could not add Item to Meal: ${data.exceptionMessage}`);
 				console.log(data);
 
 				return false;

@@ -179,19 +179,19 @@
 
 			try
 			{
-				if (!is_numeric($request['meal_id']) || !is_numeric($request['item_id']))
-				{
-					$dalResult->setException(new Exception("Invalid Request"));
+				$meal = $this->meals_service->verifyMealRequest($request);
+				$item = $this->items_service->verifyItemRequest($request);
 
-					return $dalResult->jsonSerialize();
-				}
+				$mealItem = $this->meals_service->addItemToMeal($meal, $item);
+				$meal->addMealItem($mealItem);
 
-				$mealItem = $this->meals_service->addItemToMeal(intval($request['meal_id']), intval($request['item_id']));
+				$params =
+				[
+					'mealId'    => $meal->getId(),
+					'mealItems' => $meal->getMealItems(),
+				];
 
-				if (!is_null($mealItem))
-				{
-					$dalResult->setPartialView(getPartialView("MealItem", ['mealItem' => $mealItem]));
-				}
+				$dalResult->setPartialView(getPartialView("MealItemListItems", $params));
 
 				$this->meals_service->closeConnexion();
 				$this->items_service->closeConnexion();
