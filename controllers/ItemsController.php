@@ -85,7 +85,7 @@
 						[
 							'suggested_items'      => $suggestedItems,
 							'consumption_interval' => $consumptionInterval,
-							'consumption_period'   => $consumptionPeriod
+							'consumption_period'   => $consumptionPeriod,
 						],
 					];
 				}
