@@ -188,7 +188,7 @@
 				$params =
 				[
 					'mealId'    => $meal->getId(),
-					'mealItems' => $meal->getMealItems(),
+					'mealItems' => $meal->getMealItems($reSort = true),
 				];
 
 				$dalResult->setPartialView(getPartialView("MealItemListItems", $params));

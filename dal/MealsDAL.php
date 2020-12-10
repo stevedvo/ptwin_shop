@@ -205,26 +205,31 @@
 		// 	return $result;
 		// }
 
-		// public function addItemToMeal(Item $item, Meal $meal) : DalResult
-		// {
-		// 	$result = new DalResult();
+		public function addMealItem(MealItem $mealItem) : MealItem
+		{
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("INSERT INTO meal_items (meal_id, item_id, quantity) VALUES (:meal_id, :item_id, :quantity)");
+				$query->execute(
+				[
+					':meal_id'  => $mealItem->getMealId(),
+					':item_id'  => $mealItem->getItemId(),
+					':quantity' => $mealItem->getQuantity(),
+				]);
 
-		// 	try
-		// 	{
-		// 		$query = $this->ShopDb->conn->prepare("UPDATE items SET luckydip_id = :meal_id WHERE item_id = :item_id");
-		// 		$result->setResult($query->execute(
-		// 		[
-		// 			':meal_id' => $meal->getId(),
-		// 			':item_id'     => $item->getId()
-		// 		]));
-		// 	}
-		// 	catch(PDOException $e)
-		// 	{
-		// 		$result->setException($e);
-		// 	}
+				$mealItem->setId(intval($this->ShopDb->conn->lastInsertId()));
 
-		// 	return $result;
-		// }
+				return $mealItem;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
 
 		// public function removeItemFromMeal(Item $item, Meal $meal) : DalResult
 		// {

@@ -3170,9 +3170,9 @@ function manageMeals()
 				request    :
 				{
 					'item_id' : itemID,
-					'meal_id' : mealID
-				}
-			}
+					'meal_id' : mealID,
+				},
+			},
 		}).done(function(data)
 		{
 			if (!data)
@@ -3201,8 +3201,7 @@ function manageMeals()
 				return false;
 			}
 
-			$(".meal-items-container").append(html);
-			$(".meal-items-container").find(".no-results").remove();
+			$(".meal-items-container").html(html);
 			selectedOption.remove();
 
 			toastr.success("Item successfully added to Meal");

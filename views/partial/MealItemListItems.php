@@ -13,7 +13,7 @@
 	}
 	else
 	{
-		foreach ($mealItems as $mealItemId => $mealItem)
+		foreach ($mealItems as $key => $mealItem)
 		{
 ?>
 			<div class="row result-item form" data-item_id="<?= $mealItem->getId(); ?>">
@@ -22,7 +22,7 @@
 				</div>
 
 				<div class="col-xs-6 meal-item-name-container">
-					<p data-description="<?= $mealItem->getDescription(); ?>"><a href="<?= SITEURL; ?>/items/edit/<?= $mealItem->getId(); ?>/"><?= $mealItem->getDescription(); ?></a></p>
+					<p data-description="<?= $mealItem->getItemDescription(); ?>"><a href="<?= SITEURL; ?>/items/edit/<?= $mealItem->getItemId(); ?>/"><?= $mealItem->getItemDescription(); ?></a></p>
 				</div>
 
 				<div class="col-xs-2 meal-item-quantity-container">
@@ -30,7 +30,7 @@
 				</div>
 
 				<div class="col-xs-2 button-container">
-					<button class="btn btn-danger btn-sm js-remove-item-from-meal">&times;</button>
+					<button class="btn btn-primary btn-sm js-update-mealitem">Update</button>
 				</div>
 			</div>
 <?php

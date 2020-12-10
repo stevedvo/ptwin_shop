@@ -182,13 +182,14 @@
 		{
 			try
 			{
-				throw new Exception("Not implemented yet");
 				$mealItem = $this->dal->addMealItem($mealItem);
 
 				if (!($mealItem instanceof MealItem))
 				{
 					throw new Exception("MealItem could not be added to DB");
 				}
+
+				return $mealItem;
 			}
 			catch (Exception $e)
 			{

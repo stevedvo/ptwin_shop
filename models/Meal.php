@@ -41,9 +41,23 @@
 			$this->name = $name;
 		}
 
-		public function getMealItems() : array
+		public function getMealItems(bool $reSort = false) : array
 		{
-			return $this->mealItems;
+			if (!$reSort)
+			{
+				return $this->mealItems;
+			}
+
+			$sortedMealItems = [];
+
+			foreach ($this->mealItems as $key => $mealItem)
+			{
+				$sortedMealItems[$mealItem->getItemDescription()] = $mealItem;
+			}
+
+			ksort($sortedMealItems);
+
+			return $sortedMealItems;
 		}
 
 		public function setMealItems(array $mealItems) : void

@@ -116,4 +116,17 @@
 
 			return getValidationString($this, $property);
 		}
+
+		public function getItemDescription() : string
+		{
+			$itemDescription = "";
+			$item = $this->getItem();
+
+			if ($item instanceof Item)
+			{
+				$itemDescription = $item->getDescription();
+			}
+
+			return $itemDescription;
+		}
 	}
