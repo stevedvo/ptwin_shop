@@ -206,30 +206,41 @@
 			}
 		}
 
-		// public function updateMealItem($request) : ?string
-		// {
-		// 	$mealItem = $this->meals_service->verifyMealItemRequest($request);
+		public function updateMealItem(array $request) : array
+		{
+			$dalResult = new DalResult();
 
-		// 	if (!($mealItem instanceof MealItem))
-		// 	{
-		// 		return null;
-		// 	}
+			try
+			{
+				$mealItem = $this->meals_service->verifyMealItemRequest($request);
 
-		// 	$quantity = isset($request['quantity']) && is_numeric($request['quantity']) ? intval($request['quantity']) : null;
+				if (!($mealItem instanceof MealItem))
+				{
+					return null;
+				}
 
-		// 	$mealItem->setQuantity($quantity);
+				$quantity = isset($request['quantity']) && is_numeric($request['quantity']) ? intval($request['quantity']) : null;
 
-		// 	if (!entityIsValid($mealItem))
-		// 	{
+				$mealItem->setQuantity($quantity);
 
-		// 	}
+				if (!entityIsValid($mealItem))
+				{
 
-		// 	$dalResult = $this->meals_service->updateMealItem($mealItem);
+				}
 
-		// 	$this->meals_service->closeConnexion();
+				$dalResult = $this->meals_service->updateMealItem($mealItem);
 
-		// 	return $dalResult->jsonSerialize();
-		// }
+				$this->meals_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
 
 		// public function removeItemFromMeal($request) : ?string
 		// {

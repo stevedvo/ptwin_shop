@@ -16,7 +16,7 @@
 		foreach ($mealItems as $key => $mealItem)
 		{
 ?>
-			<div class="row result-item form" data-item_id="<?= $mealItem->getId(); ?>">
+			<div class="row result-item form" data-mealitem_id="<?= $mealItem->getId(); ?>">
 				<div class="col-xs-2 button-container">
 					<button class="btn btn-danger btn-sm js-remove-item-from-meal">&times;</button>
 				</div>

@@ -3214,6 +3214,93 @@ function manageMeals()
 		});
 	});
 
+	$(document).on("click", ".js-update-mealitem", function()
+	{
+		let form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		let validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+
+			return false;
+		}
+		else
+		{
+			let mealItemID = parseInt(form.data("mealitem_id"));
+			let mealItemQuantity = parseInt(form.find(`[name='mealItem[${mealItemID}][quantity]']`).val());
+
+			console.log(mealItemID);
+			console.log(mealItemQuantity);
+
+			return;
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Meals",
+					action     : "updateMealItem",
+					request    :
+					{
+						'meal_item_id'       : mealItemID,
+						'meal_item_quantity' : mealItemQuantity,
+					},
+				},
+			}).done(function(data)
+			{
+				if (!data)
+				{
+					toastr.error("Could not add Item to Meal: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				if (data.exception != null)
+				{
+					toastr.error(`Could not add Item to Meal: ${data.exceptionMessage}`);
+					console.log(data);
+
+					return false;
+				}
+
+				let html = data.partial_view;
+
+				if (!html)
+				{
+					toastr.error("Could not add Item to Meal: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				$(".meal-items-container").html(html);
+				selectedOption.remove();
+
+				toastr.success("Item successfully added to Meal");
+
+				return true;
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+
 	// $(document).on("click", ".js-remove-item-from-meal", function()
 	// {
 	// 	var $this = $(this);
