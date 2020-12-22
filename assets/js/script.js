@@ -3239,11 +3239,6 @@ function manageMeals()
 			let mealItemID = parseInt(form.data("mealitem_id"));
 			let mealItemQuantity = parseInt(form.find(`[name='mealItem[${mealItemID}][quantity]']`).val());
 
-			console.log(mealItemID);
-			console.log(mealItemQuantity);
-
-			return;
-
 			$.ajax(
 			{
 				type     : "POST",
@@ -3263,7 +3258,7 @@ function manageMeals()
 			{
 				if (!data)
 				{
-					toastr.error("Could not add Item to Meal: unknown error");
+					toastr.error("Could not update Meal Item: unknown error");
 					console.log(data);
 
 					return false;
@@ -3271,26 +3266,21 @@ function manageMeals()
 
 				if (data.exception != null)
 				{
-					toastr.error(`Could not add Item to Meal: ${data.exceptionMessage}`);
+					toastr.error(`Could not update Meal Item: ${data.exceptionMessage}`);
 					console.log(data);
 
 					return false;
 				}
 
-				let html = data.partial_view;
-
-				if (!html)
+				if (!data.result)
 				{
-					toastr.error("Could not add Item to Meal: unknown error");
+					toastr.error("Could not update Meal Item: unknown error");
 					console.log(data);
 
 					return false;
 				}
 
-				$(".meal-items-container").html(html);
-				selectedOption.remove();
-
-				toastr.success("Item successfully added to Meal");
+				toastr.success("Meal Item successfully updated");
 
 				return true;
 			}).fail(function(data)

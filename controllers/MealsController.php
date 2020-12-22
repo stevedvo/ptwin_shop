@@ -214,21 +214,10 @@
 			{
 				$mealItem = $this->meals_service->verifyMealItemRequest($request);
 
-				if (!($mealItem instanceof MealItem))
-				{
-					return null;
-				}
-
-				$quantity = isset($request['quantity']) && is_numeric($request['quantity']) ? intval($request['quantity']) : null;
-
+				$quantity = isset($request['meal_item_quantity']) && is_numeric($request['meal_item_quantity']) ? intval($request['meal_item_quantity']) : null;
 				$mealItem->setQuantity($quantity);
 
-				if (!entityIsValid($mealItem))
-				{
-
-				}
-
-				$dalResult = $this->meals_service->updateMealItem($mealItem);
+				$dalResult->setResult($this->meals_service->updateMealItem($mealItem));
 
 				$this->meals_service->closeConnexion();
 

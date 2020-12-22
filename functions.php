@@ -108,7 +108,7 @@
 		}
 	}
 
-	function createMealItem($request) : MealItem
+	function createMealItem(array $request) : MealItem
 	{
 		try
 		{

@@ -35,6 +35,25 @@
 			}
 		}
 
+		public function verifyMealItemRequest(array $request) : MealItem
+		{
+			try
+			{
+				if (!is_numeric($request['meal_item_id']))
+				{
+					throw new Exception("Invalid Meal Item ID");
+				}
+
+				$mealItem = $this->getMealItemById(intval($request['meal_item_id']));
+
+				return $mealItem;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
 		public function mealNameExists(string $mealName) : bool
 		{
 			try
@@ -104,7 +123,7 @@
 			}
 		}
 
-		public function getMealById($mealId) : Meal
+		public function getMealById(int $mealId) : Meal
 		{
 			try
 			{
@@ -190,6 +209,42 @@
 				}
 
 				return $mealItem;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function getMealItemById(int $mealItemId) : MealItem
+		{
+			try
+			{
+				$mealItem = $this->dal->getMealItemById($mealItemId);
+
+				if (!($mealItem instanceof MealItem))
+				{
+					throw new Exception("Meal Item not found");
+				}
+
+				return $mealItem;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function updateMealItem(MealItem $mealItem) : bool
+		{
+			try
+			{
+				if (!entityIsValid($mealItem))
+				{
+					throw new Exception("Invalid Meal Item quantity");
+				}
+
+				return $this->dal->updateMealItem($mealItem);
 			}
 			catch (Exception $e)
 			{

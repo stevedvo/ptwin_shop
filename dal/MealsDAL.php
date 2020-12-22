@@ -231,6 +231,79 @@
 			}
 		}
 
+		public function getMealItemById(int $mealItemId) : ?MealItem
+		{
+			try
+			{
+				$mealItem = null;
+
+				$query = $this->ShopDb->conn->prepare("SELECT mi.id AS meal_item_id, mi.meal_id, mi.item_id, mi.quantity AS meal_item_quantity, m.name AS meal_name, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id FROM meal_items AS mi LEFT JOIN meals AS m ON (m.id = mi.meal_id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) WHERE mi.id = :id");
+				$query->execute([':id' => $mealItemId]);
+				$row = $query->fetch(PDO::FETCH_ASSOC);
+
+				if (is_array($row))
+				{
+					$mealItem = createMealItem($row);
+
+					if (!entityIsValid($mealItem))
+					{
+						throw new Exception("Invalid Meal Item. #".$mealItem->getId());
+					}
+
+					$meal = createMeal($row);
+
+					if (!entityIsValid($meal))
+					{
+						throw new Exception("Invalid Meal. Meal ID #".$meal->getId());
+					}
+
+					$mealItem->setMeal($meal);
+
+					$item = createItem($row);
+
+					if (!entityIsValid($item))
+					{
+						throw new Exception("Invalid Item. Item ID #".$item->getId());
+					}
+
+					$mealItem->setItem($item);
+				}
+
+				return $mealItem;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
+		public function updateMealItem(MealItem $mealItem) : bool
+		{
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE meal_items SET quantity = :quantity WHERE id = :id");
+				$success = $query->execute(
+				[
+					':quantity' => $mealItem->getQuantity(),
+					':id'       => $mealItem->getId(),
+				]);
+
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
 		// public function removeItemFromMeal(Item $item, Meal $meal) : DalResult
 		// {
 		// 	$result = new DalResult();
