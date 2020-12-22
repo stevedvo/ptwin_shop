@@ -252,6 +252,35 @@
 			}
 		}
 
+		public function removeItemFromMeal(MealItem $mealItem, Meal $meal) : bool
+		{
+			try
+			{
+				if ($mealItem->getMealId() != $meal->getId())
+				{
+					throw new Exception("Meal ID mismatch");
+				}
+
+				return $this->removeMealItem($mealItem);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function removeMealItem(MealItem $mealItem) : bool
+		{
+			try
+			{
+				return $this->dal->removeMealItem($mealItem);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
 		// public function getMealByName(string $meal_name) : DalResult
 		// {
 		// 	return $this->dal->getMealByName($meal_name);

@@ -137,7 +137,7 @@
 					renderPage($pageData);
 				}
 
-				$item_list = $this->items_service->getAllItemsNotInMeal($meal->getId());
+				$itemList = $this->items_service->getAllItemsNotInMeal($meal->getId());
 
 				$pageData =
 				[
@@ -146,18 +146,18 @@
 					[
 						[
 							'link' => '/meals/',
-							'text' => 'Meals'
+							'text' => 'Meals',
 						],
 						[
-							'text' => 'Edit'
+							'text' => 'Edit',
 						]
 					],
 					'template'   => 'views/meals/edit.php',
 					'page_data'  =>
 					[
 						'meal'      => $meal,
-						'item_list' => $item_list
-					]
+						'item_list' => $itemList,
+					],
 				];
 
 				$this->meals_service->closeConnexion();
@@ -231,21 +231,37 @@
 			}
 		}
 
-		// public function removeItemFromMeal($request) : ?string
-		// {
-		// 	$mealItem = $this->meals_service->verifyMealItemRequest($request);
+		public function removeItemFromMeal(array $request) : array
+		{
+			$dalResult = new DalResult();
 
-		// 	if (!($mealItem instanceof MealItem))
-		// 	{
-		// 		return null;
-		// 	}
+			try
+			{
+				$meal = $this->meals_service->verifyMealRequest($request);
+				$mealItem = $this->meals_service->verifyMealItemRequest($request);
 
-		// 	$dalResult = $this->meals_service->removeMealItem($mealItem);
+				$dalResult->setResult($this->meals_service->removeItemFromMeal($mealItem, $meal));
+				$meal->removeMealItem($mealItem);
 
-		// 	$this->meals_service->closeConnexion();
+				$params =
+				[
+					'mealId'    => $meal->getId(),
+					'mealItems' => $meal->getMealItems($reSort = true),
+				];
 
-		// 	return $dalResult->jsonSerialize();
-		// }
+				$dalResult->setPartialView(getPartialView("MealItemListItems", $params));
+
+				$this->meals_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
 
 		// public function removeMeal($request)
 		// {

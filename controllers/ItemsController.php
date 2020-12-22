@@ -8,6 +8,7 @@
 		private $departments_service;
 		private $orders_service;
 		private $luckyDips_service;
+		private $meals_service;
 
 		public function __construct()
 		{
@@ -17,6 +18,7 @@
 			$this->orders_service = new OrdersService();
 			$this->packsizes_service = new PackSizesService();
 			$this->luckyDips_service = new LuckyDipsService();
+			$this->meals_service = new MealsService();
 		}
 
 		public function Index(array $request, int $consumptionInterval = DEFAULT_CONSUMPTION_INTERVAL, string $consumptionPeriod = DEFAULT_CONSUMPTION_PERIOD) : void
@@ -494,8 +496,33 @@
 				$luckyDip = $this->luckyDips_service->verifyLuckyDipRequest($request);
 				$items = $this->items_service->getAllItemsNotInLuckyDip($luckyDip->getId());
 
-				$dalResult->setPartialView(getPartialView("LuckyDipItemSelection", ['item_list' => $all_items]));
+				$dalResult->setPartialView(getPartialView("LuckyDipItemSelection", ['item_list' => $items]));
 
+				$this->luckyDips_service->closeConnexion();
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
+		public function getAllItemsNotInMeal(array $request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$meal = $this->meals_service->verifyMealRequest($request);
+				$items = $this->items_service->getAllItemsNotInMeal($meal->getId());
+
+				$dalResult->setPartialView(getPartialView("MealItemSelection", ['item_list' => $items]));
+
+				$this->meals_service->closeConnexion();
 				$this->items_service->closeConnexion();
 
 				return $dalResult->jsonSerialize();

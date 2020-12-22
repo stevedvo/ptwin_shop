@@ -70,6 +70,11 @@
 			$this->mealItems[$mealItem->getId()] = $mealItem;
 		}
 
+		public function removeMealItem(MealItem $mealItem) : void
+		{
+			unset($this->mealItems[$mealItem->getId()]);
+		}
+
 		public function getValidation($property = null)
 		{
 			if (is_null($property))

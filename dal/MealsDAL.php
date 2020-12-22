@@ -304,25 +304,24 @@
 			}
 		}
 
-		// public function removeItemFromMeal(Item $item, Meal $meal) : DalResult
-		// {
-		// 	$result = new DalResult();
+		public function removeMealItem(MealItem $mealItem) : bool
+		{
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("DELETE FROM meal_items WHERE id = :id");
+				$success = $query->execute([':id' => $mealItem->getId()]);
 
-		// 	try
-		// 	{
-		// 		$query = $this->ShopDb->conn->prepare("UPDATE items SET luckydip_id = NULL WHERE item_id = :item_id");
-		// 		$result->setResult($query->execute(
-		// 		[
-		// 			':item_id' => $item->getId()
-		// 		]));
-		// 	}
-		// 	catch(PDOException $e)
-		// 	{
-		// 		$result->setException($e);
-		// 	}
-
-		// 	return $result;
-		// }
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
 
 		// public function removeMeal(Meal $meal) : DalResult
 		// {
