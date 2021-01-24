@@ -3201,7 +3201,7 @@ function manageMeals()
 				return false;
 			}
 
-			$(".meal-items-container").html(html);
+			$("#MealItemListItems").html(html);
 			selectedOption.remove();
 
 			toastr.success("Item successfully added to Meal");
@@ -3342,7 +3342,7 @@ function manageMeals()
 				return false;
 			}
 
-			$(".meal-items-container").html(html);
+			$("#MealItemListItems").html(html);
 			toastr.success("Item successfully removed from Meal");
 
 			reloadPartial("MealItemSelection", "Items", "getAllItemsNotInMeal", { "meal_id" : mealID }, null, null, "POST");
@@ -3355,57 +3355,57 @@ function manageMeals()
 		});
 	});
 
-	// $(document).on("click", ".js-remove-meal", function()
-	// {
-	// 	var mealID = parseInt($(this).closest(".meal-items-container").data("luckydip_id"));
+	$(document).on("click", ".js-remove-meal", function()
+	{
+		var mealID = parseInt($(this).closest(".meal-items-container").data("meal_id"));
 
-	// 	$.ajax(
-	// 	{
-	// 		type     : "POST",
-	// 		url      : constants.SITEURL+"/ajax.php",
-	// 		dataType : "json",
-	// 		data     :
-	// 		{
-	// 			controller : "Meals",
-	// 			action     : "removeMeal",
-	// 			request    : {'meal_id' : mealID}
-	// 		}
-	// 	}).done(function(data)
-	// 	{
-	// 		if (data)
-	// 		{
-	// 			if (data.result == true)
-	// 			{
-	// 				toastr.success("Lucky Dip successfully removed");
-	// 				var timer = setTimeout(function()
-	// 				{
-	// 					location.href = constants.SITEURL+"/luckydips/";
-	// 				}, 750);
-	// 			}
-	// 			else
-	// 			{
-	// 				if (data.exception != null)
-	// 				{
-	// 					toastr.error("PDOException");
-	// 					console.log(data.exception);
-	// 				}
-	// 				else
-	// 				{
-	// 					toastr.error("Unspecified error");
-	// 					console.log(data);
-	// 				}
-	// 			}
-	// 		}
-	// 		else
-	// 		{
-	// 			toastr.error("Could not remove Lucky Dip");
-	// 		}
-	// 	}).fail(function(data)
-	// 	{
-	// 		toastr.error("Could not perform request");
-	// 		console.log(data);
-	// 	});
-	// });
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Meals",
+				action     : "removeMeal",
+				request    : {'meal_id' : mealID}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				if (data.result == true)
+				{
+					toastr.success("Lucky Dip successfully removed");
+					var timer = setTimeout(function()
+					{
+						location.href = constants.SITEURL+"/luckydips/";
+					}, 750);
+				}
+				else
+				{
+					if (data.exception != null)
+					{
+						toastr.error("PDOException");
+						console.log(data.exception);
+					}
+					else
+					{
+						toastr.error("Unspecified error");
+						console.log(data);
+					}
+				}
+			}
+			else
+			{
+				toastr.error("Could not remove Lucky Dip");
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
 }
 
 function reloadPartial(id, controller, action, params, callback, onbeforeload, ajaxMethod)

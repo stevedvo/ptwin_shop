@@ -38,7 +38,7 @@
 			{
 				$meal = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, mi.id AS meal_item_id, mi.quantity AS meal_item_quantity, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id FROM meals AS m LEFT JOIN meal_items AS mi ON (mi.meal_id = m.id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) WHERE m.id = :id ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, mi.id AS meal_item_id, mi.quantity AS meal_item_quantity, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id FROM meals AS m LEFT JOIN meal_items AS mi ON (mi.meal_id = m.id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) WHERE m.id = :id ORDER BY i.description");
 				$query->execute([':id' => $mealId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -85,13 +85,15 @@
 			}
 		}
 
-		public function getMealByName(string $mealName) : ?Meal
+		public function getMealByName(string $mealName, bool $includeDeleted) : ?Meal
 		{
 			$meal = null;
 
+			$includeDeletedQuery = $includeDeleted ? "" : "AND IsDeleted = 0";
+
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT id AS meal_id, name AS meal_name FROM meals WHERE name = :name LIMIT 1");
+				$query = $this->ShopDb->conn->prepare("SELECT id AS meal_id, name AS meal_name, IsDeleted AS meal_isDeleted FROM meals WHERE name = :name ".$includeDeletedQuery." LIMIT 1");
 				$query->execute([':name' => $mealName]);
 				$row = $query->fetch(PDO::FETCH_ASSOC);
 
@@ -108,13 +110,15 @@
 			return $meal;
 		}
 
-		public function getAllMeals() : ?array
+		public function getAllMeals(bool $includeDeleted) : ?array
 		{
+			$includeDeletedQuery = $includeDeleted ? "" : "WHERE IsDeleted = 0";
+
 			try
 			{
 				$meals = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT id AS meal_id, name AS meal_name FROM meals ORDER BY meal_name");
+				$query = $this->ShopDb->conn->prepare("SELECT id AS meal_id, name AS meal_name, IsDeleted AS meal_isDeleted FROM meals ".$includeDeletedQuery." ORDER BY meal_name");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -237,7 +241,7 @@
 			{
 				$mealItem = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT mi.id AS meal_item_id, mi.meal_id, mi.item_id, mi.quantity AS meal_item_quantity, m.name AS meal_name, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id FROM meal_items AS mi LEFT JOIN meals AS m ON (m.id = mi.meal_id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) WHERE mi.id = :id");
+				$query = $this->ShopDb->conn->prepare("SELECT mi.id AS meal_item_id, mi.meal_id, mi.item_id, mi.quantity AS meal_item_quantity, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id FROM meal_items AS mi LEFT JOIN meals AS m ON (m.id = mi.meal_id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) WHERE mi.id = :id");
 				$query->execute([':id' => $mealItemId]);
 				$row = $query->fetch(PDO::FETCH_ASSOC);
 

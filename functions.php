@@ -97,8 +97,9 @@
 		{
 			$id = isset($request['meal_id']) ? intval($request['meal_id']) : null;
 			$name = isset($request['meal_name']) ? trim($request['meal_name']) : null;
+			$isDeleted = isset($request['meal_isDeleted']) && $request['meal_isDeleted'];
 
-			$meal = new Meal($id, $name);
+			$meal = new Meal($id, $name, $isDeleted);
 
 			return $meal;
 		}

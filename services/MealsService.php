@@ -54,11 +54,11 @@
 			}
 		}
 
-		public function mealNameExists(string $mealName) : bool
+		public function mealNameExists(string $mealName, bool $includeDeleted = false) : bool
 		{
 			try
 			{
-				$meal = $this->dal->getMealByName($mealName);
+				$meal = $this->dal->getMealByName($mealName, $includeDeleted);
 
 				return ($meal instanceof Meal);
 			}
@@ -68,11 +68,11 @@
 			}
 		}
 
-		public function mealNameIsUnique(string $mealName, int $mealId) : bool
+		public function mealNameIsUnique(string $mealName, int $mealId, bool $includeDeleted = false) : bool
 		{
 			try
 			{
-				$meal = $this->dal->getMealByName($mealName);
+				$meal = $this->dal->getMealByName($mealName, $includeDeleted);
 
 				if (!$meal instanceof Meal)
 				{
@@ -104,11 +104,11 @@
 			}
 		}
 
-		public function getAllMeals() : array
+		public function getAllMeals(bool $includeDeleted = false) : array
 		{
 			try
 			{
-				$meals = $this->dal->getAllMeals();
+				$meals = $this->dal->getAllMeals($includeDeleted);
 
 				if (!is_array($meals))
 				{

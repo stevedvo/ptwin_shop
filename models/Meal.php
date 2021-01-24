@@ -5,13 +5,15 @@
 	{
 		private ?int $id;
 		private ?string $name;
+		private bool $isDeleted;
 		private array $mealItems;
 		private array $validation;
 
-		public function __construct(?int $id = null, ?string $name = null, array $mealItems = [])
+		public function __construct(?int $id = null, ?string $name = null, bool $isDeleted = false, array $mealItems = [])
 		{
 			$this->id = $id;
 			$this->name = $name;
+			$this->isDeleted = $isDeleted;
 			$this->validation = ['Name' => ['required' => true]];
 			$this->mealItems = $mealItems;
 		}
@@ -39,6 +41,16 @@
 		public function setName(string $name) : void
 		{
 			$this->name = $name;
+		}
+
+		public function getIsDeleted() : bool
+		{
+			return $this->isDeleted;
+		}
+
+		public function setIsDeleted(bool $isDeleted) : void
+		{
+			$this->isDeleted = $isDeleted;
 		}
 
 		public function getMealItems(bool $reSort = false) : array
