@@ -165,50 +165,6 @@
 			}
 		}
 
-		// public function getMealsByListId(int $list_id) : DalResult
-		// {
-		// 	$result = new DalResult();
-		// 	$meals = null;
-
-		// 	try
-		// 	{
-		// 		$query = $this->ShopDb->conn->prepare("SELECT ld.id AS meal_id, ld.name AS meal_name, ld.list_id AS meal_list_id, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM meals AS ld LEFT JOIN items AS i ON (i.luckydip_id = ld.id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE ld.list_id = :list_id ORDER BY ld.id, i.description");
-		// 		$query->execute([':list_id' => $list_id]);
-		// 		$rows = $query->fetchAll(PDO::FETCH_ASSOC);
-
-		// 		if (is_array($rows))
-		// 		{
-		// 			$meals = [];
-
-		// 			foreach ($rows as $row)
-		// 			{
-		// 				if (!array_key_exists($row['meal_id'], $meals))
-		// 				{
-		// 					$meal = createMeal($row);
-		// 					$meals[$meal->getId()] = $meal;
-		// 				}
-
-		// 				$item = createItem($row);
-		// 				$packsize = createPackSize($row);
-		// 				$item->setPackSize($packsize);
-
-		// 				if (entityIsValid($item))
-		// 				{
-		// 					$meals[$row['meal_id']]->addItem($item);
-		// 				}
-		// 			}
-		// 		}
-
-		// 		$result->setResult($meals);
-		// 	}
-		// 	catch(PDOException $e)
-		// 	{
-		// 		$result->setException($e);
-		// 	}
-
-		// 	return $result;
-		// }
-
 		public function addMealItem(MealItem $mealItem) : MealItem
 		{
 			try
@@ -327,20 +283,26 @@
 			}
 		}
 
-		// public function removeMeal(Meal $meal) : DalResult
-		// {
-		// 	$result = new DalResult();
+		public function removeMeal(Meal $meal) : bool
+		{
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE meals SET IsDeleted = :isDeleted WHERE id = :id");
+				$success = $query->execute(
+				[
+					':isDeleted' => $meal->getIsDeleted(),
+					':id'        => $meal->getId()
+				]);
 
-		// 	try
-		// 	{
-		// 		$query = $this->ShopDb->conn->prepare("DELETE FROM meals WHERE id = :id");
-		// 		$result->setResult($query->execute([':id' => $meal->getId()]));
-		// 	}
-		// 	catch(PDOException $e)
-		// 	{
-		// 		$result->setException($e);
-		// 	}
-
-		// 	return $result;
-		// }
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
 	}

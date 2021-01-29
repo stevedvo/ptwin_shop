@@ -3372,34 +3372,38 @@ function manageMeals()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					toastr.success("Lucky Dip successfully removed");
-					var timer = setTimeout(function()
-					{
-						location.href = constants.SITEURL+"/luckydips/";
-					}, 750);
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				toastr.error("Could not remove Meal: unknown error");
+				console.log(data);
+
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not remove Lucky Dip");
+				toastr.error(`Could not remove Meal: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not remove Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Meal successfully removed");
+
+			let timer = setTimeout(function()
+			{
+				location.href = constants.SITEURL+"/meals/";
+			}, 750);
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");

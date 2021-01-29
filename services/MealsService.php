@@ -281,23 +281,17 @@
 			}
 		}
 
-		// public function getMealByName(string $meal_name) : DalResult
-		// {
-		// 	return $this->dal->getMealByName($meal_name);
-		// }
+		public function removeMeal(Meal $meal) : bool
+		{
+			try
+			{
+				$meal->setIsDeleted(true);
 
-		// public function getMealsByListId(int $list_id) : DalResult
-		// {
-		// 	return $this->dal->getMealsByListId($list_id);
-		// }
-
-		// public function removeItemFromMeal(Item $item, Meal $meal) : DalResult
-		// {
-		// 	return $this->dal->removeItemFromMeal($item, $meal);
-		// }
-
-		// public function removeMeal(Meal $meal) : DalResult
-		// {
-		// 	return $this->dal->removeMeal($meal);
-		// }
+				return $this->dal->removeMeal($meal);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
 	}

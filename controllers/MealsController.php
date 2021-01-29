@@ -263,26 +263,36 @@
 			}
 		}
 
-		// public function removeMeal($request)
-		// {
-		// 	$meal = $this->meals_service->verifyMealRequest($request);
+		public function removeMeal(array $request) : array
+		{
+			$dalResult = new DalResult();
 
-		// 	if (!($meal instanceof Meal))
-		// 	{
-		// 		return false;
-		// 	}
+			try
+			{
+				$meal = $this->meals_service->verifyMealRequest($request);
 
-		// 	if (sizeof($meal->getItems()) > 0)
-		// 	{
-		// 		return false;
-		// 	}
+				if (sizeof($meal->getMealItems()) > 0)
+				{
+					$dalResult->setException(new Exception("Cannot remove Meal with MealItems associated"));
 
-		// 	$dalResult = $this->meals_service->removeMeal($meal);
+					$this->meals_service->closeConnexion();
 
-		// 	$this->meals_service->closeConnexion();
+					return $dalResult->jsonSerialize();
+				}
 
-		// 	return $dalResult->jsonSerialize();
-		// }
+				$dalResult->setResult($this->meals_service->removeMeal($meal));
+
+				$this->meals_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
 
 		// public function getAllMeals($request)
 		// {
