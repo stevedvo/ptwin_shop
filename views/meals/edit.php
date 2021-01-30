@@ -14,7 +14,7 @@
 					<div class="form">
 						<div class="row">
 							<div class="col-xs-4 restore-meal-container">
-								<button class="btn btn-primary btn-sm js-restore-meal">Restore Meal</button>
+								<button class="btn btn-primary btn-sm js-restore-meal" data-meal_id="<?= $meal->getId(); ?>">Restore Meal</button>
 							</div>
 						</div>
 					</div>

@@ -305,4 +305,27 @@
 				throw $exception;
 			}
 		}
+
+		public function restoreMeal(Meal $meal) : Meal
+		{
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE meals SET IsDeleted = :isDeleted WHERE id = :id");
+				$query->execute(
+				[
+					':isDeleted' => $meal->getIsDeleted() ? 1 : 0,
+					':id'        => $meal->getId()
+				]);
+
+				return $meal;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
 	}

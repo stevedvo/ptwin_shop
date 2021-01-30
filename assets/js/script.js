@@ -3410,6 +3410,64 @@ function manageMeals()
 			console.log(data);
 		});
 	});
+
+	$(document).on("click", ".js-restore-meal", function()
+	{
+		var mealID = parseInt($(this).data("meal_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Meals",
+				action     : "restoreMeal",
+				request    : {'meal_id' : mealID}
+			}
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not restore Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not restore Meal: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
+			}
+
+			let meal = data.result;
+
+			if (!meal)
+			{
+				toastr.error("Could not restore Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Meal successfully restored");
+
+			let timer = setTimeout(function()
+			{
+				location.href = `${constants.SITEURL}/meals/edit/${meal.id}/`;
+			}, 750);
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
 }
 
 function reloadPartial(id, controller, action, params, callback, onbeforeload, ajaxMethod)

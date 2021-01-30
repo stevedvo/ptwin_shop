@@ -294,6 +294,28 @@
 			}
 		}
 
+		public function restoreMeal(array $request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$meal = $this->meals_service->verifyMealRequest($request);
+
+				$dalResult->setResult($this->meals_service->restoreMeal($meal)->jsonSerialize());
+
+				$this->meals_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
 		// public function getAllMeals($request)
 		// {
 		// 	$meals = null;

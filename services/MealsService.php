@@ -294,4 +294,18 @@
 				throw $e;
 			}
 		}
+
+		public function restoreMeal(Meal $meal) : Meal
+		{
+			try
+			{
+				$meal->setIsDeleted(false);
+
+				return $this->dal->restoreMeal($meal);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
 	}
