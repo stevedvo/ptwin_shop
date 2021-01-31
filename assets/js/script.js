@@ -128,9 +128,9 @@ function manageItems()
 						'link'         : link,
 						'list_id'      : listID,
 						'add_to_order' : addToOrder,
-						'packsize_id'  : packSizeID
-					}
-				}
+						'packsize_id'  : packSizeID,
+					},
+				},
 			}).done(function(data)
 			{
 				if (data.exception != null)
@@ -144,7 +144,7 @@ function manageItems()
 
 					var timer = setTimeout(function()
 					{
-						location.href = constants.SITEURL+"/items/edit/"+data.item.id+"/";
+						location.href = constants.SITEURL+"/items/edit/"+data.id+"/";
 					}, 750);
 				}
 			}).fail(function(data)
@@ -1787,7 +1787,20 @@ function quickAdd()
 				if (data.description == itemDescription)
 				{
 					toastr.error("QuickAdd: "+itemDescription+" not found... redirecting.");
-					var timer = setTimeout(function()
+
+					let timer = setTimeout(function()
+					{
+						location.href = constants.SITEURL+"/items/create/?description="+itemDescription;
+					}, 750);
+
+					return;
+				}
+
+				if (data.exceptionMessage == "Item not found")
+				{
+					toastr.error("QuickAdd: "+itemDescription+" not found... redirecting.");
+
+					let timer = setTimeout(function()
 					{
 						location.href = constants.SITEURL+"/items/create/?description="+itemDescription;
 					}, 750);
@@ -1797,7 +1810,7 @@ function quickAdd()
 
 				if (data.exception != null)
 				{
-					toastr.error(`QuickAdd - error adding Item: ${data.exception.message}`);
+					toastr.error(`QuickAdd - error adding Item: ${data.exceptionMessage}`);
 					console.log(data.exception);
 
 					return false;
