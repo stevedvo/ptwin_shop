@@ -26,12 +26,7 @@
 					throw new Exception("Invalid Order ID");
 				}
 
-				$order = $this->dal->getOrderById(intval($request['order_id']));
-
-				if (!($order instanceof Order))
-				{
-					throw new Exception("Order not found");
-				}
+				$order = $this->getOrderById(intval($request['order_id']));
 
 				return $order;
 			}
@@ -193,7 +188,7 @@
 			}
 		}
 
-		public function getOrderById(int $orderId) : ?Order
+		public function getOrderById(int $orderId) : Order
 		{
 			try
 			{
@@ -203,6 +198,8 @@
 				{
 					throw new Exception("Cannot find Order with ID ".$orderId);
 				}
+
+				return $order;
 			}
 			catch (Exception $e)
 			{
