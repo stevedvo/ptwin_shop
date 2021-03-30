@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class ItemsService
 	{
 		private $dal;
@@ -13,101 +15,206 @@
 			$this->dal->closeConnexion();
 		}
 
-		public function verifyItemRequest($request)
+		public function verifyItemRequest(array $request) : Item
 		{
-			$item = false;
-
-			if (!is_numeric($request['item_id']))
+			try
 			{
-				return false;
-			}
-
-			$dalResult = $this->dal->getItemById(intval($request['item_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$item = $dalResult->getResult();
-			}
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			return $item;
-		}
-
-		public function addItem($item)
-		{
-			return $this->dal->addItem($item);
-		}
-
-		public function getAllItems()
-		{
-			return $this->dal->getAllItems();
-		}
-
-		public function getAllItemsNotInLuckyDip(int $luckyDip_id) : DalResult
-		{
-			return $this->dal->getAllItemsNotInLuckyDip($luckyDip_id);
-		}
-
-		public function getAllSuggestedItems($interval, $period)
-		{
-			$suggested_items = [];
-
-			$dalResult = $this->dal->getAllSuggestedItems();
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$all_items = $dalResult->getResult();
-
-				if (is_array($all_items))
+				if (!is_numeric($request['item_id']))
 				{
-					foreach ($all_items as $item_id => $item)
-					{
-						$item->calculateRecentOrders($interval, $period);
-						$est_overall = $item->getStockLevelPrediction(7, 'overall');
-						$est_recent = $item->getStockLevelPrediction(7, 'recent');
+					throw new Exception("Invalid Item ID");
+				}
 
-						if (($est_overall !== false && $est_overall < 0) || ($est_recent !== false && $est_recent < 0))
-						{
-							$suggested_items[$item->getId()] = $item;
-						}
+				return $this->getItemById(intval($request['item_id']));
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function addItem(Item $item) : Item
+		{
+			try
+			{
+				return $this->dal->addItem($item);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function getAllItems() : array
+		{
+			try
+			{
+				$items = $this->dal->getAllItems();
+
+				if (!is_array($items))
+				{
+					throw new Exception("Items not found");
+				}
+
+				return $items;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function getAllItemsNotInLuckyDip(int $luckyDipId) : array
+		{
+			try
+			{
+				$items = $this->dal->getAllItemsNotInLuckyDip($luckyDipId);
+
+				if (!is_array($items))
+				{
+					throw new Exception("Items not found");
+				}
+
+				return $items;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function getAllItemsNotInMeal(int $mealId) : array
+		{
+			try
+			{
+				return $this->dal->getAllItemsNotInMeal($mealId);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function getAllSuggestedItems(int $interval, string $period) : array
+		{
+			try
+			{
+				$suggestedItems = [];
+
+				$allItems = $this->dal->getAllSuggestedItems();
+
+				if (!is_array($allItems))
+				{
+					throw new Exception("Suggested Items not found.");
+				}
+
+				foreach ($allItems as $itemId => $item)
+				{
+					$item->calculateRecentOrders($interval, $period);
+					$estOverall = $item->getStockLevelPrediction(7, 'overall');
+					$estRecent = $item->getStockLevelPrediction(7, 'recent');
+
+					if ((is_int($estOverall) && $estOverall < 0) || (is_int($estRecent) && $estRecent < 0))
+					{
+						$suggestedItems[$item->getId()] = $item;
 					}
 				}
+
+				return $suggestedItems;
 			}
-
-			return $suggested_items;
-		}
-
-		public function getAllMutedSuggestedItems()
-		{
-			$muted_items = [];
-
-			$dalResult = $this->dal->getAllMutedSuggestedItems();
-
-			if (!is_null($dalResult->getResult()))
+			catch (Exception $e)
 			{
-				$muted_items = $dalResult->getResult();
+				throw $e;
 			}
-
-			return $muted_items;
 		}
 
-		public function getItemById($item_id)
+		public function getAllMutedSuggestedItems() : array
 		{
-			return $this->dal->getItemById($item_id);
+			try
+			{
+				$mutedItems = $this->dal->getAllMutedSuggestedItems();
+
+				if (!is_array($mutedItems))
+				{
+					throw new Exception("Muted Suggestions not found");
+				}
+
+				return $mutedItems;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function getItemsById($item_ids)
+		public function getItemById($itemId) : Item
 		{
-			return $this->dal->getItemsById($item_ids);
+			try
+			{
+				$item = $this->dal->getItemById($itemId);
+
+				if (!($item instanceof Item))
+				{
+					throw new Exception("Item not found");
+				}
+
+				return $item;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function getItemByDescription($description)
+		public function getItemsById(array $item_ids) : array
 		{
-			return $this->dal->getItemByDescription($description);
+			try
+			{
+				$items = $this->dal->getItemsById($item_ids);
+
+				if (!is_array($items))
+				{
+					throw new Exception("Items not found");
+				}
+
+				return $items;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function getItemByDescription(string $description) : Item
+		{
+			try
+			{
+				$item = $this->dal->getItemByDescription($description);
+
+				if (!($item instanceof Item))
+				{
+					throw new Exception("Item not found");
+				}
+
+				return $item;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function itemDoesNotExist(string $description) : bool
+		{
+			try
+			{
+				$item = $this->dal->getItemByDescription($description);
+
+				return !($item instanceof Item);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getItemsByDepartmentId($dept_id)
@@ -120,35 +227,112 @@
 			return $this->dal->getItemsByListId($list_id);
 		}
 
-		public function updateItem($item)
+		public function updateItem(Item $item) : bool
 		{
-			return $this->dal->updateItem($item);
+			try
+			{
+				$success = $this->dal->updateItem($item);
+
+				if (!$success)
+				{
+					throw new Exception("Error updating Item");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function addDepartmentToItem($department, $item)
+		public function addDepartmentToItem(Department $department, Item $item) : int
 		{
-			return $this->dal->addDepartmentToItem($department, $item);
+			try
+			{
+				$result = $this->dal->addDepartmentToItem($department, $item);
+
+				if (!is_numeric($result))
+				{
+					throw new Exception("Error adding Department to Item");
+				}
+
+				return $result;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function setItemPrimaryDepartment($department, $item)
+		public function setItemPrimaryDepartment(Department $department, Item $item) : bool
 		{
-			$item->setPrimaryDept($department->getId());
+			try
+			{
+				$item->setPrimaryDept($department->getId());
 
-			return $this->dal->updateItem($item);
+				$success = $this->dal->updateItem($item);
+
+				if (!$success)
+				{
+					throw new Exception("Error setting Primary Department to Item");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function removeDepartmentsFromItem($dept_ids, $item_id)
+		public function removeDepartmentsFromItem(array $deptIds, int $itemId) : bool
 		{
-			return $this->dal->removeDepartmentsFromItem($dept_ids, $item_id);
+			try
+			{
+				$success = $this->dal->removeDepartmentsFromItem($deptIds, $itemId);
+
+				if (!$success)
+				{
+					throw new Exception("Error removing Departments from Item");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function getItemDepartmentLookupArray()
+		public function getItemDepartmentLookupArray() : array
 		{
-			return $this->dal->getItemDepartmentLookupArray();
+			try
+			{
+				$departments_lookup = $this->dal->getItemDepartmentLookupArray();
+
+				if (!is_array($departments_lookup))
+				{
+					throw new Exception("Error getting Item/Department lookups");
+				}
+
+				return $departments_lookup;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function resetMuteTemps()
+		public function resetMuteTemps() : bool
 		{
-			return $this->dal->resetMuteTemps();
+			try
+			{
+				return $this->dal->resetMuteTemps();
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 	}

@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class DepartmentsDAL
 	{
 		private $ShopDb;
@@ -25,7 +27,7 @@
 					':dept_name' => $department->getName(),
 					':seq'       => $department->getSeq()
 				]);
-				$result->setResult($this->ShopDb->conn->lastInsertId());
+				$result->setResult(intval($this->ShopDb->conn->lastInsertId()));
 			}
 			catch(PDOException $e)
 			{
@@ -35,22 +37,21 @@
 			return $result;
 		}
 
-		public function getDepartmentById($dept_id)
+		public function getDepartmentById(int $dept_id) : ?Department
 		{
-			$result = new DalResult();
-			$department = false;
-
 			try
 			{
+				$department = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, d.seq, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE d.dept_id = :dept_id ORDER BY i.description");
 				$query->execute([':dept_id' => $dept_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					foreach ($rows as $row)
 					{
-						if (!$department)
+						if (!($department instanceof Department))
 						{
 							$department = createDepartment($row);
 						}
@@ -64,14 +65,16 @@
 					}
 				}
 
-				$result->setResult($department);
+				return $department;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getDepartmentByName($dept_name)
@@ -100,18 +103,17 @@
 			return $result;
 		}
 
-		public function getAllDepartments()
+		public function getAllDepartments() : ?array
 		{
-			$result = new DalResult();
-			$departments = false;
-
 			try
 			{
+				$departments = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT dept_id, dept_name, seq FROM departments ORDER BY seq, dept_name");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$departments = [];
 
@@ -123,28 +125,29 @@
 					}
 				}
 
-				$result->setResult($departments);
+				return $departments;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function getAllDepartmentsWithItems()
+		public function getAllDepartmentsWithItems() : ?array
 		{
-			$result = new DalResult();
-			$departments = false;
-
 			try
 			{
+				$departments = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, d.seq, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM departments AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) ORDER BY d.seq, d.dept_name, i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$departments = [];
 
@@ -165,35 +168,41 @@
 					}
 				}
 
-				$result->setResult($departments);
+				return $departments;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function addItemToDepartment($item, $department)
+		public function addItemToDepartment(Item $item, Department $department) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
+				$success = false;
+
 				$query = $this->ShopDb->conn->prepare("INSERT INTO item_dept_link (dept_id, item_id) VALUES (:dept_id, :item_id)");
-				$result->setResult($query->execute(
+				$success = $query->execute(
 				[
 					':dept_id' => $department->getId(),
 					':item_id' => $item->getId()
-				]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function removeItemsFromDepartment($item_ids, $dept_id)
@@ -224,57 +233,60 @@
 			return $result;
 		}
 
-		public function updateDepartment($department)
+		public function updateDepartment(Department $department) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("UPDATE departments SET dept_name = :dept_name, seq = :seq WHERE dept_id = :dept_id");
-				$result->setResult($query->execute(
+				$success = $query->execute(
 				[
 					':dept_name' => $department->getName(),
 					':seq'       => $department->getSeq(),
 					':dept_id'   => $department->getId()
-				]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function removeDepartment($department)
+		public function removeDepartment(Department $department) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("DELETE FROM departments WHERE dept_id = :dept_id");
-				$result->setResult($query->execute([':dept_id' => $department->getId()]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				$success = $query->execute([':dept_id' => $department->getId()]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function getPrimaryDepartments()
+		public function getPrimaryDepartments() : ?array
 		{
-			$result = new DalResult();
-			$departments = false;
-
 			try
 			{
+				$departments = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, idl.dept_id, d.dept_name, d.seq FROM items AS i LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) ORDER BY ISNULL(i.primary_dept), d.seq, d.dept_name, i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$departments = [];
 
@@ -311,13 +323,15 @@
 					}
 				}
 
-				$result->setResult($departments);
+				return $departments;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 	}

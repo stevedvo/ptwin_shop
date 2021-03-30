@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class PackSizesDAL
 	{
 		private $ShopDb;
@@ -8,42 +10,43 @@
 			$this->ShopDb = new ShopDb();
 		}
 
-		public function closeConnexion()
+		public function closeConnexion() : void
 		{
 			$this->ShopDb = null;
 		}
 
-		public function getAllPackSizes()
+		public function getAllPackSizes() : ?array
 		{
-			$result = new DalResult();
-			$packsizes = false;
-
 			try
 			{
+				$packSizes = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT id AS packsize_id, name AS packsize_name, short_name AS packsize_short_name FROM pack_sizes ORDER BY packsize_name");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
-					$packsizes = [];
+					$packSizes = [];
 
 					foreach ($rows as $row)
 					{
-						$packsize = createPackSize($row);
+						$packSize = createPackSize($row);
 
-						$packsizes[$packsize->getId()] = $packsize;
+						$packSizes[$packSize->getId()] = $packSize;
 					}
 				}
 
-				$result->setResult($packsizes);
+				return $packSizes;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getPackSizeByName($packsize_name)
@@ -98,7 +101,7 @@
 			return $result;
 		}
 
-		public function addPackSize($packsize)
+		public function addPackSize($packSize)
 		{
 			$result = new DalResult();
 
@@ -107,13 +110,13 @@
 				$query = $this->ShopDb->conn->prepare("INSERT INTO pack_sizes (name, short_name) VALUES (:name, :short_name)");
 				$query->execute(
 				[
-					':name'       => $packsize->getName(),
-					':short_name' => $packsize->getShortName()
+					':name'       => $packSize->getName(),
+					':short_name' => $packSize->getShortName()
 				]);
 
-				$packsize->setId($this->ShopDb->conn->lastInsertId());
+				$packSize->setId(intval($this->ShopDb->conn->lastInsertId()));
 
-				$result->setResult($packsize);
+				$result->setResult($packSize);
 			}
 			catch(PDOException $e)
 			{

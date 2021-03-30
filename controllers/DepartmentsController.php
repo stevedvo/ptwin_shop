@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class DepartmentsController
 	{
 		private $departments_service;
@@ -10,31 +12,41 @@
 			$this->items_service = new ItemsService();
 		}
 
-		public function Index()
+		public function Index() : void
 		{
-			$deptPrototype = new Department();
-			$dalResult = $this->departments_service->getAllDepartments();
-			$departments = false;
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$departments = $dalResult->getResult();
-			}
-
-			$this->departments_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'Manage Departments',
-				'template'   => 'views/departments/index.php',
-				'page_data'  =>
-				[
-					'deptPrototype' => $deptPrototype,
-					'departments'   => $departments
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => [],
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$deptPrototype = new Department();
+				$departments = $this->departments_service->getAllDepartments();
+
+				$this->departments_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Manage Departments',
+					'template'   => 'views/departments/index.php',
+					'page_data'  =>
+					[
+						'deptPrototype' => $deptPrototype,
+						'departments'   => $departments,
+					],
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
 		public function addDepartment($request)
@@ -76,75 +88,85 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		public function Edit($request = null)
+		public function Edit(?int $request = null) : void
 		{
-			$department = $all_items = false;
-
-			if (is_numeric($request))
-			{
-				$dalResult = $this->departments_service->getDepartmentById(intval($request));
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$department = $dalResult->getResult();
-				}
-
-				$dalResult = $this->items_service->getAllItems();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$all_items = $dalResult->getResult();
-				}
-			}
-
-			$this->departments_service->closeConnexion();
-			$this->items_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'Edit Department',
-				'breadcrumb' =>
-				[
-					[
-						'link' => '/departments/',
-						'text' => 'Departments'
-					],
-					[
-						'text' => 'Edit'
-					]
-				],
-				'template'   => 'views/departments/edit.php',
-				'page_data'  =>
-				[
-					'department'      => $department,
-					'all_items'       => $all_items
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$department = $this->departments_service->verifyDepartmentRequest(['dept_id' => $request]);
+				$allItems = $this->items_service->getAllItems();
+
+				$this->departments_service->closeConnexion();
+				$this->items_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Edit Department',
+					'breadcrumb' =>
+					[
+						[
+							'link' => '/departments/',
+							'text' => 'Departments'
+						],
+						[
+							'text' => 'Edit'
+						]
+					],
+					'template'   => 'views/departments/edit.php',
+					'page_data'  =>
+					[
+						'department' => $department,
+						'all_items'  => $allItems
+					]
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
-		public function addItemToDepartment($request)
+		public function addItemToDepartment(array $request) : array
 		{
-			$item = $this->items_service->verifyItemRequest($request);
-			$department = $this->items_service->verifyDepartmentRequest($request);
+			$dalResult = new DalResult();
 
-			if (!$item || !$department)
+			try
 			{
-				return false;
-			}
+				$item = $this->items_service->verifyItemRequest($request);
+				$department = $this->departments_service->verifyDepartmentRequest($request);
 
-			$dalResult = $this->departments_service->addItemToDepartment($item, $department);
+				$success = $this->departments_service->addItemToDepartment($item, $department);
 
-			if (!is_null($dalResult->getResult()))
-			{
+				if (!$success)
+				{
+					$dalResult->setException(new Exception("Error adding Item to Department"));
+
+					return $dalResult->jsonSerialize();
+				}
+
 				$dalResult->setPartialView(getPartialView("DepartmentItem", ['item' => $item]));
+
+				$this->departments_service->closeConnexion();
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
 
-			$this->departments_service->closeConnexion();
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
+				return $dalResult->jsonSerialize();
+			}
 		}
 
 		public function removeItemsFromDepartment($request)
@@ -172,68 +194,75 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		public function editDepartment($request)
+		public function editDepartment(array $request) : array
 		{
-			$department = createDepartment($request);
+			$dalResult = new DalResult();
 
-			if (!entityIsValid($department))
+			try
 			{
-				return false;
+				$dept_update = createDepartment($request);
+
+				if (!entityIsValid($dept_update))
+				{
+					$dalResult->setException(new Exception("Department is not valid"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$department = $this->departments_service->verifyDepartmentRequest($request);
+
+				$department->setName($dept_update->getName());
+				$department->setSeq($dept_update->getSeq());
+
+				$success = $this->departments_service->updateDepartment($department);
+
+				if (!$success)
+				{
+					$dalResult->setException(new Exception("Error updating Deprtment"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$dalResult->setResult($success);
+
+				$this->departments_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dept_update = $this->departments_service->verifyDepartmentRequest($request);
-
-			if (!$dept_update)
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dept_update->setName($department->getName());
-			$dept_update->setSeq($department->getSeq());
-
-			$dalResult = $this->departments_service->updateDepartment($dept_update);
-			$this->departments_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 
-		public function removeDepartment($request)
+		public function removeDepartment(array $request) : array
 		{
-			if (!isset($request['dept_id']) || !is_numeric($request['dept_id']))
+			$dalResult = new DalResult();
+
+			try
 			{
-				return false;
+				$department = $this->departments_service->verifyDepartmentRequest($request);
+
+				if (sizeof($department->getItems()) > 0)
+				{
+					$dalResult->setException(new Exception("Cannot remove Department whilst it has Items in it"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$dalResult->setResult($this->departments_service->removeDepartment($department));
+
+				$this->departments_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->items_service->getItemsByDepartmentId(intval($request['dept_id']));
-
-			if (!is_null($dalResult->getException()))
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$items = $dalResult->getResult();
-
-			if (is_array($items) && sizeof($items) > 0)
-			{
-				return false;
-			}
-
-			$dalResult = $this->departments_service->getDepartmentById(intval($request['dept_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$department = $dalResult->getResult();
-			}
-
-			if (!$department)
-			{
-				return false;
-			}
-
-			$dalResult = $this->departments_service->removeDepartment($department);
-			$this->departments_service->closeConnexion();
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 	}

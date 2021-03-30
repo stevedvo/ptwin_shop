@@ -11,6 +11,7 @@ $(function()
 	manageOrders();
 	managePackSizes();
 	manageLuckyDips();
+	manageMeals();
 	quickAdd();
 	adminFuncs();
 	updateRecentConsumptionParameters();
@@ -127,33 +128,24 @@ function manageItems()
 						'link'         : link,
 						'list_id'      : listID,
 						'add_to_order' : addToOrder,
-						'packsize_id'  : packSizeID
-					}
-				}
+						'packsize_id'  : packSizeID,
+					},
+				},
 			}).done(function(data)
 			{
-				if (data)
+				if (data.exception != null)
 				{
-					toastr.success("New Item successfully added");
-
-					if (data.item == undefined)
-					{
-						var timer = setTimeout(function()
-						{
-							location.href = constants.SITEURL+"/items/edit/"+data.id+"/";
-						}, 750);
-					}
-					else
-					{
-						var timer = setTimeout(function()
-						{
-							location.href = constants.SITEURL+"/items/edit/"+data.item.id+"/";
-						}, 750);
-					}
+					toastr.error(`Could not add Item: ${data.exception.message}`);
+					console.log(data.exception);
 				}
 				else
 				{
-					toastr.error("Could not save Item");
+					toastr.success("New Item successfully added");
+
+					var timer = setTimeout(function()
+					{
+						location.href = constants.SITEURL+"/items/edit/"+data.id+"/";
+					}, 750);
 				}
 			}).fail(function(data)
 			{
@@ -217,22 +209,33 @@ function manageItems()
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (!data)
 				{
-					if (data.exception == null)
-					{
-						toastr.success("Item successfully updated");
-					}
-					else
-					{
-						toastr.error("PDOException");
-						console.log(data);
-					}
+					toastr.error("Could not save Item: unknown error");
+					console.log(data);
+
+					return false;
 				}
-				else
+
+				if (data.exception != null)
 				{
-					toastr.error("Could not save Item");
+					toastr.error(`Could not save Item: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
 				}
+
+				if (!data.result)
+				{
+					toastr.error("Could not save Item: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				toastr.success("Item successfully updated");
+
+				return true;
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");
@@ -265,36 +268,39 @@ function manageItems()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					var html = data.partial_view;
+				toastr.error("Could not add Department to Item: unknown error");
+				console.log(data);
 
-					$(".department-items-container").append(html);
-					$(".department-items-container").find(".no-results").remove();
-					selectedOption.remove();
-
-					toastr.success("Department successfully added to Item");
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not add Department to Item");
+				toastr.error(`Could not add Department to Item: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			let html = data.partial_view;
+
+			if (html == null)
+			{
+				toastr.error("Could not add Department to Item: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$(".department-items-container").append(html);
+			$(".department-items-container").find(".no-results").remove();
+			selectedOption.remove();
+
+			toastr.success("Department successfully added to Item");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -333,40 +339,43 @@ function manageItems()
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (!data)
 				{
-					if (data.result == true)
-					{
-						$.each(selectedItems, function()
-						{
-							$(this).remove();
-						});
+					toastr.error("Could not remove Department(s) from Item: unknown error");
+					console.log(data);
 
-						if (departmentItemsContainer.find(".result-item").length == 0)
-						{
-							departmentItemsContainer.html('<p class="no-results">Not added to any Departments.</p>');
-						}
-
-						toastr.success("Department(s) successfully detached from Item");
-					}
-					else
-					{
-						if (data.exception != null)
-						{
-							toastr.error("PDOException");
-							console.log(data.exception);
-						}
-						else
-						{
-							toastr.error("Unspecified error");
-							console.log(data);
-						}
-					}
+					return false;
 				}
-				else
+
+				if (data.exception != null)
 				{
-					toastr.error("Could not remove Department(s) from Item");
+					toastr.error(`Could not remove Department(s) from Item: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
 				}
+
+				if (!data.result)
+				{
+					toastr.error("Could not remove Department(s) from Item: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				$.each(selectedItems, function()
+				{
+					$(this).remove();
+				});
+
+				if (departmentItemsContainer.find(".result-item").length == 0)
+				{
+					departmentItemsContainer.html('<p class="no-results">Not added to any Departments.</p>');
+				}
+
+				toastr.success("Department(s) successfully detached from Item");
+
+				return true;
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");
@@ -399,33 +408,36 @@ function manageItems()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					departmentItemsContainer.find(".primary-dept").removeClass("primary-dept");
-					form.addClass("primary-dept");
+				toastr.error("Could not set Primary Department: unknown error");
+				console.log(data);
 
-					toastr.success("Primary Department successfully set");
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not set Primary Department");
+				toastr.error(`Could not set Primary Department: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			if (data.result == null)
+			{
+				toastr.error("Could not set Primary Department: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			departmentItemsContainer.find(".primary-dept").removeClass("primary-dept");
+			form.addClass("primary-dept");
+
+			toastr.success("Primary Department successfully set");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -451,35 +463,51 @@ function manageItems()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				toastr.success("Item successfully added to Order");
-
-				if ($(".result-item[data-item_id='"+itemID+"']").length > 0)
-				{
-					$.each($(".result-item[data-item_id='"+itemID+"']"), function()
-					{
-						$(this).addClass("selected");
-						$(this).find("button.js-remove-item-from-current-order").data("order_item_id", data.id);
-					});
-
-					return;
-				}
-
-				// adding Item from /items/edit/{id}/
-				if (form.hasClass("item-current_order-item"))
-				{
-					form.data("order_item_id", data.id);
-					form.find(".order-quantity-container").html('<input type="number" min="1" name="quantity" value="'+data.quantity+'" data-validation="{&quot;required&quot;:&quot;1&quot;,&quot;min-value&quot;:&quot;1&quot;}" />');
-					form.find(".order-buttons-container button").toggleClass("hidden");
-
-					return;
-				}
-			}
-			else
-			{
-				toastr.error("Could not add Item to Order");
+				toastr.error("Could not add Item to Order: unknown error");
 				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not add Item to Order: ${data.exception.message}`);
+				console.log(data.exception);
+
+				return false;
+			}
+
+			if (data.result == null)
+			{
+				toastr.error("Could not add Item to Order: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Item successfully added to Order");
+
+			if ($(".result-item[data-item_id='"+data.result.item.id+"']").length > 0)
+			{
+				$.each($(".result-item[data-item_id='"+data.result.item.id+"']"), function()
+				{
+					$(this).addClass("selected");
+					$(this).find("button.js-remove-item-from-current-order").data("order_item_id", data.result.id);
+				});
+
+				return;
+			}
+
+			// adding Item from /items/edit/{id}/
+			if (form.hasClass("item-current_order-item"))
+			{
+				form.data("order_item_id", data.result.id);
+				form.find(".order-quantity-container").html('<input type="number" min="1" name="quantity" value="'+data.result.quantity+'" data-validation="{&quot;required&quot;:&quot;1&quot;,&quot;min-value&quot;:&quot;1&quot;}" />');
+				form.find(".order-buttons-container button").toggleClass("hidden");
+
+				return;
 			}
 		}).fail(function(data)
 		{
@@ -513,7 +541,7 @@ function manageItems()
 				{
 					if (data.exception != null)
 					{
-						toastr.error("Could not remove Item from Order: PDOException");
+						toastr.error(`Could not remove Item from Order: ${data.exception.message}`);
 						console.log(data.exception);
 					}
 					else
@@ -568,44 +596,46 @@ function manageItems()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.exception != null)
-				{
-					toastr.error("Could not update Item: PDOException");
-					console.log(data.exception);
-				}
-				else
-				{
-					if (!data.result)
-					{
-						toastr.error("Could not update Item: Unspecified error");
-						console.log(data);
-					}
-					else
-					{
-						toastr.success("Item suggestion successfully muted");
+				toastr.error("Could not mute Item: unknown error");
+				console.log(data);
 
-						if (form.hasClass("fade-on-mute"))
-						{
-							form.fadeOut(function()
-							{
-								form.remove();
-							});
-						}
-						else
-						{
-							form.removeClass("unmuted-"+muteBasis);
-							form.addClass("muted-"+muteBasis);
-						}
-					}
-				}
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not mute Item: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
+			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not mute Item: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Item suggestion successfully muted");
+
+			if (form.hasClass("fade-on-mute"))
+			{
+				form.fadeOut(function()
+				{
+					form.remove();
+				});
 			}
 			else
 			{
-				toastr.error("Could not mute Item");
-				console.log(data);
+				form.removeClass("unmuted-"+muteBasis);
+				form.addClass("muted-"+muteBasis);
 			}
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -638,34 +668,36 @@ function manageItems()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.exception != null)
-				{
-					toastr.error("Could not update Item: PDOException");
-					console.log(data.exception);
-				}
-				else
-				{
-					if (!data.result)
-					{
-						toastr.error("Could not update Item: Unspecified error");
-						console.log(data);
-					}
-					else
-					{
-						toastr.success("Item successfully unmuted");
-
-						form.removeClass("muted-"+muteBasis);
-						form.addClass("unmuted-"+muteBasis);
-					}
-				}
-			}
-			else
-			{
-				toastr.error("Could not unmute Item");
+				toastr.error("Could not unmute Item: unknown error");
 				console.log(data);
+
+				return false;
 			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not unmute Item: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
+			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not unmute Item: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Item successfully unmuted");
+
+			form.removeClass("muted-"+muteBasis);
+			form.addClass("unmuted-"+muteBasis);
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -761,20 +793,39 @@ function manageLists()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				var html = data.partial_view;
+				toastr.error(`Could not add Item to List: unknown error`);
+				console.log(data);
 
-				$(".list-items-container").append(html);
-				$(".list-items-container").find(".no-results").remove();
-				selectedOption.remove();
-
-				toastr.success("Item successfully added to List");
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not add Item to List");
+				toastr.error(`Could not add Item to List: ${data.exception.message}`);
+				console.log(data.exception);
+
+				return false;
 			}
+
+			let html = data.partial_view;
+
+			if (html == null)
+			{
+				toastr.error(`Could not add Item to List: unknown error`);
+				console.log(data);
+
+				return false;
+			}
+
+			$(".list-items-container").append(html);
+			$(".list-items-container").find(".no-results").remove();
+			selectedOption.remove();
+
+			toastr.success("Item successfully added to List");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -815,29 +866,48 @@ function manageLists()
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (!data)
 				{
-					var options = "";
+					toastr.error("Could not add Items to List: unknown error");
+					console.log(data);
 
-					$.each(selectedItems, function()
-					{
-						options+= '<option data-item_id="'+$(this).data("item_id")+'">'+$(this).data("description")+'</option>'
-					});
-
-					$("select.item-selection").append(options);
-					selectedItems.remove();
-
-					if (listItemsContainer.find("p").length == 0)
-					{
-						listItemsContainer.append('<button class="btn btn-danger btn-sm no-results js-remove-list">Remove List</button>');
-					}
-
-					toastr.success("Items successfully added to List");
+					return false;
 				}
-				else
+
+				if (data.exception != null)
 				{
-					toastr.error("Could not add Items to List");
+					toastr.error(`Could not add Items to List: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
 				}
+
+				if (!data.result)
+				{
+					toastr.error("Could not add Items to List: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				let options = "";
+
+				$.each(selectedItems, function()
+				{
+					options+= '<option data-item_id="'+$(this).data("item_id")+'">'+$(this).data("description")+'</option>'
+				});
+
+				$("select.item-selection").append(options);
+				selectedItems.remove();
+
+				if (listItemsContainer.find("p").length == 0)
+				{
+					listItemsContainer.append('<button class="btn btn-danger btn-sm no-results js-remove-list">Remove List</button>');
+				}
+
+				toastr.success("Items successfully added to List");
+
+				return true;
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");
@@ -886,17 +956,33 @@ function manageLists()
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (!data)
 				{
-					if (data.exception == null)
-					{
-						toastr.success("List successfully updated");
-					}
+					toastr.error("Could not update List: unknown error");
+					console.log(data);
+
+					return false;
 				}
-				else
+
+				if (data.exception != null)
 				{
-					toastr.error("Could not update List");
+					toastr.error(`Could not update List: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
 				}
+
+				if (!data.result)
+				{
+					toastr.error("Could not update List: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				toastr.success("List successfully updated");
+
+				return true;
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");
@@ -922,21 +1008,38 @@ function manageLists()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.exception == null)
-				{
-					toastr.success("List successfully removed");
-					var timer = setTimeout(function()
-					{
-						location.href = constants.SITEURL+"/lists/";
-					}, 750);
-				}
+				toastr.error("Could not remove List: unknown error");
+				console.log(data);
+
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not remove List");
+				toastr.error(`Could not remove List: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not remove List: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("List successfully removed");
+
+			var timer = setTimeout(function()
+			{
+				location.href = constants.SITEURL+"/lists/";
+			}, 750);
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -1033,36 +1136,39 @@ function manageDepts()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					var html = data.partial_view;
+				toastr.error("Could not add Item to Department: unknown error");
+				console.log(data);
 
-					$(".department-items-container").append(html);
-					$(".department-items-container").find(".no-results").remove();
-					selectedOption.remove();
-
-					toastr.success("Item successfully added to Department");
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not add Item to Department");
+				toastr.error(`Could not add Item to Department: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			let html = data.partial_view;
+
+			if (html == null)
+			{
+				toastr.error("Could not add Item to Department: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$(".department-items-container").append(html);
+			$(".department-items-container").find(".no-results").remove();
+			selectedOption.remove();
+
+			toastr.success("Item successfully added to Department");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -1185,17 +1291,33 @@ function manageDepts()
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (!data)
 				{
-					if (data.exception == null)
-					{
-						toastr.success("Department successfully updated");
-					}
+					toastr.error("Could not update Department: unknown error");
+					console.log(data);
+
+					return false;
 				}
-				else
+
+				if (data.exception != null)
 				{
-					toastr.error("Could not update Department");
+					toastr.error(`Could not update Department: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
 				}
+
+				if (data.result == null)
+				{
+					toastr.error("Could not update Department: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				toastr.success("Department successfully updated");
+
+				return true;
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");
@@ -1221,34 +1343,38 @@ function manageDepts()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					toastr.success("Department successfully removed");
-					var timer = setTimeout(function()
-					{
-						location.href = constants.SITEURL+"/departments/";
-					}, 750);
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				toastr.error("Could not remove Department: unknown error");
+				console.log(data);
+
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not remove Department");
+				toastr.error(`Could not remove Department: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not remove Department: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Department successfully removed");
+
+			var timer = setTimeout(function()
+			{
+				location.href = constants.SITEURL+"/departments/";
+			}, 750);
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -1277,7 +1403,7 @@ function validateForm(form)
 					{
 						case 'required':
 						{
-							if ($thisInput.val() == null || $thisInput.val().length == 0)
+							if ($thisInput.val() == null || $thisInput.val().trim().length == 0)
 							{
 								if (result[$thisInput.attr("name")] == undefined)
 								{
@@ -1539,7 +1665,7 @@ function quickAdd()
 		{
 			if (data.exception != null)
 			{
-				toastr.error("QuickAdd: PDOException");
+				toastr.error(`Could not get Items for QuickAdd: ${data.exception.message}`);
 				console.log(data.exception);
 			}
 			else
@@ -1578,14 +1704,40 @@ function quickAdd()
 						}
 					}).done(function(data)
 					{
+						if (!data)
+						{
+							toastr.error("QuickAdd: Could not retrieve Lucky Dips - unknown error");
+							console.log(data);
+
+							return false;
+						}
+
+						if (data.exception != null)
+						{
+							toastr.error(`QuickAdd: Could not retrieve Lucky Dips - ${data.exception.message}`);
+							console.log(data);
+
+							return false;
+						}
+
+						if (data.result == null)
+						{
+							toastr.error("QuickAdd: Could not retrieve Lucky Dips - unknown error");
+							console.log(data);
+
+							return false;
+						}
+
 						$.each(data.result, function()
 						{
 							availableItems.push("[LuckyDip] "+this.name);
 						});
 
-						var sortedItems = arraySort(availableItems);
+						let sortedItems = arraySort(availableItems);
 
 						$("#quick-add").autocomplete({source : sortedItems});
+
+						return true;
 					}).fail(function(data)
 					{
 						toastr.error("QuickAdd: Could not retrieve Lucky Dips");
@@ -1624,39 +1776,68 @@ function quickAdd()
 				}
 			}).done(function(data)
 			{
-				if (data)
-				{
-					if (data.description == itemDescription)
-					{
-						toastr.error("QuickAdd: "+itemDescription+" not found... redirecting.");
-						var timer = setTimeout(function()
-						{
-							location.href = constants.SITEURL+"/items/create/?description="+itemDescription;
-						}, 750);
-					}
-					else
-					{
-						input.val("");
-						toastr.success(data.result.item.description+" added to Current Order");
-
-						if ($(".results-container.current-order").length > 0)
-						{
-							var currentOrder = $(".results-container.current-order");
-							currentOrder.find(".no-results").remove();
-
-							if (currentOrder.find(".form[data-order_item_id='"+data.id+"']").length == 0)
-							{
-								var html = data.partial_view;
-
-								currentOrder.append(html);
-							}
-						}
-					}
-				}
-				else
+				if (!data)
 				{
 					toastr.error("QuickAdd: Could not add Item");
 					console.log(data);
+
+					return false;
+				}
+
+				if (data.description == itemDescription)
+				{
+					toastr.error("QuickAdd: "+itemDescription+" not found... redirecting.");
+
+					let timer = setTimeout(function()
+					{
+						location.href = constants.SITEURL+"/items/create/?description="+itemDescription;
+					}, 750);
+
+					return;
+				}
+
+				if (data.exceptionMessage == "Item not found")
+				{
+					toastr.error("QuickAdd: "+itemDescription+" not found... redirecting.");
+
+					let timer = setTimeout(function()
+					{
+						location.href = constants.SITEURL+"/items/create/?description="+itemDescription;
+					}, 750);
+
+					return;
+				}
+
+				if (data.exception != null)
+				{
+					toastr.error(`QuickAdd - error adding Item: ${data.exceptionMessage}`);
+					console.log(data.exception);
+
+					return false;
+				}
+
+				if (data.result == null)
+				{
+					toastr.error(`QuickAdd - error adding Item`);
+					console.log(data);
+
+					return false;
+				}
+
+				input.val("");
+				toastr.success(data.result.item.description+" added to Current Order");
+
+				if ($(".results-container.current-order").length > 0)
+				{
+					var currentOrder = $(".results-container.current-order");
+					currentOrder.find(".no-results").remove();
+
+					if (currentOrder.find(".form[data-order_item_id='"+data.result.id+"']").length == 0)
+					{
+						var html = data.partial_view;
+
+						currentOrder.append(html);
+					}
 				}
 			}).fail(function(data)
 			{
@@ -1688,18 +1869,36 @@ function quickAdd()
 					}
 				}).done(function(data)
 				{
-					if (data != null)
+					if (!data)
 					{
-						location.href = constants.SITEURL+"/luckydips/edit/"+data.id+"/";
-					}
-					else
-					{
-						toastr.error("QuickAdd: Could not edit Lucky Dip");
+						toastr.error("QuickEdit: Could not edit Lucky Dip");
 						console.log(data);
+
+						return false;
 					}
+
+					if (data.exception != null)
+					{
+						toastr.error(`QuickEdit - Could not edit Lucky Dip: ${data.exception.message}`);
+						console.log(data);
+
+						return false;
+					}
+
+					if (data.result == null)
+					{
+						toastr.error("QuickEdit: Could not edit Lucky Dip");
+						console.log(data);
+
+						return false;
+					}
+
+					location.href = constants.SITEURL+"/luckydips/edit/"+data.result.id+"/";
+
+					return;
 				}).fail(function(data)
 				{
-					toastr.error("QuickAdd: Could not perform request");
+					toastr.error("QuickEdit: Could not perform request");
 					console.log(data);
 				});
 			}
@@ -1718,18 +1917,36 @@ function quickAdd()
 					}
 				}).done(function(data)
 				{
-					if (data)
+					if (!data)
 					{
-						location.href = constants.SITEURL+"/items/edit/"+data.id+"/";
-					}
-					else
-					{
-						toastr.error("QuickAdd: Could not edit Item");
+						toastr.error("QuickEdit: Could not edit Item");
 						console.log(data);
+
+						return false;
 					}
+
+					if (data.exception != null)
+					{
+						toastr.error(`QuickEdit - Could not edit Item: ${data.exception.message}`);
+						console.log(data);
+
+						return false;
+					}
+
+					if (data.result == null)
+					{
+						toastr.error("QuickEdit: Could not edit Item");
+						console.log(data);
+
+						return false;
+					}
+
+					location.href = constants.SITEURL+"/items/edit/"+data.result.id+"/";
+
+					return;
 				}).fail(function(data)
 				{
-					toastr.error("QuickAdd: Could not perform request");
+					toastr.error("QuickEdit: Could not perform request");
 					console.log(data);
 				});
 			}
@@ -1834,7 +2051,7 @@ function manageOrders()
 			{
 				if (data.exception != null)
 				{
-					toastr.error("Could not remove Order Item: PDOException");
+					toastr.error(`Could not remove Order Item: ${data.exception.message}`);
 					console.log(data.exception);
 				}
 				else
@@ -1913,7 +2130,7 @@ function manageOrders()
 				{
 					if (data.exception != null)
 					{
-						toastr.error("Could not update Order Item: PDOException");
+						toastr.error(`Could not update Order Item: ${data.exception.message}`);
 						console.log(data.exception);
 					}
 					else
@@ -1987,32 +2204,34 @@ function manageOrders()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.exception != null)
-				{
-					toastr.error("Could not remove Order Items: PDOException");
-					console.log(data.exception);
-				}
-				else
-				{
-					if (!data.result)
-					{
-						toastr.error("Could not remove Order Items: Unspecified error");
-						console.log(data);
-					}
-					else
-					{
-						$(".current-order").empty().append('<p class="no-results">No Items added to Order yet</p>');
-						toastr.success("Order Items successfully removed");
-					}
-				}
-			}
-			else
-			{
-				toastr.error("Could not remove Order Items");
+				toastr.error("Could not remove Order Items: Unspecified error");
 				console.log(data);
+
+				return false;
 			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not remove Order Items: ${data.exception.message}`);
+				console.log(data.exception);
+
+				return false;
+			}
+
+			if (data.result == null)
+			{
+				toastr.error("Could not remove Order Items: Unspecified error");
+				console.log(data);
+
+				return false;
+			}
+
+			$(".current-order").empty().append('<p class="no-results">No Items added to Order yet</p>');
+			toastr.success("Order Items successfully removed");
+
+			return;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -2042,7 +2261,7 @@ function manageOrders()
 			{
 				if (data.exception != null)
 				{
-					toastr.error("Could not confirm Order: PDOException");
+					toastr.error(`Could not confirm Order: ${data.exception.message}`);
 					console.log(data.exception);
 				}
 				else
@@ -2097,24 +2316,42 @@ function manageOrders()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				toastr.success("List successfully added to Order");
-
-				if ($(".results-container.current-order").length > 0)
-				{
-					var currentOrder = $(".results-container.current-order");
-					var html = data.partial_view;
-					currentOrder.find(".no-results").remove();
-
-					currentOrder.append(html);
-				}
-			}
-			else
-			{
-				toastr.error("Could not add List to Order");
+				toastr.error("Could not add List to Order: unknown error");
 				console.log(data);
+
+				return false;
 			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not add List to Order: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.partial_view == null)
+			{
+				toastr.error("Could not add List to Order: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("List successfully added to Order");
+
+			if ($(".results-container.current-order").length > 0)
+			{
+				let currentOrder = $(".results-container.current-order");
+				let html = data.partial_view;
+				currentOrder.find(".no-results").remove();
+
+				currentOrder.append(html);
+			}
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -2166,7 +2403,7 @@ function manageOrders()
 				{
 					if (data.exception != null)
 					{
-						toastr.error("Could not update Order: PDOException");
+						toastr.error(`Could not update Order: ${data.exception.message}`);
 						console.log(data.exception);
 					}
 					else
@@ -2222,6 +2459,22 @@ function manageOrders()
 			{
 				if (data)
 				{
+					if (data.exception != null)
+					{
+						toastr.error(`Could not add Item to Order: ${data.exception.message}`);
+						console.log(data.exception);
+
+						return false;
+					}
+
+					if (data.partial_view == null || data.result == null)
+					{
+						toastr.error(`Could not add Item to Order: Unspecified error`);
+						console.log(data);
+
+						return false;
+					}
+
 					input.val("");
 					toastr.success("Item added to Order");
 
@@ -2232,9 +2485,7 @@ function manageOrders()
 
 						if (order.find(".form[data-order_item_id='"+data.result.id+"']").length == 0)
 						{
-							var html = data.partial_view;
-
-							order.append(html);
+							order.append(data.partial_view);
 						}
 					}
 				}
@@ -2269,15 +2520,33 @@ function adminFuncs()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				toastr.success("Done");
-			}
-			else
-			{
-				toastr.error("Fail");
+				toastr.error("Could not reset Primary Departments: unknown error");
 				console.log(data);
+
+				return false;
 			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not reset Primary Departments: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
+			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not reset Primary Departments: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Done");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -2372,16 +2641,32 @@ function updateRecentConsumptionParameters()
 				}
 			}).done(function(data)
 			{
-				if (data == false)
+				if (!data)
 				{
 					toastr.error("Invalid request.");
 					console.log(data);
 				}
 				else
 				{
-					$("#itemDailyConsumptionRecent").html(data.itemDailyConsumptionRecent);
-					$("#itemStockNowRecent").html(data.itemStockNowRecent);
-					$("#itemStockFutureRecent").html(data.itemStockFutureRecent);
+					if (data.exception != null)
+					{
+						toastr.error(`Could not get recent Order statistics: ${data.exception.message}`);
+						console.log(data.exception);
+
+						return false;
+					}
+
+					if (data.result == null)
+					{
+						toastr.error(`Could not get recent Order statistics`);
+						console.log(data);
+
+						return false;
+					}
+
+					$("#itemDailyConsumptionRecent").html(data.result.itemDailyConsumptionRecent);
+					$("#itemStockNowRecent").html(data.result.itemStockNowRecent);
+					$("#itemStockFutureRecent").html(data.result.itemStockFutureRecent);
 
 					$form.find("input[name='consumption_interval']").val(interval);
 					$form.find("select[name='consumption_period']").val(period);
@@ -2450,28 +2735,42 @@ function manageLuckyDips()
 				{
 					controller : "LuckyDips",
 					action     : "addLuckyDip",
-					request    :
-					{
-						'luckyDip_name' : luckyDipName
-					}
+					request    : {'luckyDip_name' : luckyDipName}
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (!data)
 				{
-					var html = data.partial_view;
+					toastr.error("Could not save Lucky Dip: unknown error");
+					console.log(data);
 
-					$(".results-container").append(html);
-					$(".results-container").find(".no-results").remove();
-					form.find(".input-error").removeClass("input-error");
-					form.find("[name='luckyDip_name']").val("");
-
-					toastr.success("New Lucky Dip successfully added");
+					return false;
 				}
-				else
+
+				if (data.exception != null)
 				{
-					toastr.error("Could not save Lucky Dip");
+					toastr.error(`Could not save Lucky Dip: ${data.exception.message}`);
+					console.log(data.exception);
+
+					return false;
 				}
+
+				if (data.partial_view == null)
+				{
+					toastr.error("Could not save Lucky Dip: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				var html = data.partial_view;
+
+				$(".results-container").append(html);
+				$(".results-container").find(".no-results").remove();
+				form.find(".input-error").removeClass("input-error");
+				form.find("[name='luckyDip_name']").val("");
+
+				toastr.success("New Lucky Dip successfully added");
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");
@@ -2504,36 +2803,39 @@ function manageLuckyDips()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					var html = data.partial_view;
+				toastr.error("Could not add Item to Lucky Dip: unknown error");
+				console.log(data);
 
-					$(".luckyDip-items-container").append(html);
-					$(".luckyDip-items-container").find(".no-results").remove();
-					selectedOption.remove();
-
-					toastr.success("Item successfully added to Lucky Dip");
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not add Item to Lucky Dip");
+				toastr.error(`Could not add Item to Lucky Dip: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			let html = data.partial_view;
+
+			if (html == null)
+			{
+				toastr.error("Could not add Item to Lucky Dip: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$(".luckyDip-items-container").append(html);
+			$(".luckyDip-items-container").find(".no-results").remove();
+			selectedOption.remove();
+
+			toastr.success("Item successfully added to Lucky Dip");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -2561,44 +2863,47 @@ function manageLuckyDips()
 				request    :
 				{
 					'item_id'     : itemID,
-					'luckyDip_id' : luckyDipID
-				}
+					'luckyDip_id' : luckyDipID,
+				},
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
-				{
-					form.remove();
+				toastr.error("Could not remove Item from Lucky Dip: unknown error");
+				console.log(data);
 
-					if (luckyDipItemsContainer.find(".result-item").length == 0)
-					{
-						luckyDipItemsContainer.html('<p class="no-results">No Items in this Lucky Dip</p><button class="btn btn-danger btn-sm no-results js-remove-luckyDip">Delete Lucky Dip</button>');
-					}
-
-					toastr.success("Item successfully removed from Lucky Dip");
-
-					reloadPartial("LuckyDipItemSelection", "Items", "getAllItemsNotInLuckyDip", { "luckyDip_id" : luckyDipID }, null, null, "POST");
-				}
-				else
-				{
-					if (data.exception != null)
-					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
-					}
-				}
+				return false;
 			}
-			else
+
+			if (data.exception != null)
 			{
-				toastr.error("Could not remove Item from Lucky Dip");
+				toastr.error(`Could not remove Item from Lucky Dip: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
 			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not remove Item from Lucky Dip: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			form.remove();
+
+			if (luckyDipItemsContainer.find(".result-item").length == 0)
+			{
+				luckyDipItemsContainer.html('<p class="no-results">No Items in this Lucky Dip</p><button class="btn btn-danger btn-sm no-results js-remove-luckyDip">Delete Lucky Dip</button>');
+			}
+
+			toastr.success("Item successfully removed from Lucky Dip");
+
+			reloadPartial("LuckyDipItemSelection", "Items", "getAllItemsNotInLuckyDip", { "luckyDip_id" : luckyDipID }, null, null, "POST");
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -2648,17 +2953,33 @@ function manageLuckyDips()
 				}
 			}).done(function(data)
 			{
-				if (data)
+				if (!data)
 				{
-					if (data.exception == null)
-					{
-						toastr.success("Lucky Dip successfully updated");
-					}
+					toastr.error("Could not update Lucky Dip: unknown error");
+					console.log(data);
+
+					return false;
 				}
-				else
+
+				if (data.exception != null)
 				{
-					toastr.error("Could not update Lucky Dip");
+					toastr.error(`Could not update Lucky Dip: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
 				}
+
+				if (!data.result)
+				{
+					toastr.error("Could not update Lucky Dip: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				toastr.success("Lucky Dip successfully updated");
+
+				return true;
 			}).fail(function(data)
 			{
 				toastr.error("Could not perform request");
@@ -2684,34 +3005,476 @@ function manageLuckyDips()
 			}
 		}).done(function(data)
 		{
-			if (data)
+			if (!data)
 			{
-				if (data.result == true)
+				toastr.error("Could not remove Lucky Dip: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not remove Lucky Dip: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
+			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not remove Lucky Dip: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Lucky Dip successfully removed");
+
+			let timer = setTimeout(function()
+			{
+				location.href = constants.SITEURL+"/luckydips/";
+			}, 750);
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+}
+
+function manageMeals()
+{
+	$(document).on("click", ".js-add-meal", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			var mealName = form.find("[name='meal_name']").val().trim();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
 				{
-					toastr.success("Lucky Dip successfully removed");
-					var timer = setTimeout(function()
-					{
-						location.href = constants.SITEURL+"/luckydips/";
-					}, 750);
+					controller : "Meals",
+					action     : "addMeal",
+					request    : {'meal_name' : mealName}
+				}
+			}).done(function(data)
+			{
+				if (data.exception != null)
+				{
+					toastr.error(`"Could not create Meal: ${data.exception}"`);
 				}
 				else
 				{
-					if (data.exception != null)
+					var html = data.partial_view;
+
+					$("#mealsListItems").html(html);
+					form.find(".input-error").removeClass("input-error");
+					form.find("[name='meal_name']").val("");
+
+					toastr.success("New Meal successfully added");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+
+	$(document).on("click", ".js-update-meal-name", function()
+	{
+		var form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		var validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+		}
+		else
+		{
+			var mealID = parseInt(form.find("[name='meal_id']").val());
+			var mealName = form.find("[name='meal_name']").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Meals",
+					action     : "editMeal",
+					request    :
 					{
-						toastr.error("PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						toastr.error("Unspecified error");
-						console.log(data);
+						'meal_id'   : mealID,
+						'meal_name' : mealName
 					}
 				}
-			}
-			else
+			}).done(function(data)
 			{
-				toastr.error("Could not remove Lucky Dip");
+				if (data.exception != null)
+				{
+					toastr.error(`"Could not update Meal: ${data.exception}"`);
+				}
+				else
+				{
+					var html = data.partial_view;
+
+					$("#mealsListItems").html(html);
+
+					toastr.success("Meal successfully updated");
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+
+	$(document).on("click", ".js-add-item-to-meal", function()
+	{
+		var form = $(this).closest(".form");
+		var selectedOption = form.find("select option:selected");
+		var itemID = parseInt(selectedOption.val());
+		var mealID = parseInt(form.find("[name='meal_id']").val());
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Meals",
+				action     : "addItemToMeal",
+				request    :
+				{
+					'item_id' : itemID,
+					'meal_id' : mealID,
+				},
+			},
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not add Item to Meal: unknown error");
+				console.log(data);
+
+				return false;
 			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not add Item to Meal: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
+			}
+
+			let html = data.partial_view;
+
+			if (!html)
+			{
+				toastr.error("Could not add Item to Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$("#MealItemListItems").html(html);
+			selectedOption.remove();
+
+			toastr.success("Item successfully added to Meal");
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+
+	$(document).on("click", ".js-update-mealitem", function()
+	{
+		let form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		let validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+
+			return false;
+		}
+		else
+		{
+			let mealItemID = parseInt(form.data("mealitem_id"));
+			let mealItemQuantity = parseInt(form.find(`[name='mealItem[${mealItemID}][quantity]']`).val());
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Meals",
+					action     : "updateMealItem",
+					request    :
+					{
+						'meal_item_id'       : mealItemID,
+						'meal_item_quantity' : mealItemQuantity,
+					},
+				},
+			}).done(function(data)
+			{
+				if (!data)
+				{
+					toastr.error("Could not update Meal Item: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				if (data.exception != null)
+				{
+					toastr.error(`Could not update Meal Item: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
+				}
+
+				if (!data.result)
+				{
+					toastr.error("Could not update Meal Item: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				toastr.success("Meal Item successfully updated");
+
+				return true;
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+			});
+		}
+	});
+
+	$(document).on("click", ".js-remove-item-from-meal", function()
+	{
+		let $this = $(this);
+		let form = $this.closest(".form");
+		let mealItemsContainer = $this.closest(".meal-items-container");
+		let mealID = parseInt(mealItemsContainer.data("meal_id"));
+		let mealItemID = parseInt(form.data("mealitem_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Meals",
+				action     : "removeItemFromMeal",
+				request    :
+				{
+					'meal_item_id' : mealItemID,
+					'meal_id'      : mealID,
+				},
+			},
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not remove Item from Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not remove Item from Meal: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
+			}
+
+			let html = data.partial_view;
+
+			if (!html)
+			{
+				toastr.error("Could not remove Item from Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$("#MealItemListItems").html(html);
+			toastr.success("Item successfully removed from Meal");
+
+			reloadPartial("MealItemSelection", "Items", "getAllItemsNotInMeal", { "meal_id" : mealID }, null, null, "POST");
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+
+	$(document).on("click", ".js-remove-meal", function()
+	{
+		var mealID = parseInt($(this).closest(".meal-items-container").data("meal_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Meals",
+				action     : "removeMeal",
+				request    : {'meal_id' : mealID}
+			}
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not remove Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not remove Meal: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
+			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not remove Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Meal successfully removed");
+
+			let timer = setTimeout(function()
+			{
+				location.href = constants.SITEURL+"/meals/";
+			}, 750);
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+
+	$(document).on("click", ".js-restore-meal", function()
+	{
+		var mealID = parseInt($(this).data("meal_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Meals",
+				action     : "restoreMeal",
+				request    : {'meal_id' : mealID}
+			}
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not restore Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not restore Meal: ${data.exception.message}`);
+				console.log(data);
+
+				return false;
+			}
+
+			let meal = data.result;
+
+			if (!meal)
+			{
+				toastr.error("Could not restore Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success("Meal successfully restored");
+
+			let timer = setTimeout(function()
+			{
+				location.href = `${constants.SITEURL}/meals/edit/${meal.id}/`;
+			}, 750);
+
+			return true;
 		}).fail(function(data)
 		{
 			toastr.error("Could not perform request");
@@ -2744,13 +3507,39 @@ function reloadPartial(id, controller, action, params, callback, onbeforeload, a
 		{
 			controller : controller,
 			action     : action,
-			request    : params
+			request    : params,
 		},
 		success : function(response)
 		{
-			target.html(response);
+			if (!response)
+			{
+				toastr.error("Could not reload Partial: unknown error");
+				console.log(response);
+
+				return false;
+			}
+
+			if (response.exception != null)
+			{
+				toastr.error(`Could not reload Partial: ${response.exception.message}`);
+				console.log(response);
+
+				return false;
+			}
+
+			let html = response.partial_view;
+
+			if (html == null)
+			{
+				toastr.error("Could not reload Partial: unknown error");
+				console.log(response);
+
+				return false;
+			}
+
+			target.html(html);
 			reloadSuccessFunction(id, params, callback);
-		}
+		},
 	});
 }
 

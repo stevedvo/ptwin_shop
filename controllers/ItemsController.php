@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class ItemsController
 	{
 		private $items_service;
@@ -6,6 +8,7 @@
 		private $departments_service;
 		private $orders_service;
 		private $luckyDips_service;
+		private $meals_service;
 
 		public function __construct()
 		{
@@ -15,843 +18,847 @@
 			$this->orders_service = new OrdersService();
 			$this->packsizes_service = new PackSizesService();
 			$this->luckyDips_service = new LuckyDipsService();
+			$this->meals_service = new MealsService();
 		}
 
-		public function Index($request, $consumption_interval = DEFAULT_CONSUMPTION_INTERVAL, $consumption_period = DEFAULT_CONSUMPTION_PERIOD)
+		public function Index(array $request, int $consumptionInterval = DEFAULT_CONSUMPTION_INTERVAL, string $consumptionPeriod = DEFAULT_CONSUMPTION_PERIOD) : void
 		{
-			$view_by = $all_items = $order = $items_in_order = $collection = false;
+			$pageData =
+			[
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => [],
+			];
 
-			if (isset($request['view-by']))
+			try
 			{
-				switch ($request['view-by'])
+				$viewBy = $items = $order = $itemsInOrder = $collection = null;
+
+				if (isset($request['view-by']))
 				{
-					case 'department':
-						$view_by = "department";
-						break;
-
-					case 'list':
-						$view_by = "list";
-						break;
-
-					case 'primary_dept':
-						$view_by = "primary department";
-						break;
-
-					case 'suggestions':
-						$view_by = "suggestions";
-						break;
-
-					case 'muted-suggestions':
-						$view_by = "muted-suggestions";
-						break;
-				}
-			}
-
-			if (!$view_by)
-			{
-				$dalResult = $this->items_service->getAllItems();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$all_items = $dalResult->getResult();
-				}
-
-				$pageData =
-				[
-					'page_title' => 'Manage Items',
-					'template'   => 'views/items/index.php',
-					'page_data'  => ['all_items' => $all_items]
-				];
-			}
-			elseif ($view_by == "suggestions")
-			{
-				if (isset($request['consumption_interval']) && is_numeric($request['consumption_interval']) && intval($request['consumption_interval']) > 0)
-				{
-					$consumption_interval = intval($request['consumption_interval']);
-				}
-
-				if (isset($request['consumption_period']))
-				{
-					if (in_array($request['consumption_period'], CONSUMPTION_PERIODS))
+					switch ($request['view-by'])
 					{
-						$consumption_period = $request['consumption_period'];
+						case 'department':
+						case 'list':
+						case 'suggestions':
+						case 'muted-suggestions':
+							$viewBy = $request['view-by'];
+							break;
+
+						case 'primary_dept':
+							$viewBy = "primary department";
+							break;
 					}
 				}
 
-				$suggested_items = $this->items_service->getAllSuggestedItems($consumption_interval, $consumption_period);
+				if (is_null($viewBy))
+				{
+					$items = $this->items_service->getAllItems();
 
-				$pageData =
-				[
-					'page_title' => 'Suggested Items',
-					'template'   => 'views/items/suggestions.php',
-					'page_data'  =>
+					$pageData =
 					[
-						'suggested_items'      => $suggested_items,
-						'consumption_interval' => $consumption_interval,
-						'consumption_period'   => $consumption_period
-					]
-				];
-			}
-			elseif ($view_by == "muted-suggestions")
-			{
-				$muted_items = $this->items_service->getAllMutedSuggestedItems();
-
-				$pageData =
-				[
-					'page_title' => 'Muted Suggestions',
-					'template'   => 'views/items/muted-suggestions.php',
-					'page_data'  => ['muted_items' => $muted_items]
-				];
-			}
-			else
-			{
-				switch ($view_by)
+						'page_title' => 'Manage Items',
+						'template'   => 'views/items/index.php',
+						'page_data'  => ['all_items' => $items],
+					];
+				}
+				elseif ($viewBy == "suggestions")
 				{
-					case 'department':
-						$dalResult = $this->departments_service->getAllDepartmentsWithItems();
-						break;
+					if (isset($request['consumption_interval']) && is_numeric($request['consumption_interval']) && intval($request['consumption_interval']) > 0)
+					{
+						$consumptionInterval = intval($request['consumption_interval']);
+					}
 
-					case 'list':
-						$dalResult = $this->lists_service->getAllListsWithItems();
-						break;
+					if (isset($request['consumption_period']))
+					{
+						if (in_array($request['consumption_period'], CONSUMPTION_PERIODS))
+						{
+							$consumptionPeriod = $request['consumption_period'];
+						}
+					}
 
-					case 'primary department':
-						$dalResult = $this->departments_service->getPrimaryDepartments();
-						break;
+					$suggestedItems = $this->items_service->getAllSuggestedItems($consumptionInterval, $consumptionPeriod);
+
+					$pageData =
+					[
+						'page_title' => 'Suggested Items',
+						'template'   => 'views/items/suggestions.php',
+						'page_data'  =>
+						[
+							'suggested_items'      => $suggestedItems,
+							'consumption_interval' => $consumptionInterval,
+							'consumption_period'   => $consumptionPeriod,
+						],
+					];
+				}
+				elseif ($viewBy == "muted-suggestions")
+				{
+					$mutedItems = $this->items_service->getAllMutedSuggestedItems();
+
+					$pageData =
+					[
+						'page_title' => 'Muted Suggestions',
+						'template'   => 'views/items/muted-suggestions.php',
+						'page_data'  => ['muted_items' => $mutedItems],
+					];
+				}
+				else
+				{
+					switch ($viewBy)
+					{
+						case 'department':
+							$collection = $this->departments_service->getAllDepartmentsWithItems();
+							break;
+
+						case 'list':
+							$collection = $this->lists_service->getAllListsWithItems();
+							break;
+
+						case 'primary department':
+							$collection = $this->departments_service->getPrimaryDepartments();
+							break;
+					}
+
+					$pageData =
+					[
+						'page_title' => 'View Items By '.ucwords($viewBy),
+						'template'   => 'views/items/view-by-collection.php',
+						'page_data'  => ['collection' => $collection],
+					];
 				}
 
-				if (!is_null($dalResult->getResult()))
-				{
-					$collection = $dalResult->getResult();
-				}
+				$order = $this->orders_service->getCurrentOrder();
 
-				$pageData =
-				[
-					'page_title' => 'View Items By '.ucwords($view_by),
-					'template'   => 'views/items/view-by-collection.php',
-					'page_data'  => ['collection' => $collection]
-				];
+				$itemsInOrder = $order->getItemIdsInOrder();
+
+				$pageData['page_data']['order'] = $order;
+				$pageData['page_data']['items_in_order'] = $itemsInOrder;
+
+				$this->items_service->closeConnexion();
+				$this->orders_service->closeConnexion();
+				$this->departments_service->closeConnexion();
+				$this->lists_service->closeConnexion();
+
+				renderPage($pageData);
 			}
-
-			$order = $this->orders_service->getCurrentOrder();
-
-			if ($order)
+			catch (Exception $e)
 			{
-				$items_in_order = $order->getItemIdsInOrder();
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
 			}
-
-			$pageData['page_data']['order'] = $order;
-			$pageData['page_data']['items_in_order'] = $items_in_order;
-
-			$this->items_service->closeConnexion();
-			$this->orders_service->closeConnexion();
-			$this->departments_service->closeConnexion();
-			$this->lists_service->closeConnexion();
-
-			renderPage($pageData);
 		}
 
-		public function Create($request)
+		public function Create(array $request) : void
 		{
-			$item = new Item();
+			$pageData =
+			[
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => [],
+			];
 
-			if (isset($request['description']) && !empty($request['description']))
+			try
 			{
-				$item->setDescription($request['description']);
+				$item = new Item();
+
+				if (isset($request['description']) && !empty($request['description']))
+				{
+					$item->setDescription($request['description']);
+				}
+
+				$lists = $this->lists_service->getAllLists();
+				$packSizes = $this->packsizes_service->getAllPackSizes();
+
+				$this->lists_service->closeConnexion();
+				$this->packsizes_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Add New Item',
+					'breadcrumb' =>
+					[
+						[
+							'link' => '/items/',
+							'text' => 'Items',
+						],
+						[
+							'text' => 'Create'
+						]
+					],
+					'template'   => 'views/items/create.php',
+					'page_data'  =>
+					[
+						'item' 	    => $item,
+						'lists'     => $lists,
+						'packSizes' => $packSizes,
+					],
+				];
+
+				renderPage($pageData);
 			}
-
-			$dalResult = $this->lists_service->getAllLists();
-
-			if (is_null($dalResult->getException()))
+			catch (Exception $e)
 			{
-				$lists = $dalResult->getResult();
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
 			}
+		}
 
-			$dalResult = $this->packsizes_service->getAllPackSizes();
+		public function addItem(array $request) : array // returns either a serialised DalResult Exception or serialised Item
+		{
+			$dalResult = new DalResult();
 
-			if (!is_null($dalResult->getResult()))
+			try
 			{
-				$packsizes = $dalResult->getResult();
-			}
+				$item = createItem($request);
 
-			$this->lists_service->closeConnexion();
-			$this->packsizes_service->closeConnexion();
+				if (!entityIsValid($item))
+				{
+					$dalResult->setException(new Exception("Item is not valid"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				if (!$this->items_service->itemDoesNotExist($item->getDescription()))
+				{
+					$dalResult->setException(new Exception("Item '".$item->getDescription()."' already exists"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$item = $this->items_service->addItem($item);
+
+				if (isset($request['add_to_order']) && $request['add_to_order'] != false)
+				{
+					$order = $this->orders_service->getCurrentOrder();
+
+					$orderItem = new OrderItem();
+					$orderItem->setOrderId($order->getId());
+					$orderItem->setItemId($item->getId());
+					$orderItem->setQuantity($item->getDefaultQty());
+					$orderItem->setChecked(0);
+
+					$orderItem = $this->orders_service->addOrderItem($orderItem);
+
+					$this->orders_service->closeConnexion();
+				}
+
+				$this->items_service->closeConnexion();
+
+				return $item->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
+		public function Edit(?int $request = null) : void
+		{
+			$lists = $packSizes = $departments = $currentOrder = $currentOrderItems = null;
 
 			$pageData =
 			[
-				'page_title' => 'Add New Item',
-				'breadcrumb' =>
-				[
-					[
-						'link' => '/items/',
-						'text' => 'Items'
-					],
-					[
-						'text' => 'Create'
-					]
-				],
-				'template'   => 'views/items/create.php',
-				'page_data'  =>
-				[
-					'item' 	    => $item,
-					'lists'     => $lists,
-					'packsizes' => $packsizes
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => [],
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$consumptionInterval = DEFAULT_CONSUMPTION_INTERVAL;
+				$consumptionPeriod = DEFAULT_CONSUMPTION_PERIOD;
+
+				if (isset($_GET['consumption_interval']) && is_numeric($_GET['consumption_interval']) && intval($_GET['consumption_interval']) > 0)
+				{
+					$consumptionInterval = intval($_GET['consumption_interval']);
+				}
+
+				if (isset($_GET['consumption_period']))
+				{
+					if (in_array($_GET['consumption_period'], CONSUMPTION_PERIODS))
+					{
+						$consumptionPeriod = $_GET['consumption_period'];
+					}
+				}
+
+				$item = $this->items_service->verifyItemRequest(['item_id' => $request]);
+				$lists = $this->lists_service->getAllLists();
+				$packSizes = $this->packsizes_service->getAllPackSizes();
+				$departments = $this->departments_service->getAllDepartments();
+				$itemOrders = $this->orders_service->getOrdersByItem($item);
+
+				$item->setOrders($itemOrders);
+
+				$currentOrder = $this->orders_service->getCurrentOrder();
+				$currentOrderItems = $currentOrder->getItemIdsInOrder();
+
+				$item->calculateRecentOrders($consumptionInterval, $consumptionPeriod);
+
+				$this->items_service->closeConnexion();
+				$this->lists_service->closeConnexion();
+				$this->departments_service->closeConnexion();
+				$this->orders_service->closeConnexion();
+				$this->packsizes_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Edit Item',
+					'breadcrumb' =>
+					[
+						[
+							'link' => '/items/',
+							'text' => 'Items',
+						],
+						[
+							'text' => 'Edit'
+						]
+					],
+					'template'   => 'views/items/edit.php',
+					'page_data'  =>
+					[
+						'item'                 => $item,
+						'lists'                => $lists,
+						'all_departments'      => $departments,
+						'packsizes'            => $packSizes,
+						'consumption_interval' => $consumptionInterval,
+						'consumption_period'   => $consumptionPeriod,
+						'current_order'        => $currentOrder,
+						'current_order_items'  => $currentOrderItems,
+					],
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
-		public function addItem($request)
+		public function editItem(array $request) : array
 		{
-			$item = createItem($request);
+			$dalResult = new DalResult();
 
-			if (!entityIsValid($item))
+			try
 			{
-				return false;
+				$item_update = createItem($request);
+
+				if (!entityIsValid($item_update))
+				{
+					$dalResult->setException(new Exception("Item is not valid"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$item = $this->items_service->verifyItemRequest($request);
+
+				$item->setDescription($item_update->getDescription());
+				$item->setComments($item_update->getComments());
+				$item->setDefaultQty($item_update->getDefaultQty());
+				$item->setListId($item_update->getListId());
+				$item->setLink($item_update->getLink());
+				$item->setPackSizeId($item_update->getPackSizeId());
+				$item->setMuteTemp($item_update->getMuteTemp());
+				$item->setMutePerm($item_update->getMutePerm());
+
+				$dalResult->setResult($this->items_service->updateItem($item));
+
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->items_service->getItemByDescription($item->getDescription());
-
-			if (!is_null($dalResult->getException()))
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
+		}
 
-			if ($dalResult->getResult() instanceof Item)
+		public function addDepartmentToItem(array $request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
 			{
-				return false;
+				$item = $this->items_service->verifyItemRequest($request);
+				$department = $this->departments_service->verifyDepartmentRequest($request);
+
+				$result = $this->items_service->addDepartmentToItem($department, $item);
+
+				$dalResult->setPartialView(getPartialView("ItemDepartment", ['department' => $department]));
+
+				$this->departments_service->closeConnexion();
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->items_service->addItem($item);
-
-			if (!is_null($dalResult->getException()))
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
+		}
 
-			$item_id = $dalResult->getResult();
-			$item->setId($item_id);
+		public function removeDepartmentsFromItem(array $request) : array
+		{
+			$dalResult = new DalResult();
 
-			if (isset($request['add_to_order']) && $request['add_to_order'] != false)
+			try
 			{
+				$deptIds = [];
+
+				$item = $this->items_service->verifyItemRequest($request);
+
+				if (!is_array($request['dept_ids']))
+				{
+					$dalResult->setException(new Exception("Invalid Dept IDs request"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				foreach ($request['dept_ids'] as $deptId)
+				{
+					if (!is_numeric($deptId))
+					{
+						$dalResult->setException(new Exception("Invalid Dept ID: ".$deptId));
+
+						return $dalResult->jsonSerialize();
+					}
+
+					$deptIds[] = intval($deptId);
+				}
+
+				$success = $this->items_service->removeDepartmentsFromItem($deptIds, $item->getId());
+
+				if (array_search($item->getPrimaryDept(), $deptIds) !== false)
+				{
+					$item->setPrimaryDept(null);
+					$success = $this->items_service->updateItem($item);
+				}
+
+				$dalResult->setResult($success);
+
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
+		public function getAllItems(array $request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$items = $this->items_service->getAllItems();
+				$itemsJSON = [];
+
+				foreach ($items as $item_id => $item)
+				{
+					$itemsJSON[$item->getId()] = $item->jsonSerialize();
+				}
+
+				$dalResult->setResult($itemsJSON);
+
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
+		public function getAllItemsNotInLuckyDip(array $request) : array
+		{
+			$dalResult = new DalResult();
+			$dalResult->setPartialView("");
+
+			try
+			{
+				$luckyDip = $this->luckyDips_service->verifyLuckyDipRequest($request);
+				$items = $this->items_service->getAllItemsNotInLuckyDip($luckyDip->getId());
+
+				$dalResult->setPartialView(getPartialView("LuckyDipItemSelection", ['item_list' => $items]));
+
+				$this->luckyDips_service->closeConnexion();
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
+		public function getAllItemsNotInMeal(array $request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$meal = $this->meals_service->verifyMealRequest($request);
+				$items = $this->items_service->getAllItemsNotInMeal($meal->getId());
+
+				$dalResult->setPartialView(getPartialView("MealItemSelection", ['item_list' => $items]));
+
+				$this->meals_service->closeConnexion();
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
+		public function quickAddItem(array $request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$item = null;
+
+				if (!isset($request['description']) || empty($request['description']))
+				{
+					$dalResult->setException(new Exception("Invalid Item description"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$description = $request['description'];
+
+				if (strpos(strtolower($description), "[luckydip]") !== false)
+				{
+					$luckyDipName = substr($description, 11);
+
+					$luckyDip = $this->luckyDips_service->getLuckyDipByName($luckyDipName);
+
+					$item = $luckyDip->getRandomItem();
+				}
+				else
+				{
+					$item = $this->items_service->getItemByDescription($description);
+				}
+
+				if (!($item instanceof Item))
+				{
+					$item = new Item();
+					$item->setDescription($description);
+
+					return $item->jsonSerialize();
+				}
+
 				$order = $this->orders_service->getCurrentOrder();
 
-				if (!$order)
-				{
-					return false;
-				}
+				$orderItem = new OrderItem();
+				$orderItem->setOrderId($order->getId());
+				$orderItem->setItemId($item->getId());
+				$orderItem->setQuantity($item->getDefaultQty());
+				$orderItem->setChecked(0);
 
-				$order_item = new OrderItem();
-				$order_item->setOrderId($order->getId());
-				$order_item->setItemId($item->getId());
-				$order_item->setQuantity($item->getDefaultQty());
-				$order_item->setChecked(0);
+				$orderItem = $this->orders_service->addOrderItem($orderItem);
 
-				$dalResult = $this->orders_service->addOrderItem($order_item);
-
-				if (!$dalResult->getResult())
-				{
-					return false;
-				}
-
-				$dalResult->getResult()->setItem($item);
+				$orderItem->setItem($item);
+				$dalResult->setPartialView(getPartialView("CurrentOrderItem", ['orderItem' => $orderItem]));
 
 				$this->items_service->closeConnexion();
 				$this->orders_service->closeConnexion();
 
-				return $dalResult->getResult()->jsonSerialize();
+				$dalResult->setResult($orderItem->jsonSerialize());
+
+				return $dalResult->jsonSerialize();
 			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
 
-			$this->items_service->closeConnexion();
-
-			return $item->jsonSerialize();
+				return $dalResult->jsonSerialize();
+			}
 		}
 
-		public function Edit($request = null)
+		public function quickEditItem(array $request) : array
 		{
-			$lists = $packsizes = $departments = $currentOrder = $currentOrderItems = null;
+			$dalResult = new DalResult();
 
-			$consumption_interval = DEFAULT_CONSUMPTION_INTERVAL;
-			$consumption_period = DEFAULT_CONSUMPTION_PERIOD;
-
-			if (isset($_GET['consumption_interval']) && is_numeric($_GET['consumption_interval']) && intval($_GET['consumption_interval']) > 0)
+			try
 			{
-				$consumption_interval = intval($_GET['consumption_interval']);
-			}
-
-			if (isset($_GET['consumption_period']))
-			{
-				if (in_array($_GET['consumption_period'], CONSUMPTION_PERIODS))
+				if (!isset($request['description']) || empty($request['description']))
 				{
-					$consumption_period = $_GET['consumption_period'];
-				}
-			}
+					$dalResult->setException(new Exception("Invalid Item description"));
 
-			$item = $this->items_service->verifyItemRequest(['item_id' => $request]);
-
-			if ($item)
-			{
-				$dalResult = $this->lists_service->getAllLists();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$lists = $dalResult->getResult();
+					return $dalResult->jsonSerialize();
 				}
 
-				$dalResult = $this->packsizes_service->getAllPackSizes();
+				$description = $request['description'];
 
-				if (!is_null($dalResult->getResult()))
+				$item = $this->items_service->getItemByDescription($description);
+
+				$this->items_service->closeConnexion();
+
+				$dalResult->setResult($item->jsonSerialize());
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
+		public function addItemToCurrentOrder(array $request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$item = $this->items_service->verifyItemRequest($request);
+				$order = $this->orders_service->getCurrentOrder();
+
+				if (!$order)
 				{
-					$packsizes = $dalResult->getResult();
+					$dalResult->setException(new Exception("No current Order found"));
+
+					return $dalResult->jsonSerialize();
 				}
 
-				$dalResult = $this->departments_service->getAllDepartments();
+				$orderItem = new OrderItem();
+				$orderItem->setOrderId($order->getId());
+				$orderItem->setItemId($item->getId());
+				$orderItem->setQuantity($item->getDefaultQty());
+				$orderItem->setChecked(0);
 
-				if (!is_null($dalResult->getResult()))
+				$orderItem = $this->orders_service->addOrderItem($orderItem);
+				$orderItem->setItem($item);
+
+				$this->items_service->closeConnexion();
+				$this->orders_service->closeConnexion();
+
+				$dalResult->setResult($orderItem->jsonSerialize());
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
+		public function removeItemFromCurrentOrder($request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$orderItem = $this->orders_service->verifyOrderItemRequest($request);
+				$success = $this->orders_service->removeOrderItem($orderItem);
+
+				if (!$success)
 				{
-					$departments = $dalResult->getResult();
+					$dalResult->setException(new Exception("Error removing Order Item #".$orderItem->getId()));
+
+					return $dalResult->jsonSerialize();
 				}
 
-				$dalResult = $this->orders_service->getOrdersByItem($item);
+				$dalResult->setResult($success);
 
-				if (!is_null($dalResult->getResult()))
-				{
-					$item->setOrders($dalResult->getResult());
-				}
+				$this->orders_service->closeConnexion();
 
-				$currentOrder = $this->orders_service->getCurrentOrder();
-
-				if ($currentOrder)
-				{
-					$currentOrderItems = $currentOrder->getItemIdsInOrder();
-				}
-
-				$item->calculateRecentOrders($consumption_interval, $consumption_period);
+				return $dalResult->jsonSerialize();
 			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
 
-			$this->items_service->closeConnexion();
-			$this->lists_service->closeConnexion();
-			$this->departments_service->closeConnexion();
-			$this->orders_service->closeConnexion();
-			$this->packsizes_service->closeConnexion();
-
-			$pageData =
-			[
-				'page_title' => 'Edit Item',
-				'breadcrumb' =>
-				[
-					[
-						'link' => '/items/',
-						'text' => 'Items'
-					],
-					[
-						'text' => 'Edit'
-					]
-				],
-				'template'   => 'views/items/edit.php',
-				'page_data'  =>
-				[
-					'item'                 => $item,
-					'lists'                => $lists,
-					'all_departments'      => $departments,
-					'packsizes'            => $packsizes,
-					'consumption_interval' => $consumption_interval,
-					'consumption_period'   => $consumption_period,
-					'current_order'        => $currentOrder,
-					'current_order_items'  => $currentOrderItems
-				]
-			];
-
-			renderPage($pageData);
+				return $dalResult->jsonSerialize();
+			}
 		}
 
-		public function editItem($request)
+		public function setItemPrimaryDepartment(array $request) : array
 		{
-			$item_update = createItem($request);
+			$dalResult = new DalResult();
 
-			if (!entityIsValid($item_update))
+			try
 			{
-				return false;
-			}
-
-			$item = $this->items_service->verifyItemRequest($request);
-
-			$item->setDescription($item_update->getDescription());
-			$item->setComments($item_update->getComments());
-			$item->setDefaultQty($item_update->getDefaultQty());
-			$item->setListId($item_update->getListId());
-			$item->setLink($item_update->getLink());
-			$item->setPackSizeId($item_update->getPackSizeId());
-			$item->setMuteTemp($item_update->getMuteTemp());
-			$item->setMutePerm($item_update->getMutePerm());
-
-			$dalResult = $this->items_service->updateItem($item);
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
-		}
-
-		public function removeItem($request)
-		{
-			if (!isset($request['item_id']) || !is_numeric($request['item_id']))
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->getItemsByItemId(intval($request['item_id']));
-
-			if (!is_null($dalResult->getException()))
-			{
-				return false;
-			}
-
-			$items = $dalResult->getResult();
-
-			if (is_array($items) && sizeof($items) > 0)
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->getItemById(intval($request['item_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$item = $dalResult->getResult();
-			}
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->removeItem($item);
-			$this->items_service->closeConnexion();
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
-		}
-
-		public function addDepartmentToItem($request)
-		{
-			$item = $this->items_service->verifyItemRequest($request);
-			$department = $this->departments_service->verifyDepartmentRequest($request);
-
-			if (!$item || !$department)
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->addDepartmentToItem($department, $item);
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$dalResult->setPartialView(getPartialView("ItemDepartment", ['department' => $department]));
-			}
-
-			$this->departments_service->closeConnexion();
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
-		}
-
-		public function removeDepartmentsFromItem($request)
-		{
-			$dept_ids = [];
-
-			$item = $this->items_service->verifyItemRequest($request);
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			if (!is_array($request['dept_ids']))
-			{
-				return false;
-			}
-
-			foreach ($request['dept_ids'] as $dept_id)
-			{
-				if (!is_numeric($dept_id))
-				{
-					return false;
-				}
-
-				$dept_ids[] = intval($dept_id);
-			}
-
-			$dalResult = $this->items_service->removeDepartmentsFromItem($dept_ids, $item->getId());
-
-			if (!is_null($dalResult->getResult()))
-			{
-				if (array_search($item->getPrimaryDept(), $dept_ids) !== false)
-				{
-					$item->setPrimaryDept(null);
-					$dalResult = $this->items_service->updateItem($item);
-				}
-			}
-
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
-		}
-
-		public function getAllItems($request)
-		{
-			$dalResult = $this->items_service->getAllItems();
-
-			if (is_array($dalResult->getResult()))
-			{
-				$items = [];
-
-				foreach ($dalResult->getResult() as $item_id => $item)
-				{
-					$items[$item->getId()] = $item->jsonSerialize();
-				}
-
-				$dalResult->setResult($items);
-			}
-
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
-		}
-
-		public function getAllItemsNotInLuckyDip(array $request) : string
-		{
-			(string)$partial_view = "";
-
-			if (!isset($request['luckyDip_id']))
-			{
-				return $partial_view;
-			}
-
-			$luckyDip_id = $request['luckyDip_id'];
-
-			if (!is_numeric($luckyDip_id))
-			{
-				return $partial_view;
-			}
-
-			$dalResult = $this->items_service->getAllItemsNotInLuckyDip(intval($luckyDip_id));
-
-			$all_items = $dalResult->getResult();
-
-			if (is_array($all_items))
-			{
-				$partial_view = getPartialView("LuckyDipItemSelection", ['item_list' => $all_items]);
-			}
-
-			$this->items_service->closeConnexion();
-
-			return $partial_view;
-		}
-
-		public function quickAddItem($request)
-		{
-			$item = null;
-
-			if (!isset($request['description']) || empty($request['description']))
-			{
-				return false;
-			}
-
-			$description = $request['description'];
-
-			if (strpos(strtolower($description), "[luckydip]") !== false)
-			{
-				$luckyDip_name = substr($description, 11);
-
-				$dalResult = $this->luckyDips_service->getLuckyDipByName($luckyDip_name);
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$luckyDip = $dalResult->getResult();
-
-					$item = $luckyDip->getRandomItem();
-				}
-			}
-			else
-			{
-				$dalResult = $this->items_service->getItemByDescription($description);
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$item = $dalResult->getResult();
-				}
-			}
-
-			if (!$item)
-			{
-				$item = new Item();
-				$item->setDescription($description);
-				return $item->jsonSerialize();
-			}
-
-			$order = $this->orders_service->getCurrentOrder();
-
-			if (!$order)
-			{
-				return false;
-			}
-
-			$order_item = new OrderItem();
-			$order_item->setOrderId($order->getId());
-			$order_item->setItemId($item->getId());
-			$order_item->setQuantity($item->getDefaultQty());
-			$order_item->setChecked(0);
-
-			$dalResult = $this->orders_service->addOrderItem($order_item);
-
-			if (!$dalResult->getResult())
-			{
-				return false;
-			}
-
-			$dalResult->getResult()->setItem($item);
-			$dalResult->setPartialView(getPartialView("CurrentOrderItem", ['order_item' => $dalResult->getResult()]));
-
-			$this->items_service->closeConnexion();
-			$this->orders_service->closeConnexion();
-
-			$dalResult->setResult($dalResult->getResult()->jsonSerialize());
-
-			return $dalResult->jsonSerialize();
-		}
-
-		public function quickEditItem($request)
-		{
-			if (!isset($request['description']) || empty($request['description']))
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->getItemByDescription($request['description']);
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$item = $dalResult->getResult();
-			}
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			$this->items_service->closeConnexion();
-
-			return $item->jsonSerialize();
-		}
-
-		public function addItemToCurrentOrder($request)
-		{
-			$item = $this->items_service->verifyItemRequest($request);
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			$order = $this->orders_service->getCurrentOrder();
-
-			if (!$order)
-			{
-				return false;
-			}
-
-			$order_item = new OrderItem();
-			$order_item->setOrderId($order->getId());
-			$order_item->setItemId($item->getId());
-			$order_item->setQuantity($item->getDefaultQty());
-			$order_item->setChecked(0);
-
-			$dalResult = $this->orders_service->addOrderItem($order_item);
-
-			if (!$dalResult->getResult())
-			{
-				return false;
-			}
-
-			$dalResult->getResult()->setItem($item);
-
-			$this->items_service->closeConnexion();
-			$this->orders_service->closeConnexion();
-
-			return $dalResult->getResult()->jsonSerialize();
-		}
-
-		public function removeItemFromCurrentOrder($request)
-		{
-			if (!isset($request['order_item_id']) || !is_numeric($request['order_item_id']))
-			{
-				return false;
-			}
-
-			$order_item = false;
-			$dalResult = $this->orders_service->getOrderItemById(intval($request['order_item_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$order_item = $dalResult->getResult();
-			}
-
-			if (!$order_item)
-			{
-				return false;
-			}
-
-			$dalResult = $this->orders_service->removeOrderItem($order_item);
-			$this->orders_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
-		}
-
-		public function setItemPrimaryDepartment($request)
-		{
-			$item = $this->items_service->verifyItemRequest($request);
-			$department = $this->departments_service->verifyDepartmentRequest($request);
-
-			if (!$item || !$department)
-			{
-				return false;
-			}
-
-			$dalResult = $this->items_service->setItemPrimaryDepartment($department, $item);
-			$this->departments_service->closeConnexion();
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
-		}
-
-		public function resetPrimaryDepartments($request)
-		{
-			$dalResult = $this->items_service->getItemDepartmentLookupArray();
-
-			if (!is_null($dalResult->getException()))
-			{
-				return false;
-			}
-
-			$departments_lookup = $dalResult->getResult();
-
-			if (!is_array($departments_lookup))
-			{
-				return false;
-			}
-
-			foreach ($departments_lookup as $item_id => $dept_id)
-			{
-				$request =
-				[
-					'item_id' => $item_id,
-					'dept_id' => $dept_id
-				];
-
 				$item = $this->items_service->verifyItemRequest($request);
 				$department = $this->departments_service->verifyDepartmentRequest($request);
 
-				if (!$item || !$department)
-				{
-					return false;
-				}
+				$success = $this->items_service->setItemPrimaryDepartment($department, $item);
 
-				$dalResult = $this->items_service->setItemPrimaryDepartment($department, $item);
+				$dalResult->setResult($success);
 
-				if (!is_null($dalResult->getException()))
-				{
-					return false;
-				}
+				$this->departments_service->closeConnexion();
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
 
-			$this->items_service->closeConnexion();
-			$this->departments_service->closeConnexion();
-
-			return true;
+				return $dalResult->jsonSerialize();
+			}
 		}
 
-		public function updateItemMuteSetting($request)
+		public function resetPrimaryDepartments(array $request) : array
 		{
-			if (!isset($request['item_id']) || !isset($request['mute_basis']))
+			$dalResult = new DalResult();
+
+			try
 			{
-				return false;
-			}
+				$departments_lookup = $this->items_service->getItemDepartmentLookupArray();
 
-			if (empty($request['mute_basis']) || !($request['mute_basis'] == "temp" || $request['mute_basis'] == "perm"))
+				foreach ($departments_lookup as $item_id => $dept_id)
+				{
+					$request =
+					[
+						'item_id' => $item_id,
+						'dept_id' => $dept_id
+					];
+
+					$item = $this->items_service->verifyItemRequest($request);
+					$department = $this->departments_service->verifyDepartmentRequest($request);
+
+					$success = $this->items_service->setItemPrimaryDepartment($department, $item);
+				}
+
+				$this->items_service->closeConnexion();
+				$this->departments_service->closeConnexion();
+
+				$dalResult->setResult(true);
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$item = $this->items_service->verifyItemRequest($request);
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			$new_setting = isset($request['unmute']) ? 0 : 1;
-
-			switch ($request['mute_basis'])
-			{
-				case 'temp':
-					$item->setMuteTemp($new_setting);
-					break;
-				case 'perm':
-					$item->setMutePerm($new_setting);
-					break;
-			}
-
-			$dalResult = $this->items_service->updateItem($item);
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 
-		public function getItemsRecentOrderStatistics($request)
+		public function updateItemMuteSetting(array $request) : array
 		{
-			if (!(isset($request['consumption_interval']) && is_numeric($request['consumption_interval']) && intval($request['consumption_interval']) > 0))
+			$dalResult = new DalResult();
+
+			try
 			{
-				return false;
-			}
+				if (empty($request['mute_basis']) || !($request['mute_basis'] == "temp" || $request['mute_basis'] == "perm"))
+				{
+					$dalResult->setException(new Exception("Invalid Mute option"));
 
-			if (!(isset($request['consumption_period']) && !empty($request['consumption_period']) && in_array($request['consumption_period'], CONSUMPTION_PERIODS)))
+					return $dalResult->jsonSerialize();
+				}
+
+				$item = $this->items_service->verifyItemRequest($request);
+
+				$new_setting = isset($request['unmute']) ? 0 : 1;
+
+				switch ($request['mute_basis'])
+				{
+					case 'temp':
+						$item->setMuteTemp($new_setting);
+						break;
+					case 'perm':
+						$item->setMutePerm($new_setting);
+						break;
+				}
+
+				$dalResult->setResult($this->items_service->updateItem($item));
+
+				$this->items_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
+		}
 
-			$item = $this->items_service->verifyItemRequest($request);
+		public function getItemsRecentOrderStatistics(array $request) : array
+		{
+			$dalResult = new DalResult();
 
-			if (!$item)
+			try
 			{
-				return false;
+				$result =
+				[
+					'itemDailyConsumptionRecent' => "N/A",
+					'itemStockNowRecent' => "N/A",
+					'itemStockFutureRecent' => "N/A"
+				];
+
+				if (!(isset($request['consumption_interval']) && is_numeric($request['consumption_interval']) && intval($request['consumption_interval']) > 0))
+				{
+					$dalResult->setException(new Exception("Invalid Consumption Interval"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				if (!(isset($request['consumption_period']) && !empty($request['consumption_period']) && in_array($request['consumption_period'], CONSUMPTION_PERIODS)))
+				{
+					$dalResult->setException(new Exception("Invalid Consumption Period"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$item = $this->items_service->verifyItemRequest($request);
+				$itemOrders = $this->orders_service->getOrdersByItem($item);
+
+				$item->setOrders($itemOrders);
+
+				$item->calculateRecentOrders(intval($request['consumption_interval']), $request['consumption_period']);
+
+				if ($item->hasOrders())
+				{
+					$result['itemDailyConsumptionRecent'] = round($item->getDailyConsumptionRecent() * 7, 2);
+					$result['itemStockNowRecent'] = $item->getStockLevelPrediction(0, "recent");
+					$result['itemStockFutureRecent'] = $item->getStockLevelPrediction(7, "recent");
+				}
+
+				$this->items_service->closeConnexion();
+				$this->orders_service->closeConnexion();
+
+				$dalResult->setResult($result);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->orders_service->getOrdersByItem($item);
-
-			if (!is_null($dalResult->getResult()))
+			catch (Exception $e)
 			{
-				$item->setOrders($dalResult->getResult());
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$item->calculateRecentOrders(intval($request['consumption_interval']), $request['consumption_period']);
-
-			$result =
-			[
-				'itemDailyConsumptionRecent' => "N/A",
-				'itemStockNowRecent' => "N/A",
-				'itemStockFutureRecent' => "N/A"
-			];
-
-			if ($item->hasOrders())
-			{
-				$result['itemDailyConsumptionRecent'] = round($item->getDailyConsumptionRecent() * 7, 2);
-				$result['itemStockNowRecent'] = $item->getStockLevelPrediction(0, "recent");
-				$result['itemStockFutureRecent'] = $item->getStockLevelPrediction(7, "recent");
-			}
-
-			$this->items_service->closeConnexion();
-			$this->orders_service->closeConnexion();
-
-			return $result;
 		}
 	}

@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class ShopDb
 	{
 		private $host = DB_HOST;
@@ -7,9 +9,9 @@
 		private $database = DB_NAME;
 		public $conn;
 
-		public function __construct($host = false, $username = false, $password = false, $database = false)
+		public function __construct(?string $host = null, ?string $username = null, ?string $password = null, ?string $database = null)
 		{
-			if ($host !== false && $username !== false && $password !== false && $database !== false)
+			if (!is_null($host) && !is_null($username) && !is_null($password) && !is_null($database))
 			{
 				$this->host = $host;
 				$this->username = $username;

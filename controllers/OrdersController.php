@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class OrdersController
 	{
 		private $orders_service;
@@ -16,471 +18,522 @@
 			$this->luckyDips_service = new LuckyDipsService();
 		}
 
-		public function updateOrder($request)
+		public function updateOrder(array $request) : array
 		{
-			$order_update = createOrder($request);
+			$dalResult = new DalResult();
 
-			if (!entityIsValid($order_update))
+			try
 			{
-				return false;
+				$orderUpdate = createOrder($request);
+
+				if (!entityIsValid($orderUpdate))
+				{
+					$dalResult->setException(new Exception("Invalid Order"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$order = $this->orders_service->getOrderById($orderUpdate->getId());
+
+				$order->setDateOrdered($orderUpdate->getDateOrdered());
+
+				$success = $this->orders_service->updateOrder($order);
+
+				if (!$success)
+				{
+					$dalResult->setException(new Exception("Error updating Order #".$order->getId()));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$dalResult->setResult($success);
+
+				$this->orders_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->orders_service->getOrderById($order_update->getId());
-
-			if (!is_null($dalResult->getException()))
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$order = $dalResult->getResult();
-
-			if (!$order)
-			{
-				return false;
-			}
-
-			$order->setDateOrdered($order_update->getDateOrdered());
-
-			$dalResult = $this->orders_service->updateOrder($order);
-
-			$this->orders_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 
-		public function updateOrderItem($request)
+		public function updateOrderItem(array $request) : array
 		{
-			$order_item_update = createOrderItem($request);
+			$dalResult = new DalResult();
 
-			if (!entityIsValid($order_item_update))
+			try
 			{
-				return false;
+				$orderItemUpdate = createOrderItem($request);
+
+				if (!entityIsValid($orderItemUpdate))
+				{
+					$dalResult->setException(new Exception("Invalid Order Item"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$orderItem = $this->orders_service->verifyOrderItemRequest($request);
+
+				$orderItem->setQuantity($orderItemUpdate->getQuantity());
+
+				$success = $this->orders_service->updateOrderItem($orderItem);
+
+				if (!$success)
+				{
+					$dalResult->setException(new Exception("Error updating Order Item #".$orderItem->getId()));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$this->orders_service->closeConnexion();
+
+				$dalResult->setResult($success);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->orders_service->getOrderItemById($order_item_update->getId());
-
-			if (!is_null($dalResult->getException()))
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$order_item = $dalResult->getResult();
-
-			if (!$order_item)
-			{
-				return false;
-			}
-
-			$order_item->setQuantity($order_item_update->getQuantity());
-
-			$dalResult = $this->orders_service->updateOrderItem($order_item);
-
-			$this->orders_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 
-		public function checkOrderItem($request)
+		public function checkOrderItem(array $request) : array
 		{
-			$order_item = $this->orders_service->verifyOrderItemRequest($request);
+			$dalResult = new DalResult();
 
-			if (!$order_item)
+			try
 			{
-				return false;
+				$orderItem = $this->orders_service->verifyOrderItemRequest($request);
+
+				$orderItemUpdate = createOrderItem($request);
+				$orderItem->setChecked($orderItemUpdate->getChecked());
+
+				if (!entityIsValid($orderItem))
+				{
+					$dalResult->setException(new Exception("Invalid Order Item"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$success = $this->orders_service->updateOrderItem($orderItem);
+
+				if (!$success)
+				{
+					$dalResult->setException(new Exception("Error updating Order Item #".$orderItem->getId()));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$this->orders_service->closeConnexion();
+
+				$dalResult->setResult($success);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$order_item_update = createOrderItem($request);
-			$order_item->setChecked($order_item_update->getChecked());
-
-			if (!entityIsValid($order_item))
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->orders_service->updateOrderItem($order_item);
-
-			$this->orders_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 
-		public function removeOrderItem($request)
+		public function removeOrderItem(array $request) : array
 		{
-			if (!isset($request['order_item_id']) || !is_numeric($request['order_item_id']))
+			$dalResult = new DalResult();
+
+			try
 			{
-				return false;
+				$orderItem = $this->orders_service->verifyOrderItemRequest($request);
+				$success = $this->orders_service->removeOrderItem($orderItem);
+
+				if (!$success)
+				{
+					$dalResult->setException(new Exception("Error removing Order Item #".$orderItem->getId()));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$this->orders_service->closeConnexion();
+
+				$dalResult->setResult($success);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->orders_service->getOrderItemById(intval($request['order_item_id']));
-
-			if (!is_null($dalResult->getException()))
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$order_item = $dalResult->getResult();
-
-			if (!$order_item)
-			{
-				return false;
-			}
-
-			$dalResult = $this->orders_service->removeOrderItem($order_item);
-
-			$this->orders_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 
-		public function removeAllOrderItemsFromOrder($request)
+		public function removeAllOrderItemsFromOrder(array $request) : array
 		{
-			if (!isset($request['order_id']) || !is_numeric($request['order_id']))
+			$dalResult = new DalResult();
+
+			try
 			{
-				return false;
+				$order = $this->orders_service->verifyOrderRequest($request);
+				$success = $this->orders_service->removeAllOrderItemsFromOrder($order);
+
+				if (!$success)
+				{
+					$dalResult->setException(new Exception("Error removing Order Items from Order #".$order->getId()));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$this->orders_service->closeConnexion();
+
+				$dalResult->setResult($success);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->orders_service->getOrderById(intval($request['order_id']));
-
-			if (!is_null($dalResult->getException()))
+			catch (Exception $e)
 			{
-				return false;
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$order = $dalResult->getResult();
-
-			if (!$order)
-			{
-				return false;
-			}
-
-			$dalResult = $this->orders_service->removeAllOrderItemsFromOrder($order);
-
-			$this->orders_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 
-		public function Index()
+		public function Index() : void
 		{
-			$orders = false;
-
-			$dalResult = $this->orders_service->getAllOrders();
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$orders = $dalResult->getResult();
-			}
-
-			$this->orders_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'Manage Orders',
-				'template'   => 'views/orders/index.php',
-				'page_data'  => ['orders' => $orders]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => [],
 			];
 
-			renderPage($pageData);
+			try
+			{
+				$orders = $this->orders_service->getAllOrders();
+
+				$this->orders_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Manage Orders',
+					'template'   => 'views/orders/index.php',
+					'page_data'  => ['orders' => $orders],
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
-		public function View($request = null)
+		public function View(?int $request = null) : void
 		{
-			$departments = false;
-			$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
-
-			if ($order)
-			{
-				$dalResult = $this->departments_service->getAllDepartments();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$departments = $dalResult->getResult();
-				}
-			}
-
-			$this->orders_service->closeConnexion();
-			$this->departments_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'View Order',
-				'breadcrumb' =>
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
+			];
+
+			try
+			{
+				$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
+				$departments = $this->departments_service->getAllDepartments();
+
+				$this->orders_service->closeConnexion();
+				$this->departments_service->closeConnexion();
+
+				$pageData =
 				[
+					'page_title' => 'View Order',
+					'breadcrumb' =>
 					[
-						'link' => '/orders/',
-						'text' => 'Orders'
+						[
+							'link' => '/orders/',
+							'text' => 'Orders'
+						],
+						[
+							'text' => 'View'
+						]
 					],
+					'template'   => 'views/orders/view.php',
+					'page_data'  =>
 					[
-						'text' => 'View'
+						'order'       => $order,
+						'departments' => $departments
 					]
-				],
-				'template'   => 'views/orders/view.php',
-				'page_data'  =>
-				[
-					'order'       => $order,
-					'departments' => $departments
-				]
-			];
+				];
 
-			renderPage($pageData);
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
-		public function Print($request = null)
+		public function Print(?int $request = null) : void
 		{
-			$departments = false;
-			$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
-
-			if ($order)
-			{
-				$dalResult = $this->departments_service->getAllDepartments();
-
-				if (!is_null($dalResult->getResult()))
-				{
-					$departments = $dalResult->getResult();
-				}
-			}
-
-			$this->orders_service->closeConnexion();
-			$this->departments_service->closeConnexion();
-
 			$pageData =
 			[
-				'page_title' => 'Print Order',
-				'template'   => 'views/orders/print.php',
-				'page_data'  =>
-				[
-					'order'       => $order,
-					'departments' => $departments
-				]
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
 			];
 
-			renderPrint($pageData);
-		}
-
-		public function Edit($request = null)
-		{
-			$departments = false;
-			$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
-
-			if ($order)
+			try
 			{
-				$dalResult = $this->departments_service->getAllDepartments();
+				$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
+				$departments = $this->departments_service->getAllDepartments();
 
-				if (!is_null($dalResult->getResult()))
-				{
-					$departments = $dalResult->getResult();
-				}
-			}
+				$this->orders_service->closeConnexion();
+				$this->departments_service->closeConnexion();
 
-			$this->orders_service->closeConnexion();
-			$this->departments_service->closeConnexion();
-
-			$pageData =
-			[
-				'page_title' => 'Edit Order',
-				'breadcrumb' =>
+				$pageData =
 				[
+					'page_title' => 'Print Order',
+					'template'   => 'views/orders/print.php',
+					'page_data'  =>
 					[
-						'link' => '/orders/',
-						'text' => 'Orders'
+						'order'       => $order,
+						'departments' => $departments
+					]
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
+		}
+
+		public function Edit(?int $request = null) : void
+		{
+			$pageData =
+			[
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
+			];
+
+			try
+			{
+				$order = $this->orders_service->verifyOrderRequest(['order_id' => $request]);
+				$departments = $this->departments_service->getAllDepartments();
+
+				$this->orders_service->closeConnexion();
+				$this->departments_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Edit Order',
+					'breadcrumb' =>
+					[
+						[
+							'link' => '/orders/',
+							'text' => 'Orders'
+						],
+						[
+							'text' => 'Edit'
+						]
 					],
+					'template'   => 'views/orders/edit.php',
+					'page_data'  =>
 					[
-						'text' => 'Edit'
+						'order'       => $order,
+						'departments' => $departments
 					]
-				],
-				'template'   => 'views/orders/edit.php',
-				'page_data'  =>
-				[
-					'order'       => $order,
-					'departments' => $departments
-				]
-			];
+				];
 
-			renderPage($pageData);
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
 		}
 
-		public function confirmOrder($request)
+		public function confirmOrder(array $request) : array
 		{
-			if (!isset($request['order_id']) || !is_numeric($request['order_id']))
+			$dalResult = new DalResult();
+
+			try
 			{
-				return false;
-			}
+				$order = $this->orders_service->verifyOrderRequest($request);
 
-			$dalResult = $this->orders_service->getOrderById(intval($request['order_id']));
+				$order->setDateOrdered(new DateTime);
 
-			if (!is_null($dalResult->getException()))
-			{
-				return false;
-			}
+				$success = $this->orders_service->updateOrder($order);
 
-			$order = $dalResult->getResult();
-
-			if (!$order)
-			{
-				return false;
-			}
-
-			$order->setDateOrdered(new DateTime);
-			$dalResult = $this->orders_service->updateOrder($order);
-
-			if (!is_null($dalResult->getException()))
-			{
-				return $dalResult;
-			}
-
-			if (!$dalResult->getResult())
-			{
-				return $dalResult;
-			}
-
-			$dalResult = $this->items_service->resetMuteTemps();
-
-			$this->orders_service->closeConnexion();
-			$this->items_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
-		}
-
-		public function addListToOrder($request)
-		{
-			$list = $this->lists_service->verifyListRequest($request);
-
-			if (!$list)
-			{
-				return false;
-			}
-
-			if (!is_array($list->getItems()) || sizeof($list->getItems()) == 0)
-			{
-				return false;
-			}
-
-			$order = $this->orders_service->verifyOrderRequest($request);
-
-			if (!$order)
-			{
-				return false;
-			}
-
-			$items_in_order = array_keys($order->getItemIdsInOrder());
-
-			$new_order_items = [];
-
-			foreach ($list->getItems() as $item_id => $item)
-			{
-				if (in_array($item->getId(), $items_in_order) === false)
+				if (!$success)
 				{
-					$order_item = new OrderItem();
-					$order_item->setOrderId($order->getId());
-					$order_item->setItemId($item->getId());
-					$order_item->setQuantity($item->getDefaultQty());
-					$order_item->setChecked(0);
-					$order_item->setItem($item);
+					$dalResult->setException(new Exception("Error confirming Order #".$order->getId()));
 
-					$new_order_items[] = $order_item;
-					$items_in_order[] = $order_item->getItemId();
+					return $dalResult->jsonSerialize();
 				}
+
+				$success = $this->items_service->resetMuteTemps();
+
+				if (!$success)
+				{
+					$dalResult->setException(new Exception("Error resetting MuteTemps"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$this->orders_service->closeConnexion();
+				$this->items_service->closeConnexion();
+
+				$dalResult->setResult($success);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->luckyDips_service->getLuckyDipsByListId($list->getId());
-			$luckyDips = $dalResult->getResult();
-
-			if (is_array($luckyDips))
+			catch (Exception $e)
 			{
-				foreach ($luckyDips as $luckyDip_id => $luckyDip)
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
+		public function addListToOrder(array $request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$list = $this->lists_service->verifyListRequest($request);
+
+				if (sizeof($list->getItems()) == 0)
+				{
+					$dalResult->setException(new Exception("List does not contain any Items"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$order = $this->orders_service->verifyOrderRequest($request);
+
+				$itemsInOrder = array_keys($order->getItemIdsInOrder());
+
+				$newOrderItems = [];
+
+				foreach ($list->getItems() as $itemId => $item)
+				{
+					if (in_array($item->getId(), $itemsInOrder) === false)
+					{
+						$orderItem = new OrderItem();
+						$orderItem->setOrderId($order->getId());
+						$orderItem->setItemId($item->getId());
+						$orderItem->setQuantity($item->getDefaultQty());
+						$orderItem->setChecked(0);
+						$orderItem->setItem($item);
+
+						$newOrderItems[] = $orderItem;
+						$itemsInOrder[] = $orderItem->getItemId();
+					}
+				}
+
+				$luckyDips = $this->luckyDips_service->getLuckyDipsByListId($list->getId());
+
+				foreach ($luckyDips as $luckyDipId => $luckyDip)
 				{
 					$item = $luckyDip->getRandomItem();
 
 					if ($item instanceof Item)
 					{
-						if (in_array($item->getId(), $items_in_order) === false)
+						if (in_array($item->getId(), $itemsInOrder) === false)
 						{
-							$order_item = new OrderItem();
-							$order_item->setOrderId($order->getId());
-							$order_item->setItemId($item->getId());
-							$order_item->setQuantity($item->getDefaultQty());
-							$order_item->setChecked(0);
-							$order_item->setItem($item);
+							$orderItem = new OrderItem();
+							$orderItem->setOrderId($order->getId());
+							$orderItem->setItemId($item->getId());
+							$orderItem->setQuantity($item->getDefaultQty());
+							$orderItem->setChecked(0);
+							$orderItem->setItem($item);
 
-							$new_order_items[] = $order_item;
-							$items_in_order[] = $order_item->getItemId();
+							$newOrderItems[] = $orderItem;
+							$itemsInOrder[] = $orderItem->getItemId();
 						}
 					}
 				}
-			}
 
-			$order_items = $this->orders_service->addOrderItems($new_order_items);
+				$orderItems = $this->orders_service->addOrderItems($newOrderItems);
 
-			$partial_view = "";
-			$dalResult = new DalResult();
+				$partialView = "";
 
-			if (is_array($order_items))
-			{
-				foreach ($order_items as $order_item)
+				foreach ($orderItems as $orderItem)
 				{
-					$partial_view.= getPartialView("CurrentOrderItem", ['order_item' => $order_item]);
+					$partialView.= getPartialView("CurrentOrderItem", ['orderItem' => $orderItem]);
 				}
 
-				$dalResult->setPartialView($partial_view);
+				$dalResult->setPartialView($partialView);
+
+				$this->lists_service->closeConnexion();
+				$this->orders_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
 
-			$this->lists_service->closeConnexion();
-			$this->orders_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
+				return $dalResult->jsonSerialize();
+			}
 		}
 
-		public function addItemToPreviousOrder($request)
+		public function addItemToPreviousOrder(array $request) : array
 		{
-			if (!isset($request['description']) || empty($request['description']) || !isset($request['order_id']) || !is_numeric($request['order_id']))
+			$dalResult = new DalResult();
+
+			try
 			{
-				return false;
+				if (!isset($request['description']) || empty($request['description']))
+				{
+					$dalResult->setException(new Exception("Invalid description"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$item = $this->items_service->getItemByDescription($request['description']);
+				$order = $this->orders_service->verifyOrderRequest($request);
+
+				$orderItem = new OrderItem();
+				$orderItem->setOrderId($order->getId());
+				$orderItem->setItemId($item->getId());
+				$orderItem->setQuantity($item->getDefaultQty());
+				$orderItem->setChecked(0);
+
+				$orderItem = $this->orders_service->addOrderItem($orderItem);
+
+				$orderItem->setItem($item);
+				$dalResult->setPartialView(getPartialView("ListOrderItem", ['order_item' => $orderItem]));
+				$dalResult->setResult($orderItem->jsonSerialize());
+
+				$this->items_service->closeConnexion();
+				$this->orders_service->closeConnexion();
+
+				return $dalResult->jsonSerialize();
 			}
-
-			$dalResult = $this->items_service->getItemByDescription($request['description']);
-
-			if (!is_null($dalResult->getResult()))
+			catch (Exception $e)
 			{
-				$item = $dalResult->getResult();
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
 			}
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			$dalResult = $this->orders_service->getOrderById(intval($request['order_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$order = $dalResult->getResult();
-			}
-
-			if (!$order)
-			{
-				return false;
-			}
-
-			$order_item = new OrderItem();
-			$order_item->setOrderId($order->getId());
-			$order_item->setItemId($item->getId());
-			$order_item->setQuantity($item->getDefaultQty());
-			$order_item->setChecked(0);
-
-			$dalResult = $this->orders_service->addOrderItem($order_item);
-
-			if (!$dalResult->getResult())
-			{
-				return false;
-			}
-
-			$dalResult->getResult()->setItem($item);
-			$dalResult->setPartialView(getPartialView("ListOrderItem", ['order_item' => $dalResult->getResult()]));
-			$dalResult->setResult($dalResult->getResult()->jsonSerialize());
-
-			$this->items_service->closeConnexion();
-			$this->orders_service->closeConnexion();
-
-			return $dalResult->jsonSerialize();
 		}
 	}

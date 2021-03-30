@@ -207,7 +207,7 @@
 			return $this->orders;
 		}
 
-		public function setOrders($orders)
+		public function setOrders(array $orders) : void
 		{
 			$this->orders = $orders;
 		}
@@ -239,7 +239,7 @@
 			}
 		}
 
-		public function hasOrders()
+		public function hasOrders() : bool
 		{
 			if (!is_array($this->orders))
 			{
@@ -274,15 +274,15 @@
 			return $total;
 		}
 
-		public function getFirstOrder()
+		public function getFirstOrder() : Order
 		{
-			$first_order = false;
+			$first_order = null;
 
-			if (is_array($this->orders))
+			if ($this->hasOrders())
 			{
 				foreach ($this->orders as $order_id => $order)
 				{
-					if (!$first_order)
+					if (!($first_order instanceof Order))
 					{
 						$first_order = $order;
 					}
@@ -299,15 +299,15 @@
 			return $first_order;
 		}
 
-		public function getLastOrder()
+		public function getLastOrder() : ?Order
 		{
-			$last_order = false;
+			$last_order = null;
 
-			if (is_array($this->orders))
+			if ($this->hasOrders())
 			{
 				foreach ($this->orders as $order_id => $order)
 				{
-					if (!$last_order)
+					if (!($last_order instanceof Order))
 					{
 						$last_order = $order;
 					}
@@ -389,20 +389,20 @@
 			$this->recent_orders[$order->getId()] = $order;
 		}
 
-		public function calculateRecentOrders($interval = DEFAULT_CONSUMPTION_INTERVAL, $period = DEFAULT_CONSUMPTION_PERIOD)
+		public function calculateRecentOrders(int $interval = DEFAULT_CONSUMPTION_INTERVAL, string $period = DEFAULT_CONSUMPTION_PERIOD) : void
 		{
-			$cutoff_date = new DateTime();
-			$cutoff_date->modify("-".$interval." ".$period);
+			$cutoffDate = new DateTime();
+			$cutoffDate->modify("-".$interval." ".$period);
 			$break = false;
 
 			if ($this->hasOrders())
 			{
-				foreach ($this->orders as $order_id => $order)
+				foreach ($this->orders as $orderId => $order)
 				{
 					if (!$break)
 					{
 						$this->addRecentOrder($order);
-						$interval = $order->getDateOrdered()->diff($cutoff_date);
+						$interval = $order->getDateOrdered()->diff($cutoffDate);
 
 						if (!$interval->invert)
 						{
@@ -436,22 +436,18 @@
 			return $packSizeShortName;
 		}
 
-		public function calculateDailyConsumptionOverall()
+		public function calculateDailyConsumptionOverall() : void
 		{
-			$consumption = $first_order = $last_order = false;
+			$consumption = $first_order = $last_order = null;
 
 			$first_order = $this->getFirstOrder();
-			// $last_order = $this->getLastOrder();
 
-			// if ($first_order && $last_order)
-			if ($first_order)
+			if ($first_order instanceof Order)
 			{
-				// $days = $first_order->getDateOrdered()->diff($last_order->getDateOrdered())->format('%a');
 				$days = $first_order->getDateOrdered()->diff(new DateTime)->format('%a');
 
 				if ($days != '0')
 				{
-					// $total = $this->getTotalOrdered() - $last_order->getOrderItembyItemId($this->id)->getQuantity();
 					$total = $this->getTotalOrdered();
 					$consumption = $total / $days;
 				}
@@ -460,7 +456,7 @@
 			$this->daily_consumption_overall = $consumption;
 		}
 
-		public function getDailyConsumptionOverall()
+		public function getDailyConsumptionOverall() : ?float
 		{
 			if (!$this->daily_consumption_overall)
 			{
@@ -470,7 +466,7 @@
 			return $this->daily_consumption_overall;
 		}
 
-		public function calculateDailyConsumptionRecent()
+		public function calculateDailyConsumptionRecent() : void
 		{
 			$from_date = $to_date = $total_recent_qty = $latest_recent_qty = $consumption = null;
 
@@ -515,7 +511,7 @@
 			$this->daily_consumption_recent = $consumption;
 		}
 
-		public function getDailyConsumptionRecent()
+		public function getDailyConsumptionRecent() : ?float
 		{
 			if (!$this->daily_consumption_recent)
 			{
@@ -525,32 +521,38 @@
 			return $this->daily_consumption_recent;
 		}
 
-		public function getStockLevelPrediction($days_ahead = 0, $consumption = 'overall')
+		public function getStockLevelPrediction(int $daysAhead = 0, string $consumption = 'overall') : ?int
 		{
-			$stock_level = $daily_consumption = false;
+			$stockLevel = $dailyConsumption = null;
 
 			switch ($consumption)
 			{
 				case 'overall':
-					$daily_consumption = $this->getDailyConsumptionOverall();
+					$dailyConsumption = $this->getDailyConsumptionOverall();
 					break;
 				case 'recent':
-					$daily_consumption = $this->getDailyConsumptionRecent();
+					$dailyConsumption = $this->getDailyConsumptionRecent();
 					break;
 			}
 
-			if (!$daily_consumption)
+			if (is_null($dailyConsumption))
 			{
-				return false;
+				return null;
 			}
 
-			$last_order = $this->getLastOrder();
-			$last_order_qty = $last_order->getOrderItembyItemId($this->id)->getQuantity();
-			$days_elapsed = $last_order->getDateOrdered()->diff(new DateTime())->format('%a');
-			$days = $days_elapsed + $days_ahead;
-			$est_consumption = round($daily_consumption * $days);
-			$stock_level = $last_order_qty - $est_consumption;
+			$lastOrder = $this->getLastOrder();
 
-			return $stock_level;
+			if (!($lastOrder instanceof Order))
+			{
+				return null;
+			}
+
+			$lastOrderQuantity = intval($lastOrder->getOrderItembyItemId($this->id)->getQuantity());
+			$daysElapsed = $lastOrder->getDateOrdered()->diff(new DateTime())->format('%a');
+			$days = $daysElapsed + $daysAhead;
+			$estConsumption = intval(round($dailyConsumption * $days));
+			$stockLevel = $lastOrderQuantity - $estConsumption;
+
+			return $stockLevel;
 		}
 	}

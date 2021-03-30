@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class ListsDAL
 	{
 		private $ShopDb;
@@ -21,7 +23,7 @@
 			{
 				$query = $this->ShopDb->conn->prepare("INSERT INTO lists (name) VALUES (:name)");
 				$query->execute([':name' => $list->getName()]);
-				$result->setResult($this->ShopDb->conn->lastInsertId());
+				$result->setResult(intval($this->ShopDb->conn->lastInsertId()));
 			}
 			catch(PDOException $e)
 			{
@@ -31,18 +33,17 @@
 			return $result;
 		}
 
-		public function getAllLists()
+		public function getAllLists() : ?array
 		{
-			$result = new DalResult();
-			$lists = false;
-
 			try
 			{
+				$lists = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT list_id, name AS list_name FROM lists");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$lists = [];
 
@@ -54,28 +55,29 @@
 					}
 				}
 
-				$result->setResult($lists);
+				return $lists;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function getAllListsWithItems()
+		public function getAllListsWithItems() : ?array
 		{
-			$result = new DalResult();
-			$lists = false;
-
 			try
 			{
+				$lists = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT l.list_id, l.name AS list_name, i.item_id, i.description, i.comments, i.default_qty, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM lists AS l LEFT JOIN items AS i ON (i.list_id = l.list_id) ORDER BY l.list_id, i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					$lists = [];
 
@@ -96,32 +98,33 @@
 					}
 				}
 
-				$result->setResult($lists);
+				return $lists;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function getListById($list_id)
+		public function getListById($list_id) : ?ShopList
 		{
-			$result = new DalResult();
-			$list = false;
-
 			try
 			{
+				$list = null;
+
 				$query = $this->ShopDb->conn->prepare("SELECT l.list_id, l.name AS list_name, i.item_id, i.description, i.comments, i.default_qty, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM lists AS l LEFT JOIN items AS i ON (l.list_id = i.list_id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE l.list_id = :list_id ORDER BY i.description");
 				$query->execute([':list_id' => $list_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-				if ($rows)
+				if (is_array($rows))
 				{
 					foreach ($rows as $row)
 					{
-						if (!$list)
+						if (!($list instanceof ShopList))
 						{
 							$list = createList($row);
 						}
@@ -137,14 +140,16 @@
 					}
 				}
 
-				$result->setResult($list);
+				return $list;
 			}
-			catch(PDOException $e)
+			catch(PDOException $PdoException)
 			{
-				$result->setException($e);
+				throw $PdoException;
 			}
-
-			return $result;
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
 		public function getListByName($list_name)
@@ -173,90 +178,98 @@
 			return $result;
 		}
 
-		public function addItemToList($item, $list)
+		public function addItemToList(Item $item, ShopList $list) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("UPDATE items SET list_id = :list_id WHERE item_id = :item_id");
-				$result->setResult($query->execute(
+				$success = $query->execute(
 				[
 					':list_id' => $list->getId(),
-					':item_id' => $item->getId()
-				]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+					':item_id' => $item->getId(),
+				]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function updateList($list)
+		public function updateList(ShopList $list) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("UPDATE lists SET name = :name WHERE list_id = :list_id");
-				$result->setResult($query->execute(
+				$success = $query->execute(
 				[
 					':name'    => $list->getName(),
-					':list_id' => $list->getId()
-				]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+					':list_id' => $list->getId(),
+				]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function removeList($list)
+		public function removeList(ShopList $list) : bool
 		{
-			$result = new DalResult();
-
 			try
 			{
 				$query = $this->ShopDb->conn->prepare("DELETE FROM lists WHERE list_id = :list_id");
-				$result->setResult($query->execute([':list_id' => $list->getId()]));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				$success = $query->execute([':list_id' => $list->getId()]);
 
-			return $result;
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 
-		public function moveItemsToList($items, $list)
+		public function moveItemsToList(array $items, ShopList $list) : bool
 		{
-			$result = new DalResult();
-
-			$query_string = "";
-			$query_values = [':list_id' => $list->getId()];
-
-			foreach ($items as $key => $item)
-			{
-				$query_string.= ":id_".$key.", ";
-				$query_values[":id_".$key] = $item->getId();
-			}
-
-			$query_string = rtrim($query_string, ", ");
-
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("UPDATE items SET list_id = :list_id WHERE item_id IN (".$query_string.")");
-				$result->setResult($query->execute($query_values));
-			}
-			catch(PDOException $e)
-			{
-				$result->setException($e);
-			}
+				$query_string = "";
+				$query_values = [':list_id' => $list->getId()];
 
-			return $result;
+				foreach ($items as $key => $item)
+				{
+					$query_string.= ":id_".$key.", ";
+					$query_values[":id_".$key] = $item->getId();
+				}
+
+				$query_string = rtrim($query_string, ", ");
+
+				$query = $this->ShopDb->conn->prepare("UPDATE items SET list_id = :list_id WHERE item_id IN (".$query_string.")");
+				$success = $query->execute($query_values);
+
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
 		}
 	}

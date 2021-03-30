@@ -6,7 +6,7 @@
 		echo "</pre>";
 	}
 
-	function createList($request)
+	function createList(array $request) : ShopList
 	{
 		$id = isset($request['list_id']) ? $request['list_id'] : null;
 		$name = isset($request['list_name']) ? $request['list_name'] : null;
@@ -16,7 +16,7 @@
 		return $list;
 	}
 
-	function createDepartment($request)
+	function createDepartment(array $request) : Department
 	{
 		$id = isset($request['dept_id']) ? intval($request['dept_id']) : null;
 		$name = isset($request['dept_name']) ? $request['dept_name'] : null;
@@ -27,7 +27,7 @@
 		return $department;
 	}
 
-	function createItem($request)
+	function createItem(array $request) : Item
 	{
 		$id = isset($request['item_id']) ? intval($request['item_id']) : null;
 		$description = isset($request['description']) ? $request['description'] : null;
@@ -46,7 +46,7 @@
 		return $item;
 	}
 
-	function createOrder($request)
+	function createOrder(array $request) : Order
 	{
 		$id = isset($request['order_id']) ? intval($request['order_id']) : null;
 		$date_ordered = isset($request['date_ordered']) ? sanitiseDate($request['date_ordered']) : null;
@@ -56,20 +56,20 @@
 		return $order;
 	}
 
-	function createOrderItem($request)
+	function createOrderItem(array $request) : OrderItem
 	{
 		$id = isset($request['order_item_id']) ? intval($request['order_item_id']) : null;
-		$order_id = isset($request['order_id']) ? $request['order_id'] : null;
-		$item_id = isset($request['item_id']) ? $request['item_id'] : null;
+		$orderId = isset($request['order_id']) ? $request['order_id'] : null;
+		$itemId = isset($request['item_id']) ? $request['item_id'] : null;
 		$quantity = isset($request['quantity']) ? intval($request['quantity']) : null;
 		$checked = isset($request['checked']) ? intval($request['checked']) : null;
 
-		$order_item = new OrderItem($id, $order_id, $item_id, $quantity, $checked);
+		$orderItem = new OrderItem($id, $orderId, $itemId, $quantity, $checked);
 
-		return $order_item;
+		return $orderItem;
 	}
 
-	function createPackSize($request)
+	function createPackSize(array $request) : PackSize
 	{
 		$id = isset($request['packsize_id']) ? intval($request['packsize_id']) : null;
 		$name = isset($request['packsize_name']) ? $request['packsize_name'] : null;
@@ -80,7 +80,7 @@
 		return $packsize;
 	}
 
-	function createLuckyDip($request) : LuckyDip
+	function createLuckyDip(array $request) : LuckyDip
 	{
 		$id = isset($request['luckyDip_id']) ? intval($request['luckyDip_id']) : null;
 		$name = isset($request['luckyDip_name']) ? $request['luckyDip_name'] : null;
@@ -89,6 +89,43 @@
 		$luckyDip = new LuckyDip($id, $name, $list_id);
 
 		return $luckyDip;
+	}
+
+	function createMeal(array $request) : Meal
+	{
+		try
+		{
+			$id = isset($request['meal_id']) ? intval($request['meal_id']) : null;
+			$name = isset($request['meal_name']) ? trim($request['meal_name']) : null;
+			$isDeleted = isset($request['meal_isDeleted']) && $request['meal_isDeleted'];
+
+			$meal = new Meal($id, $name, $isDeleted);
+
+			return $meal;
+		}
+		catch (Exception $e)
+		{
+			throw $e;
+		}
+	}
+
+	function createMealItem(array $request) : MealItem
+	{
+		try
+		{
+			$id = isset($request['meal_item_id']) ? intval($request['meal_item_id']) : null;
+			$mealId = isset($request['meal_id']) ? intval($request['meal_id']) : null;
+			$itemId = isset($request['item_id']) ? intval($request['item_id']) : null;
+			$quantity = isset($request['meal_item_quantity']) ? intval($request['meal_item_quantity']) : null;
+
+			$mealItem = new MealItem($id, $mealId, $itemId, $quantity);
+
+			return $mealItem;
+		}
+		catch (Exception $e)
+		{
+			throw $e;
+		}
 	}
 
 	function getValidationString($object, $property)
@@ -115,7 +152,7 @@
 		return $validation;
 	}
 
-	function entityIsValid($entity)
+	function entityIsValid($entity) : bool
 	{
 		if (is_array($entity->getValidation()))
 		{
@@ -129,7 +166,7 @@
 					switch ($criterion)
 					{
 						case 'required':
-							if (is_null($property_value) || (is_string($property_value) && strlen($property_value) < 1))
+							if (is_null($property_value) || (is_string($property_value) && strlen(trim($property_value)) < 1))
 							{
 								return false;
 							}
@@ -205,19 +242,19 @@
 		return $date;
 	}
 
-	function renderPage($pageData) : void
+	function renderPage(array $pageData) : void
 	{
-		$page_title = $pageData['page_title'];
+		$page_title = isset($pageData['page_title']) ? $pageData['page_title'] : null;
 		$breadcrumb = (isset($pageData['breadcrumb']) && is_array($pageData['breadcrumb'])) ? renderBreadcrumb($pageData['breadcrumb']) : $page_title;
-		$template = $pageData['template'];
-		$response = $pageData['page_data'];
+		$template = isset($pageData['template']) ? $pageData['template'] : null;
+		$response = isset($pageData['page_data']) ? $pageData['page_data'] : null;
 		include_once('views/shared/header.php');
 		include_once($template);
 		include_once('views/shared/footer.php');
 		exit;
 	}
 
-	function renderPrint($pageData) : void
+	function renderPrint(array $pageData) : void
 	{
 		$page_title = $pageData['page_title'];
 		$template = $pageData['template'];

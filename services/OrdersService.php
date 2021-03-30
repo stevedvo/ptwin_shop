@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class OrdersService
 	{
 		private $dal;
@@ -13,172 +15,239 @@
 			$this->dal->closeConnexion();
 		}
 
-		public function verifyOrderRequest($request)
+		public function verifyOrderRequest(array $request) : Order
 		{
-			$order = false;
-
-			if (!is_numeric($request['order_id']))
+			try
 			{
-				return false;
-			}
+				$order = null;
 
-			$dalResult = $this->dal->getOrderById(intval($request['order_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$order = $dalResult->getResult();
-			}
-
-			if (!$order)
-			{
-				return false;
-			}
-
-			return $order;
-		}
-
-		public function verifyOrderItemRequest($request)
-		{
-			$item = false;
-
-			if (!is_numeric($request['order_item_id']))
-			{
-				return false;
-			}
-
-			$dalResult = $this->dal->getOrderItemById(intval($request['order_item_id']));
-
-			if (!is_null($dalResult->getResult()))
-			{
-				$item = $dalResult->getResult();
-			}
-
-			if (!$item)
-			{
-				return false;
-			}
-
-			return $item;
-		}
-
-		public function getCurrentOrder()
-		{
-			$order = false;
-			$dalResult = $this->dal->getCurrentOrder();
-
-			if ($dalResult->getResult() instanceof Order)
-			{
-				$order = $dalResult->getResult();
-			}
-
-			if (!$order)
-			{
-				$order = new Order();
-				$dalResult = $this->dal->addOrder($order);
-
-				if (!is_null($dalResult->getResult()))
+				if (!is_numeric($request['order_id']))
 				{
-					$order->setId($dalResult->getResult());
-				}
-			}
-
-			return $order;
-		}
-
-		public function getAllOrders()
-		{
-			return $this->dal->getAllOrders();
-		}
-
-		public function addOrder($order)
-		{
-			return $this->dal->addOrder($order);
-		}
-
-		public function addOrderItem($order_item)
-		{
-			$dalResult = $this->dal->getOrderItemByOrderAndItem($order_item->getOrderId(), $order_item->getItemId());
-
-			if ($dalResult->getResult())
-			{
-				return $dalResult;
-			}
-
-			if (!is_null($dalResult->getException()))
-			{
-				return false;
-			}
-
-			$dalResult = $this->dal->addOrderItem($order_item);
-
-			if ($dalResult->getResult())
-			{
-				$order_item->setId($dalResult->getResult());
-				$dalResult->setResult($order_item);
-
-				return $dalResult;
-			}
-
-			return false;
-		}
-
-		public function addOrderItems($order_items)
-		{
-			if (is_array($order_items))
-			{
-				foreach ($order_items as $order_item)
-				{
-					$dalResult = $this->dal->addOrderItem($order_item);
-
-					if ($dalResult->getResult())
-					{
-						$order_item->setId($dalResult->getResult());
-					}
-					else
-					{
-						return false;
-					}
+					throw new Exception("Invalid Order ID");
 				}
 
-				return $order_items;
+				$order = $this->getOrderById(intval($request['order_id']));
+
+				return $order;
 			}
-
-			return false;
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function getOrderItemById($order_item_id)
+		public function verifyOrderItemRequest(array $request) : OrderItem
 		{
-			return $this->dal->getOrderItemById($order_item_id);
+			try
+			{
+				$orderItem = null;
+
+				if (!is_numeric($request['order_item_id']))
+				{
+					throw new Exception("Invalid OrderItem ID");
+				}
+
+				$orderItem = $this->dal->getOrderItemById(intval($request['order_item_id']));
+
+				if (!($orderItem instanceof OrderItem))
+				{
+					throw new Exception("OrderItem not found");
+				}
+
+				return $orderItem;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function updateOrderItem($order_item)
+		public function getCurrentOrder() : Order
 		{
-			return $this->dal->updateOrderItem($order_item);
+			try
+			{
+				$order = $this->dal->getCurrentOrder();
+
+				if ($order instanceof Order)
+				{
+					return $order;
+				}
+
+				$order = $this->dal->addOrder(new Order());
+
+				return $order;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function removeOrderItem($order_item)
+		public function getAllOrders() : array
 		{
-			return $this->dal->removeOrderItem($order_item);
+			try
+			{
+				$orders = $this->dal->getAllOrders();
+
+				if (!is_array($orders))
+				{
+					throw new Exception("Orders not found");
+				}
+
+				return $orders;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function getOrderById($order_id)
+		public function addOrder(Order $order) : Order
 		{
-			return $this->dal->getOrderById($order_id);
+			try
+			{
+				$order = $this->dal->addOrder($order);
+
+				return $order;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function getOrdersByItem($item)
+		public function addOrderItem(OrderItem $orderItem) : OrderItem
 		{
-			return $this->dal->getOrdersByItem($item);
+			try
+			{
+				$existingOrderItem = $this->dal->getOrderItemByOrderAndItem($orderItem->getOrderId(), $orderItem->getItemId());
+
+				if ($existingOrderItem instanceof OrderItem)
+				{
+					return $existingOrderItem;
+				}
+
+				return $this->dal->addOrderItem($orderItem);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function removeAllOrderItemsFromOrder($order)
+		public function addOrderItems(array $orderItems) : array
 		{
-			return $this->dal->removeAllOrderItemsFromOrder($order);
+			try
+			{
+				foreach ($orderItems as $orderItem)
+				{
+					$orderItem = $this->dal->addOrderItem($orderItem);
+				}
+
+				return $orderItems;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function updateOrder($order)
+		public function getOrderItemById(int $orderItemId) : ?OrderItem
 		{
-			return $this->dal->updateOrder($order);
+			try
+			{
+				return $this->dal->getOrderItemById($orderItemId);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function updateOrderItem(OrderItem $orderItem) : bool
+		{
+			try
+			{
+				return $this->dal->updateOrderItem($orderItem);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function removeOrderItem(OrderItem $orderItem) : bool
+		{
+			try
+			{
+				return $this->dal->removeOrderItem($orderItem);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function getOrderById(int $orderId) : Order
+		{
+			try
+			{
+				$order = $this->dal->getOrderById($orderId);
+
+				if (!($order instanceof Order))
+				{
+					throw new Exception("Cannot find Order with ID ".$orderId);
+				}
+
+				return $order;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function getOrdersByItem(Item $item) : array
+		{
+			try
+			{
+				$orders = $this->dal->getOrdersByItem($item);
+
+				if (!is_array($orders))
+				{
+					throw new Exception("Orders not found for Item.");
+				}
+
+				return $orders;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function removeAllOrderItemsFromOrder(Order $order) : bool
+		{
+			try
+			{
+				return $this->dal->removeAllOrderItemsFromOrder($order);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function updateOrder(Order $order) : bool
+		{
+			try
+			{
+				return $this->dal->updateOrder($order);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getOrderItemsByOrderAndItems($order, $items)

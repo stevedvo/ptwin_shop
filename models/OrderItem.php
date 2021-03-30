@@ -114,17 +114,17 @@
 			$this->item = $item;
 		}
 
-		public function getItemDescription()
+		public function getItemDescription() : string
 		{
-			$item_description = null;
+			$itemDescription = "";
 			$item = $this->getItem();
 
-			if (!is_null($item))
+			if ($item instanceof Item)
 			{
-				$item_description = $item->getDescription();
+				$itemDescription = $item->getDescription();
 			}
 
-			return $item_description;
+			return $itemDescription;
 		}
 
 		public function getItemPackSizeShortName()

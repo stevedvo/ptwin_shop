@@ -71,14 +71,14 @@
 			$this->order_items = $order_items;
 		}
 
-		public function addOrderItem($order_item)
+		public function addOrderItem(OrderItem $orderItem) : void
 		{
 			if (!is_array($this->order_items))
 			{
 				$this->order_items = [];
 			}
 
-			$this->order_items[$order_item->getId()] = $order_item;
+			$this->order_items[$orderItem->getId()] = $orderItem;
 		}
 
 		public function getItemIdsInOrder()

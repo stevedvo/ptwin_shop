@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class DepartmentsService
 	{
 		private $dal;
@@ -13,28 +15,23 @@
 			$this->dal->closeConnexion();
 		}
 
-		public function verifyDepartmentRequest($request)
+		public function verifyDepartmentRequest(array $request) : Department
 		{
-			$department = false;
-
-			if (!is_numeric($request['dept_id']))
+			try
 			{
-				return false;
+				$department = null;
+
+				if (!is_numeric($request['dept_id']))
+				{
+					throw new Exception("Invalid Department ID");
+				}
+
+				return $this->getDepartmentById(intval($request['dept_id']));
 			}
-
-			$dalResult = $this->dal->getDepartmentById(intval($request['dept_id']));
-
-			if ($dalResult->getResult() instanceof Department)
+			catch (Exception $e)
 			{
-				$department = $dalResult->getResult();
+				throw $e;
 			}
-
-			if (!$department)
-			{
-				return false;
-			}
-
-			return $department;
 		}
 
 		public function addDepartment($department)
@@ -42,19 +39,61 @@
 			return $this->dal->addDepartment($department);
 		}
 
-		public function getAllDepartments()
+		public function getAllDepartments() : array
 		{
-			return $this->dal->getAllDepartments();
+			try
+			{
+				$departments = $this->dal->getAllDepartments();
+
+				if (!is_array($departments))
+				{
+					throw new Exception("Departments not found");
+				}
+
+				return $departments;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function getAllDepartmentsWithItems()
+		public function getAllDepartmentsWithItems() : array
 		{
-			return $this->dal->getAllDepartmentsWithItems();
+			try
+			{
+				$departments = $this->dal->getAllDepartmentsWithItems();
+
+				if (!is_array($departments))
+				{
+					throw new Exception("Departments not found");
+				}
+
+				return $departments;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function getDepartmentById($dept_id)
+		public function getDepartmentById(int $dept_id) : Department
 		{
-			return $this->dal->getDepartmentById($dept_id);
+			try
+			{
+				$department = $this->dal->getDepartmentById($dept_id);
+
+				if (!($department instanceof Department))
+				{
+					throw new Exception("Department not found");
+				}
+
+				return $department;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getDepartmentByName($dept_name)
@@ -62,9 +101,16 @@
 			return $this->dal->getDepartmentByName($dept_name);
 		}
 
-		public function addItemToDepartment($item, $department)
+		public function addItemToDepartment(Item $item, Department $department) : bool
 		{
-			return $this->dal->addItemToDepartment($item, $department);
+			try
+			{
+				return $this->dal->addItemToDepartment($item, $department);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function removeItemsFromDepartment($item_ids, $dept_id)
@@ -72,18 +118,53 @@
 			return $this->dal->removeItemsFromDepartment($item_ids, $dept_id);
 		}
 
-		public function updateDepartment($department)
+		public function updateDepartment(Department $department) : bool
 		{
-			return $this->dal->updateDepartment($department);
+			try
+			{
+				return $this->dal->updateDepartment($department);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function removeDepartment($department)
+		public function removeDepartment(Department $department) : bool
 		{
-			return $this->dal->removeDepartment($department);
+			try
+			{
+				$success = $this->dal->removeDepartment($department);
+
+				if (!$success)
+				{
+					throw new Exception("Unable to remove Department");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function getPrimaryDepartments()
+		public function getPrimaryDepartments() : array
 		{
-			return $this->dal->getPrimaryDepartments();
+			try
+			{
+				$departments = $this->dal->getPrimaryDepartments();
+
+				if (!is_array($departments))
+				{
+					throw new Exception("Primary Departments not found");
+				}
+
+				return $departments;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 	}

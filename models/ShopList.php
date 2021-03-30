@@ -10,13 +10,7 @@
 		{
 			$this->id = $id;
 			$this->name = $name;
-			$this->validation =
-			[
-				'Name' =>
-				[
-					'required' => true
-				]
-			];
+			$this->validation = ['Name' => ['required' => true]];
 			$this->items = $items;
 		}
 

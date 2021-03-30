@@ -1,4 +1,6 @@
 <?php
+	declare(strict_types=1);
+
 	class ListsService
 	{
 		private $dal;
@@ -13,28 +15,21 @@
 			$this->dal->closeConnexion();
 		}
 
-		public function verifyListRequest($request)
+		public function verifyListRequest(array $request) : ShopList
 		{
-			$list = false;
-
-			if (!is_numeric($request['list_id']))
+			try
 			{
-				return false;
+				if (!is_numeric($request['list_id']))
+				{
+					throw new Exception("Invalid List ID");
+				}
+
+				return $this->getListById(intval($request['list_id']));
 			}
-
-			$dalResult = $this->dal->getListById(intval($request['list_id']));
-
-			if (!is_null($dalResult->getResult()))
+			catch (Exception $e)
 			{
-				$list = $dalResult->getResult();
+				throw $e;
 			}
-
-			if (!$list)
-			{
-				return false;
-			}
-
-			return $list;
 		}
 
 		public function addList($list)
@@ -42,19 +37,61 @@
 			return $this->dal->addList($list);
 		}
 
-		public function getAllLists()
+		public function getAllLists() : array
 		{
-			return $this->dal->getAllLists();
+			try
+			{
+				$lists = $this->dal->getAllLists();
+
+				if (!is_array($lists))
+				{
+					throw new Exception("Could not find Lists");
+				}
+
+				return $lists;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function getAllListsWithItems()
+		public function getAllListsWithItems() : array
 		{
-			return $this->dal->getAllListsWithItems();
+			try
+			{
+				$lists = $this->dal->getAllListsWithItems();
+
+				if (!is_array($lists))
+				{
+					throw new Exception("Could not find Lists");
+				}
+
+				return $lists;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function getListById($list_id)
+		public function getListById(int $list_id) : ShopList
 		{
-			return $this->dal->getListById($list_id);
+			try
+			{
+				$list = $this->dal->getListById($list_id);
+
+				if (!($list instanceof ShopList))
+				{
+					throw new Exception("List not found");
+				}
+
+				return $list;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
 		public function getListByName($list_name)
@@ -62,23 +99,72 @@
 			return $this->dal->getListByName($list_name);
 		}
 
-		public function addItemToList($item, $list)
+		public function addItemToList(Item $item, ShopList $list) : bool
 		{
-			return $this->dal->addItemToList($item, $list);
+			try
+			{
+				return $this->dal->addItemToList($item, $list);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function updateList($list)
+		public function updateList(ShopList $list) : bool
 		{
-			return $this->dal->updateList($list);
+			try
+			{
+				$success = $this->dal->updateList($list);
+
+				if (!$success)
+				{
+					throw new Exception("Error updating List");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function removeList($list)
+		public function removeList(ShopList $list) : bool
 		{
-			return $this->dal->removeList($list);
+			try
+			{
+				$success = $this->dal->removeList($list);
+
+				if (!$success)
+				{
+					throw new Exception("Error removing List");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 
-		public function moveItemsToList($items, $list)
+		public function moveItemsToList(array $items, ShopList $list) : bool
 		{
-			return $this->dal->moveItemsToList($items, $list);
+			try
+			{
+				$success = $this->dal->moveItemsToList($items, $list);
+
+				if (!$success)
+				{
+					throw new Exception("Error moving Items to List");
+				}
+
+				return $success;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
 		}
 	}

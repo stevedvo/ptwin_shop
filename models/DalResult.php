@@ -3,12 +3,14 @@
 	{
 		private $result;
 		private $exception;
+		private string $exceptionMessage;
 		private $partial_view;
 
 		public function __construct($result = null, $exception = null, $partial_view = null)
 		{
 			$this->result = $result;
 			$this->exception = $exception;
+			$this->exceptionMessage = "";
 			$this->partial_view = $partial_view;
 		}
 
@@ -35,6 +37,11 @@
 		public function setException($exception)
 		{
 			$this->exception = $exception;
+
+			if ($exception instanceof Exception)
+			{
+				$this->exceptionMessage = $exception->getMessage();
+			}
 		}
 
 		public function getPartialView()
