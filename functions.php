@@ -32,16 +32,17 @@
 		$id = isset($request['item_id']) ? intval($request['item_id']) : null;
 		$description = isset($request['description']) ? $request['description'] : null;
 		$comments = isset($request['comments']) ? $request['comments'] : null;
-		$default_qty = isset($request['default_qty']) ? intval($request['default_qty']) : null;
-		$list_id = isset($request['list_id']) ? intval($request['list_id']) : null;
+		$defaultQty = isset($request['default_qty']) ? intval($request['default_qty']) : null;
+		$listId = isset($request['list_id']) ? intval($request['list_id']) : null;
 		$link = isset($request['link']) ? $request['link'] : null;
-		$primary_dept = isset($request['primary_dept']) ? intval($request['primary_dept']) : null;
-		$mute_temp = isset($request['mute_temp']) ? intval($request['mute_temp']) : 0;
-		$mute_perm = isset($request['mute_perm']) ? intval($request['mute_perm']) : 0;
-		$packsize_id = isset($request['packsize_id']) ? intval($request['packsize_id']) : null;
-		$luckyDip_id = isset($request['luckydip_id']) ? intval($request['luckydip_id']) : null;
+		$primaryDept = isset($request['primary_dept']) ? intval($request['primary_dept']) : null;
+		$muteTemp = isset($request['mute_temp']) ? intval($request['mute_temp']) : 0;
+		$mutePerm = isset($request['mute_perm']) ? intval($request['mute_perm']) : 0;
+		$packSizeId = isset($request['packsize_id']) ? intval($request['packsize_id']) : null;
+		$luckyDipId = isset($request['luckydip_id']) ? intval($request['luckydip_id']) : null;
+		$mealPlanCheck = isset($request['meal_plan_check']) ? intval($request['meal_plan_check']) : null;
 
-		$item = new Item($id, $description, $comments, $default_qty, $list_id, $link, $primary_dept, $mute_temp, $mute_perm, $packsize_id, $luckyDip_id);
+		$item = new Item($id, $description, $comments, $defaultQty, $listId, $link, $primaryDept, $muteTemp, $mutePerm, $packSizeId, $luckyDipId, $mealPlanCheck);
 
 		return $item;
 	}

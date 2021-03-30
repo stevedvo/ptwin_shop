@@ -4,35 +4,37 @@
 		private $id;
 		private $description;
 		private $comments;
-		private $default_qty;
-		private $list_id;
+		private $defaultQty;
+		private $listId;
 		private $link;
-		private $primary_dept;
-		private $mute_temp;
-		private $mute_perm;
-		private $packsize_id;
-		private $luckyDip_id;
+		private $primaryDept;
+		private $muteTemp;
+		private $mutePerm;
+		private $packSizeId;
+		private $luckyDipId;
+		private $mealPlanCheck;
 		private $validation;
 		private $departments;
 		private $orders;
-		private $recent_orders;
-		private $packsize;
-		private $daily_consumption_overall;
-		private $daily_consumption_recent;
+		private $recentOrders;
+		private $packSize;
+		private $dailyConsumptionOverall;
+		private $dailyConsumptionRecent;
 
-		public function __construct($id = null, $description = null, $comments = null, $default_qty = null, $list_id = null, $link = null, $primary_dept = null, $mute_temp = null, $mute_perm = null, $packsize_id = null, $luckyDip_id = null, $departments = null, $orders = null, $recent_orders = null, $packsize = null, $daily_consumption_overall = null, $daily_consumption_recent = null)
+		public function __construct($id = null, $description = null, $comments = null, $defaultQty = null, $listId = null, $link = null, $primaryDept = null, $muteTemp = null, $mutePerm = null, $packSizeId = null, $luckyDipId = null, $mealPlanCheck = null, $departments = null, $orders = null, $recentOrders = null, $packSize = null, $dailyConsumptionOverall = null, $dailyConsumptionRecent = null)
 		{
 			$this->id = $id;
 			$this->description = $description;
 			$this->comments = $comments;
-			$this->default_qty = $default_qty;
-			$this->list_id = $list_id;
+			$this->defaultQty = $defaultQty;
+			$this->listId = $listId;
 			$this->link = $link;
-			$this->primary_dept = $primary_dept;
-			$this->mute_temp = $mute_temp;
-			$this->mute_perm = $mute_perm;
-			$this->packsize_id = $packsize_id;
-			$this->luckyDip_id = $luckyDip_id;
+			$this->primaryDept = $primaryDept;
+			$this->muteTemp = $muteTemp;
+			$this->mutePerm = $mutePerm;
+			$this->packSizeId = $packSizeId;
+			$this->luckyDipId = $luckyDipId;
+			$this->mealPlanCheck = $mealPlanCheck;
 			$this->validation =
 			[
 				'Description' => ['required' => true],
@@ -46,10 +48,10 @@
 			];
 			$this->departments = $departments;
 			$this->orders = $orders;
-			$this->recent_orders = $recent_orders;
-			$this->packsize = $packsize;
-			$this->daily_consumption_overall = $daily_consumption_overall;
-			$this->daily_consumption_recent = $daily_consumption_recent;
+			$this->recentOrders = $recentOrders;
+			$this->packSize = $packSize;
+			$this->dailyConsumptionOverall = $dailyConsumptionOverall;
+			$this->dailyConsumptionRecent = $dailyConsumptionRecent;
 		}
 
 		public function jsonSerialize()
@@ -89,22 +91,22 @@
 
 		public function getDefaultQty()
 		{
-			return $this->default_qty;
+			return $this->defaultQty;
 		}
 
-		public function setDefaultQty($default_qty)
+		public function setDefaultQty($defaultQty)
 		{
-			$this->default_qty = $default_qty;
+			$this->defaultQty = $defaultQty;
 		}
 
 		public function getListId()
 		{
-			return $this->list_id;
+			return $this->listId;
 		}
 
-		public function setListId($list_id)
+		public function setListId($listId)
 		{
-			$this->list_id = $list_id;
+			$this->listId = $listId;
 		}
 
 		public function getLink()
@@ -119,52 +121,62 @@
 
 		public function getPrimaryDept()
 		{
-			return $this->primary_dept;
+			return $this->primaryDept;
 		}
 
-		public function setPrimaryDept($primary_dept)
+		public function setPrimaryDept($primaryDept)
 		{
-			$this->primary_dept = $primary_dept;
+			$this->primaryDept = $primaryDept;
 		}
 
 		public function getMuteTemp()
 		{
-			return $this->mute_temp;
+			return $this->muteTemp;
 		}
 
-		public function setMuteTemp($mute_temp)
+		public function setMuteTemp($muteTemp)
 		{
-			$this->mute_temp = $mute_temp;
+			$this->muteTemp = $muteTemp;
 		}
 
 		public function getMutePerm()
 		{
-			return $this->mute_perm;
+			return $this->mutePerm;
 		}
 
-		public function setMutePerm($mute_perm)
+		public function setMutePerm($mutePerm)
 		{
-			$this->mute_perm = $mute_perm;
+			$this->mutePerm = $mutePerm;
 		}
 
 		public function getPackSizeId()
 		{
-			return $this->packsize_id;
+			return $this->packSizeId;
 		}
 
-		public function setPackSizeId($packsize_id)
+		public function setPackSizeId($packSizeId)
 		{
-			$this->packsize_id = $packsize_id;
+			$this->packSizeId = $packSizeId;
 		}
 
 		public function getLuckyDipId()
 		{
-			return $this->luckyDip_id;
+			return $this->luckyDipId;
 		}
 
-		public function setLuckyDipId($luckyDip_id)
+		public function setLuckyDipId($luckyDipId)
 		{
-			$this->luckyDip_id = $luckyDip_id;
+			$this->luckyDipId = $luckyDipId;
+		}
+
+		public function getMealPlanCheck() : bool
+		{
+			return $this->mealPlanCheck;
+		}
+
+		public function setMealPlanCheck(bool $mealPlanCheck) : void
+		{
+			$this->mealPlanCheck = $mealPlanCheck;
 		}
 
 		public function getValidation($property = null)
@@ -274,54 +286,54 @@
 			return $total;
 		}
 
-		public function getFirstOrder() : Order
+		public function getFirstOrder() : ?Order
 		{
-			$first_order = null;
+			$firstOrder = null;
 
 			if ($this->hasOrders())
 			{
 				foreach ($this->orders as $order_id => $order)
 				{
-					if (!($first_order instanceof Order))
+					if (!($firstOrder instanceof Order))
 					{
-						$first_order = $order;
+						$firstOrder = $order;
 					}
 					else
 					{
-						if ($order->getDateOrdered() < $first_order->getDateOrdered())
+						if ($order->getDateOrdered() < $firstOrder->getDateOrdered())
 						{
-							$first_order = $order;
+							$firstOrder = $order;
 						}
 					}
 				}
 			}
 
-			return $first_order;
+			return $firstOrder;
 		}
 
 		public function getLastOrder() : ?Order
 		{
-			$last_order = null;
+			$lastOrder = null;
 
 			if ($this->hasOrders())
 			{
 				foreach ($this->orders as $order_id => $order)
 				{
-					if (!($last_order instanceof Order))
+					if (!($lastOrder instanceof Order))
 					{
-						$last_order = $order;
+						$lastOrder = $order;
 					}
 					else
 					{
-						if ($order->getDateOrdered() > $last_order->getDateOrdered())
+						if ($order->getDateOrdered() > $lastOrder->getDateOrdered())
 						{
-							$last_order = $order;
+							$lastOrder = $order;
 						}
 					}
 				}
 			}
 
-			return $last_order;
+			return $lastOrder;
 		}
 
 		// public function getPenultimateOrder()
@@ -366,27 +378,27 @@
 
 		public function getRecentOrders()
 		{
-			if (!$this->recent_orders)
+			if (!$this->recentOrders)
 			{
 				$this->calculateRecentOrders();
 			}
 
-			return $this->recent_orders;
+			return $this->recentOrders;
 		}
 
 		public function setRecentOrders($orders)
 		{
-			$this->recent_orders = $orders;
+			$this->recentOrders = $orders;
 		}
 
 		public function addRecentOrder($order)
 		{
-			if (!is_array($this->recent_orders))
+			if (!is_array($this->recentOrders))
 			{
-				$this->recent_orders = [];
+				$this->recentOrders = [];
 			}
 
-			$this->recent_orders[$order->getId()] = $order;
+			$this->recentOrders[$order->getId()] = $order;
 		}
 
 		public function calculateRecentOrders(int $interval = DEFAULT_CONSUMPTION_INTERVAL, string $period = DEFAULT_CONSUMPTION_PERIOD) : void
@@ -415,22 +427,22 @@
 
 		public function getPackSize()
 		{
-			return $this->packsize;
+			return $this->packSize;
 		}
 
-		public function setPackSize($packsize)
+		public function setPackSize($packSize)
 		{
-			$this->packsize = $packsize;
+			$this->packSize = $packSize;
 		}
 
 		public function getPackSizeShortName()
 		{
 			$packSizeShortName = null;
-			$packsize = $this->getPackSize();
+			$packSize = $this->getPackSize();
 
-			if ($packsize instanceof PackSize)
+			if ($packSize instanceof PackSize)
 			{
-				$packSizeShortName = $packsize->getShortName();
+				$packSizeShortName = $packSize->getShortName();
 			}
 
 			return $packSizeShortName;
@@ -438,32 +450,38 @@
 
 		public function calculateDailyConsumptionOverall() : void
 		{
-			$consumption = $first_order = $last_order = null;
+			$consumption = $firstOrder = null;
 
-			$first_order = $this->getFirstOrder();
+			$firstOrder = $this->getFirstOrder();
 
-			if ($first_order instanceof Order)
+			if ($firstOrder instanceof Order)
 			{
-				$days = $first_order->getDateOrdered()->diff(new DateTime)->format('%a');
+				$firstOrderDate = $firstOrder->getDateOrdered();
 
-				if ($days != '0')
+				/* First Order could be current Order */
+				if (!is_null($firstOrderDate))
 				{
-					$total = $this->getTotalOrdered();
-					$consumption = $total / $days;
+					$days = $firstOrder->getDateOrdered()->diff(new DateTime)->format('%a');
+
+					if ($days != '0')
+					{
+						$total = $this->getTotalOrdered();
+						$consumption = $total / $days;
+					}
 				}
 			}
 
-			$this->daily_consumption_overall = $consumption;
+			$this->dailyConsumptionOverall = $consumption;
 		}
 
 		public function getDailyConsumptionOverall() : ?float
 		{
-			if (!$this->daily_consumption_overall)
+			if (is_null($this->dailyConsumptionOverall))
 			{
 				$this->calculateDailyConsumptionOverall();
 			}
 
-			return $this->daily_consumption_overall;
+			return $this->dailyConsumptionOverall;
 		}
 
 		public function calculateDailyConsumptionRecent() : void
@@ -472,7 +490,7 @@
 
 			if ($this->getRecentOrders())
 			{
-				foreach ($this->recent_orders as $order_id => $order)
+				foreach ($this->recentOrders as $order_id => $order)
 				{
 					if (is_null($from_date))
 					{
@@ -508,17 +526,17 @@
 				}
 			}
 
-			$this->daily_consumption_recent = $consumption;
+			$this->dailyConsumptionRecent = $consumption;
 		}
 
 		public function getDailyConsumptionRecent() : ?float
 		{
-			if (!$this->daily_consumption_recent)
+			if (is_null($this->dailyConsumptionRecent))
 			{
 				$this->calculateDailyConsumptionRecent();
 			}
 
-			return $this->daily_consumption_recent;
+			return $this->dailyConsumptionRecent;
 		}
 
 		public function getStockLevelPrediction(int $daysAhead = 0, string $consumption = 'overall') : ?int

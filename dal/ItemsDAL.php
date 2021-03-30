@@ -51,7 +51,7 @@
 			{
 				$item = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name, idl.dept_id, d.dept_name, d.seq FROM items AS i LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) WHERE i.item_id = :item_id ORDER BY d.seq, d.dept_name");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, ps.name AS packsize_name, ps.short_name AS packsize_short_name, idl.dept_id, d.dept_name, d.seq FROM items AS i LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) LEFT JOIN item_dept_link AS idl ON (idl.item_id = i.item_id) LEFT JOIN departments AS d ON (d.dept_id = idl.dept_id) WHERE i.item_id = :item_id ORDER BY d.seq, d.dept_name");
 				$query->execute([':item_id' => $item_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -106,7 +106,7 @@
 
 				$query_string = rtrim($query_string, ", ");
 
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM items AS i WHERE i.item_id IN (".$query_string.")");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM items AS i WHERE i.item_id IN (".$query_string.")");
 				$query->execute($query_values);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -140,7 +140,7 @@
 			{
 				$item = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM items AS i LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE i.description = :description");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM items AS i LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE i.description = :description");
 				$query->execute([':description' => $description]);
 				$row = $query->fetch(PDO::FETCH_ASSOC);
 
@@ -169,7 +169,7 @@
 			{
 				$items = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM items AS i ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM items AS i ORDER BY i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -202,7 +202,7 @@
 			{
 				$items = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id FROM items AS i WHERE i.luckydip_id != :luckydip_id OR luckydip_id IS NULL ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM items AS i WHERE i.luckydip_id != :luckydip_id OR luckydip_id IS NULL ORDER BY i.description");
 				$query->execute([':luckydip_id' => $luckyDipId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -235,7 +235,7 @@
 			{
 				$items = [];
 
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, mi.id AS meal_item_id, mi.meal_id, mi.quantity FROM items AS i LEFT JOIN meal_items AS mi ON (i.item_id = mi.item_id) WHERE mi.meal_id IS NULL OR mi.meal_id != :meal_id ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, mi.id AS meal_item_id, mi.meal_id, mi.quantity FROM items AS i LEFT JOIN meal_items AS mi ON (i.item_id = mi.item_id) WHERE mi.meal_id IS NULL OR mi.meal_id != :meal_id ORDER BY i.description");
 				$query->execute([':meal_id' => $mealId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -266,7 +266,7 @@
 			{
 				$items = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT oi.id AS order_item_id, oi.order_id, oi.item_id, i.description, oi.quantity, oi.checked, o.date_ordered FROM order_items AS oi LEFT JOIN orders AS o ON (o.id = oi.order_id) LEFT JOIN items AS i ON (i.item_id = oi.item_id) WHERE o.date_ordered IS NOT NULL AND i.mute_temp != 1 AND i.mute_perm != 1 ORDER BY i.description, o.date_ordered DESC");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, oi.id AS order_item_id, oi.quantity, oi.checked, oi.order_id, o.date_ordered FROM items AS i LEFT JOIN order_items AS oi ON (i.item_id = oi.item_id) LEFT JOIN orders AS o ON (o.id = oi.order_id) WHERE ((i.meal_plan_check = 1) OR (i.mute_temp = 0 AND i.mute_perm = 0)) ORDER BY i.description, o.date_ordered DESC");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -282,14 +282,17 @@
 							$items[$item->getId()] = $item;
 						}
 
-						if (!$items[$row['item_id']]->hasOrder($row['order_id']))
+						if (!is_null($row['order_id']))
 						{
-							$order = createOrder($row);
-							$items[$row['item_id']]->addOrder($order);
-						}
+							if (!$items[$row['item_id']]->hasOrder($row['order_id']))
+							{
+								$order = createOrder($row);
+								$items[$row['item_id']]->addOrder($order);
+							}
 
-						$orderItem = createOrderItem($row);
-						$items[$row['item_id']]->getOrders()[$row['order_id']]->addOrderItem($orderItem);
+							$orderItem = createOrderItem($row);
+							$items[$row['item_id']]->getOrders()[$row['order_id']]->addOrderItem($orderItem);
+						}
 					}
 				}
 
@@ -311,7 +314,7 @@
 			{
 				$items = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM items AS i WHERE i.mute_temp = 1 OR i.mute_perm = 1 ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM items AS i WHERE i.mute_temp = 1 OR i.mute_perm = 1 ORDER BY i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -348,7 +351,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT idl.dept_id, idl.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM item_dept_link AS idl LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE idl.dept_id = :dept_id");
+				$query = $this->ShopDb->conn->prepare("SELECT idl.dept_id, idl.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM item_dept_link AS idl LEFT JOIN items AS i ON (idl.item_id = i.item_id) WHERE idl.dept_id = :dept_id");
 				$query->execute([':dept_id' => $dept_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -380,7 +383,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM items AS i WHERE i.list_id = :list_id");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM items AS i WHERE i.list_id = :list_id");
 				$query->execute([':list_id' => $list_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 

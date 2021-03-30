@@ -73,7 +73,7 @@
 			{
 				$lists = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT l.list_id, l.name AS list_name, i.item_id, i.description, i.comments, i.default_qty, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM lists AS l LEFT JOIN items AS i ON (i.list_id = l.list_id) ORDER BY l.list_id, i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT l.list_id, l.name AS list_name, i.item_id, i.description, i.comments, i.default_qty, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM lists AS l LEFT JOIN items AS i ON (i.list_id = l.list_id) ORDER BY l.list_id, i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -116,7 +116,7 @@
 			{
 				$list = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT l.list_id, l.name AS list_name, i.item_id, i.description, i.comments, i.default_qty, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM lists AS l LEFT JOIN items AS i ON (l.list_id = i.list_id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE l.list_id = :list_id ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT l.list_id, l.name AS list_name, i.item_id, i.description, i.comments, i.default_qty, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM lists AS l LEFT JOIN items AS i ON (l.list_id = i.list_id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE l.list_id = :list_id ORDER BY i.description");
 				$query->execute([':list_id' => $list_id]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 

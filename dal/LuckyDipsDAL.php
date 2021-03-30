@@ -46,7 +46,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT ld.id AS luckyDip_id, ld.name AS luckyDip_name, ld.list_id AS luckyDip_list_id, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM lucky_dips AS ld LEFT JOIN items AS i ON (i.luckydip_id = ld.id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE ld.id = :id ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT ld.id AS luckyDip_id, ld.name AS luckyDip_name, ld.list_id AS luckyDip_list_id, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM lucky_dips AS ld LEFT JOIN items AS i ON (i.luckydip_id = ld.id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE ld.id = :id ORDER BY i.description");
 				$query->execute([':id' => $luckyDipId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -86,7 +86,7 @@
 			{
 				$luckyDip = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT ld.id AS luckyDip_id, ld.name AS luckyDip_name, ld.list_id AS luckyDip_list_id, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM lucky_dips AS ld LEFT JOIN items AS i ON (i.luckydip_id = ld.id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE ld.name = :name ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT ld.id AS luckyDip_id, ld.name AS luckyDip_name, ld.list_id AS luckyDip_list_id, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM lucky_dips AS ld LEFT JOIN items AS i ON (i.luckydip_id = ld.id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE ld.name = :name ORDER BY i.description");
 				$query->execute([':name' => $luckyDipName]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -128,7 +128,7 @@
 			{
 				$luckyDips = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT ld.id AS luckyDip_id, ld.name AS luckyDip_name, ld.list_id AS luckyDip_list_id, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM lucky_dips AS ld LEFT JOIN items AS i ON (i.luckydip_id = ld.id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE ld.list_id = :list_id ORDER BY ld.id, i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT ld.id AS luckyDip_id, ld.name AS luckyDip_name, ld.list_id AS luckyDip_list_id, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM lucky_dips AS ld LEFT JOIN items AS i ON (i.luckydip_id = ld.id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE ld.list_id = :list_id ORDER BY ld.id, i.description");
 				$query->execute([':list_id' => $listId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -200,48 +200,6 @@
 				throw $exception;
 			}
 		}
-
-		// public function getAllLuckyDipsWithItems() : DalResult
-		// {
-		// 	$result = new DalResult();
-		// 	$luckyDips = false;
-
-		// 	try
-		// 	{
-		// 		$query = $this->ShopDb->conn->prepare("SELECT d.dept_id, d.dept_name, d.seq, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id FROM luckyDips AS d LEFT JOIN item_dept_link AS idl ON (d.dept_id = idl.dept_id) LEFT JOIN items AS i ON (idl.item_id = i.item_id) ORDER BY d.seq, d.dept_name, i.description");
-		// 		$query->execute();
-		// 		$rows = $query->fetchAll(PDO::FETCH_ASSOC);
-
-		// 		if (is_array($rows))
-		// 		{
-		// 			$luckyDips = [];
-
-		// 			foreach ($rows as $row)
-		// 			{
-		// 				if (!array_key_exists($row['dept_id'], $luckyDips))
-		// 				{
-		// 					$luckyDip = createLuckyDip($row);
-		// 					$luckyDips[$luckyDip->getId()] = $luckyDip;
-		// 				}
-
-		// 				$item = createItem($row);
-
-		// 				if (entityIsValid($item))
-		// 				{
-		// 					$luckyDips[$row['dept_id']]->addItem($item);
-		// 				}
-		// 			}
-		// 		}
-
-		// 		$result->setResult($luckyDips);
-		// 	}
-		// 	catch(PDOException $e)
-		// 	{
-		// 		$result->setException($e);
-		// 	}
-
-		// 	return $result;
-		// }
 
 		public function addItemToLuckyDip(Item $item, LuckyDip $luckyDip) : bool
 		{
