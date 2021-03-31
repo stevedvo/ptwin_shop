@@ -109,7 +109,7 @@
 			return $this->item;
 		}
 
-		public function setItem($item)
+		public function setItem(Item $item) : void
 		{
 			$this->item = $item;
 		}

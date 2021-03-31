@@ -150,7 +150,8 @@ main
 	display: block;
 }
 
-.results-container .result-item .button-container button.js-remove-item-from-current-order
+.results-container .result-item .button-container button.js-remove-item-from-current-order,
+.results-container .result-item .button-container button.js-update-suggested-order-item
 {
 	display: none;
 }
@@ -165,7 +166,8 @@ main
 	display: none;
 }
 
-.results-container .result-item.selected .button-container button.js-remove-item-from-current-order
+.results-container .result-item.selected .button-container button.js-remove-item-from-current-order,
+.results-container .result-item.selected .button-container button.js-update-suggested-order-item
 {
 	display: block;
 }
@@ -588,17 +590,17 @@ ul.ui-autocomplete li.ui-state-focus
 
 	.results-container.suggestions .description-container
 	{
-		width: calc(3 / 12 * 100%);
+		width: calc(4 / 12 * 100%);
+	}
+
+	.results-container.suggestions .quantity-container
+	{
+		width: calc(2 / 12 * 100%);
 	}
 
 	.results-container.suggestions.muted .description-container
 	{
 		width: calc(5 / 12 * 100%);
-	}
-
-	.results-container.suggestions .stock-level-container
-	{
-		width: calc(1.5 / 12 * 100%);
 	}
 
 	.results-container.suggestions .button-container

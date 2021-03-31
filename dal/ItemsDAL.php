@@ -266,7 +266,7 @@
 			{
 				$items = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, oi.id AS order_item_id, oi.quantity, oi.checked, oi.order_id, o.date_ordered FROM items AS i LEFT JOIN order_items AS oi ON (i.item_id = oi.item_id) LEFT JOIN orders AS o ON (o.id = oi.order_id) WHERE ((i.meal_plan_check = 1) OR (i.mute_temp = 0 AND i.mute_perm = 0)) ORDER BY i.description, o.date_ordered DESC");
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, oi.id AS order_item_id, oi.quantity, oi.checked, oi.order_id, o.date_ordered, mi.id AS meal_item_id, mi.meal_id, mi.quantity AS meal_item_quantity, mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.order_item_status FROM items AS i LEFT JOIN order_items AS oi ON (i.item_id = oi.item_id) LEFT JOIN orders AS o ON (o.id = oi.order_id) LEFT JOIN meal_items AS mi ON (mi.item_id = i.item_id) LEFT JOIN meal_plan_days AS mpd ON (mpd.meal_id = mi.meal_id) WHERE ((mpd.date IS NOT NULL AND mpd.date > CURDATE() AND mpd.date < ADDDATE(CURDATE(), INTERVAL 14 DAY)) OR (i.mute_temp = 0 AND i.mute_perm = 0 AND o.date_ordered IS NOT NULL)) ORDER BY i.description, o.date_ordered DESC");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -292,6 +292,15 @@
 
 							$orderItem = createOrderItem($row);
 							$items[$row['item_id']]->getOrders()[$row['order_id']]->addOrderItem($orderItem);
+						}
+
+						if (!is_null($row['meal_plan_date']))
+						{
+							if (!$item->hasMealItem($row['meal_item_id']))
+							{
+								$mealItem = createMealItem($row);
+								$items[$row['item_id']]->addMealItem($mealItem);
+							}
 						}
 					}
 				}

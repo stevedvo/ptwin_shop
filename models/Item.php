@@ -20,8 +20,9 @@
 		private $packSize;
 		private $dailyConsumptionOverall;
 		private $dailyConsumptionRecent;
+		private $mealItems;
 
-		public function __construct($id = null, $description = null, $comments = null, $defaultQty = null, $listId = null, $link = null, $primaryDept = null, $muteTemp = null, $mutePerm = null, $packSizeId = null, $luckyDipId = null, $mealPlanCheck = null, $departments = null, $orders = null, $recentOrders = null, $packSize = null, $dailyConsumptionOverall = null, $dailyConsumptionRecent = null)
+		public function __construct($id = null, $description = null, $comments = null, $defaultQty = null, $listId = null, $link = null, $primaryDept = null, $muteTemp = null, $mutePerm = null, $packSizeId = null, $luckyDipId = null, $mealPlanCheck = null, $departments = null, $orders = null, $recentOrders = null, $packSize = null, $dailyConsumptionOverall = null, $dailyConsumptionRecent = null, $mealItems = [])
 		{
 			$this->id = $id;
 			$this->description = $description;
@@ -52,6 +53,7 @@
 			$this->packSize = $packSize;
 			$this->dailyConsumptionOverall = $dailyConsumptionOverall;
 			$this->dailyConsumptionRecent = $dailyConsumptionRecent;
+			$this->mealItems = $mealItems;
 		}
 
 		public function jsonSerialize()
@@ -274,7 +276,7 @@
 			{
 				foreach ($this->orders as $order_id => $order)
 				{
-					$order_item = $order->getOrderItembyItemId($this->id);
+					$order_item = $order->getOrderItemByItemId($this->id);
 
 					if ($order_item)
 					{
@@ -496,12 +498,12 @@
 					{
 						$from_date = $order->getDateOrdered();
 						$to_date = $order->getDateOrdered();
-						$total_recent_qty = $order->getOrderItembyItemId($this->id)->getQuantity();
-						$latest_recent_qty = $order->getOrderItembyItemId($this->id)->getQuantity();
+						$total_recent_qty = $order->getOrderItemByItemId($this->id)->getQuantity();
+						$latest_recent_qty = $order->getOrderItemByItemId($this->id)->getQuantity();
 					}
 					else
 					{
-						$total_recent_qty+= $order->getOrderItembyItemId($this->id)->getQuantity();
+						$total_recent_qty+= $order->getOrderItemByItemId($this->id)->getQuantity();
 
 						if ($from_date->diff($order->getDateOrdered())->invert)
 						{
@@ -510,7 +512,7 @@
 						else
 						{
 							$to_date = $order->getDateOrdered();
-							$latest_recent_qty = $order->getOrderItembyItemId($this->id)->getQuantity();
+							$latest_recent_qty = $order->getOrderItemByItemId($this->id)->getQuantity();
 						}
 					}
 				}
@@ -565,12 +567,49 @@
 				return null;
 			}
 
-			$lastOrderQuantity = intval($lastOrder->getOrderItembyItemId($this->id)->getQuantity());
+			$lastOrderQuantity = intval($lastOrder->getOrderItemByItemId($this->id)->getQuantity());
 			$daysElapsed = $lastOrder->getDateOrdered()->diff(new DateTime())->format('%a');
 			$days = $daysElapsed + $daysAhead;
 			$estConsumption = intval(round($dailyConsumption * $days));
 			$stockLevel = $lastOrderQuantity - $estConsumption;
 
 			return $stockLevel;
+		}
+
+		public function getMealItems() : array
+		{
+			if (!is_array($this->mealItems))
+			{
+				$this->mealItems = [];
+			}
+
+			return $this->mealItems;
+		}
+
+		public function setMealItems(array $mealItems) : void
+		{
+			$this->mealItems = $mealItems;
+		}
+
+		public function addMealItem(MealItem $mealItem) : void
+		{
+			$this->getMealItems();
+
+			$this->mealItems[$mealItem->getId()] = $mealItem;
+		}
+
+		public function hasMealItem(int $mealItemId) : bool
+		{
+			if (!$this->hasMealItems())
+			{
+				return false;
+			}
+
+			return array_key_exists($mealItemId, $this->mealItems);
+		}
+
+		public function hasMealItems() : bool
+		{
+			return count($this->getMealItems()) > 0;
 		}
 	}

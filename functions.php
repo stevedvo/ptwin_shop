@@ -129,21 +129,58 @@
 		}
 	}
 
-	function getValidationString($object, $property)
+	function createMealPlanDay(array $request) : MealPlanDay
 	{
+		try
+		{
+			$id = isset($request['meal_plan_day_id']) ? intval($request['meal_plan_day_id']) : null;
+			$date = isset($request['meal_plan_date']) ? sanitiseDate($request['meal_plan_date']) : null;
+			$mealId = isset($request['meal_id']) ? intval($request['meal_id']) : null;
+			$orderItemStatus = isset($request['order_item_status']) ? intval($request['order_item_status']) : null;
+
+			$mealPlanDay = new MealPlanDay($id, $date, $mealId, $orderItemStatus);
+
+			return $mealPlanDay;
+		}
+		catch (Exception $e)
+		{
+			throw $e;
+		}
+	}
+
+	function getValidationString(object $object, string $property) : string
+	{
+		$validation = "";
+
 		if (is_null($object) || !is_object($object) || is_null($property) || empty($property))
 		{
-			return false;
+			return $validation;
 		}
 
-		if (!isset($object->getValidation()[$property]))
+		$validationArray = [];
+
+		if (method_exists($object, "getAllValidation"))
 		{
-			return false;
+			if (!isset($object->getAllValidation()[$property]))
+			{
+				return $validation;
+			}
+
+			$validationArray = $object->getAllValidation()[$property];
+		}
+		else
+		{
+			if (!isset($object->getValidation()[$property]))
+			{
+				return $validation;
+			}
+
+			$validationArray = $object->getValidation()[$property];
 		}
 
-		$validation = "{";
+		$validation.= "{";
 
-		foreach ($object->getValidation()[$property] as $key => $value)
+		foreach ($validationArray as $key => $value)
 		{
 			$validation.= "&quot;".$key."&quot;:&quot;".$value."&quot;,";
 		}

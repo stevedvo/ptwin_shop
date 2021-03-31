@@ -23,3 +23,4 @@
 	require_once('models.php');
 	require_once('functions.php');
 	require_once('services.php');
+	require_once('viewModels.php');

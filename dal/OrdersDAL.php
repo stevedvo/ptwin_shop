@@ -290,7 +290,7 @@
 			{
 				$orderItem = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT oi.id AS order_item_id, oi.order_id, oi.item_id, oi.quantity, oi.checked FROM order_items AS oi WHERE oi.id = :order_item_id");
+				$query = $this->ShopDb->conn->prepare("SELECT oi.id AS order_item_id, oi.order_id, oi.item_id, oi.quantity, oi.checked, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM order_items AS oi LEFT JOIN items AS i ON (i.item_id = oi.item_id) WHERE oi.id = :order_item_id");
 				$query->execute([':order_item_id' => $orderItemId]);
 
 				$row = $query->fetch(PDO::FETCH_ASSOC);
@@ -298,6 +298,8 @@
 				if ($row)
 				{
 					$orderItem = createOrderItem($row);
+					$item = createItem($row);
+					$orderItem->setItem($item);
 				}
 
 				return $orderItem;
@@ -366,7 +368,7 @@
 					':item_id'  => $orderItem->getItemId(),
 					':quantity' => $orderItem->getQuantity(),
 					':checked'  => $orderItem->getChecked(),
-					':id'       => $orderItem->getId()
+					':id'       => $orderItem->getId(),
 				]);
 
 				return $success;
