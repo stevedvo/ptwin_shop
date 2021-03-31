@@ -316,6 +316,73 @@
 			}
 		}
 
+		public function Plans(array $request = null) : void
+		{
+			$pageData =
+			[
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => [],
+			];
+
+			try
+			{
+				if (!isset($request['date']))
+				{
+					$pageData['page_data'] = ['message' => "No date set"];
+
+					renderPage($pageData);
+				}
+
+				$date = sanitiseDate($request['date']);
+
+				if (!($date instanceof DateTime))
+				{
+					$pageData['page_data'] = ['message' => "Invalid date"];
+
+					renderPage($pageData);
+				}
+
+				$origDate = DateTimeImmutable::createFromMutable($date);
+
+				$mondayWeek0DaysAgo = $date->format("N") - 1;
+				$mondayWeek0 = $origDate->modify("-".$mondayWeek0DaysAgo." day");
+				$mondayLastWeek = $mondayWeek0->modify("-7 day");
+
+				$dateArray = [];
+
+				for ($i = 0; $i < 28; $i++)
+				{
+					if ($i == 0)
+					{
+						$dateArray[$i] = $mondayLastWeek;
+					}
+					else
+					{
+						$dateArray[$i] = $dateArray[$i - 1]->modify("+1 day");
+					}
+				}
+
+				$pageData =
+				[
+					'page_title' => 'Meal Plans',
+					'template'   => 'views/meals/plans.php',
+					'page_data'  =>
+					[
+						'dateArray' => $dateArray,
+					],
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
+		}
+
 		// public function getAllMeals($request)
 		// {
 		// 	$meals = null;
