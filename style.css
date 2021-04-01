@@ -487,6 +487,33 @@ ul.ui-autocomplete li.ui-state-focus
 	width: calc(100% - 68px);
 }
 
+.calendar-box
+{
+	padding: 5px;
+	border: 1px dashed lightgrey;
+	height: 100px;
+	overflow-y: auto;
+}
+
+.calendar-box-header>p,
+.calendar-box-header>.edit-btn
+{
+	padding: 0px 5px;
+}
+
+.calendar-box-header>.edit-btn
+{
+	text-align: center;
+	cursor: pointer;
+}
+
+.calendar-box-header,
+.calendar-box-body
+{
+	float: left;
+	width: 100%;
+}
+
 @media print, screen and (min-width: 576px)
 {
 	header .page-heading-container
@@ -760,6 +787,11 @@ ul.ui-autocomplete li.ui-state-focus
 	{
 		width: calc(4 / 12 * 100%);
 		text-align: left;
+	}
+
+	.calendar-box
+	{
+		width: 25%;
 	}
 }
 

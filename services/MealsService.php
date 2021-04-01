@@ -308,4 +308,49 @@
 				throw $e;
 			}
 		}
+
+		public function getMealPlansInDateRange(DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo) : array
+		{
+			try
+			{
+				$mealPlans = $this->dal->getMealPlansInDateRange($dateFrom, $dateTo);
+
+				if (!is_array($mealPlans))
+				{
+					throw new Exception("Meal Plans not found");
+				}
+
+				return $mealPlans;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function getMealPlanByDate(array $request) : MealPlanDay
+		{
+			try
+			{
+				if (!isset($request['dateString']))
+				{
+					throw new Exception("Date not provided");
+				}
+
+				$date = sanitiseDate($request['dateString']);
+
+				if (!($date instanceof DateTime))
+				{
+					throw new Exception("Invalid date");
+				}
+
+				$mealPlan = $this->dal->getMealPlanByDate($date);
+
+				return $mealPlan;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
 	}

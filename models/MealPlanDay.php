@@ -7,6 +7,7 @@
 		private ?DateTime $date;
 		private ?int $mealId;
 		private ?int $orderItemStatus;
+		private ?Meal $meal;
 		private array $validation;
 
 		public function __construct(?int $id = null, ?DateTime $date = null, ?int $mealId = null, ?int $orderItemStatus = null)
@@ -30,7 +31,7 @@
 
 		public function getId() : ?int
 		{
-			return $this->id;
+			return is_numeric($this->id) ? intval($this->id) : null;
 		}
 
 		public function setId(int $id) : void
@@ -48,14 +49,38 @@
 			$this->date = $date;
 		}
 
+		public function getDateString() : ?string
+		{
+			$dateString = $this->getDate() instanceof DateTime ? $this->getDate()->format('Y-m-d') : null;
+
+			return $dateString;
+		}
+
 		public function getMealId() : ?int
 		{
-			return $this->mealId;
+			return is_numeric($this->mealId) ? intval($this->mealId) : null;
 		}
 
 		public function setMealId(int $mealId) : void
 		{
 			$this->mealId = $mealId;
+		}
+
+		public function getMeal() : ?Meal
+		{
+			return $this->meal;
+		}
+
+		public function setMeal(Meal $meal) : void
+		{
+			$this->meal = $meal;
+		}
+
+		public function getMealName() : ?string
+		{
+			$mealName = $this->getMeal() instanceof Meal ? $this->getMeal()->getName() : null;
+
+			return $mealName;
 		}
 
 		public function getOrderItemStatus() : ?int
@@ -66,6 +91,11 @@
 		public function setOrderItemStatus(int $orderItemStatus) : void
 		{
 			$this->orderItemStatus = $orderItemStatus;
+		}
+
+		public function hasMeal() : bool
+		{
+			return (is_int($this->getId()) && is_int($this->getMealId()) && $this->getDate() instanceof DateTime);
 		}
 
 		public function getValidation($property = null)

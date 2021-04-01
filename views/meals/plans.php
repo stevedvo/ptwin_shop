@@ -1,23 +1,25 @@
 <?php
-	$dateArray = $response['dateArray'];
+	$mealPlans = $response['mealPlans'];
 ?>
 <main class="wrapper">
 	<div class="container">
 		<div class="row">
-			<div class="col-xs-12">
 <?php
-				foreach ($dateArray as $date)
-				{
+			foreach ($mealPlans as $dateString => $mealPlan)
+			{
 ?>
-					<div class="row">
-						<div class="col-xs-12">
-							<p><?= $date->format('l, d F Y'); ?></p>
-						</div>
+				<div class="col-xs-6 col-sm-3 calendar-box" data-datestring="<?= $dateString; ?>">
+					<div class="calendar-box-header">
+						<p class="col-xs-10"><?= $mealPlan->getCalendarHeader(); ?></p>
+						<span class="col-xs-2 edit-btn"><i class="far fa-edit"></i></span>
 					</div>
+					<div class="calendar-box-body">
+						<p><?= $mealPlan->getMealName(); ?></p>
+					</div>
+				</div>
 <?php
-				}
+			}
 ?>
-			</div>
 		</div>
 	</div>
 </main>

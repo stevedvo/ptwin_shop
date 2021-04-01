@@ -3,13 +3,15 @@
 
 	class MealsController
 	{
-		private $meals_service;
-		private $items_service;
+		private $mealsService;
+		private $itemsService;
+		private $mealsViewModelBuilder;
 
 		public function __construct()
 		{
-			$this->meals_service = new MealsService();
-			$this->items_service = new ItemsService();
+			$this->mealsService = new MealsService();
+			$this->itemsService = new ItemsService();
+			$this->mealsViewModelBuilder = new MealsViewModelBuilder();
 		}
 
 		public function Index() : void
@@ -24,9 +26,9 @@
 			try
 			{
 				$mealPrototype = new Meal();
-				$meals = $this->meals_service->getAllMeals();
+				$meals = $this->mealsService->getAllMeals();
 
-				$this->meals_service->closeConnexion();
+				$this->mealsService->closeConnexion();
 
 				$pageData =
 				[
@@ -61,13 +63,13 @@
 				{
 					$dalResult->setException(new Exception("Invalid Meal"));
 
-					$this->meals_service->closeConnexion();
+					$this->mealsService->closeConnexion();
 
 					return $dalResult->jsonSerialize();
 				}
 
-				$meal = $this->meals_service->addMeal($meal);
-				$meals = $this->meals_service->getAllMeals();
+				$meal = $this->mealsService->addMeal($meal);
+				$meals = $this->mealsService->getAllMeals();
 
 				$dalResult->setPartialView(getPartialView("MealListItems", ['items' => $meals]));
 			}
@@ -76,7 +78,7 @@
 				$dalResult->setException($e->getMessage());
 			}
 
-			$this->meals_service->closeConnexion();
+			$this->mealsService->closeConnexion();
 
 			return $dalResult->jsonSerialize();
 		}
@@ -93,13 +95,13 @@
 				{
 					$dalResult->setException(new Exception("Invalid Meal"));
 
-					$this->meals_service->closeConnexion();
+					$this->mealsService->closeConnexion();
 
 					return $dalResult->jsonSerialize();
 				}
 
-				$meal = $this->meals_service->updateMeal($meal);
-				$meals = $this->meals_service->getAllMeals();
+				$meal = $this->mealsService->updateMeal($meal);
+				$meals = $this->mealsService->getAllMeals();
 
 				$dalResult->setPartialView(getPartialView("MealListItems", ['items' => $meals]));
 			}
@@ -108,7 +110,7 @@
 				$dalResult->setException($e->getMessage());
 			}
 
-			$this->meals_service->closeConnexion();
+			$this->mealsService->closeConnexion();
 
 			return $dalResult->jsonSerialize();
 		}
@@ -130,14 +132,14 @@
 					renderPage($pageData);
 				}
 
-				$meal = $this->meals_service->getMealById(intval($request));
+				$meal = $this->mealsService->getMealById(intval($request));
 				
 				if (is_null($meal))
 				{
 					renderPage($pageData);
 				}
 
-				$itemList = $this->items_service->getAllItemsNotInMeal($meal->getId());
+				$itemList = $this->itemsService->getAllItemsNotInMeal($meal->getId());
 
 				$pageData =
 				[
@@ -160,8 +162,8 @@
 					],
 				];
 
-				$this->meals_service->closeConnexion();
-				$this->items_service->closeConnexion();
+				$this->mealsService->closeConnexion();
+				$this->itemsService->closeConnexion();
 
 				renderPage($pageData);
 			}
@@ -179,10 +181,10 @@
 
 			try
 			{
-				$meal = $this->meals_service->verifyMealRequest($request);
-				$item = $this->items_service->verifyItemRequest($request);
+				$meal = $this->mealsService->verifyMealRequest($request);
+				$item = $this->itemsService->verifyItemRequest($request);
 
-				$mealItem = $this->meals_service->addItemToMeal($meal, $item);
+				$mealItem = $this->mealsService->addItemToMeal($meal, $item);
 				$meal->addMealItem($mealItem);
 
 				$params =
@@ -193,8 +195,8 @@
 
 				$dalResult->setPartialView(getPartialView("MealItemListItems", $params));
 
-				$this->meals_service->closeConnexion();
-				$this->items_service->closeConnexion();
+				$this->mealsService->closeConnexion();
+				$this->itemsService->closeConnexion();
 
 				return $dalResult->jsonSerialize();
 			}
@@ -212,14 +214,14 @@
 
 			try
 			{
-				$mealItem = $this->meals_service->verifyMealItemRequest($request);
+				$mealItem = $this->mealsService->verifyMealItemRequest($request);
 
 				$quantity = isset($request['meal_item_quantity']) && is_numeric($request['meal_item_quantity']) ? intval($request['meal_item_quantity']) : null;
 				$mealItem->setQuantity($quantity);
 
-				$dalResult->setResult($this->meals_service->updateMealItem($mealItem));
+				$dalResult->setResult($this->mealsService->updateMealItem($mealItem));
 
-				$this->meals_service->closeConnexion();
+				$this->mealsService->closeConnexion();
 
 				return $dalResult->jsonSerialize();
 			}
@@ -237,10 +239,10 @@
 
 			try
 			{
-				$meal = $this->meals_service->verifyMealRequest($request);
-				$mealItem = $this->meals_service->verifyMealItemRequest($request);
+				$meal = $this->mealsService->verifyMealRequest($request);
+				$mealItem = $this->mealsService->verifyMealItemRequest($request);
 
-				$dalResult->setResult($this->meals_service->removeItemFromMeal($mealItem, $meal));
+				$dalResult->setResult($this->mealsService->removeItemFromMeal($mealItem, $meal));
 				$meal->removeMealItem($mealItem);
 
 				$params =
@@ -251,7 +253,7 @@
 
 				$dalResult->setPartialView(getPartialView("MealItemListItems", $params));
 
-				$this->meals_service->closeConnexion();
+				$this->mealsService->closeConnexion();
 
 				return $dalResult->jsonSerialize();
 			}
@@ -269,20 +271,20 @@
 
 			try
 			{
-				$meal = $this->meals_service->verifyMealRequest($request);
+				$meal = $this->mealsService->verifyMealRequest($request);
 
 				if (sizeof($meal->getMealItems()) > 0)
 				{
 					$dalResult->setException(new Exception("Cannot remove Meal with MealItems associated"));
 
-					$this->meals_service->closeConnexion();
+					$this->mealsService->closeConnexion();
 
 					return $dalResult->jsonSerialize();
 				}
 
-				$dalResult->setResult($this->meals_service->removeMeal($meal));
+				$dalResult->setResult($this->mealsService->removeMeal($meal));
 
-				$this->meals_service->closeConnexion();
+				$this->mealsService->closeConnexion();
 
 				return $dalResult->jsonSerialize();
 			}
@@ -300,11 +302,11 @@
 
 			try
 			{
-				$meal = $this->meals_service->verifyMealRequest($request);
+				$meal = $this->mealsService->verifyMealRequest($request);
 
-				$dalResult->setResult($this->meals_service->restoreMeal($meal)->jsonSerialize());
+				$dalResult->setResult($this->mealsService->restoreMeal($meal)->jsonSerialize());
 
-				$this->meals_service->closeConnexion();
+				$this->mealsService->closeConnexion();
 
 				return $dalResult->jsonSerialize();
 			}
@@ -344,10 +346,7 @@
 				}
 
 				$origDate = DateTimeImmutable::createFromMutable($date);
-
-				$mondayWeek0DaysAgo = $date->format("N") - 1;
-				$mondayWeek0 = $origDate->modify("-".$mondayWeek0DaysAgo." day");
-				$mondayLastWeek = $mondayWeek0->modify("-7 day");
+				$calendarStart = $origDate->modify("-".($date->format("N") - 1)." day")->modify("-4 day");
 
 				$dateArray = [];
 
@@ -355,7 +354,7 @@
 				{
 					if ($i == 0)
 					{
-						$dateArray[$i] = $mondayLastWeek;
+						$dateArray[$i] = $calendarStart;
 					}
 					else
 					{
@@ -363,14 +362,17 @@
 					}
 				}
 
+				$dateFrom = reset($dateArray);
+				$dateTo = end($dateArray);
+
+				$mealPlans = $this->mealsService->getMealPlansInDateRange($dateFrom, $dateTo);
+				$mealPlanViewModels = $this->mealsViewModelBuilder->createMealPlanViewModels($dateArray, $mealPlans);
+
 				$pageData =
 				[
 					'page_title' => 'Meal Plans',
 					'template'   => 'views/meals/plans.php',
-					'page_data'  =>
-					[
-						'dateArray' => $dateArray,
-					],
+					'page_data'  => ['mealPlans' => $mealPlanViewModels],
 				];
 
 				renderPage($pageData);
@@ -383,10 +385,37 @@
 			}
 		}
 
+		public function getMealPlanByDate(array $request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$mealPlan = $this->mealsService->getMealPlanByDate($request);
+				$meals = $this->mealsService->getAllMeals();
+
+				$editMealPlanDayViewModel = $this->mealsViewModelBuilder->createEditMealPlanDayViewModel($mealPlan, $meals);
+
+				var_dump($editMealPlanDayViewModel);exit;
+
+				$dalResult->setPartialView(getPartialView("MealItemListItems", $params));
+
+				$this->mealsService->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
 		// public function getAllMeals($request)
 		// {
 		// 	$meals = null;
-		// 	$dalResult = $this->meals_service->getAllMeals();
+		// 	$dalResult = $this->mealsService->getAllMeals();
 
 		// 	if (is_array($dalResult->getResult()))
 		// 	{
@@ -400,7 +429,7 @@
 		// 		$dalResult->setResult($meals);
 		// 	}
 
-		// 	$this->meals_service->closeConnexion();
+		// 	$this->mealsService->closeConnexion();
 
 		// 	return $dalResult->jsonSerialize();
 		// }
@@ -419,7 +448,7 @@
 		// 	{
 		// 		$meal_name = substr($meal_name, 11);
 
-		// 		$dalResult = $this->meals_service->getMealByName($meal_name);
+		// 		$dalResult = $this->mealsService->getMealByName($meal_name);
 
 		// 		if (!is_null($dalResult->getResult()))
 		// 		{
@@ -427,7 +456,7 @@
 		// 		}
 		// 	}
 
-		// 	$this->meals_service->closeConnexion();
+		// 	$this->mealsService->closeConnexion();
 
 		// 	return $meal->jsonSerialize();
 		// }

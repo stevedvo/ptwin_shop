@@ -25,7 +25,7 @@
 
 		public function getId() : ?int
 		{
-			return $this->id;
+			return is_numeric($this->id) ? intval($this->id) : null;
 		}
 
 		public function setId(int $id) : void

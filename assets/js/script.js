@@ -3502,6 +3502,38 @@ function manageMeals()
 			console.log(data);
 		});
 	});
+
+	$(document).on("click", ".calendar-box .edit-btn", function()
+	{
+		let dateString = $(this).closest(".calendar-box").data("datestring");
+		console.log(dateString);
+
+		resetModal();
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : `${constants.SITEURL}/ajax.php`,
+			enctype  : "multipart/form-data",
+			dataType : "json",
+			data     :
+			{
+				controller : "Meals",
+				action     : "getMealPlanByDate",
+				request    : { dateString : dateString },
+			},
+			success  : function(data)
+			{
+				console.log(data);
+			},
+			error    : function(jqXHR, textStatus, errorThrown)
+			{
+				console.log(jqXHR);
+				console.log(textStatus);
+				console.log(errorThrown);
+			},
+		});
+	});
 }
 
 function reloadPartial(id, controller, action, params, callback, onbeforeload, ajaxMethod)
@@ -3598,4 +3630,33 @@ function reloadSuccessFunction(id, params, callback)
 	{
 		callback();
 	}
+}
+
+function resetModal()
+{
+	if ($("#modal").length > 0)
+	{
+		$("#modal").remove();
+	}
+
+	let modalHtml =
+	`<div id="modal" class="modal" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<form action="" method="post" id="modalForm" enctype="multipart/form-data">
+					<div class="modal-header">
+						<h5 class="modal-title"></h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times"></i></span></button>
+					</div>
+					<div class="modal-body"></div>
+					<div class="modal-footer">
+						<button type="submit" class="btn btn-sm btn-primary">Submit</button>
+						<button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cancel</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>`;
+
+	$("body").append(modalHtml);
 }

@@ -10,7 +10,7 @@
 		private ?int $orderItemId;
 		private array $validation;
 
-		public function __construct($id, $description, $quantity, $inCurrentOrder, $orderItemId = null)
+		public function __construct(int $id, string $description, int $quantity, bool $inCurrentOrder, ?int $orderItemId = null)
 		{
 			$this->id = $id;
 			$this->description = $description;

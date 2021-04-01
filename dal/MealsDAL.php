@@ -154,7 +154,7 @@
 				$query->execute(
 				[
 					':name' => $meal->getName(),
-					':id'   => $meal->getId()
+					':id'   => $meal->getId(),
 				]);
 
 				return $meal;
@@ -291,7 +291,7 @@
 				$success = $query->execute(
 				[
 					':isDeleted' => $meal->getIsDeleted(),
-					':id'        => $meal->getId()
+					':id'        => $meal->getId(),
 				]);
 
 				return $success;
@@ -314,10 +314,86 @@
 				$query->execute(
 				[
 					':isDeleted' => $meal->getIsDeleted() ? 1 : 0,
-					':id'        => $meal->getId()
+					':id'        => $meal->getId(),
 				]);
 
 				return $meal;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
+		public function getMealPlansInDateRange(DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo) : ?array
+		{
+			try
+			{
+				$mealPlans = null;
+
+				$query = $this->ShopDb->conn->prepare("SELECT mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.meal_id, mpd.order_item_status, m.name AS meal_name, m.IsDeleted AS meal_isDeleted FROM meal_plan_days AS mpd LEFT JOIN meals AS m ON (m.id = mpd.meal_id) WHERE mpd.date IS NOT NULL AND mpd.date >= :dateFrom AND mpd.date <= :dateTo ORDER BY mpd.date");
+
+				$query->execute(
+				[
+					':dateFrom' => $dateFrom->format('Y-m-d'),
+					':dateTo'   => $dateTo->format('Y-m-d'),
+				]);
+
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if (is_array($rows))
+				{
+					$mealPlans = [];
+
+					foreach ($rows as $row)
+					{
+						$meal = createMeal($row);
+						$mealPlanDay = createMealPlanDay($row);
+						$mealPlanDay->setMeal($meal);
+
+						$mealPlans[$mealPlanDay->getId()] = $mealPlanDay;
+					}
+				}
+
+				return $mealPlans;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
+		public function getMealPlanByDate(DateTime $date) : MealPlanDay
+		{
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.meal_id, mpd.order_item_status, m.name AS meal_name, m.IsDeleted AS meal_isDeleted FROM meal_plan_days AS mpd LEFT JOIN meals AS m ON (m.id = mpd.meal_id) WHERE mpd.date = :date");
+
+				$query->execute([':date' => $date->format('Y-m-d')]);
+
+				$row = $query->fetch(PDO::FETCH_ASSOC);
+
+				if (empty($row))
+				{
+					$mealPlan = new MealPlanDay();
+					$mealPlan->setDate($date);
+				}
+				else
+				{
+					$meal = createMeal($row);
+					$mealPlan = createMealPlanDay($row);
+					$mealPlan->setMeal($meal);
+				}
+
+				return $mealPlan;
 			}
 			catch(PDOException $PdoException)
 			{

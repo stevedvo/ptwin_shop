@@ -248,13 +248,13 @@
 		return true;
 	}
 
-	function sanitiseDate($date_string)
+	function sanitiseDate(string $dateString) : ?DateTime
 	{
-		$date = DateTime::createFromFormat('Y-m-d', $date_string);
+		$date = DateTime::createFromFormat('Y-m-d', $dateString);
 
 		if ($date)
 		{
-			$validDate = checkdate(substr($date_string, 5, 2), substr($date_string, 8, 2), substr($date_string, 0, 4));
+			$validDate = checkdate(substr($dateString, 5, 2), substr($dateString, 8, 2), substr($dateString, 0, 4));
 
 			if (!$validDate)
 			{
@@ -264,11 +264,11 @@
 
 		if (!$date)
 		{
-			$date = DateTime::createFromFormat('d-m-Y', $date_string);
+			$date = DateTime::createFromFormat('d-m-Y', $dateString);
 
 			if ($date)
 			{
-				$validDate = checkdate(substr($date_string, 3, 2), substr($date_string, 0, 2), substr($date_string, 6, 4));
+				$validDate = checkdate(substr($dateString, 3, 2), substr($dateString, 0, 2), substr($dateString, 6, 4));
 
 				if (!$validDate)
 				{
@@ -277,7 +277,7 @@
 			}
 		}
 
-		return $date;
+		return $date ?? null;
 	}
 
 	function renderPage(array $pageData) : void
