@@ -330,3 +330,10 @@
 
 		return $breadcrumb_string;
 	}
+
+	function createSelectListItem(int $value, string $text) : SelectListItem
+	{
+		$selectListItem = new SelectListItem($value, $text);
+
+		return $selectListItem;
+	}

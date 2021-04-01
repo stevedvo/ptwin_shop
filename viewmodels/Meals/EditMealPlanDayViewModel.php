@@ -3,14 +3,14 @@
 
 	class EditMealPlanDayViewModel
 	{
-		private DateTimeImmutable $date;
+		private DateTimeInterface $date;
 		private ?int $id;
 		private ?int $orderItemStatus;
 		private ?int $mealId;
 		private array $meals;
 		private array $validation;
 
-		public function __construct(DateTimeImmutable $date, ?int $id = null, ?int $orderItemStatus = null, ?int $mealId = null, array $meals = [])
+		public function __construct(DateTimeInterface $date, ?int $id = null, ?int $orderItemStatus = null, ?int $mealId = null, array $meals = [])
 		{
 			$this->date = $date;
 			$this->id = $id;
@@ -25,14 +25,19 @@
 			return get_object_vars($this);
 		}
 
-		public function getDate() : DateTimeImmutable
+		public function getDate() : DateTimeInterface
 		{
 			return $this->date;
 		}
 
-		public function setDate(DateTimeImmutable $date) : void
+		public function setDate(DateTimeInterface $date) : void
 		{
 			$this->date = $date;
+		}
+
+		public function getDateString() : string
+		{
+			return $this->getDate()->format('Y-m-d');
 		}
 
 		public function getId() : ?int

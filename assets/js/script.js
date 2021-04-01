@@ -15,6 +15,7 @@ $(function()
 	quickAdd();
 	adminFuncs();
 	updateRecentConsumptionParameters();
+	modalFuncs();
 });
 
 function getURLQueryStringAsObject(queryString)
@@ -3506,9 +3507,12 @@ function manageMeals()
 	$(document).on("click", ".calendar-box .edit-btn", function()
 	{
 		let dateString = $(this).closest(".calendar-box").data("datestring");
-		console.log(dateString);
 
-		resetModal();
+		resetModal(
+		{
+			modalTitle : `Choose Meal for ${dateString}`,
+			formAction : `${constants.SITEURL}/meals/updateMealPlanDay/`,
+		});
 
 		$.ajax(
 		{
@@ -3524,10 +3528,42 @@ function manageMeals()
 			},
 			success  : function(data)
 			{
-				console.log(data);
+				if (!data)
+				{
+					toastr.error("Could not update Meal Plan Day: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				if (data.exception != null)
+				{
+					toastr.error(`Could not update Meal Plan Day: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
+				}
+
+				let html = data.partial_view;
+
+				if (html.length == 0)
+				{
+					toastr.error("Could not update Meal Plan Day: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				let modal = $("#modal");
+
+				modal.find(".modal-body").html(html);
+				modal.modal();
+
+				return true;
 			},
 			error    : function(jqXHR, textStatus, errorThrown)
 			{
+				toastr.error("Could not update Meal Plan Day: unknown error");
 				console.log(jqXHR);
 				console.log(textStatus);
 				console.log(errorThrown);
@@ -3632,31 +3668,23 @@ function reloadSuccessFunction(id, params, callback)
 	}
 }
 
-function resetModal()
+function resetModal(params = {})
 {
-	if ($("#modal").length > 0)
+	let modalTitle = params.modalTitle ?? null;
+	let formAction = params.formAction ?? null;
+	let modal = $("#modal");
+
+	modal.find(".modal-title").html(modalTitle);
+	modal.find("form").attr("action", formAction);
+	modal.find(".modal-body").empty();
+}
+
+function modalFuncs()
+{
+	$(document).on("submit", "#modalForm", function(e)
 	{
-		$("#modal").remove();
-	}
+		e.preventDefault();
 
-	let modalHtml =
-	`<div id="modal" class="modal" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<form action="" method="post" id="modalForm" enctype="multipart/form-data">
-					<div class="modal-header">
-						<h5 class="modal-title"></h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times"></i></span></button>
-					</div>
-					<div class="modal-body"></div>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-sm btn-primary">Submit</button>
-						<button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cancel</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>`;
-
-	$("body").append(modalHtml);
+		console.log("this form will be submitted");
+	});
 }

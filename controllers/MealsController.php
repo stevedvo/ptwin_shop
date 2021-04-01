@@ -396,9 +396,7 @@
 
 				$editMealPlanDayViewModel = $this->mealsViewModelBuilder->createEditMealPlanDayViewModel($mealPlan, $meals);
 
-				var_dump($editMealPlanDayViewModel);exit;
-
-				$dalResult->setPartialView(getPartialView("MealItemListItems", $params));
+				$dalResult->setPartialView(getPartialView("EditMealPlanDay", ['model' => $editMealPlanDayViewModel]));
 
 				$this->mealsService->closeConnexion();
 
