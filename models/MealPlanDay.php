@@ -61,7 +61,7 @@
 			return is_numeric($this->mealId) ? intval($this->mealId) : null;
 		}
 
-		public function setMealId(int $mealId) : void
+		public function setMealId(?int $mealId) : void
 		{
 			$this->mealId = $mealId;
 		}
@@ -71,7 +71,7 @@
 			return $this->meal;
 		}
 
-		public function setMeal(Meal $meal) : void
+		public function setMeal(?Meal $meal) : void
 		{
 			$this->meal = $meal;
 		}

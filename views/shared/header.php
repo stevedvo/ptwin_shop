@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="utf-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<!-- additional options to content to prevent zooming on mobile devices, maximum-scale=1, user-scalable=no"-->
 		<title><?= $page_title; ?></title>
 		<script type="text/javascript" src="<?= SITEURL; ?>/jQuery/jquery-1.12.3.min.js"></script>
 		<script type="text/javascript" src="<?= SITEURL; ?>/jQuery/jquery-ui-1.11.4/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="<?= SITEURL; ?>/assets/toastr/toastr.min.js"></script>
 		<script type="text/javascript" src="<?= SITEURL; ?>/assets/moment.js/moment-with-locales.min.js"></script>
+		<script type="text/javascript" src="<?= SITEURL; ?>/assets/select2-4.1.0-rc.0/select2.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="<?= SITEURL; ?>/assets/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="<?= SITEURL; ?>/jQuery/jquery-ui-1.11.4/jquery-ui.min.css" />
 		<link rel="stylesheet" type="text/css" href="<?= SITEURL; ?>/assets/toastr/toastr.min.css" />
 		<link rel="stylesheet" type="text/css" href="<?= SITEURL; ?>/assets/fontawesome/css/all.css" />
+		<link rel="stylesheet" type="text/css" href="<?= SITEURL; ?>/assets/select2-4.1.0-rc.0/select2.min.css" />
 		<link rel="stylesheet" type="text/css" href="<?= SITEURL; ?>/style.css" />
 	</head>
 

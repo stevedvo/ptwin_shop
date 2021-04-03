@@ -3510,8 +3510,9 @@ function manageMeals()
 
 		resetModal(
 		{
-			modalTitle : `Choose Meal for ${dateString}`,
-			formAction : `${constants.SITEURL}/meals/updateMealPlanDay/`,
+			modalTitle     : `Choose Meal for ${dateString}`,
+			formController : "Meals",
+			formAction     : "updateMealPlanDay",
 		});
 
 		$.ajax(
@@ -3557,6 +3558,13 @@ function manageMeals()
 				let modal = $("#modal");
 
 				modal.find(".modal-body").html(html);
+
+				$("select#mealId").select2(
+				{
+					placeholder : "Select a meal...",
+					allowClear  : true,
+				});
+
 				modal.modal();
 
 				return true;
@@ -3671,11 +3679,13 @@ function reloadSuccessFunction(id, params, callback)
 function resetModal(params = {})
 {
 	let modalTitle = params.modalTitle ?? null;
+	let formController = params.formController ?? null;
 	let formAction = params.formAction ?? null;
 	let modal = $("#modal");
 
 	modal.find(".modal-title").html(modalTitle);
-	modal.find("form").attr("action", formAction);
+	modal.find("form").data("controller", formController);
+	modal.find("form").data("action", formAction);
 	modal.find(".modal-body").empty();
 }
 
@@ -3685,6 +3695,71 @@ function modalFuncs()
 	{
 		e.preventDefault();
 
-		console.log("this form will be submitted");
+		let form = $(this).closest("form");
+		let formController = form.data("controller");
+		let formAction = form.data("action");
+		let formMethod = form.attr("method") ?? "POST";
+		let formEncType = form.attr("enctype") ?? "multipart/form-data";
+		let formData = form.serializeArray();
+		let request = {};
+
+		$.each(formData, function()
+		{
+			request[this.name] = this.value;
+		});
+
+		if (formController == undefined || formAction == undefined)
+		{
+			toastr.error("No form Controller / Action defined");
+
+			return false;
+		}
+
+		$.ajax(
+		{
+			url      : constants.SITEURL+"/ajax.php",
+			type     : formMethod,
+			dataType : "json",
+			data     :
+			{
+				controller : formController,
+				action     : formAction,
+				request    : request,
+			},
+			success : function(response)
+			{
+				if (!response)
+				{
+					toastr.error("Could not submit form: unknown error");
+					console.log(response);
+
+					return false;
+				}
+
+				if (response.exception != null)
+				{
+					toastr.error(`Could not submit form: ${response.exception.message}`);
+					console.log(response);
+
+					return false;
+				}
+
+				toastr.success("form submitted successfully");
+				console.log(response);
+
+				return true;
+
+			},
+			error    : function(jqXHR, textStatus, errorThrown)
+			{
+				toastr.error("Could not submit form: unknown error");
+				console.log(jqXHR);
+				console.log(textStatus);
+				console.log(errorThrown);
+
+				return false;
+			},
+		});
+
 	});
 }

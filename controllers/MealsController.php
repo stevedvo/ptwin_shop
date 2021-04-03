@@ -331,12 +331,12 @@
 			{
 				if (!isset($request['date']))
 				{
-					$pageData['page_data'] = ['message' => "No date set"];
-
-					renderPage($pageData);
+					$date = new DateTime();
 				}
-
-				$date = sanitiseDate($request['date']);
+				else
+				{
+					$date = sanitiseDate($request['date']);
+				}
 
 				if (!($date instanceof DateTime))
 				{
@@ -397,6 +397,28 @@
 				$editMealPlanDayViewModel = $this->mealsViewModelBuilder->createEditMealPlanDayViewModel($mealPlan, $meals);
 
 				$dalResult->setPartialView(getPartialView("EditMealPlanDay", ['model' => $editMealPlanDayViewModel]));
+
+				$this->mealsService->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
+		public function updateMealPlanDay(array $request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$mealPlanDay = $this->mealsService->updateMealPlanDay($request);
+
+				$dalResult->setResult($mealPlanDay->jsonSerialize());
 
 				$this->mealsService->closeConnexion();
 

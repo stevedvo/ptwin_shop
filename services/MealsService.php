@@ -353,4 +353,48 @@
 				throw $e;
 			}
 		}
+
+		public function updateMealPlanDay(array $request) : MealPlanDay
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$mealPlanDayUpdate = createMealPlanDay($request);
+
+				if (!($mealPlanDayUpdate->getDate() instanceof DateTimeInterface))
+				{
+					throw new Exception("Invalid date");
+				}
+
+				if (!is_null($mealPlanDayUpdate->getMealId()))
+				{
+					$meal = $this->getMealById($mealPlanDayUpdate->getMealId());
+					$mealPlanDayUpdate->setMeal($meal);
+				}
+
+				// is status valid?
+
+				$mealPlanDay = $this->dal->getMealPlanByDate($mealPlanDayUpdate->getDate());
+
+				if (is_null($mealPlanDay->getId()))
+				{
+					$mealPlanDay = $this->dal->addMealPlanDay($mealPlanDayUpdate);
+				}
+				else
+				{
+					$mealPlanDay->setMealId($mealPlanDayUpdate->getMealId());
+					$mealPlanDay->setMeal($mealPlanDayUpdate->getMeal());
+					$mealPlanDay->setOrderItemStatus($mealPlanDayUpdate->getOrderItemStatus());
+
+					$mealPlanDay = $this->dal->updateMealPlanDay($mealPlanDay);
+				}
+
+				return $mealPlanDay;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
 	}

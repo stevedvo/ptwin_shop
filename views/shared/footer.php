@@ -4,7 +4,7 @@
 		<div id="modal" class="modal" role="dialog">
 			<div class="modal-dialog">
 				<div class="modal-content">
-					<form action="" method="post" id="modalForm" enctype="multipart/form-data">
+					<form action="" data-controller="" data-action="" method="post" id="modalForm" enctype="multipart/form-data">
 						<div class="modal-header">
 							<div class="row">
 								<h4 class="modal-title col-xs-10"></h4>

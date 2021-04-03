@@ -404,4 +404,61 @@
 				throw $exception;
 			}
 		}
+
+		public function addMealPlanDay(MealPlanDay $mealPlanDay) : MealPlanDay
+		{
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("INSERT INTO meal_plan_days (date, meal_id, order_item_status) VALUES (:date, :mealId, :orderItemStatus)");
+
+				$query->execute(
+				[
+					':date'           => $mealPlanDay->getDateString(),
+					'mealId'          => $mealPlanDay->getMealId(),
+					'orderItemStatus' => $mealPlanDay->getOrderItemStatus(),
+				]);
+
+				$mealPlanDay->setId(intval($this->ShopDb->conn->lastInsertId()));
+
+				return $mealPlanDay;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
+		public function updateMealPlanDay(MealPlanDay $mealPlanDay) : MealPlanDay
+		{
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE meal_plan_days SET meal_id = :mealId, order_item_status = :orderItemStatus WHERE id = :id");
+
+				$success = $query->execute(
+				[
+					':mealId'          => $mealPlanDay->getMealId(),
+					':orderItemStatus' => $mealPlanDay->getOrderItemStatus(),
+					':id'              => $mealPlanDay->getId(),
+				]);
+
+				if (!$success)
+				{
+					throw new Exception("Error updating MealPlanDay");
+				}
+
+				return $mealPlanDay;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
 	}
