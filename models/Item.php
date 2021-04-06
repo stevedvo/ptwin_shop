@@ -591,25 +591,65 @@
 			$this->mealItems = $mealItems;
 		}
 
-		public function addMealItem(MealItem $mealItem) : void
+		public function addMealItem(string $dateString, MealItem $mealItem) : void
 		{
 			$this->getMealItems();
 
-			$this->mealItems[$mealItem->getId()] = $mealItem;
+			$this->mealItems[$dateString] = $mealItem;
 		}
 
-		public function hasMealItem(int $mealItemId) : bool
+		public function hasMealItem(string $dateString) : bool
 		{
 			if (!$this->hasMealItems())
 			{
 				return false;
 			}
 
-			return array_key_exists($mealItemId, $this->mealItems);
+			return array_key_exists($dateString, $this->mealItems);
 		}
 
 		public function hasMealItems() : bool
 		{
 			return count($this->getMealItems()) > 0;
+		}
+
+		public function hasUpcomingMealItems() : bool
+		{
+			if (!$this->hasMealItems())
+			{
+				return false;
+			}
+
+			$mealPlanDates = array_keys($this->getMealItems());
+			rsort($mealPlanDates);
+			$now = new DateTimeImmutable();
+			$upcomingLimit = $now->modify("+14 day");
+
+			foreach ($mealPlanDates as $mealPlanDate)
+			{
+				if ($mealPlanDate > $now->format('Y-m-d') && $mealPlanDate < $upcomingLimit->format('Y-m-d'))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		public function getUpcomingMealItems() : array
+		{
+			$upcomingMealItems = [];
+			$now = new DateTimeImmutable();
+			$upcomingLimit = $now->modify("+14 day");
+
+			foreach ($this->getMealItems() as $dateString => $mealItem)
+			{
+				if ($dateString > $now->format('Y-m-d') && $dateString < $upcomingLimit->format('Y-m-d'))
+				{
+					$upcomingMealItems[$dateString] = $mealItem;
+				}
+			}
+
+			return $upcomingMealItems;
 		}
 	}

@@ -331,9 +331,9 @@
 		return $breadcrumb_string;
 	}
 
-	function createSelectListItem(int $value, string $text) : SelectListItem
+	function createSelectListItem(int $value, string $text, array $dataAttributes = []) : SelectListItem
 	{
-		$selectListItem = new SelectListItem($value, $text);
+		$selectListItem = new SelectListItem($value, $text, $dataAttributes);
 
 		return $selectListItem;
 	}

@@ -12,12 +12,18 @@
 				foreach ($model->getMeals() as $meal)
 				{
 ?>
-					<option value="<?= $meal->getValue(); ?>" <?= $meal->getValue() == $model->getMealId() ? "selected" : ""; ?>><?= $meal->getText(); ?></option>
+					<option value="<?= $meal->getValue(); ?>" <?= $meal->getValue() == $model->getMealId() ? "selected" : ""; ?> <?= $meal->getDataAttributesString(); ?>><?= $meal->getText(); ?></option>
 <?php
 				}
 ?>
 			</select>
 		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12">
+		<button id="randomMealSelector" class="btn btn-success btn-sm">Random</button>
 	</div>
 </div>
 

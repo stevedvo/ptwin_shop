@@ -3578,6 +3578,34 @@ function manageMeals()
 			},
 		});
 	});
+
+	$(document).on("click", "#randomMealSelector", function(e)
+	{
+		e.preventDefault();
+
+		let selector = $("select#mealId");
+		let allOptions = selector.find("option");
+		let validOptions = [];
+
+		$.each(allOptions, function()
+		{
+			if ($(this).data("hadrecently") != 1)
+			{
+				validOptions.push($(this).attr("value"));
+			}
+		});
+
+		if (validOptions.length == 0)
+		{
+			toastr.error("No Meals not in last 14 days");
+
+			return false;
+		}
+
+		let randomOption = validOptions[Math.floor(Math.random() * validOptions.length)];
+
+		selector.val(randomOption).trigger("change");
+	});
 }
 
 function reloadPartial(id, controller, action, params, callback, onbeforeload, ajaxMethod)

@@ -50,9 +50,9 @@
 					}
 					else
 					{
-						foreach ($order->getOrderItems() as $order_item_id => $order_item)
+						foreach ($order->getOrderItems() as $orderItemId => $orderItem)
 						{
-							echo getPartialView("CurrentOrderItem", ['order_item' => $order_item]);
+							echo getPartialView("CurrentOrderItem", ['orderItem' => $orderItem]);
 						}
 					}
 ?>

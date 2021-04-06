@@ -36,7 +36,34 @@
 
 			foreach ($meals as $mealId => $meal)
 			{
-				$selectListItem = createSelectListItem($meal->getId(), $meal->getName());
+				$previousDateString = "";
+				$hadRecently = false;
+
+				$previousMealPlanDay = $meal->getLastMealPlanDayBeforeDate($mealPlan->getDate());
+
+				if (!is_null($previousMealPlanDay))
+				{
+					$previousDateString = $previousMealPlanDay->getDateString();
+
+					$previousMealPlanDate = DateTimeImmutable::createFromMutable($previousMealPlanDay->getDate());
+					$currentMealPlanDate = DateTimeImmutable::createFromMutable($mealPlan->getDate());
+					$previousLimit = $currentMealPlanDate->modify("-14 day");
+
+					$hadRecently = $previousMealPlanDate->format("Y-m-d") > $previousLimit->format("Y-m-d");
+				}
+
+				$selectListItem = createSelectListItem($meal->getId(), $meal->getName(),
+				[
+					[
+						'key'   => "previousDateString",
+						'value' => $previousDateString,
+					],
+					[
+						'key'   => "hadRecently",
+						'value' => $hadRecently,
+					],
+				]);
+
 				$editMealPlanDayViewModel->addMeal($selectListItem);
 			}
 

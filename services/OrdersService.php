@@ -203,6 +203,8 @@
 				{
 					throw new Exception("Cannot find Order with ID ".$orderId);
 				}
+
+				return $order;
 			}
 			catch (Exception $e)
 			{

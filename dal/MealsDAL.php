@@ -118,7 +118,7 @@
 			{
 				$meals = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT id AS meal_id, name AS meal_name, IsDeleted AS meal_isDeleted FROM meals ".$includeDeletedQuery." ORDER BY meal_name");
+				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.order_item_status FROM meals AS m LEFT JOIN meal_plan_days AS mpd ON (mpd.meal_id = m.id) ".$includeDeletedQuery." ORDER BY meal_name");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -128,9 +128,18 @@
 
 					foreach ($rows as $row)
 					{
-						$meal = createMeal($row);
+						if (!isset($meals[$row['meal_id']]))
+						{
+							$meal = createMeal($row);
 
-						$meals[$meal->getId()] = $meal;
+							$meals[$meal->getId()] = $meal;
+						}
+
+						if (!is_null($row['meal_plan_day_id']))
+						{
+							$mealPlanDay = createMealPlanDay($row);
+							$meals[$row['meal_id']]->addMealPlanDay($mealPlanDay);
+						}
 					}
 				}
 

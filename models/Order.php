@@ -15,8 +15,8 @@
 				'DateOrdered' =>
 				[
 					'required' => true,
-					'datatype' => 'date'
-				]
+					'datatype' => 'date',
+				],
 			];
 			$this->order_items = null;
 		}

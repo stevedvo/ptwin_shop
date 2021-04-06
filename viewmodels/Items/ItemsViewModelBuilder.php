@@ -15,9 +15,9 @@
 				$orderItemId = null;
 				$totalMealItemsQuantity = 0;
 
-				if ($item->hasMealItems())
+				if ($item->hasUpcomingMealItems())
 				{
-					foreach ($item->getMealItems() as $mealItemId => $mealItem)
+					foreach ($item->getUpcomingMealItems() as $dateString => $mealItem)
 					{
 						$totalMealItemsQuantity+= $mealItem->getQuantity();
 					}

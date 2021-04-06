@@ -296,10 +296,10 @@
 
 						if (!is_null($row['meal_plan_date']))
 						{
-							if (!$item->hasMealItem($row['meal_item_id']))
+							if (!$item->hasMealItem($row['meal_plan_date']))
 							{
 								$mealItem = createMealItem($row);
-								$items[$row['item_id']]->addMealItem($mealItem);
+								$items[$row['item_id']]->addMealItem($row['meal_plan_date'], $mealItem);
 							}
 						}
 					}
