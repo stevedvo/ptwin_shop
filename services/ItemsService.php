@@ -335,4 +335,21 @@
 				throw $e;
 			}
 		}
+
+		public function updateMealPlanChecks(array $itemIds) : bool
+		{
+			try
+			{
+				if (count($itemIds) == 0)
+				{
+					return false;
+				}
+
+				return $this->dal->updateMealPlanChecks($itemIds);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
 	}

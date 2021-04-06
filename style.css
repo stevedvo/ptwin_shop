@@ -496,7 +496,8 @@ ul.ui-autocomplete li.ui-state-focus
 }
 
 .calendar-box-header>p,
-.calendar-box-header>.edit-btn
+.calendar-box-header>.edit-btn,
+.calendar-box-body>p
 {
 	padding: 0px 5px;
 }

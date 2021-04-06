@@ -383,11 +383,34 @@
 				}
 				else
 				{
-					$mealPlanDay->setMealId($mealPlanDayUpdate->getMealId());
-					$mealPlanDay->setMeal($mealPlanDayUpdate->getMeal());
-					$mealPlanDay->setOrderItemStatus($mealPlanDayUpdate->getOrderItemStatus());
+					if ($mealPlanDay->getMealId() != $mealPlanDayUpdate->getMealId())
+					{
+						$mealPlanDay->setMealId($mealPlanDayUpdate->getMealId());
+						$mealPlanDay->setMeal($mealPlanDayUpdate->getMeal());
+						$mealPlanDay->setOrderItemStatus($mealPlanDayUpdate->getOrderItemStatus());
 
-					$mealPlanDay = $this->dal->updateMealPlanDay($mealPlanDay);
+						$mealPlanDay = $this->dal->updateMealPlanDay($mealPlanDay);
+					}
+				}
+
+				$itemsToUpdate = [];
+
+				foreach ($mealPlanDayUpdate->getMealItems() as $key => $mealItem)
+				{
+					if (!is_null($mealItem->getItemId()) && !in_array($mealItem->getItemId(), $itemsToUpdate))
+					{
+						$itemsToUpdate[] = $mealItem->getItemId();
+					}
+				}
+
+				if (count($itemsToUpdate) > 0)
+				{
+					$success = $this->items_service->updateMealPlanChecks($itemsToUpdate);
+
+					if (!$success)
+					{
+						throw new Exception("Meal Plan day updated but failed to set Items to check");
+					}
 				}
 
 				return $mealPlanDay;

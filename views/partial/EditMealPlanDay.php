@@ -1,6 +1,8 @@
 <?php
 	$model = $params['model'];
 ?>
+<meta name="reloadPartial" content="<?= $model->getDateString(); ?>" />
+
 <div class="form-group">
 	<div class="row">
 		<label class="col-xs-12" for="mealId">Meal</label>
@@ -10,7 +12,7 @@
 				foreach ($model->getMeals() as $meal)
 				{
 ?>
-					<option value="<?= $meal->getValue(); ?>"><?= $meal->getText(); ?></option>
+					<option value="<?= $meal->getValue(); ?>" <?= $meal->getValue() == $model->getMealId() ? "selected" : ""; ?>><?= $meal->getText(); ?></option>
 <?php
 				}
 ?>

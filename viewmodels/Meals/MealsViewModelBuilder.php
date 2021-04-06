@@ -42,4 +42,11 @@
 
 			return $editMealPlanDayViewModel;
 		}
+
+		public function createMealPlanViewModel(MealPlanDay $mealPlanDay) : MealPlanViewModel
+		{
+			$mealPlanViewModel = new MealPlanViewModel($mealPlanDay->getDate(), $mealPlanDay->getId(), $mealPlanDay->getOrderItemStatus(), $mealPlanDay->getMealId(), $mealPlanDay->getMealName());
+
+			return $mealPlanViewModel;
+		}
 	}

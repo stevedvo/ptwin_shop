@@ -418,7 +418,9 @@
 			{
 				$mealPlanDay = $this->mealsService->updateMealPlanDay($request);
 
-				$dalResult->setResult($mealPlanDay->jsonSerialize());
+				$mealPlanCalendarItem = $this->mealsViewModelBuilder->createMealPlanViewModel($mealPlanDay);
+
+				$dalResult->setPartialView(getPartialView("MealPlansCalendarItem", ['mealPlan' => $mealPlanCalendarItem]));
 
 				$this->mealsService->closeConnexion();
 

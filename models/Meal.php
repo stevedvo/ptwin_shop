@@ -1,7 +1,7 @@
 <?php
 	declare(strict_types=1);
 
-	class Meal
+	class Meal implements JsonSerializable
 	{
 		private ?int $id;
 		private ?string $name;
@@ -18,9 +18,17 @@
 			$this->mealItems = $mealItems;
 		}
 
-		public function jsonSerialize() : ?array
+		public function jsonSerialize() : array
 		{
-			return get_object_vars($this);
+			$serialised =
+			[
+				'id'        => $this->getId(),
+				'name'      => $this->getName(),
+				'isDeleted' => $this->getIsDeleted(),
+				'mealItems' => $this->getMealItems(),
+			];
+
+			return $serialised;
 		}
 
 		public function getId() : ?int

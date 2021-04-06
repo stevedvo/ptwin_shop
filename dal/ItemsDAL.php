@@ -545,8 +545,40 @@
 		{
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("UPDATE items SET mute_temp = :mute_temp");
-				$success = $query->execute(['mute_temp' => 0]);
+				$query = $this->ShopDb->conn->prepare("UPDATE items SET mute_temp = :mute_temp, meal_plan_check = :meal_plan_check");
+				$success = $query->execute(
+				[
+					'mute_temp'       => 0,
+					'meal_plan_check' => 0,
+				]);
+
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
+		public function updateMealPlanChecks(array $itemIds) : bool
+		{
+			try
+			{
+				foreach ($itemIds as $itemId)
+				{
+					$args[':item_'.$itemId] = $itemId;
+				}
+
+				$inClause = implode(", ", array_keys($args));
+
+				$args[':meal_plan_check'] = 1;
+
+				$query = $this->ShopDb->conn->prepare("UPDATE items SET meal_plan_check = :meal_plan_check WHERE item_id IN (".$inClause.")");
+				$success = $query->execute($args);
 
 				return $success;
 			}

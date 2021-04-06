@@ -3506,7 +3506,7 @@ function manageMeals()
 
 	$(document).on("click", ".calendar-box .edit-btn", function()
 	{
-		let dateString = $(this).closest(".calendar-box").data("datestring");
+		let dateString = $(this).closest(".calendar-box").attr("id");
 
 		resetModal(
 		{
@@ -3744,11 +3744,43 @@ function modalFuncs()
 					return false;
 				}
 
-				toastr.success("form submitted successfully");
-				console.log(response);
+				if (response.partial_view != null)
+				{
+					let partialViewMeta = form.find("meta[name='reloadPartial']");
+
+					if (partialViewMeta.length == 0)
+					{
+						toastr.warning(`${formController}.${formAction} successful but no meta container found for Partial View`);
+						console.log(response);
+					}
+
+					let partialViewTarget = partialViewMeta.attr("content");
+
+					if (partialViewTarget.length == 0)
+					{
+						toastr.warning(`${formController}.${formAction} successful but no target found for Partial View`);
+						console.log(response);
+					}
+
+					$(`#${partialViewTarget}`).html(response.partial_view);
+					toastr.success(`${formController}.${formAction} completed successfully`);
+
+					$("#modal").modal('hide');
+
+					return true;
+				}
+
+				if (response.result != null)
+				{
+					toastr.success(`${formController}.${formAction} completed successfully`);
+					console.log(response);
+
+					return true;
+				}
+
+				toastr.warning(`${formController}.${formAction} completed successfully but no Partial View / Result returned`);
 
 				return true;
-
 			},
 			error    : function(jqXHR, textStatus, errorThrown)
 			{
@@ -3760,6 +3792,5 @@ function modalFuncs()
 				return false;
 			},
 		});
-
 	});
 }

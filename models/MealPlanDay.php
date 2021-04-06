@@ -1,7 +1,7 @@
 <?php
 	declare(strict_types=1);
 
-	class MealPlanDay
+	class MealPlanDay implements JsonSerializable
 	{
 		private ?int $id;
 		private ?DateTime $date;
@@ -16,17 +16,22 @@
 			$this->date = $date;
 			$this->mealId = $mealId;
 			$this->orderItemStatus = $orderItemStatus;
-			$this->validation =
-			[
-				'MealId'   => ['required' => true],
-				'ItemId'   => ['required' => true],
-				'Quantity' => ['required' => true]
-			];
+			$this->meal = null;
+			$this->validation = [];
 		}
 
-		public function jsonSerialize() : ?array
+		public function jsonSerialize() : array
 		{
-			return get_object_vars($this);
+			$serialised =
+			[
+				'id'              => $this->getId(),
+				'date'            => $this->getDate(),
+				'mealId'          => $this->getMealId(),
+				'orderItemStatus' => $this->getOrderItemStatus(),
+				'meal'            => $this->getMeal(),
+			];
+
+			return $serialised;
 		}
 
 		public function getId() : ?int
@@ -66,6 +71,21 @@
 			$this->mealId = $mealId;
 		}
 
+		public function getOrderItemStatus() : ?int
+		{
+			return $this->orderItemStatus;
+		}
+
+		public function setOrderItemStatus(int $orderItemStatus) : void
+		{
+			$this->orderItemStatus = $orderItemStatus;
+		}
+
+		public function hasMeal() : bool
+		{
+			return (is_int($this->getId()) && is_int($this->getMealId()) && $this->getDate() instanceof DateTime);
+		}
+
 		public function getMeal() : ?Meal
 		{
 			return $this->meal;
@@ -83,19 +103,11 @@
 			return $mealName;
 		}
 
-		public function getOrderItemStatus() : ?int
+		public function getMealItems() : array
 		{
-			return $this->orderItemStatus;
-		}
+			$mealItems = $this->getMeal() instanceof Meal ? $this->getMeal()->getMealItems() : [];
 
-		public function setOrderItemStatus(int $orderItemStatus) : void
-		{
-			$this->orderItemStatus = $orderItemStatus;
-		}
-
-		public function hasMeal() : bool
-		{
-			return (is_int($this->getId()) && is_int($this->getMealId()) && $this->getDate() instanceof DateTime);
+			return $mealItems;
 		}
 
 		public function getValidation($property = null)
