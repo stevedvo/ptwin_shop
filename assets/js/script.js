@@ -3506,11 +3506,13 @@ function manageMeals()
 
 	$(document).on("click", ".calendar-box .edit-btn", function()
 	{
-		let dateString = $(this).closest(".calendar-box").attr("id");
+		let calendarBox = $(this).closest(".calendar-box");
+		let dateStringYmd = calendarBox.attr("id");
+		let dateString = calendarBox.find(".calendar-box-header").text().trim();
 
 		resetModal(
 		{
-			modalTitle     : `Choose Meal for ${dateString}`,
+			modalTitle     : `${dateString}`,
 			formController : "Meals",
 			formAction     : "updateMealPlanDay",
 		});
@@ -3525,7 +3527,7 @@ function manageMeals()
 			{
 				controller : "Meals",
 				action     : "getMealPlanByDate",
-				request    : { dateString : dateString },
+				request    : { dateString : dateStringYmd },
 			},
 			success  : function(data)
 			{
