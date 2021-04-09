@@ -45,6 +45,11 @@
 			return $this->getDate()->format('Y-m-d');
 		}
 
+		public function getWeekdayNumber() : string
+		{
+			return $this->getDate()->format('w');
+		}
+
 		public function getId() : ?int
 		{
 			return $this->id;

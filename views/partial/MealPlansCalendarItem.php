@@ -2,7 +2,7 @@
 	$mealPlan = $params['mealPlan'];
 ?>
 <div class="calendar-box-header">
-	<p class="col-xs-10"><?= $mealPlan->getCalendarHeader(); ?></p>
+	<p class="col-xs-10"><a href="<?= SITEURL; ?>/meals/plans/?date=<?= $mealPlan->getDateString(); ?>"><?= $mealPlan->getCalendarHeader(); ?></a></p>
 	<span class="col-xs-2 edit-btn"><i class="far fa-edit"></i></span>
 </div>
 

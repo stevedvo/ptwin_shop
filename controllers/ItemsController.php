@@ -587,7 +587,7 @@
 				$orderItem = $this->orders_service->addOrderItem($orderItem);
 
 				$orderItem->setItem($item);
-				$dalResult->setPartialView(getPartialView("CurrentOrderItem", ['order_item' => $orderItem]));
+				$dalResult->setPartialView(getPartialView("CurrentOrderItem", ['orderItem' => $orderItem]));
 
 				$this->items_service->closeConnexion();
 				$this->orders_service->closeConnexion();

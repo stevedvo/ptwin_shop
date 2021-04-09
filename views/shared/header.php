@@ -59,18 +59,19 @@
 				<div class="col-xs-12">
 					<ul>
 						<li><a href="<?= SITEURL; ?>/">Home</a></li>
-						<li><a href="<?= SITEURL; ?>/items/">Manage Items</a></li>
-						<li><a href="<?= SITEURL; ?>/items/?view-by=list">View By List</a></li>
-						<li><a href="<?= SITEURL; ?>/items/?view-by=department">View By Dept</a></li>
-						<li><a href="<?= SITEURL; ?>/items/?view-by=primary_dept">Primary Depts</a></li>
+						<li><a href="<?= SITEURL; ?>/meals/plans/">Meal Planner</a></li>
 						<li><a href="<?= SITEURL; ?>/items/?view-by=suggestions">Suggestions</a></li>
-						<li><a href="<?= SITEURL; ?>/items/?view-by=muted-suggestions">Muted Suggestions</a></li>
 						<li><a href="<?= SITEURL; ?>/departments/">Manage Depts</a></li>
+						<li><a href="<?= SITEURL; ?>/items/">Manage Items</a></li>
 						<li><a href="<?= SITEURL; ?>/lists/">Manage Lists</a></li>
 						<li><a href="<?= SITEURL; ?>/luckydips/">Manage Lucky Dips</a></li>
 						<li><a href="<?= SITEURL; ?>/meals/">Manage Meals</a></li>
 						<li><a href="<?= SITEURL; ?>/orders/">Manage Orders</a></li>
 						<li><a href="<?= SITEURL; ?>/packsizes/">Manage PackSizes</a></li>
+						<li><a href="<?= SITEURL; ?>/items/?view-by=muted-suggestions">Muted Suggestions</a></li>
+						<li><a href="<?= SITEURL; ?>/items/?view-by=department">View By Dept</a></li>
+						<li><a href="<?= SITEURL; ?>/items/?view-by=list">View By List</a></li>
+						<li><a href="<?= SITEURL; ?>/items/?view-by=primary_dept">View By Primary Depts</a></li>
 					</ul>
 				</div>
 			</div>

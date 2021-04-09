@@ -49,7 +49,7 @@
 					$currentMealPlanDate = DateTimeImmutable::createFromMutable($mealPlan->getDate());
 					$previousLimit = $currentMealPlanDate->modify("-14 day");
 
-					$hadRecently = $previousMealPlanDate->format("Y-m-d") > $previousLimit->format("Y-m-d");
+					$hadRecently = $previousMealPlanDate->format("Y-m-d") >= $previousLimit->format("Y-m-d");
 				}
 
 				$selectListItem = createSelectListItem($meal->getId(), $meal->getName(),
