@@ -90,7 +90,7 @@
 
 				$this->orders_service->closeConnexion();
 
-				$dalResult->setResult($success);
+				$dalResult->setResult($orderItem->jsonSerialize());
 
 				return $dalResult->jsonSerialize();
 			}

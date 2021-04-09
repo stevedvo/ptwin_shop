@@ -9,6 +9,7 @@
 		private $orders_service;
 		private $luckyDips_service;
 		private $meals_service;
+		private ItemsViewModelBuilder $itemsViewModelBuilder;
 
 		public function __construct()
 		{
@@ -19,6 +20,7 @@
 			$this->packsizes_service = new PackSizesService();
 			$this->luckyDips_service = new LuckyDipsService();
 			$this->meals_service = new MealsService();
+			$this->itemsViewModelBuilder = new ItemsViewModelBuilder();
 		}
 
 		public function Index(array $request, int $consumptionInterval = DEFAULT_CONSUMPTION_INTERVAL, string $consumptionPeriod = DEFAULT_CONSUMPTION_PERIOD) : void
@@ -32,7 +34,10 @@
 
 			try
 			{
-				$viewBy = $items = $order = $itemsInOrder = $collection = null;
+				$viewBy = $items = $collection = null;
+
+				$order = $this->orders_service->getCurrentOrder();
+				$itemsInOrder = $order->getItemIdsInOrder();
 
 				if (isset($request['view-by']))
 				{
@@ -79,13 +84,15 @@
 
 					$suggestedItems = $this->items_service->getAllSuggestedItems($consumptionInterval, $consumptionPeriod);
 
+					$suggestionsViewModels = $this->itemsViewModelBuilder->createSuggestionsViewModels($suggestedItems, $order);
+
 					$pageData =
 					[
 						'page_title' => 'Suggested Items',
 						'template'   => 'views/items/suggestions.php',
 						'page_data'  =>
 						[
-							'suggested_items'      => $suggestedItems,
+							'suggested_items'      => $suggestionsViewModels,
 							'consumption_interval' => $consumptionInterval,
 							'consumption_period'   => $consumptionPeriod,
 						],
@@ -126,10 +133,6 @@
 						'page_data'  => ['collection' => $collection],
 					];
 				}
-
-				$order = $this->orders_service->getCurrentOrder();
-
-				$itemsInOrder = $order->getItemIdsInOrder();
 
 				$pageData['page_data']['order'] = $order;
 				$pageData['page_data']['items_in_order'] = $itemsInOrder;
@@ -651,7 +654,16 @@
 				$orderItem = new OrderItem();
 				$orderItem->setOrderId($order->getId());
 				$orderItem->setItemId($item->getId());
-				$orderItem->setQuantity($item->getDefaultQty());
+
+				if (isset($request['quantity']) && is_numeric($request['quantity']))
+				{
+					$orderItem->setQuantity(intval($request['quantity']));
+				}
+				else
+				{
+					$orderItem->setQuantity($item->getDefaultQty());
+				}
+
 				$orderItem->setChecked(0);
 
 				$orderItem = $this->orders_service->addOrderItem($orderItem);

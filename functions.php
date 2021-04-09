@@ -32,16 +32,17 @@
 		$id = isset($request['item_id']) ? intval($request['item_id']) : null;
 		$description = isset($request['description']) ? $request['description'] : null;
 		$comments = isset($request['comments']) ? $request['comments'] : null;
-		$default_qty = isset($request['default_qty']) ? intval($request['default_qty']) : null;
-		$list_id = isset($request['list_id']) ? intval($request['list_id']) : null;
+		$defaultQty = isset($request['default_qty']) ? intval($request['default_qty']) : null;
+		$listId = isset($request['list_id']) ? intval($request['list_id']) : null;
 		$link = isset($request['link']) ? $request['link'] : null;
-		$primary_dept = isset($request['primary_dept']) ? intval($request['primary_dept']) : null;
-		$mute_temp = isset($request['mute_temp']) ? intval($request['mute_temp']) : 0;
-		$mute_perm = isset($request['mute_perm']) ? intval($request['mute_perm']) : 0;
-		$packsize_id = isset($request['packsize_id']) ? intval($request['packsize_id']) : null;
-		$luckyDip_id = isset($request['luckydip_id']) ? intval($request['luckydip_id']) : null;
+		$primaryDept = isset($request['primary_dept']) ? intval($request['primary_dept']) : null;
+		$muteTemp = isset($request['mute_temp']) ? intval($request['mute_temp']) : 0;
+		$mutePerm = isset($request['mute_perm']) ? intval($request['mute_perm']) : 0;
+		$packSizeId = isset($request['packsize_id']) ? intval($request['packsize_id']) : null;
+		$luckyDipId = isset($request['luckydip_id']) ? intval($request['luckydip_id']) : null;
+		$mealPlanCheck = isset($request['meal_plan_check']) ? intval($request['meal_plan_check']) : null;
 
-		$item = new Item($id, $description, $comments, $default_qty, $list_id, $link, $primary_dept, $mute_temp, $mute_perm, $packsize_id, $luckyDip_id);
+		$item = new Item($id, $description, $comments, $defaultQty, $listId, $link, $primaryDept, $muteTemp, $mutePerm, $packSizeId, $luckyDipId, $mealPlanCheck);
 
 		return $item;
 	}
@@ -128,21 +129,58 @@
 		}
 	}
 
-	function getValidationString($object, $property)
+	function createMealPlanDay(array $request) : MealPlanDay
 	{
+		try
+		{
+			$id = isset($request['meal_plan_day_id']) ? intval($request['meal_plan_day_id']) : null;
+			$date = isset($request['meal_plan_date']) ? sanitiseDate($request['meal_plan_date']) : null;
+			$mealId = isset($request['meal_id']) ? intval($request['meal_id']) : null;
+			$orderItemStatus = isset($request['order_item_status']) ? intval($request['order_item_status']) : null;
+
+			$mealPlanDay = new MealPlanDay($id, $date, $mealId, $orderItemStatus);
+
+			return $mealPlanDay;
+		}
+		catch (Exception $e)
+		{
+			throw $e;
+		}
+	}
+
+	function getValidationString(object $object, string $property) : string
+	{
+		$validation = "";
+
 		if (is_null($object) || !is_object($object) || is_null($property) || empty($property))
 		{
-			return false;
+			return $validation;
 		}
 
-		if (!isset($object->getValidation()[$property]))
+		$validationArray = [];
+
+		if (method_exists($object, "getAllValidation"))
 		{
-			return false;
+			if (!isset($object->getAllValidation()[$property]))
+			{
+				return $validation;
+			}
+
+			$validationArray = $object->getAllValidation()[$property];
+		}
+		else
+		{
+			if (!isset($object->getValidation()[$property]))
+			{
+				return $validation;
+			}
+
+			$validationArray = $object->getValidation()[$property];
 		}
 
-		$validation = "{";
+		$validation.= "{";
 
-		foreach ($object->getValidation()[$property] as $key => $value)
+		foreach ($validationArray as $key => $value)
 		{
 			$validation.= "&quot;".$key."&quot;:&quot;".$value."&quot;,";
 		}
@@ -210,13 +248,13 @@
 		return true;
 	}
 
-	function sanitiseDate($date_string)
+	function sanitiseDate(string $dateString) : ?DateTime
 	{
-		$date = DateTime::createFromFormat('Y-m-d', $date_string);
+		$date = DateTime::createFromFormat('Y-m-d', $dateString);
 
 		if ($date)
 		{
-			$validDate = checkdate(substr($date_string, 5, 2), substr($date_string, 8, 2), substr($date_string, 0, 4));
+			$validDate = checkdate(substr($dateString, 5, 2), substr($dateString, 8, 2), substr($dateString, 0, 4));
 
 			if (!$validDate)
 			{
@@ -226,11 +264,11 @@
 
 		if (!$date)
 		{
-			$date = DateTime::createFromFormat('d-m-Y', $date_string);
+			$date = DateTime::createFromFormat('d-m-Y', $dateString);
 
 			if ($date)
 			{
-				$validDate = checkdate(substr($date_string, 3, 2), substr($date_string, 0, 2), substr($date_string, 6, 4));
+				$validDate = checkdate(substr($dateString, 3, 2), substr($dateString, 0, 2), substr($dateString, 6, 4));
 
 				if (!$validDate)
 				{
@@ -239,7 +277,7 @@
 			}
 		}
 
-		return $date;
+		return $date ?? null;
 	}
 
 	function renderPage(array $pageData) : void
@@ -291,4 +329,11 @@
 		}
 
 		return $breadcrumb_string;
+	}
+
+	function createSelectListItem(int $value, string $text, array $dataAttributes = []) : SelectListItem
+	{
+		$selectListItem = new SelectListItem($value, $text, $dataAttributes);
+
+		return $selectListItem;
 	}

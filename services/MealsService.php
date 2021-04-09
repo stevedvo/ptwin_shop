@@ -308,4 +308,116 @@
 				throw $e;
 			}
 		}
+
+		public function getMealPlansInDateRange(DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo) : array
+		{
+			try
+			{
+				$mealPlans = $this->dal->getMealPlansInDateRange($dateFrom, $dateTo);
+
+				if (!is_array($mealPlans))
+				{
+					throw new Exception("Meal Plans not found");
+				}
+
+				return $mealPlans;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function getMealPlanByDate(array $request) : MealPlanDay
+		{
+			try
+			{
+				if (!isset($request['dateString']))
+				{
+					throw new Exception("Date not provided");
+				}
+
+				$date = sanitiseDate($request['dateString']);
+
+				if (!($date instanceof DateTime))
+				{
+					throw new Exception("Invalid date");
+				}
+
+				$mealPlan = $this->dal->getMealPlanByDate($date);
+
+				return $mealPlan;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function updateMealPlanDay(array $request) : MealPlanDay
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$mealPlanDayUpdate = createMealPlanDay($request);
+
+				if (!($mealPlanDayUpdate->getDate() instanceof DateTimeInterface))
+				{
+					throw new Exception("Invalid date");
+				}
+
+				if (!is_null($mealPlanDayUpdate->getMealId()))
+				{
+					$meal = $this->getMealById($mealPlanDayUpdate->getMealId());
+					$mealPlanDayUpdate->setMeal($meal);
+				}
+
+				// is status valid?
+
+				$mealPlanDay = $this->dal->getMealPlanByDate($mealPlanDayUpdate->getDate());
+
+				if (is_null($mealPlanDay->getId()))
+				{
+					$mealPlanDay = $this->dal->addMealPlanDay($mealPlanDayUpdate);
+				}
+				else
+				{
+					if ($mealPlanDay->getMealId() != $mealPlanDayUpdate->getMealId())
+					{
+						$mealPlanDay->setMealId($mealPlanDayUpdate->getMealId());
+						$mealPlanDay->setMeal($mealPlanDayUpdate->getMeal());
+						$mealPlanDay->setOrderItemStatus($mealPlanDayUpdate->getOrderItemStatus());
+
+						$mealPlanDay = $this->dal->updateMealPlanDay($mealPlanDay);
+					}
+				}
+
+				$itemsToUpdate = [];
+
+				foreach ($mealPlanDayUpdate->getMealItems() as $key => $mealItem)
+				{
+					if (!is_null($mealItem->getItemId()) && !in_array($mealItem->getItemId(), $itemsToUpdate))
+					{
+						$itemsToUpdate[] = $mealItem->getItemId();
+					}
+				}
+
+				if (count($itemsToUpdate) > 0)
+				{
+					$success = $this->items_service->updateMealPlanChecks($itemsToUpdate);
+
+					if (!$success)
+					{
+						throw new Exception("Meal Plan day updated but failed to set Items to check");
+					}
+				}
+
+				return $mealPlanDay;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
 	}

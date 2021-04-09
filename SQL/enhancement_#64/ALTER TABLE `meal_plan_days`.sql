@@ -1,0 +1,1 @@
+ALTER TABLE `meal_plan_days` CHANGE `meal_id` `meal_id` INT(11) NULL DEFAULT NULL;

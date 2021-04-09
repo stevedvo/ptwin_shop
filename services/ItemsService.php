@@ -113,7 +113,7 @@
 					$estOverall = $item->getStockLevelPrediction(7, 'overall');
 					$estRecent = $item->getStockLevelPrediction(7, 'recent');
 
-					if ((is_int($estOverall) && $estOverall < 0) || (is_int($estRecent) && $estRecent < 0))
+					if ($item->hasUpcomingMealItems() || (is_int($estOverall) && $estOverall < 0) || (is_int($estRecent) && $estRecent < 0))
 					{
 						$suggestedItems[$item->getId()] = $item;
 					}
@@ -329,6 +329,23 @@
 			try
 			{
 				return $this->dal->resetMuteTemps();
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function updateMealPlanChecks(array $itemIds) : bool
+		{
+			try
+			{
+				if (count($itemIds) == 0)
+				{
+					return false;
+				}
+
+				return $this->dal->updateMealPlanChecks($itemIds);
 			}
 			catch (Exception $e)
 			{

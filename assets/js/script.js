@@ -15,6 +15,7 @@ $(function()
 	quickAdd();
 	adminFuncs();
 	updateRecentConsumptionParameters();
+	modalFuncs();
 });
 
 function getURLQueryStringAsObject(queryString)
@@ -447,8 +448,32 @@ function manageItems()
 
 	$(document).on("click", ".js-add-item-to-current-order", function()
 	{
-		var form = $(this).closest(".form");
-		var itemID = parseInt(form.data("item_id"));
+		let form = $(this).closest(".form");
+		let itemID = parseInt(form.data("item_id"));
+		let quantityInput = form.find("input[name='quantity']");
+		let quantityValue = null;
+
+		if (quantityInput.length > 0)
+		{
+			form.find("p.error-message").remove();
+			form.find(".input-error").removeClass("input-error");
+
+			var validation = validateForm(form);
+
+			if (Object.keys(validation).length > 0)
+			{
+				$.each(validation, function(field, errMsg)
+				{
+					form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+				});
+
+				toastr.error("There were validation failures");
+
+				return false;
+			}
+
+			quantityValue = parseInt(quantityInput.val());
+		}
 
 		$.ajax(
 		{
@@ -459,8 +484,12 @@ function manageItems()
 			{
 				controller : "Items",
 				action     : "addItemToCurrentOrder",
-				request    : {'item_id' : itemID}
-			}
+				request    :
+				{
+					'item_id'  : itemID,
+					'quantity' : quantityValue,
+				},
+			},
 		}).done(function(data)
 		{
 			if (!data)
@@ -487,14 +516,14 @@ function manageItems()
 				return false;
 			}
 
-			toastr.success("Item successfully added to Order");
+			toastr.success(`'${data.result.item.description}' successfully added to Order`);
 
 			if ($(".result-item[data-item_id='"+data.result.item.id+"']").length > 0)
 			{
 				$.each($(".result-item[data-item_id='"+data.result.item.id+"']"), function()
 				{
 					$(this).addClass("selected");
-					$(this).find("button.js-remove-item-from-current-order").data("order_item_id", data.result.id);
+					$(this).data("order_item_id", data.result.id);
 				});
 
 				return;
@@ -520,56 +549,60 @@ function manageItems()
 	{
 		var form = $(this).closest(".form");
 		var itemID = parseInt(form.data("item_id"));
-		var orderItemID = parseInt($(this).data("order_item_id"));
+		var orderItemID = parseInt(form.data("order_item_id"));
 
-		if (!isNaN(orderItemID))
+		if (isNaN(orderItemID))
 		{
-			$.ajax(
-			{
-				type     : "POST",
-				url      : constants.SITEURL+"/ajax.php",
-				dataType : "json",
-				data     :
-				{
-					controller : "Items",
-					action     : "removeItemFromCurrentOrder",
-					request    : {'order_item_id' : orderItemID}
-				}
-			}).done(function(data)
-			{
-				if (data)
-				{
-					if (data.exception != null)
-					{
-						toastr.error(`Could not remove Item from Order: ${data.exception.message}`);
-						console.log(data.exception);
-					}
-					else
-					{
-						if (!data.result)
-						{
-							toastr.error("Could not remove Item from Order: Unspecified error");
-							console.log(data);
-						}
-						else
-						{
-							toastr.success("Item successfully removed from Order");
+			toastr.error("Invalid OrderItem ID");
 
-							$(".result-item[data-item_id='"+itemID+"']").removeClass("selected");
-						}
-					}
+			return false;
+		}
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Items",
+				action     : "removeItemFromCurrentOrder",
+				request    : {'order_item_id' : orderItemID}
+			}
+		}).done(function(data)
+		{
+			if (data)
+			{
+				if (data.exception != null)
+				{
+					toastr.error(`Could not remove Item from Order: ${data.exception.message}`);
+					console.log(data.exception);
 				}
 				else
 				{
-					toastr.error("Could not remove Item from Order");
-					console.log(data);
+					if (!data.result)
+					{
+						toastr.error("Could not remove Item from Order: Unspecified error");
+						console.log(data);
+					}
+					else
+					{
+						toastr.success("Item successfully removed from Order");
+
+						$(".result-item[data-item_id='"+itemID+"']").removeClass("selected");
+					}
 				}
-			}).fail(function(data)
+			}
+			else
 			{
-				toastr.error("Could not perform request");
+				toastr.error("Could not remove Item from Order");
 				console.log(data);
-			});
-		}
+			}
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
 	});
 
 	$(document).on("click", ".js-mute-suggestion", function()
@@ -1956,14 +1989,14 @@ function quickAdd()
 
 function manageOrders()
 {
-	$(document).on("click", ".js-update-order-item", function()
+	$(document).on("click", ".js-update-order-item, .js-update-suggested-order-item", function()
 	{
-		var form = $(this).closest(".form");
+		let form = $(this).closest(".form");
 
 		form.find("p.error-message").remove();
 		form.find(".input-error").removeClass("input-error");
 
-		var validation = validateForm(form);
+		let validation = validateForm(form);
 
 		if (Object.keys(validation).length > 0)
 		{
@@ -1973,60 +2006,62 @@ function manageOrders()
 			});
 
 			toastr.error("There were validation failures");
-		}
-		else
-		{
-			var orderItemID = parseInt(form.data("order_item_id"));
-			var quantity = parseInt(form.find("[name='quantity']").val());
 
-			$.ajax(
-			{
-				type     : "POST",
-				url      : constants.SITEURL+"/ajax.php",
-				dataType : "json",
-				data     :
-				{
-					controller : "Orders",
-					action     : "updateOrderItem",
-					request    :
-					{
-						'order_item_id' : orderItemID,
-						'quantity'      : quantity
-					}
-				}
-			}).done(function(data)
-			{
-				if (data)
-				{
-					if (data.exception != null)
-					{
-						toastr.error("Could not update Order Item: PDOException");
-						console.log(data.exception);
-					}
-					else
-					{
-						if (!data.result)
-						{
-							toastr.error("Could not update Order Item: Unspecified error");
-							console.log(data);
-						}
-						else
-						{
-							toastr.success("Order Item successfully updated");
-						}
-					}
-				}
-				else
-				{
-					toastr.error("Could not update Order Item");
-					console.log(data);
-				}
-			}).fail(function(data)
-			{
-				toastr.error("Could not perform request");
-				console.log(data);
-			});
+			return false;
 		}
+
+		let orderItemID = parseInt(form.data("order_item_id"));
+		let quantity = parseInt(form.find("[name='quantity']").val());
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Orders",
+				action     : "updateOrderItem",
+				request    :
+				{
+					'order_item_id' : orderItemID,
+					'quantity'      : quantity,
+				},
+			},
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not update Order Item: Unspecified error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not update Order Item: ${data.exception.message}`);
+				console.log(data.exception);
+
+				return false;
+			}
+
+			if (data.result == null)
+			{
+				toastr.error("Could not update Order Item: Unspecified error");
+				console.log(data);
+
+				return false;
+			}
+
+			toastr.success(`'${data.result.item.description}' successfully updated`);
+
+			return;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
 	});
 
 	$(document).on("click", ".js-remove-order-item", function()
@@ -3481,6 +3516,111 @@ function manageMeals()
 			console.log(data);
 		});
 	});
+
+	$(document).on("click", ".calendar-box .edit-btn", function()
+	{
+		let calendarBox = $(this).closest(".calendar-box");
+		let dateStringYmd = calendarBox.attr("id");
+		let dateString = calendarBox.find(".calendar-box-header").text().trim();
+
+		resetModal(
+		{
+			modalTitle     : `${dateString}`,
+			formController : "Meals",
+			formAction     : "updateMealPlanDay",
+		});
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : `${constants.SITEURL}/ajax.php`,
+			enctype  : "multipart/form-data",
+			dataType : "json",
+			data     :
+			{
+				controller : "Meals",
+				action     : "getMealPlanByDate",
+				request    : { dateString : dateStringYmd },
+			},
+			success  : function(data)
+			{
+				if (!data)
+				{
+					toastr.error("Could not update Meal Plan Day: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				if (data.exception != null)
+				{
+					toastr.error(`Could not update Meal Plan Day: ${data.exception.message}`);
+					console.log(data);
+
+					return false;
+				}
+
+				let html = data.partial_view;
+
+				if (html.length == 0)
+				{
+					toastr.error("Could not update Meal Plan Day: unknown error");
+					console.log(data);
+
+					return false;
+				}
+
+				let modal = $("#modal");
+
+				modal.find(".modal-body").html(html);
+
+				$("select#mealId").select2(
+				{
+					placeholder : "Select a meal...",
+					allowClear  : true,
+				});
+
+				modal.modal();
+
+				return true;
+			},
+			error    : function(jqXHR, textStatus, errorThrown)
+			{
+				toastr.error("Could not update Meal Plan Day: unknown error");
+				console.log(jqXHR);
+				console.log(textStatus);
+				console.log(errorThrown);
+			},
+		});
+	});
+
+	$(document).on("click", "#randomMealSelector", function(e)
+	{
+		e.preventDefault();
+
+		let selector = $("select#mealId");
+		let allOptions = selector.find("option");
+		let validOptions = [];
+
+		$.each(allOptions, function()
+		{
+			if ($(this).data("hadrecently") != 1)
+			{
+				validOptions.push($(this).attr("value"));
+			}
+		});
+
+		if (validOptions.length == 0)
+		{
+			toastr.error("No Meals not in last 14 days");
+
+			return false;
+		}
+
+		let randomOption = validOptions[Math.floor(Math.random() * validOptions.length)];
+
+		selector.val(randomOption).trigger("change");
+	});
 }
 
 function reloadPartial(id, controller, action, params, callback, onbeforeload, ajaxMethod)
@@ -3577,4 +3717,123 @@ function reloadSuccessFunction(id, params, callback)
 	{
 		callback();
 	}
+}
+
+function resetModal(params = {})
+{
+	let modalTitle = params.modalTitle ?? null;
+	let formController = params.formController ?? null;
+	let formAction = params.formAction ?? null;
+	let modal = $("#modal");
+
+	modal.find(".modal-title").html(modalTitle);
+	modal.find("form").data("controller", formController);
+	modal.find("form").data("action", formAction);
+	modal.find(".modal-body").empty();
+}
+
+function modalFuncs()
+{
+	$(document).on("submit", "#modalForm", function(e)
+	{
+		e.preventDefault();
+
+		let form = $(this).closest("form");
+		let formController = form.data("controller");
+		let formAction = form.data("action");
+		let formMethod = form.attr("method") ?? "POST";
+		let formEncType = form.attr("enctype") ?? "multipart/form-data";
+		let formData = form.serializeArray();
+		let request = {};
+
+		$.each(formData, function()
+		{
+			request[this.name] = this.value;
+		});
+
+		if (formController == undefined || formAction == undefined)
+		{
+			toastr.error("No form Controller / Action defined");
+
+			return false;
+		}
+
+		$.ajax(
+		{
+			url      : constants.SITEURL+"/ajax.php",
+			type     : formMethod,
+			dataType : "json",
+			data     :
+			{
+				controller : formController,
+				action     : formAction,
+				request    : request,
+			},
+			success : function(response)
+			{
+				if (!response)
+				{
+					toastr.error("Could not submit form: unknown error");
+					console.log(response);
+
+					return false;
+				}
+
+				if (response.exception != null)
+				{
+					toastr.error(`Could not submit form: ${response.exception.message}`);
+					console.log(response);
+
+					return false;
+				}
+
+				if (response.partial_view != null)
+				{
+					let partialViewMeta = form.find("meta[name='reloadPartial']");
+
+					if (partialViewMeta.length == 0)
+					{
+						toastr.warning(`${formController}.${formAction} successful but no meta container found for Partial View`);
+						console.log(response);
+					}
+
+					let partialViewTarget = partialViewMeta.attr("content");
+
+					if (partialViewTarget.length == 0)
+					{
+						toastr.warning(`${formController}.${formAction} successful but no target found for Partial View`);
+						console.log(response);
+					}
+
+					$(`#${partialViewTarget}`).html(response.partial_view);
+					toastr.success(`${formController}.${formAction} completed successfully`);
+
+					$("#modal").modal('hide');
+
+					return true;
+				}
+
+				if (response.result != null)
+				{
+					toastr.success(`${formController}.${formAction} completed successfully`);
+					console.log(response);
+
+					return true;
+				}
+
+				toastr.warning(`${formController}.${formAction} completed successfully but no Partial View / Result returned`);
+
+				return true;
+			},
+			error    : function(jqXHR, textStatus, errorThrown)
+			{
+				toastr.error("Could not submit form: unknown error");
+				console.log(jqXHR);
+				console.log(textStatus);
+				console.log(errorThrown);
+
+				return false;
+			},
+		});
+	});
 }

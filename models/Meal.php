@@ -1,12 +1,13 @@
 <?php
 	declare(strict_types=1);
 
-	class Meal
+	class Meal implements JsonSerializable
 	{
 		private ?int $id;
 		private ?string $name;
 		private bool $isDeleted;
 		private array $mealItems;
+		private array $mealPlanDays;
 		private array $validation;
 
 		public function __construct(?int $id = null, ?string $name = null, bool $isDeleted = false, array $mealItems = [])
@@ -14,18 +15,27 @@
 			$this->id = $id;
 			$this->name = $name;
 			$this->isDeleted = $isDeleted;
-			$this->validation = ['Name' => ['required' => true]];
 			$this->mealItems = $mealItems;
+			$this->mealPlanDays = [];
+			$this->validation = ['Name' => ['required' => true]];
 		}
 
-		public function jsonSerialize() : ?array
+		public function jsonSerialize() : array
 		{
-			return get_object_vars($this);
+			$serialised =
+			[
+				'id'        => $this->getId(),
+				'name'      => $this->getName(),
+				'isDeleted' => $this->getIsDeleted(),
+				'mealItems' => $this->getMealItems(),
+			];
+
+			return $serialised;
 		}
 
 		public function getId() : ?int
 		{
-			return $this->id;
+			return is_numeric($this->id) ? intval($this->id) : null;
 		}
 
 		public function setId(int $id) : void
@@ -87,6 +97,53 @@
 			unset($this->mealItems[$mealItem->getId()]);
 		}
 
+		public function getMealItemByItemId(int $itemId) : ?MealItem
+		{
+			foreach ($this->mealItems as $mealItemId => $mealItem)
+			{
+				if ($mealItem->getItemId() == $itemId)
+				{
+					return $mealItem;
+				}
+			}
+
+			return null;
+		}
+
+		public function getMealPlanDays() : array
+		{
+			return $this->mealPlanDays;
+		}
+
+		public function setMealPlanDays(array $mealPlanDays) : void
+		{
+			$this->mealPlanDays = $mealPlanDays;
+		}
+
+		public function addMealPlanDay(MealPlanDay $mealPlanDay) : void
+		{
+			$this->mealPlanDays[$mealPlanDay->getDateString()] = $mealPlanDay;
+		}
+
+		public function getLastMealPlanDayBeforeDate(DateTimeInterface $date) : ?MealPlanDay
+		{
+			if (count($this->getMealPlanDays()) > 0)
+			{
+				$mealPlanDates = array_keys($this->getMealPlanDays());
+				rsort($mealPlanDates);
+
+				foreach ($mealPlanDates as $mealPlanDate)
+				{
+					if ($mealPlanDate < $date->format('Y-m-d'))
+					{
+						return $this->getMealPlanDays()[$mealPlanDate];
+					}
+				}
+			}
+
+			return null;
+		}
+
 		public function getValidation($property = null)
 		{
 			if (is_null($property))
@@ -100,18 +157,5 @@
 			}
 
 			return getValidationString($this, $property);
-		}
-
-		public function getMealItemByItemId(int $itemId) : ?MealItem
-		{
-			foreach ($this->mealItems as $mealItemId => $mealItem)
-			{
-				if ($mealItem->getItemId() == $itemId)
-				{
-					return $mealItem;
-				}
-			}
-
-			return null;
 		}
 	}
