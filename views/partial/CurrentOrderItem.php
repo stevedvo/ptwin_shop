@@ -1,7 +1,7 @@
 <?php
 	$orderItem = $params['orderItem'];
 ?>
-<div class="row form result-item" data-orderItem_id="<?= $orderItem->getId(); ?>">
+<div class="row form result-item" data-order_item_id="<?= $orderItem->getId(); ?>">
 	<div class="col-xs-7 description-container">
 		<p><a href="<?= SITEURL; ?>/items/edit/<?= $orderItem->getItemId(); ?>/"><?= $orderItem->getItemDescription(); ?></a></p>
 	</div>
