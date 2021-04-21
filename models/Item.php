@@ -413,14 +413,17 @@
 			{
 				foreach ($this->orders as $orderId => $order)
 				{
-					if (!$break)
+					if ($order->getDateOrdered() instanceof DateTime)
 					{
-						$this->addRecentOrder($order);
-						$interval = $order->getDateOrdered()->diff($cutoffDate);
-
-						if (!$interval->invert)
+						if (!$break)
 						{
-							$break = true;
+							$this->addRecentOrder($order);
+							$interval = $order->getDateOrdered()->diff($cutoffDate);
+
+							if (!$interval->invert)
+							{
+								$break = true;
+							}
 						}
 					}
 				}
