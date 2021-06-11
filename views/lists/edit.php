@@ -93,7 +93,8 @@
 						<div class="row">
 							<div class="col-xs-8 item-selection-container">
 								<input type="hidden" name="list-id" value="<?= $list->getId(); ?>" />
-								<select class="item-selection">
+								<select id="addItemToList" class="item-selection">
+									<option value="-1"></option>
 <?php
 									if (is_array($all_items))
 									{

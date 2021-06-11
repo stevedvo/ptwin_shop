@@ -741,6 +741,16 @@ function manageItems()
 
 function manageLists()
 {
+	$("#addItemToList").select2(
+	{
+		placeholder :
+		{
+			id   : "-1",
+			text : "Select an Item",
+		},
+		allowClear  : true,
+	});
+
 	$(document).on("click", ".js-add-list", function()
 	{
 		var form = $(this).closest(".form");
@@ -804,10 +814,16 @@ function manageLists()
 
 	$(document).on("click", ".js-add-item-to-list", function()
 	{
-		var form = $(this).closest(".form");
-		var selectedOption = form.find("select option:selected");
-		var itemID = parseInt(selectedOption.data("item_id"));
-		var listID = parseInt(form.find("[name='list-id']").val());
+		let form = $(this).closest(".form");
+		let selectedOption = form.find("select option:selected");
+		let itemID = parseInt(selectedOption.data("item_id"));
+		let listID = parseInt(form.find("[name='list-id']").val());
+
+		if (isNaN(itemID) || itemID == -1)
+		{
+			toastr.error("No Item selected");
+			return false;
+		}
 
 		$.ajax(
 		{
@@ -1083,6 +1099,16 @@ function manageLists()
 
 function manageDepts()
 {
+	$("#addItemToDepartment").select2(
+	{
+		placeholder :
+		{
+			id   : "-1",
+			text : "Select an Item",
+		},
+		allowClear  : true,
+	});
+
 	$(document).on("click", ".js-add-department", function()
 	{
 		var form = $(this).closest(".form");
@@ -1147,10 +1173,16 @@ function manageDepts()
 
 	$(document).on("click", ".js-add-item-to-department", function()
 	{
-		var form = $(this).closest(".form");
-		var selectedOption = form.find("select option:selected");
-		var itemID = parseInt(selectedOption.data("item_id"));
-		var departmentID = parseInt(form.find("[name='department-id']").val());
+		let form = $(this).closest(".form");
+		let selectedOption = form.find("select option:selected");
+		let itemID = parseInt(selectedOption.data("item_id"));
+		let departmentID = parseInt(form.find("[name='department-id']").val());
+
+		if (isNaN(itemID) || itemID == -1)
+		{
+			toastr.error("No Item selected");
+			return false;
+		}
 
 		$.ajax(
 		{
@@ -2816,10 +2848,16 @@ function manageLuckyDips()
 
 	$(document).on("click", ".js-add-item-to-luckyDip", function()
 	{
-		var form = $(this).closest(".form");
-		var selectedOption = form.find("select option:selected");
-		var itemID = parseInt(selectedOption.val());
-		var luckyDipID = parseInt(form.find("[name='luckyDip_id']").val());
+		let form = $(this).closest(".form");
+		let selectedOption = form.find("select option:selected");
+		let itemID = parseInt(selectedOption.val());
+		let luckyDipID = parseInt(form.find("[name='luckyDip_id']").val());
+
+		if (isNaN(itemID) || itemID == -1)
+		{
+			toastr.error("No Item selected");
+			return false;
+		}
 
 		$.ajax(
 		{
@@ -3201,10 +3239,16 @@ function manageMeals()
 
 	$(document).on("click", ".js-add-item-to-meal", function()
 	{
-		var form = $(this).closest(".form");
-		var selectedOption = form.find("select option:selected");
-		var itemID = parseInt(selectedOption.val());
-		var mealID = parseInt(form.find("[name='meal_id']").val());
+		let form = $(this).closest(".form");
+		let selectedOption = form.find("select option:selected");
+		let itemID = parseInt(selectedOption.val());
+		let mealID = parseInt(form.find("[name='meal_id']").val());
+
+		if (isNaN(itemID) || itemID == -1)
+		{
+			toastr.error("No Item selected");
+			return false;
+		}
 
 		$.ajax(
 		{
