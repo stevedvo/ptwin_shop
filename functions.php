@@ -135,7 +135,7 @@
 		{
 			$id = isset($request['meal_plan_day_id']) ? intval($request['meal_plan_day_id']) : null;
 			$date = isset($request['meal_plan_date']) ? sanitiseDate($request['meal_plan_date']) : null;
-			$mealId = isset($request['meal_id']) ? intval($request['meal_id']) : null;
+			$mealId = (isset($request['meal_id']) && $request['meal_id'] != -1) ? intval($request['meal_id']) : null;
 			$orderItemStatus = isset($request['order_item_status']) ? intval($request['order_item_status']) : null;
 
 			$mealPlanDay = new MealPlanDay($id, $date, $mealId, $orderItemStatus);
