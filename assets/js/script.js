@@ -1083,6 +1083,16 @@ function manageLists()
 
 function manageDepts()
 {
+	$("#addItemToDepartment").select2(
+	{
+		placeholder :
+		{
+			id   : "-1",
+			text : "Select an Item",
+		},
+		allowClear  : true,
+	});
+
 	$(document).on("click", ".js-add-department", function()
 	{
 		var form = $(this).closest(".form");
@@ -1147,10 +1157,16 @@ function manageDepts()
 
 	$(document).on("click", ".js-add-item-to-department", function()
 	{
-		var form = $(this).closest(".form");
-		var selectedOption = form.find("select option:selected");
-		var itemID = parseInt(selectedOption.data("item_id"));
-		var departmentID = parseInt(form.find("[name='department-id']").val());
+		let form = $(this).closest(".form");
+		let selectedOption = form.find("select option:selected");
+		let itemID = parseInt(selectedOption.data("item_id"));
+		let departmentID = parseInt(form.find("[name='department-id']").val());
+
+		if (isNaN(itemID))
+		{
+			toastr.error("No Item selected");
+			return false;
+		}
 
 		$.ajax(
 		{
