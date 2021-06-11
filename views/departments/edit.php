@@ -71,7 +71,8 @@
 						<div class="row">
 							<div class="col-xs-8 item-selection-container">
 								<input type="hidden" name="department-id" value="<?= $department->getId(); ?>" />
-								<select class="item-selection">
+								<select id="addItemToDepartment" class="item-selection">
+									<option value="-1"></option>
 <?php
 									if (is_array($all_items))
 									{

@@ -31,14 +31,14 @@
 							foreach ($muted_items as $item_id => $item)
 							{
 ?>
-								<div class="row form result-item <?= array_key_exists($item->getId(), $items_in_order) ? 'selected' : ''; ?> <?= $item->GetMuteTemp() ? 'muted-temp' : 'unmuted-temp'; ?> <?= $item->GetMutePerm() ? 'muted-perm' : 'unmuted-perm'; ?>" data-item_id="<?= $item->getId(); ?>">
+								<div class="row form result-item <?= array_key_exists($item->getId(), $items_in_order) ? 'selected' : ''; ?> <?= $item->getMuteTemp() ? 'muted-temp' : 'unmuted-temp'; ?> <?= $item->getMutePerm() ? 'muted-perm' : 'unmuted-perm'; ?>" data-item_id="<?= $item->getId(); ?>" data-order_item_id="<?= array_key_exists($item->getId(), $items_in_order) ? $items_in_order[$item->getId()] : ''; ?>">
 									<div class="col-xs-12 description-container">
 										<a href="<?= SITEURL; ?>/items/edit/<?= $item->getId(); ?>/"><p><?= $item->getDescription(); ?></p></a>
 									</div>
 
 									<div class="col-xs-4 button-container">
 										<button class="btn btn-sm btn-primary pull-right js-add-item-to-current-order">Add</button>
-										<button class="btn btn-sm btn-danger pull-right js-remove-item-from-current-order" data-order_item_id="<?= array_key_exists($item->getId(), $items_in_order) ? $items_in_order[$item->getId()] : ''; ?>">Remove</button>
+										<button class="btn btn-sm btn-danger pull-right js-remove-item-from-current-order">Remove</button>
 									</div>
 
 									<div class="col-xs-4 button-container mute-button">

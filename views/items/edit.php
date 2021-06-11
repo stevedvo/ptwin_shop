@@ -220,7 +220,7 @@
 												if ($itemInCurrentOrder)
 												{
 ?>
-													<input type="number" min="1" name="quantity" value="<?= $currentOrder->getOrderItembyItemId($item->getId())->getQuantity(); ?>" data-validation="<?= getValidationString($currentOrder->getOrderItembyItemId($item->getId()), 'Quantity'); ?>" />
+													<input type="number" min="1" name="quantity" value="<?= $currentOrder->getOrderItemByItemId($item->getId())->getQuantity(); ?>" data-validation="<?= getValidationString($currentOrder->getOrderItemByItemId($item->getId()), 'Quantity'); ?>" />
 <?php
 												}
 ?>
@@ -252,7 +252,7 @@
 												</div>
 
 												<div class="col-xs-3 order-result-item order-quantity-container">
-													<p><?= $order->getOrderItembyItemId($item->getId())->getQuantity()." ".$item->getPackSizeShortName(); ?></p>
+													<p><?= $order->getOrderItemByItemId($item->getId())->getQuantity()." ".$item->getPackSizeShortName(); ?></p>
 												</div>
 											</a>
 										</div>

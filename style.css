@@ -150,7 +150,8 @@ main
 	display: block;
 }
 
-.results-container .result-item .button-container button.js-remove-item-from-current-order
+.results-container .result-item .button-container button.js-remove-item-from-current-order,
+.results-container .result-item .button-container button.js-update-suggested-order-item
 {
 	display: none;
 }
@@ -165,7 +166,8 @@ main
 	display: none;
 }
 
-.results-container .result-item.selected .button-container button.js-remove-item-from-current-order
+.results-container .result-item.selected .button-container button.js-remove-item-from-current-order,
+.results-container .result-item.selected .button-container button.js-update-suggested-order-item
 {
 	display: block;
 }
@@ -485,6 +487,34 @@ ul.ui-autocomplete li.ui-state-focus
 	width: calc(100% - 68px);
 }
 
+.calendar-box
+{
+	padding: 5px;
+	border: 1px dashed lightgrey;
+	height: 100px;
+	overflow-y: auto;
+}
+
+.calendar-box-header>p,
+.calendar-box-header>.edit-btn,
+.calendar-box-body>p
+{
+	padding: 0px 5px;
+}
+
+.calendar-box-header>.edit-btn
+{
+	text-align: center;
+	cursor: pointer;
+}
+
+.calendar-box-header,
+.calendar-box-body
+{
+	float: left;
+	width: 100%;
+}
+
 @media print, screen and (min-width: 576px)
 {
 	header .page-heading-container
@@ -588,17 +618,17 @@ ul.ui-autocomplete li.ui-state-focus
 
 	.results-container.suggestions .description-container
 	{
-		width: calc(3 / 12 * 100%);
+		width: calc(4 / 12 * 100%);
+	}
+
+	.results-container.suggestions .quantity-container
+	{
+		width: calc(2 / 12 * 100%);
 	}
 
 	.results-container.suggestions.muted .description-container
 	{
 		width: calc(5 / 12 * 100%);
-	}
-
-	.results-container.suggestions .stock-level-container
-	{
-		width: calc(1.5 / 12 * 100%);
 	}
 
 	.results-container.suggestions .button-container
@@ -758,6 +788,11 @@ ul.ui-autocomplete li.ui-state-focus
 	{
 		width: calc(4 / 12 * 100%);
 		text-align: left;
+	}
+
+	.calendar-box
+	{
+		width: 25%;
 	}
 }
 

@@ -1,7 +1,8 @@
 <?php
 	$all_items = $params['item_list'];
 ?>
-<select class="item-selection">
+<select id="addItemToMeal" class="item-selection">
+	<option value="-1"></option>
 <?php
 	if (is_array($all_items))
 	{
@@ -14,3 +15,15 @@
 	}
 ?>
 </select>
+
+<script type="text/javascript">
+	$("#addItemToMeal").select2(
+	{
+		placeholder :
+		{
+			id   : "-1",
+			text : "Select an Item",
+		},
+		allowClear  : true,
+	});
+</script>

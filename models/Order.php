@@ -15,8 +15,8 @@
 				'DateOrdered' =>
 				[
 					'required' => true,
-					'datatype' => 'date'
-				]
+					'datatype' => 'date',
+				],
 			];
 			$this->order_items = null;
 		}
@@ -96,24 +96,19 @@
 			return $items_in_order;
 		}
 
-		public function getOrderItembyItemId($item_id)
+		public function getOrderItemByItemId(int $itemId) : ?OrderItem
 		{
-			$order_item_to_return = false;
-
 			if (is_array($this->order_items))
 			{
-				foreach ($this->order_items as $order_item_id => $order_item)
+				foreach ($this->order_items as $orderItemId => $orderItem)
 				{
-					if (!$order_item_to_return)
+					if ($orderItem->getItemId() == $itemId)
 					{
-						if ($order_item->getItemId() == $item_id)
-						{
-							$order_item_to_return = $order_item;
-						}
+						return $orderItem;
 					}
 				}
 			}
 
-			return $order_item_to_return;
+			return null;
 		}
 	}

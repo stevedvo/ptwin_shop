@@ -38,7 +38,7 @@
 			{
 				$meal = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, mi.id AS meal_item_id, mi.quantity AS meal_item_quantity, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id FROM meals AS m LEFT JOIN meal_items AS mi ON (mi.meal_id = m.id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) WHERE m.id = :id ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, mi.id AS meal_item_id, mi.quantity AS meal_item_quantity, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM meals AS m LEFT JOIN meal_items AS mi ON (mi.meal_id = m.id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) WHERE m.id = :id ORDER BY i.description");
 				$query->execute([':id' => $mealId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -118,7 +118,7 @@
 			{
 				$meals = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT id AS meal_id, name AS meal_name, IsDeleted AS meal_isDeleted FROM meals ".$includeDeletedQuery." ORDER BY meal_name");
+				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.order_item_status FROM meals AS m LEFT JOIN meal_plan_days AS mpd ON (mpd.meal_id = m.id) ".$includeDeletedQuery." ORDER BY meal_name");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -128,9 +128,18 @@
 
 					foreach ($rows as $row)
 					{
-						$meal = createMeal($row);
+						if (!isset($meals[$row['meal_id']]))
+						{
+							$meal = createMeal($row);
 
-						$meals[$meal->getId()] = $meal;
+							$meals[$meal->getId()] = $meal;
+						}
+
+						if (!is_null($row['meal_plan_day_id']))
+						{
+							$mealPlanDay = createMealPlanDay($row);
+							$meals[$row['meal_id']]->addMealPlanDay($mealPlanDay);
+						}
 					}
 				}
 
@@ -154,7 +163,7 @@
 				$query->execute(
 				[
 					':name' => $meal->getName(),
-					':id'   => $meal->getId()
+					':id'   => $meal->getId(),
 				]);
 
 				return $meal;
@@ -197,7 +206,7 @@
 			{
 				$mealItem = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT mi.id AS meal_item_id, mi.meal_id, mi.item_id, mi.quantity AS meal_item_quantity, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id FROM meal_items AS mi LEFT JOIN meals AS m ON (m.id = mi.meal_id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) WHERE mi.id = :id");
+				$query = $this->ShopDb->conn->prepare("SELECT mi.id AS meal_item_id, mi.meal_id, mi.item_id, mi.quantity AS meal_item_quantity, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM meal_items AS mi LEFT JOIN meals AS m ON (m.id = mi.meal_id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) WHERE mi.id = :id");
 				$query->execute([':id' => $mealItemId]);
 				$row = $query->fetch(PDO::FETCH_ASSOC);
 
@@ -291,7 +300,7 @@
 				$success = $query->execute(
 				[
 					':isDeleted' => $meal->getIsDeleted(),
-					':id'        => $meal->getId()
+					':id'        => $meal->getId(),
 				]);
 
 				return $success;
@@ -314,10 +323,143 @@
 				$query->execute(
 				[
 					':isDeleted' => $meal->getIsDeleted() ? 1 : 0,
-					':id'        => $meal->getId()
+					':id'        => $meal->getId(),
 				]);
 
 				return $meal;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
+		public function getMealPlansInDateRange(DateTimeImmutable $dateFrom, DateTimeImmutable $dateTo) : ?array
+		{
+			try
+			{
+				$mealPlans = null;
+
+				$query = $this->ShopDb->conn->prepare("SELECT mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.meal_id, mpd.order_item_status, m.name AS meal_name, m.IsDeleted AS meal_isDeleted FROM meal_plan_days AS mpd LEFT JOIN meals AS m ON (m.id = mpd.meal_id) WHERE mpd.date IS NOT NULL AND mpd.date >= :dateFrom AND mpd.date <= :dateTo ORDER BY mpd.date");
+
+				$query->execute(
+				[
+					':dateFrom' => $dateFrom->format('Y-m-d'),
+					':dateTo'   => $dateTo->format('Y-m-d'),
+				]);
+
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if (is_array($rows))
+				{
+					$mealPlans = [];
+
+					foreach ($rows as $row)
+					{
+						$meal = createMeal($row);
+						$mealPlanDay = createMealPlanDay($row);
+						$mealPlanDay->setMeal($meal);
+
+						$mealPlans[$mealPlanDay->getId()] = $mealPlanDay;
+					}
+				}
+
+				return $mealPlans;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
+		public function getMealPlanByDate(DateTime $date) : MealPlanDay
+		{
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("SELECT mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.meal_id, mpd.order_item_status, m.name AS meal_name, m.IsDeleted AS meal_isDeleted FROM meal_plan_days AS mpd LEFT JOIN meals AS m ON (m.id = mpd.meal_id) WHERE mpd.date = :date");
+
+				$query->execute([':date' => $date->format('Y-m-d')]);
+
+				$row = $query->fetch(PDO::FETCH_ASSOC);
+
+				if (empty($row))
+				{
+					$mealPlan = new MealPlanDay();
+					$mealPlan->setDate($date);
+				}
+				else
+				{
+					$meal = createMeal($row);
+					$mealPlan = createMealPlanDay($row);
+					$mealPlan->setMeal($meal);
+				}
+
+				return $mealPlan;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
+		public function addMealPlanDay(MealPlanDay $mealPlanDay) : MealPlanDay
+		{
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("INSERT INTO meal_plan_days (date, meal_id, order_item_status) VALUES (:date, :mealId, :orderItemStatus)");
+
+				$query->execute(
+				[
+					':date'           => $mealPlanDay->getDateString(),
+					'mealId'          => $mealPlanDay->getMealId(),
+					'orderItemStatus' => $mealPlanDay->getOrderItemStatus(),
+				]);
+
+				$mealPlanDay->setId(intval($this->ShopDb->conn->lastInsertId()));
+
+				return $mealPlanDay;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
+		public function updateMealPlanDay(MealPlanDay $mealPlanDay) : MealPlanDay
+		{
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE meal_plan_days SET meal_id = :mealId, order_item_status = :orderItemStatus WHERE id = :id");
+
+				$success = $query->execute(
+				[
+					':mealId'          => $mealPlanDay->getMealId(),
+					':orderItemStatus' => $mealPlanDay->getOrderItemStatus(),
+					':id'              => $mealPlanDay->getId(),
+				]);
+
+				if (!$success)
+				{
+					throw new Exception("Error updating MealPlanDay");
+				}
+
+				return $mealPlanDay;
 			}
 			catch(PDOException $PdoException)
 			{
