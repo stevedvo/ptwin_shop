@@ -148,6 +148,23 @@
 		}
 	}
 
+	function createTag(array $request) : Tag
+	{
+		try
+		{
+			$id = isset($request['tag_id']) ? intval($request['tag_id']) : null;
+			$name = isset($request['tag_name']) ? trim($request['tag_name']) : null;
+
+			$tag = new Tag($id, $name);
+
+			return $tag;
+		}
+		catch (Exception $e)
+		{
+			throw $e;
+		}
+	}
+
 	function getValidationString(object $object, string $property) : string
 	{
 		$validation = "";

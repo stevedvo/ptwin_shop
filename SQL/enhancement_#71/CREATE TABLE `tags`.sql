@@ -1,0 +1,15 @@
+CREATE TABLE `tags` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` text COLLATE utf8mb4_unicode_520_ci,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
+CREATE TABLE `meals_tags` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `meal_id` INT NOT NULL,
+  `tag_id` INT NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
+
+ALTER TABLE `meals_tags` ADD FOREIGN KEY (`meal_id`) REFERENCES `meals`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE `meals_tags` ADD FOREIGN KEY (`tag_id`) REFERENCES `tags`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;

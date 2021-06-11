@@ -8,3 +8,4 @@
 	require_once('controllers/MealsController.php');
 	require_once('controllers/OrdersController.php');
 	require_once('controllers/PackSizesController.php');
+	require_once('controllers/TagsController.php');
