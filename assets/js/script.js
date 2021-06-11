@@ -3598,7 +3598,7 @@ function manageMeals()
 
 				if (data.exception != null)
 				{
-					toastr.error(`Could not update Meal Plan Day: ${data.exception.message}`);
+					toastr.error(`Could not update Meal Plan Day: ${data.exceptionMessage}`);
 					console.log(data);
 
 					return false;
@@ -3620,7 +3620,11 @@ function manageMeals()
 
 				$("select#mealId").select2(
 				{
-					placeholder : "Select a meal...",
+					placeholder :
+					{
+						id   : "-1",
+						text : "Select a meal",
+					},
 					allowClear  : true,
 				});
 
@@ -3825,7 +3829,7 @@ function modalFuncs()
 
 				if (response.exception != null)
 				{
-					toastr.error(`Could not submit form: ${response.exception.message}`);
+					toastr.error(`Could not submit form: ${response.exceptionMessage}`);
 					console.log(response);
 
 					return false;

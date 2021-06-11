@@ -8,6 +8,7 @@
 		<label class="col-xs-12" for="mealId">Meal</label>
 		<div class="col-xs-12">
 			<select class="form-control" id="mealId" name="meal_id" style="width: 100%;">
+				<option value="-1"></option>
 <?php
 				foreach ($model->getMeals() as $meal)
 				{
