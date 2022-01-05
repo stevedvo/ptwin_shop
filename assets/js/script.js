@@ -16,6 +16,7 @@ $(function()
 	adminFuncs();
 	updateRecentConsumptionParameters();
 	modalFuncs();
+	manageTags();
 });
 
 function getURLQueryStringAsObject(queryString)
@@ -3882,6 +3883,281 @@ function modalFuncs()
 
 				return false;
 			},
+		});
+	});
+}
+
+function manageTags()
+{
+	$(document).on("click", ".js-add-tag", function()
+	{
+		let form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		let validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+
+			return false;
+		}
+		else
+		{
+			let tagName = form.find("[name='tagName']").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Tags",
+					action     : "addTag",
+					request    : {'tag_name' : tagName},
+				},
+			}).done(function(data)
+			{
+				if (data.exception != null)
+				{
+					toastr.error(`Could not add Tag: ${data.exceptionMessage}`);
+					console.log(data.exception);
+
+					return false;
+				}
+				else
+				{
+					toastr.success("New Tag successfully added");
+
+					if (data.partial_view != null)
+					{
+						$("#tagsListItems").html(data.partial_view);
+					}
+
+					return true;
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+
+				return false;
+			});
+		}
+	});
+
+	$(document).on("click", ".js-update-tag-name", function()
+	{
+		let form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		let validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+
+			return false;
+		}
+		else
+		{
+			let tagId = parseInt(form.find("[name='tag_id']").val());
+			let tagName = form.find("[name='tag_name']").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Tags",
+					action     : "editTag",
+					request    :
+					{
+						'tag_id'   : tagId,
+						'tag_name' : tagName,
+					},
+				},
+			}).done(function(data)
+			{
+				if (data.exception != null)
+				{
+					toastr.error(`Could not update Tag: ${data.exceptionMessage}`);
+					console.log(data);
+
+					return false;
+				}
+				else if (!data.result)
+				{
+					toastr.error(`Could not update Tag: unknown error`);
+					console.log(data);
+
+					return false;
+				}
+				else
+				{
+					toastr.success("Tag successfully updated");
+
+					return true;
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+
+				return false;
+			});
+		}
+	});
+
+	$(document).on("click", ".js-add-meal-to-tag", function()
+	{
+		let form = $(this).closest(".form");
+		let selectedOption = form.find("select option:selected");
+		let mealId = parseInt(selectedOption.val());
+		let tagId = parseInt(form.find("[name='tag_id']").val());
+
+		if (isNaN(mealId) || mealId == -1)
+		{
+			toastr.error("No Meal selected");
+			return false;
+		}
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Tags",
+				action     : "addTagToMeal",
+				request    :
+				{
+					'tag_id'  : tagId,
+					'meal_id' : mealId,
+				},
+			},
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not add Meal to Tag: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not add Meal to Tag: ${data.exceptionMessage}`);
+				console.log(data);
+
+				return false;
+			}
+
+			let html = data.partial_view;
+
+			if (!html)
+			{
+				toastr.error("Could not add Meal to Tag: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$("#tagMealListItems").html(html);
+			selectedOption.remove();
+
+			toastr.success("Meal successfully added to Tag");
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+
+			return false;
+		});
+	});
+
+	$(document).on("click", ".js-remove-meal-from-tag", function()
+	{
+		let form = $(this).closest(".form");
+		let mealId = parseInt(form.data("meal_id"));
+		let tagId = parseInt($(".tag-meals-container").data("tag_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Tags",
+				action     : "removeTagFromMeal",
+				request    :
+				{
+					'tag_id'  : tagId,
+					'meal_id' : mealId,
+				},
+			},
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not remove Meal from Tag: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not remove Meal from Tag: ${data.exceptionMessage}`);
+				console.log(data);
+
+				return false;
+			}
+
+			let html = data.partial_view;
+
+			if (!html)
+			{
+				toastr.error("Could not remove Meal from Tag: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			form.remove();
+			$("#tagMealSelection").html(html);
+
+			toastr.success("Meal successfully removed from Tag");
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+
+			return false;
 		});
 	});
 }

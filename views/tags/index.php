@@ -23,7 +23,7 @@
 				<h3>Tags</h3>
 				<div id="tagsListItems" class="results-container">
 <?php
-					echo getPartialView("TagListItems", ['items' => $tags]);
+					echo getPartialView("TagListItems", ['tags' => $tags]);
 ?>
 				</div>
 			</div>

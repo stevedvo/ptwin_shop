@@ -4,11 +4,13 @@
 	class TagsController
 	{
 		private $tagsService;
+		private $mealsService;
 		private $tagsViewModelBuilder;
 
 		public function __construct()
 		{
 			$this->tagsService = new TagsService();
+			$this->mealsService = new MealsService();
 			$this->tagsViewModelBuilder = new TagsViewModelBuilder();
 		}
 
@@ -49,7 +51,7 @@
 			}
 		}
 
-		public function addTag(array $request) : ?array
+		public function addTag(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -69,11 +71,11 @@
 				$tag = $this->tagsService->addTag($tag);
 				$tags = $this->tagsService->getAllTags();
 
-				$dalResult->setPartialView(getPartialView("TagListItems", ['items' => $tags]));
+				$dalResult->setPartialView(getPartialView("TagListItems", ['tags' => $tags]));
 			}
 			catch (Exception $e)
 			{
-				$dalResult->setException($e->getMessage());
+				$dalResult->setException($e);
 			}
 
 			$this->tagsService->closeConnexion();
@@ -81,7 +83,7 @@
 			return $dalResult->jsonSerialize();
 		}
 
-		public function editTag(array $request) : ?array
+		public function editTag(array $request) : array
 		{
 			$dalResult = new DalResult();
 
@@ -98,14 +100,11 @@
 					return $dalResult->jsonSerialize();
 				}
 
-				$tag = $this->tagsService->updateTag($tag);
-				$tags = $this->tagsService->getAllTags();
-
-				$dalResult->setPartialView(getPartialView("TagListItems", ['items' => $tags]));
+				$dalResult->setResult($this->tagsService->updateTag($tag));
 			}
 			catch (Exception $e)
 			{
-				$dalResult->setException($e->getMessage());
+				$dalResult->setException($e);
 			}
 
 			$this->tagsService->closeConnexion();
@@ -115,12 +114,13 @@
 
 		public function Edit($request = null) : void
 		{
-			$tag = $all_items = null;
+			$tag = $mealList = null;
+
 			$pageData =
 			[
 				'page_title' => 'Not Found',
 				'template'   => 'views/404.php',
-				'page_data'  => []
+				'page_data'  => [],
 			];
 
 			try
@@ -137,7 +137,7 @@
 					renderPage($pageData);
 				}
 
-				$itemList = $this->itemsService->getAllItemsNotInTag($tag->getId());
+				$mealList = $this->tagsService->getAllMealsNotWithTag($tag->getId());
 
 				$pageData =
 				[
@@ -155,13 +155,12 @@
 					'template'   => 'views/tags/edit.php',
 					'page_data'  =>
 					[
-						'tag'      => $tag,
-						'item_list' => $itemList,
+						'tag'       => $tag,
+						'meal_list' => $mealList,
 					],
 				];
 
 				$this->tagsService->closeConnexion();
-				$this->itemsService->closeConnexion();
 
 				renderPage($pageData);
 			}
@@ -173,85 +172,48 @@
 			}
 		}
 
-		public function addItemToTag(array $request) : array
+		public function addTagToMeal(array $request) : array
 		{
 			$dalResult = new DalResult();
 
 			try
 			{
 				$tag = $this->tagsService->verifyTagRequest($request);
-				$item = $this->itemsService->verifyItemRequest($request);
+				$meal = $this->mealsService->verifyMealRequest($request);
 
-				$tagItem = $this->tagsService->addItemToTag($tag, $item);
-				$tag->addTagItem($tagItem);
+				$this->tagsService->addTagToMeal($tag, $meal);
+				$tag->addMeal($meal);
 
-				$params =
-				[
-					'tagId'    => $tag->getId(),
-					'tagItems' => $tag->getTagItems($reSort = true),
-				];
-
-				$dalResult->setPartialView(getPartialView("TagItemListItems", $params));
+				$dalResult->setPartialView(getPartialView("TagMealListItems", ['tagId' => $tag->getId(), 'tagMeals' => $tag->getMeals($reSort = true)]));
 
 				$this->tagsService->closeConnexion();
-				$this->itemsService->closeConnexion();
-
-				return $dalResult->jsonSerialize();
+				$this->mealsService->closeConnexion();
 			}
 			catch (Exception $e)
 			{
 				$dalResult->setException($e);
-
-				return $dalResult->jsonSerialize();
 			}
+
+			return $dalResult->jsonSerialize();
 		}
 
-		public function updateTagItem(array $request) : array
-		{
-			$dalResult = new DalResult();
-
-			try
-			{
-				$tagItem = $this->tagsService->verifyTagItemRequest($request);
-
-				$quantity = isset($request['tag_item_quantity']) && is_numeric($request['tag_item_quantity']) ? intval($request['tag_item_quantity']) : null;
-				$tagItem->setQuantity($quantity);
-
-				$dalResult->setResult($this->tagsService->updateTagItem($tagItem));
-
-				$this->tagsService->closeConnexion();
-
-				return $dalResult->jsonSerialize();
-			}
-			catch (Exception $e)
-			{
-				$dalResult->setException($e);
-
-				return $dalResult->jsonSerialize();
-			}
-		}
-
-		public function removeItemFromTag(array $request) : array
+		public function removeTagFromMeal(array $request) : array
 		{
 			$dalResult = new DalResult();
 
 			try
 			{
 				$tag = $this->tagsService->verifyTagRequest($request);
-				$tagItem = $this->tagsService->verifyTagItemRequest($request);
+				$meal = $this->mealsService->verifyMealRequest($request);
 
-				$dalResult->setResult($this->tagsService->removeItemFromTag($tagItem, $tag));
-				$tag->removeTagItem($tagItem);
+				$this->tagsService->removeTagFromMeal($tag, $meal);
 
-				$params =
-				[
-					'tagId'    => $tag->getId(),
-					'tagItems' => $tag->getTagItems($reSort = true),
-				];
+				$mealList = $this->tagsService->getAllMealsNotWithTag($tag->getId());
 
-				$dalResult->setPartialView(getPartialView("TagItemListItems", $params));
+				$dalResult->setPartialView(getPartialView("TagMealSelection", ['meal_list' => $mealList]));
 
 				$this->tagsService->closeConnexion();
+				$this->mealsService->closeConnexion();
 
 				return $dalResult->jsonSerialize();
 			}
@@ -263,174 +225,58 @@
 			}
 		}
 
-		public function removeTag(array $request) : array
-		{
-			$dalResult = new DalResult();
+		// public function removeTag(array $request) : array
+		// {
+		// 	$dalResult = new DalResult();
 
-			try
-			{
-				$tag = $this->tagsService->verifyTagRequest($request);
+		// 	try
+		// 	{
+		// 		$tag = $this->tagsService->verifyTagRequest($request);
 
-				if (sizeof($tag->getTagItems()) > 0)
-				{
-					$dalResult->setException(new Exception("Cannot remove Tag with TagItems associated"));
+		// 		if (sizeof($tag->getTagItems()) > 0)
+		// 		{
+		// 			$dalResult->setException(new Exception("Cannot remove Tag with TagItems associated"));
 
-					$this->tagsService->closeConnexion();
+		// 			$this->tagsService->closeConnexion();
 
-					return $dalResult->jsonSerialize();
-				}
+		// 			return $dalResult->jsonSerialize();
+		// 		}
 
-				$dalResult->setResult($this->tagsService->removeTag($tag));
+		// 		$dalResult->setResult($this->tagsService->removeTag($tag));
 
-				$this->tagsService->closeConnexion();
+		// 		$this->tagsService->closeConnexion();
 
-				return $dalResult->jsonSerialize();
-			}
-			catch (Exception $e)
-			{
-				$dalResult->setException($e);
+		// 		return $dalResult->jsonSerialize();
+		// 	}
+		// 	catch (Exception $e)
+		// 	{
+		// 		$dalResult->setException($e);
 
-				return $dalResult->jsonSerialize();
-			}
-		}
+		// 		return $dalResult->jsonSerialize();
+		// 	}
+		// }
 
-		public function restoreTag(array $request) : array
-		{
-			$dalResult = new DalResult();
+		// public function restoreTag(array $request) : array
+		// {
+		// 	$dalResult = new DalResult();
 
-			try
-			{
-				$tag = $this->tagsService->verifyTagRequest($request);
+		// 	try
+		// 	{
+		// 		$tag = $this->tagsService->verifyTagRequest($request);
 
-				$dalResult->setResult($this->tagsService->restoreTag($tag)->jsonSerialize());
+		// 		$dalResult->setResult($this->tagsService->restoreTag($tag)->jsonSerialize());
 
-				$this->tagsService->closeConnexion();
+		// 		$this->tagsService->closeConnexion();
 
-				return $dalResult->jsonSerialize();
-			}
-			catch (Exception $e)
-			{
-				$dalResult->setException($e);
+		// 		return $dalResult->jsonSerialize();
+		// 	}
+		// 	catch (Exception $e)
+		// 	{
+		// 		$dalResult->setException($e);
 
-				return $dalResult->jsonSerialize();
-			}
-		}
-
-		public function Plans(array $request = null) : void
-		{
-			$pageData =
-			[
-				'page_title' => 'Not Found',
-				'template'   => 'views/404.php',
-				'page_data'  => [],
-			];
-
-			try
-			{
-				if (!isset($request['date']))
-				{
-					$date = new DateTime();
-				}
-				else
-				{
-					$date = sanitiseDate($request['date']);
-				}
-
-				if (!($date instanceof DateTime))
-				{
-					$pageData['page_data'] = ['message' => "Invalid date"];
-
-					renderPage($pageData);
-				}
-
-				$origDate = DateTimeImmutable::createFromMutable($date);
-				$calendarStart = $origDate->modify("-".($date->format("N") - 1)." day")->modify("-4 day");
-
-				$dateArray = [];
-
-				for ($i = 0; $i < 25; $i++)
-				{
-					if ($i == 0)
-					{
-						$dateArray[$i] = $calendarStart;
-					}
-					else
-					{
-						$dateArray[$i] = $dateArray[$i - 1]->modify("+1 day");
-					}
-				}
-
-				$dateFrom = reset($dateArray);
-				$dateTo = end($dateArray);
-
-				$tagPlans = $this->tagsService->getTagPlansInDateRange($dateFrom, $dateTo);
-				$tagPlanViewModels = $this->tagsViewModelBuilder->createTagPlanViewModels($dateArray, $tagPlans);
-
-				$pageData =
-				[
-					'page_title' => 'Tag Plans',
-					'template'   => 'views/tags/plans.php',
-					'page_data'  => ['tagPlans' => $tagPlanViewModels],
-				];
-
-				renderPage($pageData);
-			}
-			catch (Exception $e)
-			{
-				$pageData['page_data'] = ['message' => $e->getMessage()];
-
-				renderPage($pageData);
-			}
-		}
-
-		public function getTagPlanByDate(array $request) : array
-		{
-			$dalResult = new DalResult();
-
-			try
-			{
-				$tagPlan = $this->tagsService->getTagPlanByDate($request);
-				$tags = $this->tagsService->getAllTags();
-
-				$editTagPlanDayViewModel = $this->tagsViewModelBuilder->createEditTagPlanDayViewModel($tagPlan, $tags);
-
-				$dalResult->setPartialView(getPartialView("EditTagPlanDay", ['model' => $editTagPlanDayViewModel]));
-
-				$this->tagsService->closeConnexion();
-
-				return $dalResult->jsonSerialize();
-			}
-			catch (Exception $e)
-			{
-				$dalResult->setException($e);
-
-				return $dalResult->jsonSerialize();
-			}
-		}
-
-		public function updateTagPlanDay(array $request) : array
-		{
-			$dalResult = new DalResult();
-
-			try
-			{
-				$tagPlanDay = $this->tagsService->updateTagPlanDay($request);
-
-				$tagPlanCalendarItem = $this->tagsViewModelBuilder->createTagPlanViewModel($tagPlanDay);
-
-				$dalResult->setPartialView(getPartialView("TagPlansCalendarItem", ['tagPlan' => $tagPlanCalendarItem]));
-
-				$this->tagsService->closeConnexion();
-
-				return $dalResult->jsonSerialize();
-			}
-			catch (Exception $e)
-			{
-				$dalResult->setException($e);
-
-				return $dalResult->jsonSerialize();
-			}
-		}
+		// 		return $dalResult->jsonSerialize();
+		// 	}
+		// }
 
 		// public function getAllTags($request)
 		// {

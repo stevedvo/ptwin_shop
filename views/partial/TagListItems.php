@@ -1,5 +1,5 @@
 <?php
-	$tags = $params['items'];
+	$tags = $params['tags'];
 
 	if (sizeof($tags) < 1)
 	{
@@ -9,20 +9,15 @@
 	}
 	else
 	{
+		foreach ($tags as $id => $tag)
+		{
 ?>
-		<table class="table table-bordered table-striped">
-			<tbody>
+			<div class="row form result-item tag-list-item">
+				<input type="hidden" name="tag_id" value="<?= $tag->getId(); ?>" />
+				<div class="col-xs-12 tag_name-container">
+					<a class="btn btn-sm btn-primary" href="<?= SITEURL; ?>/tags/edit/<?= $tag->getId(); ?>/"><?= $tag->getName(); ?></a>
+				</div>
+			</div>
 <?php
-				foreach ($tags as $id => $tag)
-				{
-?>
-					<tr class="result-item tag-list-item">
-						<td><a href="<?= SITEURL; ?>/tags/edit/<?= $tag->getId(); ?>/"><?= $tag->getName(); ?></a></td>
-					</tr>
-<?php
-				}
-?>
-			</tbody>
-		</table>
-<?php
+		}
 	}

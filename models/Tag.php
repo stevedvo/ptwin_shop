@@ -50,21 +50,26 @@
 
 		public function getMeals(bool $reSort = false) : array
 		{
-			if (!$reSort)
+			if ($reSort)
 			{
-				return $this->meals;
+				$sortedMeals = [];
+
+				foreach ($this->meals as $mealId => $meal)
+				{
+					$sortedMeals[$meal->getName()] = $meal;
+				}
+
+				ksort($sortedMeals);
+
+				$this->meals = [];
+
+				foreach ($sortedMeals as $mealName => $meal)
+				{
+					$this->addMeal($meal);
+				}
 			}
 
-			$sortedMeals = [];
-
-			foreach ($this->meals as $key => $meal)
-			{
-				$sortedMeals[$meal->getName()] = $meal;
-			}
-
-			ksort($sortedMeals);
-
-			return $sortedMeals;
+			return $this->meals;
 		}
 
 		public function setMeals(array $meals) : void
