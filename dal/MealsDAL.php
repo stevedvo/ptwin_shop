@@ -38,7 +38,7 @@
 			{
 				$meal = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, mi.id AS meal_item_id, mi.quantity AS meal_item_quantity, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM meals AS m LEFT JOIN meal_items AS mi ON (mi.meal_id = m.id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) WHERE m.id = :id ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, mi.id AS meal_item_id, mi.quantity AS meal_item_quantity, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, t.id AS tag_id, t.name AS tag_name FROM meals AS m LEFT JOIN meal_items AS mi ON (mi.meal_id = m.id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) LEFT JOIN meals_tags AS mt ON (mt.meal_id = m.id) LEFT JOIN tags AS t ON (t.id = mt.tag_id) WHERE m.id = :id ORDER BY i.description");
 				$query->execute([':id' => $mealId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -51,7 +51,7 @@
 							$meal = createMeal($row);
 						}
 
-						if (!is_null($row['meal_item_id']))
+						if (!is_null($row['meal_item_id']) && !$meal->hasMealItem(intval($row['meal_item_id'])))
 						{
 							$item = createItem($row);
 
@@ -69,6 +69,18 @@
 							}
 
 							$meal->addMealItem($mealItem);
+						}
+
+						if (!is_null($row['tag_id']) && !$meal->hasTag(intval($row['tag_id'])))
+						{
+							$tag = createTag($row);
+
+							if (!entityIsValid($tag))
+							{
+								throw new Exception("Invalid Tag. Tag ID #".$tag->getId());
+							}
+
+							$meal->addTag($tag);
 						}
 					}
 				}

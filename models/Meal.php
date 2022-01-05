@@ -8,6 +8,7 @@
 		private bool $isDeleted;
 		private array $mealItems;
 		private array $mealPlanDays;
+		private array $tags;
 		private array $validation;
 
 		public function __construct(?int $id = null, ?string $name = null, bool $isDeleted = false, array $mealItems = [])
@@ -17,6 +18,7 @@
 			$this->isDeleted = $isDeleted;
 			$this->mealItems = $mealItems;
 			$this->mealPlanDays = [];
+			$this->tags = [];
 			$this->validation = ['Name' => ['required' => true]];
 		}
 
@@ -97,6 +99,11 @@
 			unset($this->mealItems[$mealItem->getId()]);
 		}
 
+		public function hasMealItem(int $mealItemId) : bool
+		{
+			return array_key_exists($mealItemId, $this->mealItems);
+		}
+
 		public function getMealItemByItemId(int $itemId) : ?MealItem
 		{
 			foreach ($this->mealItems as $mealItemId => $mealItem)
@@ -142,6 +149,31 @@
 			}
 
 			return null;
+		}
+
+		public function getTags() : array
+		{
+			return $this->tags;
+		}
+
+		public function setTags(array $tags) : void
+		{
+			$this->tags = $tags;
+		}
+
+		public function addTag(Tag $tag) : void
+		{
+			$this->tags[$tag->getId()] = $tag;
+		}
+
+		public function removeTag(Tag $tag) : void
+		{
+			unset($this->tags[$tag->getId()]);
+		}
+
+		public function hasTag(int $tagId) : bool
+		{
+			return array_key_exists($tagId, $this->tags);
 		}
 
 		public function getValidation($property = null)
