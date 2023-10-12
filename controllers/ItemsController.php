@@ -7,6 +7,7 @@
 		private $lists_service;
 		private $departments_service;
 		private $orders_service;
+		private $packsizes_service;
 		private $luckyDips_service;
 		private $meals_service;
 		private ItemsViewModelBuilder $itemsViewModelBuilder;
