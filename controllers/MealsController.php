@@ -5,12 +5,14 @@
 	{
 		private $mealsService;
 		private $itemsService;
+		private $tagsService;
 		private $mealsViewModelBuilder;
 
 		public function __construct()
 		{
 			$this->mealsService = new MealsService();
 			$this->itemsService = new ItemsService();
+			$this->tagsService = new TagsService();
 			$this->mealsViewModelBuilder = new MealsViewModelBuilder();
 		}
 
@@ -140,6 +142,7 @@
 				}
 
 				$itemList = $this->itemsService->getAllItemsNotInMeal($meal->getId());
+				$tagList = $this->tagsService->getAllTagsNotWithMeal($meal->getId());
 
 				$pageData =
 				[
@@ -159,11 +162,13 @@
 					[
 						'meal'      => $meal,
 						'item_list' => $itemList,
+						'tag_list'  => $tagList,
 					],
 				];
 
 				$this->mealsService->closeConnexion();
 				$this->itemsService->closeConnexion();
+				$this->tagsService->closeConnexion();
 
 				renderPage($pageData);
 			}
@@ -197,6 +202,78 @@
 
 				$this->mealsService->closeConnexion();
 				$this->itemsService->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
+		public function addTagToMeal(array $request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$meal = $this->mealsService->verifyMealRequest($request);
+				$tag = $this->tagsService->verifyTagRequest($request);
+
+				$this->tagsService->addTagToMeal($tag, $meal);
+				$meal->addTag($tag);
+
+				$params =
+				[
+					'mealId'   => $meal->getId(),
+					'mealTags' => $meal->getTags($reSort = true),
+				];
+
+				$tagList = $this->tagsService->getAllTagsNotWithMeal($meal->getId());
+
+				$dalResult->setPartialView(getPartialView("MealTagListItems", $params));
+				$dalResult->setResult(['tagSelection' => getPartialView("MealTagSelection", ['tag_list' => $tagList])]);
+
+				$this->mealsService->closeConnexion();
+				$this->tagsService->closeConnexion();
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
+		public function removeTagFromMeal(array $request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$meal = $this->mealsService->verifyMealRequest($request);
+				$tag = $this->tagsService->verifyTagRequest($request);
+
+				$this->tagsService->removeTagFromMeal($tag, $meal);
+				$meal->removeTag($tag);
+
+				$params =
+				[
+					'mealId'   => $meal->getId(),
+					'mealTags' => $meal->getTags($reSort = true),
+				];
+
+				$tagList = $this->tagsService->getAllTagsNotWithMeal($meal->getId());
+
+				$dalResult->setPartialView(getPartialView("MealTagListItems", $params));
+				$dalResult->setResult(['tagSelection' => getPartialView("MealTagSelection", ['tag_list' => $tagList])]);
+
+				$this->mealsService->closeConnexion();
+				$this->tagsService->closeConnexion();
 
 				return $dalResult->jsonSerialize();
 			}
@@ -318,7 +395,7 @@
 			}
 		}
 
-		public function Plans(array $request = null) : void
+		public function Plans(?array $request = null) : void
 		{
 			$pageData =
 			[

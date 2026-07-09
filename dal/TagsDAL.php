@@ -175,6 +175,37 @@
 			}
 		}
 
+		public function getAllTagsNotWithMeal(int $mealId) : array
+		{
+			try
+			{
+				$tags = [];
+
+				$query = $this->ShopDb->conn->prepare("SELECT t.id AS tag_id, t.name AS tag_name FROM tags AS t WHERE t.id NOT IN (SELECT tag_id FROM meals_tags WHERE meal_id = :meal_id) ORDER BY t.name");
+				$query->execute([':meal_id' => $mealId]);
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if (is_array($rows))
+				{
+					foreach ($rows as $row)
+					{
+						$tag = createTag($row);
+						$tags[$tag->getId()] = $tag;
+					}
+				}
+
+				return $tags;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
 		public function updateTag(Tag $tag) : Tag
 		{
 			try

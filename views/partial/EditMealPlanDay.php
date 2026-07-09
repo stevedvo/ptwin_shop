@@ -5,6 +5,24 @@
 
 <div class="form-group">
 	<div class="row">
+		<label class="col-xs-12" for="mealTagsFilter">Tags</label>
+		<div class="col-xs-12">
+			<select class="form-control" id="mealTagsFilter" name="meal_tag_filters[]" multiple="multiple" style="width: 100%;">
+<?php
+				foreach ($model->getTags() as $tag)
+				{
+?>
+					<option value="<?= $tag->getValue(); ?>"><?= $tag->getText(); ?></option>
+<?php
+				}
+?>
+			</select>
+		</div>
+	</div>
+</div>
+
+<div class="form-group">
+	<div class="row">
 		<label class="col-xs-12" for="mealId">Meal</label>
 		<div class="col-xs-12">
 			<select class="form-control" id="mealId" name="meal_id" style="width: 100%;">

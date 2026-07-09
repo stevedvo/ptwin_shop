@@ -1,6 +1,7 @@
 <?php
 	$meal = $response['meal'];
 	$item_list = $response['item_list'];
+	$tagList = $response['tag_list'];
 ?>
 <main class="wrapper">
 	<div class="container">

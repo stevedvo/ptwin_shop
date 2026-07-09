@@ -134,6 +134,18 @@
 			}
 		}
 
+		public function getAllTagsNotWithMeal(int $mealId) : array
+		{
+			try
+			{
+				return $this->dal->getAllTagsNotWithMeal($mealId);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
 		public function updateTag(Tag $tagUpdate) : Tag
 		{
 			try

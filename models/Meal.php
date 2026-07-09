@@ -151,9 +151,23 @@
 			return null;
 		}
 
-		public function getTags() : array
+		public function getTags(bool $reSort = false) : array
 		{
-			return $this->tags;
+			if (!$reSort)
+			{
+				return $this->tags;
+			}
+
+			$sortedTags = [];
+
+			foreach ($this->tags as $key => $tag)
+			{
+				$sortedTags[$tag->getName()] = $tag;
+			}
+
+			ksort($sortedTags);
+
+			return $sortedTags;
 		}
 
 		public function setTags(array $tags) : void

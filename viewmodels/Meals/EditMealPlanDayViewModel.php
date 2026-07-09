@@ -8,15 +8,17 @@
 		private ?int $orderItemStatus;
 		private ?int $mealId;
 		private array $meals;
+		private array $tags;
 		private array $validation;
 
-		public function __construct(DateTimeInterface $date, ?int $id = null, ?int $orderItemStatus = null, ?int $mealId = null, array $meals = [])
+		public function __construct(DateTimeInterface $date, ?int $id = null, ?int $orderItemStatus = null, ?int $mealId = null, array $meals = [], array $tags = [])
 		{
 			$this->date = $date;
 			$this->id = $id;
 			$this->orderItemStatus = $orderItemStatus;
 			$this->mealId = $mealId;
 			$this->meals = $meals;
+			$this->tags = $tags;
 			$this->validation = [];
 		}
 
@@ -85,12 +87,27 @@
 			$this->meals[] = $meal;
 		}
 
+		public function getTags() : array
+		{
+			return $this->tags;
+		}
+
+		public function setTags(array $tags) : void
+		{
+			$this->tags = $tags;
+		}
+
+		public function addTag(SelectListItem $tag) : void
+		{
+			$this->tags[] = $tag;
+		}
+
 		public function getAllValidation() : array
 		{
 			return $this->validation;
 		}
 
-		public function getValidation(string $property = null) : string
+		public function getValidation(?string $property = null) : string
 		{
 			$validationString = "";
 

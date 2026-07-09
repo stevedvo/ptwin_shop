@@ -33,11 +33,13 @@
 		public function createEditMealPlanDayViewModel(MealPlanDay $mealPlan, array $meals) : EditMealPlanDayViewModel
 		{
 			$editMealPlanDayViewModel = new EditMealPlanDayViewModel($mealPlan->getDate(), $mealPlan->getId(), $mealPlan->getOrderItemStatus(), $mealPlan->getMealId());
+			$tags = [];
 
 			foreach ($meals as $mealId => $meal)
 			{
 				$previousDateString = "";
 				$hadRecently = false;
+				$mealTagIds = [];
 
 				$previousMealPlanDay = $meal->getLastMealPlanDayBeforeDate($mealPlan->getDate());
 
@@ -52,6 +54,18 @@
 					$hadRecently = $previousMealPlanDate->format("Y-m-d") >= $previousLimit->format("Y-m-d");
 				}
 
+				foreach ($meal->getTags() as $tag)
+				{
+					$mealTagIds[] = $tag->getId();
+
+					if (!isset($tags[$tag->getName()]))
+					{
+						$tags[$tag->getName()] = createSelectListItem($tag->getId(), $tag->getName());
+					}
+				}
+
+				sort($mealTagIds);
+
 				$selectListItem = createSelectListItem($meal->getId(), $meal->getName(),
 				[
 					[
@@ -62,9 +76,20 @@
 						'key'   => "hadRecently",
 						'value' => $hadRecently,
 					],
+					[
+						'key'   => "tagids",
+						'value' => implode(",", $mealTagIds),
+					],
 				]);
 
 				$editMealPlanDayViewModel->addMeal($selectListItem);
+			}
+
+			ksort($tags);
+
+			foreach ($tags as $tag)
+			{
+				$editMealPlanDayViewModel->addTag($tag);
 			}
 
 			return $editMealPlanDayViewModel;

@@ -3307,6 +3307,73 @@ function manageMeals()
 		});
 	});
 
+	$(document).on("click", ".js-add-tag-to-meal", function()
+	{
+		let form = $(this).closest(".form");
+		let selectedOption = form.find("select option:selected");
+		let tagID = parseInt(selectedOption.val());
+		let mealID = parseInt(form.find("[name='meal_id']").val());
+
+		if (isNaN(tagID) || tagID == -1)
+		{
+			toastr.error("No Tag selected");
+			return false;
+		}
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Meals",
+				action     : "addTagToMeal",
+				request    :
+				{
+					'tag_id'  : tagID,
+					'meal_id' : mealID,
+				},
+			},
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not add Tag to Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not add Tag to Meal: ${data.exceptionMessage}`);
+				console.log(data);
+
+				return false;
+			}
+
+			if (!data.partial_view || !data.result || !data.result.tagSelection)
+			{
+				toastr.error("Could not add Tag to Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$("#mealTagListItems").html(data.partial_view);
+			$("#mealTagSelection").html(data.result.tagSelection);
+
+			toastr.success("Tag successfully added to Meal");
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+
 	$(document).on("click", ".js-update-mealitem", function()
 	{
 		let form = $(this).closest(".form");
@@ -3448,6 +3515,66 @@ function manageMeals()
 		});
 	});
 
+	$(document).on("click", ".js-remove-tag-from-meal", function()
+	{
+		let form = $(this).closest(".form");
+		let tagID = parseInt(form.data("tag_id"));
+		let mealID = parseInt($(".meal-tags-container").data("meal_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Meals",
+				action     : "removeTagFromMeal",
+				request    :
+				{
+					'tag_id'  : tagID,
+					'meal_id' : mealID,
+				},
+			},
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not remove Tag from Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not remove Tag from Meal: ${data.exceptionMessage}`);
+				console.log(data);
+
+				return false;
+			}
+
+			if (!data.partial_view || !data.result || !data.result.tagSelection)
+			{
+				toastr.error("Could not remove Tag from Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$("#mealTagListItems").html(data.partial_view);
+			$("#mealTagSelection").html(data.result.tagSelection);
+
+			toastr.success("Tag successfully removed from Meal");
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+
 	$(document).on("click", ".js-remove-meal", function()
 	{
 		var mealID = parseInt($(this).closest(".meal-items-container").data("meal_id"));
@@ -3562,6 +3689,142 @@ function manageMeals()
 		});
 	});
 
+	function getSelectedMealPlanTagIds()
+	{
+		let tagIds = $("select#mealTagsFilter").val();
+
+		if (!Array.isArray(tagIds))
+		{
+			return [];
+		}
+
+		return tagIds.map(function(tagId)
+		{
+			return tagId.toString();
+		});
+	}
+
+	function getMealPlanOptionTagIds(option)
+	{
+		let tagIdsString = $(option).attr("data-tagids") || "";
+
+		if (tagIdsString.length == 0)
+		{
+			return [];
+		}
+
+		return tagIdsString.split(",").filter(function(tagId)
+		{
+			return tagId.length > 0;
+		});
+	}
+
+	function mealPlanOptionMatchesTagFilters(option)
+	{
+		let selectedTagIds = getSelectedMealPlanTagIds();
+
+		if (selectedTagIds.length == 0)
+		{
+			return true;
+		}
+
+		let mealTagIds = getMealPlanOptionTagIds(option);
+
+		return selectedTagIds.every(function(tagId)
+		{
+			return mealTagIds.indexOf(tagId) != -1;
+		});
+	}
+
+	function mealPlanOptionIsVisible(option)
+	{
+		let optionValue = $(option).attr("value");
+
+		if (optionValue == "-1")
+		{
+			return true;
+		}
+
+		if ($(option).data("hadrecently") == 1)
+		{
+			return false;
+		}
+
+		return mealPlanOptionMatchesTagFilters(option);
+	}
+
+	function mealPlanMealMatcher(params, data)
+	{
+		if (!data.element)
+		{
+			return data;
+		}
+
+		if (!mealPlanOptionIsVisible(data.element))
+		{
+			return null;
+		}
+
+		if ($.trim(params.term) == "")
+		{
+			return data;
+		}
+
+		if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1)
+		{
+			return data;
+		}
+
+		return null;
+	}
+
+	function filterSelectedMealPlanMeal()
+	{
+		let selector = $("select#mealId");
+		let selectedOption = selector.find("option:selected");
+
+		if (selectedOption.length == 0)
+		{
+			return;
+		}
+
+		if (selectedOption.attr("value") != "-1" && !mealPlanOptionMatchesTagFilters(selectedOption[0]))
+		{
+			selector.val("-1").trigger("change");
+		}
+	}
+
+	function initMealPlanDayModal(modal)
+	{
+		modal.find("select#mealTagsFilter").select2(
+		{
+			placeholder :
+			{
+				id   : "",
+				text : "Filter by Tags",
+			},
+			allowClear : true,
+		});
+
+		modal.find("select#mealId").select2(
+		{
+			placeholder :
+			{
+				id   : "-1",
+				text : "Select a meal",
+			},
+			allowClear : true,
+			matcher    : mealPlanMealMatcher,
+		});
+
+		filterSelectedMealPlanMeal();
+	}
+
+	$(document).on("change", "#mealTagsFilter", function()
+	{
+		filterSelectedMealPlanMeal();
+	});
+
 	$(document).on("click", ".calendar-box .edit-btn", function()
 	{
 		let calendarBox = $(this).closest(".calendar-box");
@@ -3618,16 +3881,7 @@ function manageMeals()
 				let modal = $("#modal");
 
 				modal.find(".modal-body").html(html);
-
-				$("select#mealId").select2(
-				{
-					placeholder :
-					{
-						id   : "-1",
-						text : "Select a meal",
-					},
-					allowClear  : true,
-				});
+				initMealPlanDayModal(modal);
 
 				modal.modal();
 
@@ -3653,7 +3907,7 @@ function manageMeals()
 
 		$.each(allOptions, function()
 		{
-			if ($(this).data("hadrecently") != 1)
+			if ($(this).attr("value") != "-1" && mealPlanOptionIsVisible(this))
 			{
 				validOptions.push($(this).attr("value"));
 			}
@@ -3661,7 +3915,7 @@ function manageMeals()
 
 		if (validOptions.length == 0)
 		{
-			toastr.error("No Meals not in last 14 days");
+			toastr.error("No matching Meals available");
 
 			return false;
 		}
