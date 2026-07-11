@@ -130,7 +130,7 @@
 			{
 				$meals = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.order_item_status, t.id AS tag_id, t.name AS tag_name FROM meals AS m LEFT JOIN meal_plan_days AS mpd ON (mpd.meal_id = m.id) LEFT JOIN meals_tags AS mt ON (mt.meal_id = m.id) LEFT JOIN tags AS t ON (t.id = mt.tag_id) ".$includeDeletedQuery." ORDER BY meal_name, mpd.date, t.name");
+				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.order_item_status, t.id AS tag_id, t.name AS tag_name, t.IsDefaultInclude AS tag_isDefaultInclude, t.IsDefaultExclude AS tag_isDefaultExclude FROM meals AS m LEFT JOIN meal_plan_days AS mpd ON (mpd.meal_id = m.id) LEFT JOIN meals_tags AS mt ON (mt.meal_id = m.id) LEFT JOIN tags AS t ON (t.id = mt.tag_id) ".$includeDeletedQuery." ORDER BY meal_name, mpd.date, t.name");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 

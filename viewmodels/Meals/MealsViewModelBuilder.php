@@ -34,6 +34,8 @@
 		{
 			$editMealPlanDayViewModel = new EditMealPlanDayViewModel($mealPlan->getDate(), $mealPlan->getId(), $mealPlan->getOrderItemStatus(), $mealPlan->getMealId());
 			$tags = [];
+			$defaultIncludeTagIds = [];
+			$defaultExcludeTagIds = [];
 
 			foreach ($meals as $mealId => $meal)
 			{
@@ -61,6 +63,16 @@
 					if (!isset($tags[$tag->getName()]))
 					{
 						$tags[$tag->getName()] = createSelectListItem($tag->getId(), $tag->getName());
+					}
+
+					if ($tag->getIsDefaultInclude())
+					{
+						$defaultIncludeTagIds[$tag->getId()] = $tag->getId();
+					}
+
+					if ($tag->getIsDefaultExclude())
+					{
+						$defaultExcludeTagIds[$tag->getId()] = $tag->getId();
 					}
 				}
 
@@ -91,6 +103,9 @@
 			{
 				$editMealPlanDayViewModel->addTag($tag);
 			}
+
+			$editMealPlanDayViewModel->setDefaultIncludeTagIds(array_values($defaultIncludeTagIds));
+			$editMealPlanDayViewModel->setDefaultExcludeTagIds(array_values($defaultExcludeTagIds));
 
 			return $editMealPlanDayViewModel;
 		}

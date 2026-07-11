@@ -9,9 +9,11 @@
 		private ?int $mealId;
 		private array $meals;
 		private array $tags;
+		private array $defaultIncludeTagIds;
+		private array $defaultExcludeTagIds;
 		private array $validation;
 
-		public function __construct(DateTimeInterface $date, ?int $id = null, ?int $orderItemStatus = null, ?int $mealId = null, array $meals = [], array $tags = [])
+		public function __construct(DateTimeInterface $date, ?int $id = null, ?int $orderItemStatus = null, ?int $mealId = null, array $meals = [], array $tags = [], array $defaultIncludeTagIds = [], array $defaultExcludeTagIds = [])
 		{
 			$this->date = $date;
 			$this->id = $id;
@@ -19,6 +21,8 @@
 			$this->mealId = $mealId;
 			$this->meals = $meals;
 			$this->tags = $tags;
+			$this->defaultIncludeTagIds = $defaultIncludeTagIds;
+			$this->defaultExcludeTagIds = $defaultExcludeTagIds;
 			$this->validation = [];
 		}
 
@@ -100,6 +104,36 @@
 		public function addTag(SelectListItem $tag) : void
 		{
 			$this->tags[] = $tag;
+		}
+
+		public function getDefaultIncludeTagIds() : array
+		{
+			return $this->defaultIncludeTagIds;
+		}
+
+		public function setDefaultIncludeTagIds(array $defaultIncludeTagIds) : void
+		{
+			$this->defaultIncludeTagIds = $defaultIncludeTagIds;
+		}
+
+		public function addDefaultIncludeTagId(int $tagId) : void
+		{
+			$this->defaultIncludeTagIds[] = $tagId;
+		}
+
+		public function getDefaultExcludeTagIds() : array
+		{
+			return $this->defaultExcludeTagIds;
+		}
+
+		public function setDefaultExcludeTagIds(array $defaultExcludeTagIds) : void
+		{
+			$this->defaultExcludeTagIds = $defaultExcludeTagIds;
+		}
+
+		public function addDefaultExcludeTagId(int $tagId) : void
+		{
+			$this->defaultExcludeTagIds[] = $tagId;
 		}
 
 		public function getAllValidation() : array

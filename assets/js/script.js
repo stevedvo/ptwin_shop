@@ -3689,9 +3689,24 @@ function manageMeals()
 		});
 	});
 
-	function getSelectedMealPlanTagIds()
+	function getSelectedMealPlanIncludeTagIds()
 	{
-		let tagIds = $("select#mealTagsFilter").val();
+		let tagIds = $("select#mealIncludeTagsFilter").val();
+
+		if (!Array.isArray(tagIds))
+		{
+			return [];
+		}
+
+		return tagIds.map(function(tagId)
+		{
+			return tagId.toString();
+		});
+	}
+
+	function getSelectedMealPlanExcludeTagIds()
+	{
+		let tagIds = $("select#mealExcludeTagsFilter").val();
 
 		if (!Array.isArray(tagIds))
 		{
@@ -3719,9 +3734,9 @@ function manageMeals()
 		});
 	}
 
-	function mealPlanOptionMatchesTagFilters(option)
+	function mealPlanOptionMatchesIncludeTagFilters(option)
 	{
-		let selectedTagIds = getSelectedMealPlanTagIds();
+		let selectedTagIds = getSelectedMealPlanIncludeTagIds();
 
 		if (selectedTagIds.length == 0)
 		{
@@ -3734,6 +3749,28 @@ function manageMeals()
 		{
 			return mealTagIds.indexOf(tagId) != -1;
 		});
+	}
+
+	function mealPlanOptionMatchesExcludeTagFilters(option)
+	{
+		let selectedTagIds = getSelectedMealPlanExcludeTagIds();
+
+		if (selectedTagIds.length == 0)
+		{
+			return true;
+		}
+
+		let mealTagIds = getMealPlanOptionTagIds(option);
+
+		return !selectedTagIds.some(function(tagId)
+		{
+			return mealTagIds.indexOf(tagId) != -1;
+		});
+	}
+
+	function mealPlanOptionMatchesTagFilters(option)
+	{
+		return mealPlanOptionMatchesIncludeTagFilters(option) && mealPlanOptionMatchesExcludeTagFilters(option);
 	}
 
 	function mealPlanOptionIsVisible(option)
@@ -3796,12 +3833,22 @@ function manageMeals()
 
 	function initMealPlanDayModal(modal)
 	{
-		modal.find("select#mealTagsFilter").select2(
+		modal.find("select#mealIncludeTagsFilter").select2(
 		{
 			placeholder :
 			{
 				id   : "",
-				text : "Filter by Tags",
+				text : "Include Tags",
+			},
+			allowClear : true,
+		});
+
+		modal.find("select#mealExcludeTagsFilter").select2(
+		{
+			placeholder :
+			{
+				id   : "",
+				text : "Exclude Tags",
 			},
 			allowClear : true,
 		});
@@ -3817,10 +3864,9 @@ function manageMeals()
 			matcher    : mealPlanMealMatcher,
 		});
 
-		filterSelectedMealPlanMeal();
 	}
 
-	$(document).on("change", "#mealTagsFilter", function()
+	$(document).on("change", "#mealIncludeTagsFilter, #mealExcludeTagsFilter", function()
 	{
 		filterSelectedMealPlanMeal();
 	});
@@ -4232,6 +4278,8 @@ function manageTags()
 		{
 			let tagId = parseInt(form.find("[name='tag_id']").val());
 			let tagName = form.find("[name='tag_name']").val();
+			let isDefaultInclude = form.find("[name='tag_isDefaultInclude']").prop("checked") ? 1 : 0;
+			let isDefaultExclude = form.find("[name='tag_isDefaultExclude']").prop("checked") ? 1 : 0;
 
 			$.ajax(
 			{
@@ -4244,8 +4292,10 @@ function manageTags()
 					action     : "editTag",
 					request    :
 					{
-						'tag_id'   : tagId,
-						'tag_name' : tagName,
+						'tag_id'               : tagId,
+						'tag_name'             : tagName,
+						'tag_isDefaultInclude' : isDefaultInclude,
+						'tag_isDefaultExclude' : isDefaultExclude,
 					},
 				},
 			}).done(function(data)

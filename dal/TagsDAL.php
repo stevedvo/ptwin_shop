@@ -19,8 +19,13 @@
 		{
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("INSERT INTO tags (name) VALUES (:name)");
-				$query->execute([':name' => $tag->getName()]);
+				$query = $this->ShopDb->conn->prepare("INSERT INTO tags (name, IsDefaultInclude, IsDefaultExclude) VALUES (:name, :isDefaultInclude, :isDefaultExclude)");
+				$query->execute(
+				[
+					':name'             => $tag->getName(),
+					':isDefaultInclude' => $tag->getIsDefaultInclude() ? 1 : 0,
+					':isDefaultExclude' => $tag->getIsDefaultExclude() ? 1 : 0,
+				]);
 
 				$tag->setId(intval($this->ShopDb->conn->lastInsertId()));
 			}
@@ -38,7 +43,7 @@
 			{
 				$tag = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT t.id AS tag_id, t.name AS tag_name, m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted FROM tags AS t LEFT JOIN meals_tags AS mt ON (mt.tag_id = t.id) LEFT JOIN meals AS m ON (m.id = mt.meal_id) WHERE t.id = :id AND (m.IsDeleted = 0 OR m.IsDeleted IS NULL) ORDER BY m.name");
+				$query = $this->ShopDb->conn->prepare("SELECT t.id AS tag_id, t.name AS tag_name, t.IsDefaultInclude AS tag_isDefaultInclude, t.IsDefaultExclude AS tag_isDefaultExclude, m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted FROM tags AS t LEFT JOIN meals_tags AS mt ON (mt.tag_id = t.id) LEFT JOIN meals AS m ON (m.id = mt.meal_id) WHERE t.id = :id AND (m.IsDeleted = 0 OR m.IsDeleted IS NULL) ORDER BY m.name");
 				$query->execute([':id' => $tagId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -83,7 +88,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT id AS tag_id, name AS tag_name FROM tags WHERE name = :name LIMIT 1");
+				$query = $this->ShopDb->conn->prepare("SELECT id AS tag_id, name AS tag_name, IsDefaultInclude AS tag_isDefaultInclude, IsDefaultExclude AS tag_isDefaultExclude FROM tags WHERE name = :name LIMIT 1");
 				$query->execute([':name' => $tagName]);
 				$row = $query->fetch(PDO::FETCH_ASSOC);
 
@@ -107,7 +112,7 @@
 				$tags = null;
 
 				// $query = $this->ShopDb->conn->prepare("SELECT t.id AS tag_id, t.name AS tag_name, m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted FROM tags AS t LEFT JOIN meals_tags AS mt ON (mt.tag_id = t.id) LEFT JOIN meals AS m ON (m.id = mt.meal_id) WHERE m.IsDeleted = 0 ORDER BY t.name");
-				$query = $this->ShopDb->conn->prepare("SELECT t.id AS tag_id, t.name AS tag_name FROM tags AS t ORDER BY t.name");
+				$query = $this->ShopDb->conn->prepare("SELECT t.id AS tag_id, t.name AS tag_name, t.IsDefaultInclude AS tag_isDefaultInclude, t.IsDefaultExclude AS tag_isDefaultExclude FROM tags AS t ORDER BY t.name");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -181,7 +186,7 @@
 			{
 				$tags = [];
 
-				$query = $this->ShopDb->conn->prepare("SELECT t.id AS tag_id, t.name AS tag_name FROM tags AS t WHERE t.id NOT IN (SELECT tag_id FROM meals_tags WHERE meal_id = :meal_id) ORDER BY t.name");
+				$query = $this->ShopDb->conn->prepare("SELECT t.id AS tag_id, t.name AS tag_name, t.IsDefaultInclude AS tag_isDefaultInclude, t.IsDefaultExclude AS tag_isDefaultExclude FROM tags AS t WHERE t.id NOT IN (SELECT tag_id FROM meals_tags WHERE meal_id = :meal_id) ORDER BY t.name");
 				$query->execute([':meal_id' => $mealId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -210,11 +215,13 @@
 		{
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("UPDATE tags SET name = :name WHERE id = :id");
+				$query = $this->ShopDb->conn->prepare("UPDATE tags SET name = :name, IsDefaultInclude = :isDefaultInclude, IsDefaultExclude = :isDefaultExclude WHERE id = :id");
 				$query->execute(
 				[
-					':name' => $tag->getName(),
-					':id'   => $tag->getId(),
+					':name'             => $tag->getName(),
+					':isDefaultInclude' => $tag->getIsDefaultInclude() ? 1 : 0,
+					':isDefaultExclude' => $tag->getIsDefaultExclude() ? 1 : 0,
+					':id'               => $tag->getId(),
 				]);
 
 				return $tag;

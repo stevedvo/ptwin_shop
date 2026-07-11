@@ -5,13 +5,17 @@
 	{
 		private ?int $id;
 		private ?string $name;
+		private bool $isDefaultInclude;
+		private bool $isDefaultExclude;
 		private array $meals;
 		private array $validation;
 
-		public function __construct(?int $id = null, ?string $name = null, array $meals = [])
+		public function __construct(?int $id = null, ?string $name = null, bool $isDefaultInclude = false, bool $isDefaultExclude = false, array $meals = [])
 		{
 			$this->id = $id;
 			$this->name = $name;
+			$this->isDefaultInclude = $isDefaultInclude;
+			$this->isDefaultExclude = $isDefaultExclude;
 			$this->meals = $meals;
 			$this->validation = ['Name' => ['required' => true]];
 		}
@@ -20,9 +24,11 @@
 		{
 			$serialised =
 			[
-				'id'    => $this->getId(),
-				'name'  => $this->getName(),
-				'meals' => $this->getMeals(),
+				'id'               => $this->getId(),
+				'name'             => $this->getName(),
+				'isDefaultInclude' => $this->getIsDefaultInclude(),
+				'isDefaultExclude' => $this->getIsDefaultExclude(),
+				'meals'            => $this->getMeals(),
 			];
 
 			return $serialised;
@@ -46,6 +52,26 @@
 		public function setName(string $name) : void
 		{
 			$this->name = $name;
+		}
+
+		public function getIsDefaultInclude() : bool
+		{
+			return $this->isDefaultInclude;
+		}
+
+		public function setIsDefaultInclude(bool $isDefaultInclude) : void
+		{
+			$this->isDefaultInclude = $isDefaultInclude;
+		}
+
+		public function getIsDefaultExclude() : bool
+		{
+			return $this->isDefaultExclude;
+		}
+
+		public function setIsDefaultExclude(bool $isDefaultExclude) : void
+		{
+			$this->isDefaultExclude = $isDefaultExclude;
 		}
 
 		public function getMeals(bool $reSort = false) : array

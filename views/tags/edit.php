@@ -18,6 +18,24 @@
 					</div>
 
 					<div class="form-group">
+						<div class="row">
+							<label for="tag_isDefaultInclude" class="col-sm-3">Default Include:</label>
+							<div class="col-sm-9">
+								<input type="checkbox" id="tag_isDefaultInclude" name="tag_isDefaultInclude" value="1" <?= $tag->getIsDefaultInclude() ? "checked" : ""; ?> />
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="row">
+							<label for="tag_isDefaultExclude" class="col-sm-3">Default Exclude:</label>
+							<div class="col-sm-9">
+								<input type="checkbox" id="tag_isDefaultExclude" name="tag_isDefaultExclude" value="1" <?= $tag->getIsDefaultExclude() ? "checked" : ""; ?> />
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
 						<button class="btn btn-primary btn-sm js-update-tag-name">Update</button>
 					</div>
 				</div>

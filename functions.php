@@ -154,8 +154,10 @@
 		{
 			$id = isset($request['tag_id']) ? intval($request['tag_id']) : null;
 			$name = isset($request['tag_name']) ? trim($request['tag_name']) : null;
+			$isDefaultInclude = isset($request['tag_isDefaultInclude']) ? filter_var($request['tag_isDefaultInclude'], FILTER_VALIDATE_BOOLEAN) : false;
+			$isDefaultExclude = isset($request['tag_isDefaultExclude']) ? filter_var($request['tag_isDefaultExclude'], FILTER_VALIDATE_BOOLEAN) : false;
 
-			$tag = new Tag($id, $name);
+			$tag = new Tag($id, $name, $isDefaultInclude, $isDefaultExclude);
 
 			return $tag;
 		}

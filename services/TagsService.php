@@ -158,6 +158,8 @@
 				}
 
 				$tag->setName($tagUpdate->getName());
+				$tag->setIsDefaultInclude($tagUpdate->getIsDefaultInclude());
+				$tag->setIsDefaultExclude($tagUpdate->getIsDefaultExclude());
 
 				return $this->dal->updateTag($tag);
 			}
