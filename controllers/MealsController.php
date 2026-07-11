@@ -470,12 +470,14 @@
 			{
 				$mealPlan = $this->mealsService->getMealPlanByDate($request);
 				$meals = $this->mealsService->getAllMeals();
+				$tags = $this->tagsService->getAllTags();
 
-				$editMealPlanDayViewModel = $this->mealsViewModelBuilder->createEditMealPlanDayViewModel($mealPlan, $meals);
+				$editMealPlanDayViewModel = $this->mealsViewModelBuilder->createEditMealPlanDayViewModel($mealPlan, $meals, $tags);
 
 				$dalResult->setPartialView(getPartialView("EditMealPlanDay", ['model' => $editMealPlanDayViewModel]));
 
 				$this->mealsService->closeConnexion();
+				$this->tagsService->closeConnexion();
 
 				return $dalResult->jsonSerialize();
 			}

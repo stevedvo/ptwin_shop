@@ -30,12 +30,30 @@
 			return $mealPlanViewModels;
 		}
 
-		public function createEditMealPlanDayViewModel(MealPlanDay $mealPlan, array $meals) : EditMealPlanDayViewModel
+		public function createEditMealPlanDayViewModel(MealPlanDay $mealPlan, array $meals, array $tags = []) : EditMealPlanDayViewModel
 		{
 			$editMealPlanDayViewModel = new EditMealPlanDayViewModel($mealPlan->getDate(), $mealPlan->getId(), $mealPlan->getOrderItemStatus(), $mealPlan->getMealId());
-			$tags = [];
+			$tagSelectListItems = [];
 			$defaultIncludeTagIds = [];
 			$defaultExcludeTagIds = [];
+
+			foreach ($tags as $tag)
+			{
+				if (!isset($tagSelectListItems[$tag->getName()]))
+				{
+					$tagSelectListItems[$tag->getName()] = createSelectListItem($tag->getId(), $tag->getName());
+				}
+
+				if ($tag->getIsDefaultInclude())
+				{
+					$defaultIncludeTagIds[$tag->getId()] = $tag->getId();
+				}
+
+				if ($tag->getIsDefaultExclude())
+				{
+					$defaultExcludeTagIds[$tag->getId()] = $tag->getId();
+				}
+			}
 
 			foreach ($meals as $mealId => $meal)
 			{
@@ -59,21 +77,6 @@
 				foreach ($meal->getTags() as $tag)
 				{
 					$mealTagIds[] = $tag->getId();
-
-					if (!isset($tags[$tag->getName()]))
-					{
-						$tags[$tag->getName()] = createSelectListItem($tag->getId(), $tag->getName());
-					}
-
-					if ($tag->getIsDefaultInclude())
-					{
-						$defaultIncludeTagIds[$tag->getId()] = $tag->getId();
-					}
-
-					if ($tag->getIsDefaultExclude())
-					{
-						$defaultExcludeTagIds[$tag->getId()] = $tag->getId();
-					}
 				}
 
 				sort($mealTagIds);
@@ -97,9 +100,9 @@
 				$editMealPlanDayViewModel->addMeal($selectListItem);
 			}
 
-			ksort($tags);
+			ksort($tagSelectListItems);
 
-			foreach ($tags as $tag)
+			foreach ($tagSelectListItems as $tag)
 			{
 				$editMealPlanDayViewModel->addTag($tag);
 			}
