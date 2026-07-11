@@ -5,6 +5,32 @@
 	{
 		public function __construct() { }
 
+		private function getMealDisplayName(?Meal $meal) : string
+		{
+			if (!($meal instanceof Meal))
+			{
+				return "";
+			}
+
+			$mealName = $meal->getName() ?? "";
+			$tagNames = [];
+
+			foreach ($meal->getTags(true) as $tag)
+			{
+				if (!is_null($tag->getName()) && strlen(trim($tag->getName())) > 0)
+				{
+					$tagNames[] = $tag->getName();
+				}
+			}
+
+			if (count($tagNames) == 0)
+			{
+				return $mealName;
+			}
+
+			return $mealName." [".implode(", ", $tagNames)."]";
+		}
+
 		public function createMealPlanViewModels(array $dateArray, array $mealPlans) : array
 		{
 			$mealPlanViewModels = [];
@@ -23,7 +49,7 @@
 					$mealPlanViewModels[$dateString]->setId($mealPlanDay->getId());
 					$mealPlanViewModels[$dateString]->setOrderItemStatus($mealPlanDay->getOrderItemStatus());
 					$mealPlanViewModels[$dateString]->setMealId($mealPlanDay->getMealId());
-					$mealPlanViewModels[$dateString]->setMealName($mealPlanDay->getMealName());
+					$mealPlanViewModels[$dateString]->setMealName($this->getMealDisplayName($mealPlanDay->getMeal()));
 				}
 			}
 
@@ -81,7 +107,7 @@
 
 				sort($mealTagIds);
 
-				$selectListItem = createSelectListItem($meal->getId(), $meal->getName(),
+				$selectListItem = createSelectListItem($meal->getId(), $this->getMealDisplayName($meal),
 				[
 					[
 						'key'   => "previousDateString",
@@ -115,7 +141,7 @@
 
 		public function createMealPlanViewModel(MealPlanDay $mealPlanDay) : MealPlanViewModel
 		{
-			$mealPlanViewModel = new MealPlanViewModel($mealPlanDay->getDate(), $mealPlanDay->getId(), $mealPlanDay->getOrderItemStatus(), $mealPlanDay->getMealId(), $mealPlanDay->getMealName());
+			$mealPlanViewModel = new MealPlanViewModel($mealPlanDay->getDate(), $mealPlanDay->getId(), $mealPlanDay->getOrderItemStatus(), $mealPlanDay->getMealId(), $this->getMealDisplayName($mealPlanDay->getMeal()));
 
 			return $mealPlanViewModel;
 		}

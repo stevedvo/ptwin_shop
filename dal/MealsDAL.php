@@ -362,7 +362,7 @@
 			{
 				$mealPlans = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.meal_id, mpd.order_item_status, m.name AS meal_name, m.IsDeleted AS meal_isDeleted FROM meal_plan_days AS mpd LEFT JOIN meals AS m ON (m.id = mpd.meal_id) WHERE mpd.date IS NOT NULL AND mpd.date >= :dateFrom AND mpd.date <= :dateTo ORDER BY mpd.date");
+				$query = $this->ShopDb->conn->prepare("SELECT mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.meal_id, mpd.order_item_status, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, t.id AS tag_id, t.name AS tag_name FROM meal_plan_days AS mpd LEFT JOIN meals AS m ON (m.id = mpd.meal_id) LEFT JOIN meals_tags AS mt ON (mt.meal_id = m.id) LEFT JOIN tags AS t ON (t.id = mt.tag_id) WHERE mpd.date IS NOT NULL AND mpd.date >= :dateFrom AND mpd.date <= :dateTo ORDER BY mpd.date, t.name");
 
 				$query->execute(
 				[
@@ -378,11 +378,20 @@
 
 					foreach ($rows as $row)
 					{
-						$meal = createMeal($row);
-						$mealPlanDay = createMealPlanDay($row);
-						$mealPlanDay->setMeal($meal);
+						if (!isset($mealPlans[$row['meal_plan_day_id']]))
+						{
+							$meal = createMeal($row);
+							$mealPlanDay = createMealPlanDay($row);
+							$mealPlanDay->setMeal($meal);
 
-						$mealPlans[$mealPlanDay->getId()] = $mealPlanDay;
+							$mealPlans[$mealPlanDay->getId()] = $mealPlanDay;
+						}
+
+						if (!is_null($row['tag_id']))
+						{
+							$tag = createTag($row);
+							$mealPlans[$row['meal_plan_day_id']]->getMeal()->addTag($tag);
+						}
 					}
 				}
 
