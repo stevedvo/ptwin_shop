@@ -70,6 +70,7 @@
 						<li><a href="<?= SITEURL; ?>/orders/">Manage Orders</a></li>
 						<li><a href="<?= SITEURL; ?>/packsizes/">Manage PackSizes</a></li>
 						<li><a href="<?= SITEURL; ?>/items/?view-by=muted-suggestions">Muted Suggestions</a></li>
+						<li><a href="<?= SITEURL; ?>/items/?view-by=temporary-muted-suggestions">Temp Muted Suggestions</a></li>
 						<li><a href="<?= SITEURL; ?>/items/?view-by=department">View By Dept</a></li>
 						<li><a href="<?= SITEURL; ?>/items/?view-by=list">View By List</a></li>
 						<li><a href="<?= SITEURL; ?>/items/?view-by=primary_dept">View By Primary Depts</a></li>

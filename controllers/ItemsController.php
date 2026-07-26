@@ -48,6 +48,7 @@
 						case 'list':
 						case 'suggestions':
 						case 'muted-suggestions':
+						case 'temporary-muted-suggestions':
 							$viewBy = $request['view-by'];
 							break;
 
@@ -107,6 +108,17 @@
 					[
 						'page_title' => 'Muted Suggestions',
 						'template'   => 'views/items/muted-suggestions.php',
+						'page_data'  => ['muted_items' => $mutedItems],
+					];
+				}
+				elseif ($viewBy == "temporary-muted-suggestions")
+				{
+					$mutedItems = $this->items_service->getAllTemporarilyMutedSuggestedItems();
+
+					$pageData =
+					[
+						'page_title' => 'Temporarily Muted Suggestions',
+						'template'   => 'views/items/temporary-muted-suggestions.php',
 						'page_data'  => ['muted_items' => $mutedItems],
 					];
 				}

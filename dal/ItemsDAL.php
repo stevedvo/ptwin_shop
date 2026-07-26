@@ -375,6 +375,42 @@
 			}
 		}
 
+		public function getAllTemporarilyMutedSuggestedItems() : ?array
+		{
+			try
+			{
+				$items = null;
+
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM items AS i WHERE i.mute_temp = 1 AND i.mute_perm = 0 ORDER BY i.description");
+				$query->execute();
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if (is_array($rows))
+				{
+					$items = [];
+
+					foreach ($rows as $row)
+					{
+						if (!array_key_exists($row['item_id'], $items))
+						{
+							$item = createItem($row);
+							$items[$item->getId()] = $item;
+						}
+					}
+				}
+
+				return $items;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
 		public function getItemsByDepartmentId($dept_id)
 		{
 			$result = new DalResult();

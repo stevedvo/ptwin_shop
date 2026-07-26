@@ -83,6 +83,24 @@ function globalFuncs()
 	});
 }
 
+function removeResultItem(form)
+{
+	let resultsContainer = form.closest(".results-container");
+	let resultsBody = form.closest(".results-body");
+
+	form.fadeOut(function()
+	{
+		form.remove();
+
+		if (resultsBody.length > 0 && resultsBody.find(".result-item").length == 0)
+		{
+			resultsContainer.find(".results-header").remove();
+			resultsBody.remove();
+			resultsContainer.append('<p class="no-results">No Items can be found</p>');
+		}
+	});
+}
+
 function manageItems()
 {
 	$(document).on("click", ".js-add-item", function()
@@ -656,12 +674,9 @@ function manageItems()
 
 			toastr.success("Item suggestion successfully muted");
 
-			if (form.hasClass("fade-on-mute"))
+			if (form.hasClass("fade-on-mute") || (form.hasClass("temp-muted-suggestions-filter") && muteBasis == "perm"))
 			{
-				form.fadeOut(function()
-				{
-					form.remove();
-				});
+				removeResultItem(form);
 			}
 			else
 			{
@@ -728,8 +743,15 @@ function manageItems()
 
 			toastr.success("Item successfully unmuted");
 
-			form.removeClass("muted-"+muteBasis);
-			form.addClass("unmuted-"+muteBasis);
+			if (form.hasClass("temp-muted-suggestions-filter") && muteBasis == "temp")
+			{
+				removeResultItem(form);
+			}
+			else
+			{
+				form.removeClass("muted-"+muteBasis);
+				form.addClass("unmuted-"+muteBasis);
+			}
 
 			return true;
 		}).fail(function(data)

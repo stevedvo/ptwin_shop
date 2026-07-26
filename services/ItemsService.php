@@ -132,6 +132,25 @@
 			}
 		}
 
+		public function getAllTemporarilyMutedSuggestedItems() : array
+		{
+			try
+			{
+				$mutedItems = $this->dal->getAllTemporarilyMutedSuggestedItems();
+
+				if (!is_array($mutedItems))
+				{
+					throw new Exception("Temporarily Muted Suggestions not found");
+				}
+
+				return $mutedItems;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
 		public function getItemById($itemId) : Item
 		{
 			try
