@@ -143,6 +143,44 @@
 			}
 		}
 
+		public function checkAllOrderItems(array $request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				if (!isset($request['checked']) || !in_array($request['checked'], [0, 1, "0", "1"], true))
+				{
+					$dalResult->setException(new Exception("Invalid checked state"));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$checked = intval($request['checked']);
+				$order = $this->orders_service->verifyOrderRequest($request);
+				$success = $this->orders_service->updateAllOrderItemsChecked($order, $checked);
+
+				if (!$success)
+				{
+					$dalResult->setException(new Exception("Error updating Order Items for Order #".$order->getId()));
+
+					return $dalResult->jsonSerialize();
+				}
+
+				$this->orders_service->closeConnexion();
+
+				$dalResult->setResult($success);
+
+				return $dalResult->jsonSerialize();
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+
+				return $dalResult->jsonSerialize();
+			}
+		}
+
 		public function removeOrderItem(array $request) : array
 		{
 			$dalResult = new DalResult();

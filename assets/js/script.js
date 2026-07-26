@@ -2022,6 +2022,34 @@ function quickAdd()
 
 function manageOrders()
 {
+	function setOrderItemsChecked(orderItems, checked)
+	{
+		orderItems.removeClass("checked unchecked");
+
+		if (checked == 1)
+		{
+			orderItems.addClass("checked");
+		}
+		else if (checked == 0)
+		{
+			orderItems.addClass("unchecked");
+		}
+	}
+
+	function applyCheckedItemsVisibility()
+	{
+		$(".results-container.previous-order .result-item.unchecked").show();
+
+		if ($(".js-toggle-checked-items-visibility").hasClass("checked-on"))
+		{
+			$(".results-container.previous-order .result-item.checked").show();
+		}
+		else
+		{
+			$(".results-container.previous-order .result-item.checked").hide();
+		}
+	}
+
 	$(document).on("click", ".js-update-order-item, .js-update-suggested-order-item", function()
 	{
 		let form = $(this).closest(".form");
@@ -2210,17 +2238,8 @@ function manageOrders()
 						}
 						else
 						{
-							form.removeClass("checked unchecked");
-
-							if (check == 1)
-							{
-								form.addClass("checked");
-							}
-							else if (check == 0)
-							{
-								form.addClass("unchecked");
-							}
-
+							setOrderItemsChecked(form, check);
+							applyCheckedItemsVisibility();
 							toastr.success("Order Item successfully updated");
 						}
 					}
@@ -2236,6 +2255,88 @@ function manageOrders()
 				console.log(data);
 			});
 		}
+	});
+
+	$(document).on("click", ".js-check-all-order-items", function()
+	{
+		var $this = $(this);
+		var orderID = parseInt($this.data("order_id"));
+		var check = $this.data("check") == "check" ? 1 : $this.data("check") == "uncheck" ? 0 : null;
+		var bulkActionButtons = $(".js-check-all-order-items");
+
+		if (isNaN(orderID) || check == null)
+		{
+			toastr.error("Could not update Order Items");
+
+			return false;
+		}
+
+		bulkActionButtons.prop("disabled", true);
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Orders",
+				action     : "checkAllOrderItems",
+				request    :
+				{
+					'order_id' : orderID,
+					'checked'  : check,
+				},
+			},
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not update Order Items: Unspecified error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				let exceptionMessage = data.exceptionMessage || data.exception.message || "Unspecified error";
+
+				toastr.error(`Could not update Order Items: ${exceptionMessage}`);
+				console.log(data.exception);
+
+				return false;
+			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not update Order Items: Unspecified error");
+				console.log(data);
+
+				return false;
+			}
+
+			setOrderItemsChecked($(".results-container.previous-order .result-item"), check);
+			applyCheckedItemsVisibility();
+
+			if (check == 1)
+			{
+				toastr.success("All Order Items successfully checked");
+			}
+			else
+			{
+				toastr.success("All Order Items successfully unchecked");
+			}
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		}).always(function()
+		{
+			bulkActionButtons.prop("disabled", false);
+		});
 	});
 
 	$(document).on("click", ".js-toggle-checked-items-visibility", function()

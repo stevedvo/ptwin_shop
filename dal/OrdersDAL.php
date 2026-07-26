@@ -383,6 +383,29 @@
 			}
 		}
 
+		public function updateAllOrderItemsChecked(Order $order, int $checked) : bool
+		{
+			try
+			{
+				$query = $this->ShopDb->conn->prepare("UPDATE order_items SET checked = :checked WHERE order_id = :order_id");
+				$success = $query->execute(
+				[
+					':checked'  => $checked,
+					':order_id' => $order->getId(),
+				]);
+
+				return $success;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
 		public function removeOrderItem(OrderItem $orderItem) : bool
 		{
 			try
