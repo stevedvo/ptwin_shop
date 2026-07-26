@@ -98,28 +98,14 @@
 		{
 			try
 			{
-				$suggestedItems = [];
-
-				$allItems = $this->dal->getAllSuggestedItems();
+				$allItems = $this->dal->getAllSuggestedItems($interval, $period);
 
 				if (!is_array($allItems))
 				{
 					throw new Exception("Suggested Items not found.");
 				}
 
-				foreach ($allItems as $itemId => $item)
-				{
-					$item->calculateRecentOrders($interval, $period);
-					$estOverall = $item->getStockLevelPrediction(7, 'overall');
-					$estRecent = $item->getStockLevelPrediction(7, 'recent');
-
-					if ($item->hasUpcomingMealItems() || (is_int($estOverall) && $estOverall < 0) || (is_int($estRecent) && $estRecent < 0))
-					{
-						$suggestedItems[$item->getId()] = $item;
-					}
-				}
-
-				return $suggestedItems;
+				return $allItems;
 			}
 			catch (Exception $e)
 			{
