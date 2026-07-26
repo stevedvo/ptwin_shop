@@ -160,6 +160,7 @@
 				}
 
 				$meal->setName($mealUpdate->getName());
+				$meal->setFrequency($mealUpdate->getFrequency());
 
 				return $this->dal->updateMeal($meal);
 			}

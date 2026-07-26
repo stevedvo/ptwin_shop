@@ -95,7 +95,7 @@
 
 					$previousMealPlanDate = DateTimeImmutable::createFromMutable($previousMealPlanDay->getDate());
 					$currentMealPlanDate = DateTimeImmutable::createFromMutable($mealPlan->getDate());
-					$previousLimit = $currentMealPlanDate->modify("-14 day");
+					$previousLimit = $currentMealPlanDate->modify("-".$meal->getFrequency()." day");
 
 					$hadRecently = $previousMealPlanDate->format("Y-m-d") >= $previousLimit->format("Y-m-d");
 				}

@@ -19,8 +19,12 @@
 		{
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("INSERT INTO meals (name) VALUES (:name)");
-				$query->execute([':name' => $meal->getName()]);
+				$query = $this->ShopDb->conn->prepare("INSERT INTO meals (name, frequency) VALUES (:name, :frequency)");
+				$query->execute(
+				[
+					':name'      => $meal->getName(),
+					':frequency' => $meal->getFrequency(),
+				]);
 
 				$meal->setId(intval($this->ShopDb->conn->lastInsertId()));
 			}
@@ -38,7 +42,7 @@
 			{
 				$meal = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, mi.id AS meal_item_id, mi.quantity AS meal_item_quantity, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, t.id AS tag_id, t.name AS tag_name FROM meals AS m LEFT JOIN meal_items AS mi ON (mi.meal_id = m.id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) LEFT JOIN meals_tags AS mt ON (mt.meal_id = m.id) LEFT JOIN tags AS t ON (t.id = mt.tag_id) WHERE m.id = :id ORDER BY i.description");
+				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, m.frequency AS meal_frequency, mi.id AS meal_item_id, mi.quantity AS meal_item_quantity, i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, t.id AS tag_id, t.name AS tag_name FROM meals AS m LEFT JOIN meal_items AS mi ON (mi.meal_id = m.id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) LEFT JOIN meals_tags AS mt ON (mt.meal_id = m.id) LEFT JOIN tags AS t ON (t.id = mt.tag_id) WHERE m.id = :id ORDER BY i.description");
 				$query->execute([':id' => $mealId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -105,7 +109,7 @@
 
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT id AS meal_id, name AS meal_name, IsDeleted AS meal_isDeleted FROM meals WHERE name = :name ".$includeDeletedQuery." LIMIT 1");
+				$query = $this->ShopDb->conn->prepare("SELECT id AS meal_id, name AS meal_name, IsDeleted AS meal_isDeleted, frequency AS meal_frequency FROM meals WHERE name = :name ".$includeDeletedQuery." LIMIT 1");
 				$query->execute([':name' => $mealName]);
 				$row = $query->fetch(PDO::FETCH_ASSOC);
 
@@ -130,7 +134,7 @@
 			{
 				$meals = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.order_item_status, t.id AS tag_id, t.name AS tag_name, t.IsDefaultInclude AS tag_isDefaultInclude, t.IsDefaultExclude AS tag_isDefaultExclude FROM meals AS m LEFT JOIN meal_plan_days AS mpd ON (mpd.meal_id = m.id) LEFT JOIN meals_tags AS mt ON (mt.meal_id = m.id) LEFT JOIN tags AS t ON (t.id = mt.tag_id) ".$includeDeletedQuery." ORDER BY meal_name, mpd.date, t.name");
+				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, m.frequency AS meal_frequency, mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.order_item_status, t.id AS tag_id, t.name AS tag_name, t.IsDefaultInclude AS tag_isDefaultInclude, t.IsDefaultExclude AS tag_isDefaultExclude FROM meals AS m LEFT JOIN meal_plan_days AS mpd ON (mpd.meal_id = m.id) LEFT JOIN meals_tags AS mt ON (mt.meal_id = m.id) LEFT JOIN tags AS t ON (t.id = mt.tag_id) ".$includeDeletedQuery." ORDER BY meal_name, mpd.date, t.name");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -177,11 +181,12 @@
 		{
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("UPDATE meals SET name = :name WHERE id = :id");
+				$query = $this->ShopDb->conn->prepare("UPDATE meals SET name = :name, frequency = :frequency WHERE id = :id");
 				$query->execute(
 				[
-					':name' => $meal->getName(),
-					':id'   => $meal->getId(),
+					':name'      => $meal->getName(),
+					':frequency' => $meal->getFrequency(),
+					':id'        => $meal->getId(),
 				]);
 
 				return $meal;
@@ -224,7 +229,7 @@
 			{
 				$mealItem = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT mi.id AS meal_item_id, mi.meal_id, mi.item_id, mi.quantity AS meal_item_quantity, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM meal_items AS mi LEFT JOIN meals AS m ON (m.id = mi.meal_id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) WHERE mi.id = :id");
+				$query = $this->ShopDb->conn->prepare("SELECT mi.id AS meal_item_id, mi.meal_id, mi.item_id, mi.quantity AS meal_item_quantity, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, m.frequency AS meal_frequency, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM meal_items AS mi LEFT JOIN meals AS m ON (m.id = mi.meal_id) LEFT JOIN items AS i ON (i.item_id = mi.item_id) WHERE mi.id = :id");
 				$query->execute([':id' => $mealItemId]);
 				$row = $query->fetch(PDO::FETCH_ASSOC);
 
@@ -362,7 +367,7 @@
 			{
 				$mealPlans = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.meal_id, mpd.order_item_status, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, t.id AS tag_id, t.name AS tag_name FROM meal_plan_days AS mpd LEFT JOIN meals AS m ON (m.id = mpd.meal_id) LEFT JOIN meals_tags AS mt ON (mt.meal_id = m.id) LEFT JOIN tags AS t ON (t.id = mt.tag_id) WHERE mpd.date IS NOT NULL AND mpd.date >= :dateFrom AND mpd.date <= :dateTo ORDER BY mpd.date, t.name");
+				$query = $this->ShopDb->conn->prepare("SELECT mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.meal_id, mpd.order_item_status, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, m.frequency AS meal_frequency, t.id AS tag_id, t.name AS tag_name FROM meal_plan_days AS mpd LEFT JOIN meals AS m ON (m.id = mpd.meal_id) LEFT JOIN meals_tags AS mt ON (mt.meal_id = m.id) LEFT JOIN tags AS t ON (t.id = mt.tag_id) WHERE mpd.date IS NOT NULL AND mpd.date >= :dateFrom AND mpd.date <= :dateTo ORDER BY mpd.date, t.name");
 
 				$query->execute(
 				[
@@ -411,7 +416,7 @@
 		{
 			try
 			{
-				$query = $this->ShopDb->conn->prepare("SELECT mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.meal_id, mpd.order_item_status, m.name AS meal_name, m.IsDeleted AS meal_isDeleted FROM meal_plan_days AS mpd LEFT JOIN meals AS m ON (m.id = mpd.meal_id) WHERE mpd.date = :date");
+				$query = $this->ShopDb->conn->prepare("SELECT mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.meal_id, mpd.order_item_status, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, m.frequency AS meal_frequency FROM meal_plan_days AS mpd LEFT JOIN meals AS m ON (m.id = mpd.meal_id) WHERE mpd.date = :date");
 
 				$query->execute([':date' => $date->format('Y-m-d')]);
 

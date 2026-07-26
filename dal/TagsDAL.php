@@ -43,7 +43,7 @@
 			{
 				$tag = null;
 
-				$query = $this->ShopDb->conn->prepare("SELECT t.id AS tag_id, t.name AS tag_name, t.IsDefaultInclude AS tag_isDefaultInclude, t.IsDefaultExclude AS tag_isDefaultExclude, m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted FROM tags AS t LEFT JOIN meals_tags AS mt ON (mt.tag_id = t.id) LEFT JOIN meals AS m ON (m.id = mt.meal_id) WHERE t.id = :id AND (m.IsDeleted = 0 OR m.IsDeleted IS NULL) ORDER BY m.name");
+				$query = $this->ShopDb->conn->prepare("SELECT t.id AS tag_id, t.name AS tag_name, t.IsDefaultInclude AS tag_isDefaultInclude, t.IsDefaultExclude AS tag_isDefaultExclude, m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, m.frequency AS meal_frequency FROM tags AS t LEFT JOIN meals_tags AS mt ON (mt.tag_id = t.id) LEFT JOIN meals AS m ON (m.id = mt.meal_id) WHERE t.id = :id AND (m.IsDeleted = 0 OR m.IsDeleted IS NULL) ORDER BY m.name");
 				$query->execute([':id' => $tagId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -155,7 +155,7 @@
 			{
 				$meals = [];
 
-				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_IsDeleted FROM meals AS m WHERE m.id NOT IN (SELECT meal_id FROM meals_tags WHERE tag_id = :tag_id) AND m.IsDeleted = 0 ORDER BY m.name");
+				$query = $this->ShopDb->conn->prepare("SELECT m.id AS meal_id, m.name AS meal_name, m.IsDeleted AS meal_isDeleted, m.frequency AS meal_frequency FROM meals AS m WHERE m.id NOT IN (SELECT meal_id FROM meals_tags WHERE tag_id = :tag_id) AND m.IsDeleted = 0 ORDER BY m.name");
 				$query->execute([':tag_id' => $tagId]);
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 

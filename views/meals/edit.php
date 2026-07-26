@@ -41,7 +41,16 @@
 						</div>
 
 						<div class="form-group">
-							<button class="btn btn-primary btn-sm js-update-meal-name">Update</button>
+							<div class="row">
+								<label for="meal_frequency" class="col-sm-3">Frequency:</label>
+								<div class="col-sm-9">
+									<input type="number" id="meal_frequency" name="meal_frequency" min="1" placeholder="Required" data-validation="<?= getValidationString($meal, "Frequency"); ?>" value="<?= $meal->getFrequency(); ?>" />
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<button class="btn btn-primary btn-sm js-update-meal">Update</button>
 						</div>
 					</div>
 				</div>

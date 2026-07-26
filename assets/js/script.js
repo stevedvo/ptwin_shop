@@ -3142,6 +3142,7 @@ function manageMeals()
 		else
 		{
 			var mealName = form.find("[name='meal_name']").val().trim();
+			var mealFrequency = parseInt(form.find("[name='meal_frequency']").val());
 
 			$.ajax(
 			{
@@ -3152,7 +3153,11 @@ function manageMeals()
 				{
 					controller : "Meals",
 					action     : "addMeal",
-					request    : {'meal_name' : mealName}
+					request    :
+					{
+						'meal_name'      : mealName,
+						'meal_frequency' : mealFrequency,
+					},
 				}
 			}).done(function(data)
 			{
@@ -3167,6 +3172,7 @@ function manageMeals()
 					$("#mealsListItems").html(html);
 					form.find(".input-error").removeClass("input-error");
 					form.find("[name='meal_name']").val("");
+					form.find("[name='meal_frequency']").val(14);
 
 					toastr.success("New Meal successfully added");
 				}
@@ -3178,7 +3184,7 @@ function manageMeals()
 		}
 	});
 
-	$(document).on("click", ".js-update-meal-name", function()
+	$(document).on("click", ".js-update-meal", function()
 	{
 		var form = $(this).closest(".form");
 
@@ -3200,6 +3206,7 @@ function manageMeals()
 		{
 			var mealID = parseInt(form.find("[name='meal_id']").val());
 			var mealName = form.find("[name='meal_name']").val();
+			var mealFrequency = parseInt(form.find("[name='meal_frequency']").val());
 
 			$.ajax(
 			{
@@ -3212,9 +3219,10 @@ function manageMeals()
 					action     : "editMeal",
 					request    :
 					{
-						'meal_id'   : mealID,
-						'meal_name' : mealName
-					}
+						'meal_id'        : mealID,
+						'meal_name'      : mealName,
+						'meal_frequency' : mealFrequency,
+					},
 				}
 			}).done(function(data)
 			{
