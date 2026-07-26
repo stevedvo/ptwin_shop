@@ -113,6 +113,25 @@
 			}
 		}
 
+		public function getUpcomingMealItems(DateTimeInterface $dateFrom, DateTimeInterface $dateTo) : array
+		{
+			try
+			{
+				$allItems = $this->dal->getUpcomingMealItems($dateFrom, $dateTo);
+
+				if (!is_array($allItems))
+				{
+					throw new Exception("Upcoming Meal Items not found.");
+				}
+
+				return $allItems;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
 		public function getAllMutedSuggestedItems() : array
 		{
 			try

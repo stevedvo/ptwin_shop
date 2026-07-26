@@ -47,6 +47,8 @@
 						case 'department':
 						case 'list':
 						case 'suggestions':
+						case 'consumption-suggestions':
+						case 'upcoming-meal-items':
 						case 'muted-suggestions':
 						case 'temporary-muted-suggestions':
 							$viewBy = $request['view-by'];
@@ -69,7 +71,7 @@
 						'page_data'  => ['all_items' => $items],
 					];
 				}
-				elseif ($viewBy == "suggestions")
+				elseif ($viewBy == "suggestions" || $viewBy == "consumption-suggestions")
 				{
 					if (isset($request['consumption_interval']) && is_numeric($request['consumption_interval']) && intval($request['consumption_interval']) > 0)
 					{
@@ -90,13 +92,31 @@
 
 					$pageData =
 					[
-						'page_title' => 'Suggested Items',
+						'page_title' => 'Consumption Suggestions',
 						'template'   => 'views/items/suggestions.php',
 						'page_data'  =>
 						[
 							'suggested_items'      => $suggestionsViewModels,
 							'consumption_interval' => $consumptionInterval,
 							'consumption_period'   => $consumptionPeriod,
+						],
+					];
+				}
+				elseif ($viewBy == "upcoming-meal-items")
+				{
+					$dateRange = $this->getUpcomingMealItemsDateRange($request);
+					$suggestedItems = $this->items_service->getUpcomingMealItems($dateRange['from'], $dateRange['to']);
+					$suggestionsViewModels = $this->itemsViewModelBuilder->createMealItemSuggestionsViewModels($suggestedItems, $order);
+
+					$pageData =
+					[
+						'page_title' => 'Upcoming Meal Items',
+						'template'   => 'views/items/upcoming-meal-items.php',
+						'page_data'  =>
+						[
+							'suggested_items' => $suggestionsViewModels,
+							'date_from'       => $dateRange['from'],
+							'date_to'         => $dateRange['to'],
 						],
 					];
 				}
@@ -163,6 +183,43 @@
 
 				renderPage($pageData);
 			}
+		}
+
+		private function getUpcomingMealItemsDateRange(array $request) : array
+		{
+			$today = new DateTimeImmutable('today');
+			$defaultFromDate = $today->modify('next monday');
+			$defaultToDate = $defaultFromDate->modify('+6 days');
+			$fromDate = $this->getDateRequestValue($request, 'date_from', $defaultFromDate);
+			$toDate = $this->getDateRequestValue($request, 'date_to', $defaultToDate);
+
+			if ($toDate < $fromDate)
+			{
+				$toDate = $fromDate;
+			}
+
+			return
+			[
+				'from' => $fromDate,
+				'to'   => $toDate,
+			];
+		}
+
+		private function getDateRequestValue(array $request, string $key, DateTimeImmutable $defaultDate) : DateTimeImmutable
+		{
+			if (!isset($request[$key]) || empty($request[$key]))
+			{
+				return $defaultDate;
+			}
+
+			$date = sanitiseDate($request[$key]);
+
+			if ($date instanceof DateTime)
+			{
+				return DateTimeImmutable::createFromMutable($date);
+			}
+
+			return $defaultDate;
 		}
 
 		public function Create(array $request) : void

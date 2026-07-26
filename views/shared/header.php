@@ -60,7 +60,8 @@
 					<ul>
 						<li><a href="<?= SITEURL; ?>/">Home</a></li>
 						<li><a href="<?= SITEURL; ?>/meals/plans/">Meal Planner</a></li>
-						<li><a href="<?= SITEURL; ?>/items/?view-by=suggestions">Suggestions</a></li>
+						<li><a href="<?= SITEURL; ?>/items/?view-by=consumption-suggestions">Consumption Suggestions</a></li>
+						<li><a href="<?= SITEURL; ?>/items/?view-by=upcoming-meal-items">Upcoming Meal Items</a></li>
 						<li><a href="<?= SITEURL; ?>/departments/">Manage Depts</a></li>
 						<li><a href="<?= SITEURL; ?>/items/">Manage Items</a></li>
 						<li><a href="<?= SITEURL; ?>/lists/">Manage Lists</a></li>

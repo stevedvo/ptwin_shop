@@ -11,37 +11,56 @@
 
 			foreach ($suggestedItems as $itemId => $item)
 			{
-				$inCurrentOrder = false;
-				$orderItemId = null;
-				$totalMealItemsQuantity = 0;
-
-				if ($item->hasUpcomingMealItems())
-				{
-					foreach ($item->getUpcomingMealItems() as $dateString => $mealItem)
-					{
-						$totalMealItemsQuantity+= $mealItem->getQuantity();
-					}
-				}
-
-				$orderItem = $currentOrder->getOrderItemByItemId($item->getId());
-
-				if ($orderItem instanceof OrderItem)
-				{
-					$inCurrentOrder = true;
-					$orderItemId = $orderItem->getId();
-					$suggestedItemQuantity = $orderItem->getQuantity();
-				}
-				else
-				{
-					$suggestedItemQuantity = $item->getDefaultQty();
-				}
-
-				$suggestedItemQuantity = max($suggestedItemQuantity, $totalMealItemsQuantity);
-
-				$suggestionsViewModel = new SuggestionsViewModel($item->getId(), $item->getDescription(), $suggestedItemQuantity, $inCurrentOrder, $orderItemId);
+				$suggestionsViewModel = $this->createSuggestionViewModel($item, $currentOrder);
 				$suggestionsViewModels[$suggestionsViewModel->getId()] = $suggestionsViewModel;
 			}
 
 			return $suggestionsViewModels;
+		}
+
+		public function createMealItemSuggestionsViewModels(array $suggestedItems, Order $currentOrder) : array
+		{
+			$suggestionsViewModels = [];
+
+			foreach ($suggestedItems as $itemId => $item)
+			{
+				$totalMealItemsQuantity = 0;
+
+				foreach ($item->getMealItems() as $dateString => $mealItem)
+				{
+					$totalMealItemsQuantity+= $mealItem->getQuantity();
+				}
+
+				$suggestionsViewModel = $this->createSuggestionViewModel($item, $currentOrder, $totalMealItemsQuantity);
+				$suggestionsViewModels[$suggestionsViewModel->getId()] = $suggestionsViewModel;
+			}
+
+			return $suggestionsViewModels;
+		}
+
+		private function createSuggestionViewModel(Item $item, Order $currentOrder, ?int $minimumQuantity = null) : SuggestionsViewModel
+		{
+			$inCurrentOrder = false;
+			$orderItemId = null;
+
+			$orderItem = $currentOrder->getOrderItemByItemId($item->getId());
+
+			if ($orderItem instanceof OrderItem)
+			{
+				$inCurrentOrder = true;
+				$orderItemId = $orderItem->getId();
+				$suggestedItemQuantity = intval($orderItem->getQuantity());
+			}
+			else
+			{
+				$suggestedItemQuantity = intval($item->getDefaultQty());
+			}
+
+			if (!is_null($minimumQuantity))
+			{
+				$suggestedItemQuantity = max($suggestedItemQuantity, $minimumQuantity);
+			}
+
+			return new SuggestionsViewModel($item->getId(), $item->getDescription(), $suggestedItemQuantity, $inCurrentOrder, $orderItemId);
 		}
 	}
