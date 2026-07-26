@@ -170,6 +170,18 @@
 			}
 		}
 
+		public function getMealPlanDaysByMealId(int $mealId) : array
+		{
+			try
+			{
+				return $this->dal->getMealPlanDaysByMealId($mealId);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
 		public function addItemToMeal(Meal $meal, Item $item) : MealItem
 		{
 			try

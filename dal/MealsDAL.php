@@ -197,6 +197,37 @@
 			}
 		}
 
+		public function getMealPlanDaysByMealId(int $mealId) : array
+		{
+			try
+			{
+				$mealPlanDays = [];
+
+				$query = $this->ShopDb->conn->prepare("SELECT id AS meal_plan_day_id, date AS meal_plan_date, meal_id, order_item_status FROM meal_plan_days WHERE meal_id = :meal_id ORDER BY date DESC");
+				$query->execute([':meal_id' => $mealId]);
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if (is_array($rows))
+				{
+					foreach ($rows as $row)
+					{
+						$mealPlanDay = createMealPlanDay($row);
+						$mealPlanDays[$mealPlanDay->getDateString()] = $mealPlanDay;
+					}
+				}
+
+				return $mealPlanDays;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
 		public function addMealItem(MealItem $mealItem) : MealItem
 		{
 			try

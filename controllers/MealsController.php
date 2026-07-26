@@ -143,6 +143,8 @@
 
 				$itemList = $this->itemsService->getAllItemsNotInMeal($meal->getId());
 				$tagList = $this->tagsService->getAllTagsNotWithMeal($meal->getId());
+				$mealPlanDays = $this->mealsService->getMealPlanDaysByMealId($meal->getId());
+				$meal->setMealPlanDays($mealPlanDays);
 
 				$pageData =
 				[

@@ -62,6 +62,7 @@
 						<ul class="nav nav-tabs" role="tablist">
 							<li role="presentation" class="active"><a href="#mealItemsTab" role="tab" data-toggle="tab">Items</a></li>
 							<li role="presentation" class=""><a href="#mealTagsTab" role="tab" data-toggle="tab">Tags</a></li>
+							<li role="presentation" class=""><a href="#mealPlanDaysTab" role="tab" data-toggle="tab">Dates Had</a></li>
 						</ul>
 
 						<div class="tab-content">
@@ -130,6 +131,19 @@
 													<button class="btn btn-primary btn-sm js-add-tag-to-meal">Add to Meal</button>
 												</div>
 											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div role="tabpanel" class="tab-pane" id="mealPlanDaysTab">
+								<div class="row">
+									<div class="col-xs-12">
+										<h3>Dates Had</h3>
+										<div id="mealPlanDayListItems">
+<?php
+											echo getPartialView("MealPlanDayListItems", ['mealId' => $meal->getId(), 'mealPlanDays' => $meal->getMealPlanDays()]);
+?>
 										</div>
 									</div>
 								</div>
