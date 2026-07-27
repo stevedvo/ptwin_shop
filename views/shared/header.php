@@ -69,6 +69,7 @@
 						<li><a href="<?= SITEURL; ?>/meals/">Manage Meals</a></li>
 						<li><a href="<?= SITEURL; ?>/tags/">Manage Tags</a></li>
 						<li><a href="<?= SITEURL; ?>/orders/">Manage Orders</a></li>
+						<li><a href="<?= SITEURL; ?>/orders/unchecked/">Unchecked Order Items</a></li>
 						<li><a href="<?= SITEURL; ?>/packsizes/">Manage PackSizes</a></li>
 						<li><a href="<?= SITEURL; ?>/items/?view-by=muted-suggestions">Muted Suggestions</a></li>
 						<li><a href="<?= SITEURL; ?>/items/?view-by=temporary-muted-suggestions">Temp Muted Suggestions</a></li>
