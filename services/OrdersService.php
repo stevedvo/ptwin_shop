@@ -176,6 +176,23 @@
 			}
 		}
 
+		public function updateAllOrderItemsChecked(Order $order, int $checked) : bool
+		{
+			try
+			{
+				if ($checked !== 0 && $checked !== 1)
+				{
+					throw new Exception("Invalid checked state");
+				}
+
+				return $this->dal->updateAllOrderItemsChecked($order, $checked);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
 		public function removeOrderItem(OrderItem $orderItem) : bool
 		{
 			try

@@ -99,8 +99,9 @@
 			$id = isset($request['meal_id']) ? intval($request['meal_id']) : null;
 			$name = isset($request['meal_name']) ? trim($request['meal_name']) : null;
 			$isDeleted = isset($request['meal_isDeleted']) && $request['meal_isDeleted'];
+			$frequency = isset($request['meal_frequency']) && $request['meal_frequency'] !== "" ? intval($request['meal_frequency']) : null;
 
-			$meal = new Meal($id, $name, $isDeleted);
+			$meal = new Meal($id, $name, $isDeleted, $frequency);
 
 			return $meal;
 		}
@@ -141,6 +142,25 @@
 			$mealPlanDay = new MealPlanDay($id, $date, $mealId, $orderItemStatus);
 
 			return $mealPlanDay;
+		}
+		catch (Exception $e)
+		{
+			throw $e;
+		}
+	}
+
+	function createTag(array $request) : Tag
+	{
+		try
+		{
+			$id = isset($request['tag_id']) ? intval($request['tag_id']) : null;
+			$name = isset($request['tag_name']) ? trim($request['tag_name']) : null;
+			$isDefaultInclude = isset($request['tag_isDefaultInclude']) ? filter_var($request['tag_isDefaultInclude'], FILTER_VALIDATE_BOOLEAN) : false;
+			$isDefaultExclude = isset($request['tag_isDefaultExclude']) ? filter_var($request['tag_isDefaultExclude'], FILTER_VALIDATE_BOOLEAN) : false;
+
+			$tag = new Tag($id, $name, $isDefaultInclude, $isDefaultExclude);
+
+			return $tag;
 		}
 		catch (Exception $e)
 		{

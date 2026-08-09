@@ -6,3 +6,4 @@
 	require_once('services/MealsService.php');
 	require_once('services/OrdersService.php');
 	require_once('services/PackSizesService.php');
+	require_once('services/TagsService.php');

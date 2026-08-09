@@ -5,6 +5,42 @@
 
 <div class="form-group">
 	<div class="row">
+		<label class="col-xs-12" for="mealIncludeTagsFilter">Include Tags</label>
+		<div class="col-xs-12">
+			<select class="form-control" id="mealIncludeTagsFilter" name="meal_include_tag_filters[]" multiple="multiple" style="width: 100%;">
+<?php
+				foreach ($model->getTags() as $tag)
+				{
+?>
+					<option value="<?= $tag->getValue(); ?>" <?= in_array($tag->getValue(), $model->getDefaultIncludeTagIds()) ? "selected" : ""; ?>><?= $tag->getText(); ?></option>
+<?php
+				}
+?>
+			</select>
+		</div>
+	</div>
+</div>
+
+<div class="form-group">
+	<div class="row">
+		<label class="col-xs-12" for="mealExcludeTagsFilter">Exclude Tags</label>
+		<div class="col-xs-12">
+			<select class="form-control" id="mealExcludeTagsFilter" name="meal_exclude_tag_filters[]" multiple="multiple" style="width: 100%;">
+<?php
+				foreach ($model->getTags() as $tag)
+				{
+?>
+					<option value="<?= $tag->getValue(); ?>" <?= in_array($tag->getValue(), $model->getDefaultExcludeTagIds()) ? "selected" : ""; ?>><?= $tag->getText(); ?></option>
+<?php
+				}
+?>
+			</select>
+		</div>
+	</div>
+</div>
+
+<div class="form-group">
+	<div class="row">
 		<label class="col-xs-12" for="mealId">Meal</label>
 		<div class="col-xs-12">
 			<select class="form-control" id="mealId" name="meal_id" style="width: 100%;">

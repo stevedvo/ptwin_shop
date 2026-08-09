@@ -7,3 +7,4 @@
 	require_once('dal/OrdersDAL.php');
 	require_once('dal/PackSizesDAL.php');
 	require_once('dal/ShopDb.php');
+	require_once('dal/TagsDAL.php');

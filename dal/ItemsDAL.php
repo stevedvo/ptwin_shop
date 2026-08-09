@@ -15,6 +15,23 @@
 			$this->ShopDb = null;
 		}
 
+		private function getConsumptionPeriodSqlUnit(string $period) : string
+		{
+			switch ($period)
+			{
+				case 'day':
+					return 'DAY';
+				case 'week':
+					return 'WEEK';
+				case 'month':
+					return 'MONTH';
+				case 'year':
+					return 'YEAR';
+			}
+
+			throw new InvalidArgumentException("Invalid Consumption Period");
+		}
+
 		public function addItem(Item $item) : Item
 		{
 			try
@@ -260,49 +277,65 @@
 			}
 		}
 
-		public function getAllSuggestedItems() : ?array
+		public function getAllSuggestedItems(int $interval = DEFAULT_CONSUMPTION_INTERVAL, string $period = DEFAULT_CONSUMPTION_PERIOD) : ?array
 		{
 			try
 			{
-				$items = null;
+				$items = [];
+				$interval = intval($interval);
 
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, oi.id AS order_item_id, oi.quantity, oi.checked, oi.order_id, o.date_ordered, mi.id AS meal_item_id, mi.meal_id, mi.quantity AS meal_item_quantity, mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.order_item_status FROM items AS i LEFT JOIN order_items AS oi ON (i.item_id = oi.item_id) LEFT JOIN orders AS o ON (o.id = oi.order_id) LEFT JOIN meal_items AS mi ON (mi.item_id = i.item_id) LEFT JOIN meal_plan_days AS mpd ON (mpd.meal_id = mi.meal_id) WHERE ((mpd.date IS NOT NULL AND mpd.date > CURDATE() AND mpd.date < ADDDATE(CURDATE(), INTERVAL 14 DAY)) OR (i.mute_temp = 0 AND i.mute_perm = 0 AND o.date_ordered IS NOT NULL)) ORDER BY i.description, o.date_ordered DESC");
-				$query->execute();
-				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
-
-				if (is_array($rows))
+				if ($interval < 1)
 				{
-					$items = [];
+					throw new InvalidArgumentException("Invalid Consumption Interval");
+				}
 
-					foreach ($rows as $row)
+				$periodSqlUnit = $this->getConsumptionPeriodSqlUnit($period);
+				$cutoffSql = "DATE_SUB(CURDATE(), INTERVAL ".$interval." ".$periodSqlUnit.")";
+
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM items AS i LEFT JOIN (SELECT oi.item_id, SUM(oi.quantity) AS total_ordered, MIN(o.date_ordered) AS first_ordered FROM order_items AS oi INNER JOIN orders AS o ON (o.id = oi.order_id) WHERE o.date_ordered IS NOT NULL GROUP BY oi.item_id) AS order_stats ON (order_stats.item_id = i.item_id) LEFT JOIN order_items AS last_oi ON (last_oi.id = (SELECT oi2.id FROM order_items AS oi2 INNER JOIN orders AS o2 ON (o2.id = oi2.order_id) WHERE oi2.item_id = i.item_id AND o2.date_ordered IS NOT NULL ORDER BY o2.date_ordered DESC, oi2.id DESC LIMIT 1)) LEFT JOIN orders AS last_o ON (last_o.id = last_oi.order_id) LEFT JOIN (SELECT recent_orders.item_id, SUM(recent_orders.quantity) AS total_recent_ordered, MIN(recent_orders.date_ordered) AS first_recent_ordered FROM (SELECT oi.item_id, oi.quantity, o.date_ordered FROM order_items AS oi INNER JOIN orders AS o ON (o.id = oi.order_id) LEFT JOIN (SELECT oi2.item_id, MAX(o2.date_ordered) AS boundary_ordered FROM order_items AS oi2 INNER JOIN orders AS o2 ON (o2.id = oi2.order_id) WHERE o2.date_ordered IS NOT NULL AND o2.date_ordered < ".$cutoffSql." GROUP BY oi2.item_id) AS recent_boundary ON (recent_boundary.item_id = oi.item_id) WHERE o.date_ordered IS NOT NULL AND (o.date_ordered >= ".$cutoffSql." OR o.date_ordered = recent_boundary.boundary_ordered)) AS recent_orders GROUP BY recent_orders.item_id) AS recent_order_stats ON (recent_order_stats.item_id = i.item_id) WHERE i.mute_temp = 0 AND i.mute_perm = 0 AND last_oi.id IS NOT NULL AND ((order_stats.first_ordered IS NOT NULL AND ABS(DATEDIFF(CURDATE(), order_stats.first_ordered)) > 0 AND last_oi.quantity - ROUND((order_stats.total_ordered / ABS(DATEDIFF(CURDATE(), order_stats.first_ordered))) * (ABS(DATEDIFF(CURDATE(), last_o.date_ordered)) + 7)) < 0) OR (recent_order_stats.first_recent_ordered IS NOT NULL AND ABS(DATEDIFF(CURDATE(), recent_order_stats.first_recent_ordered)) > 0 AND last_oi.quantity - ROUND((recent_order_stats.total_recent_ordered / ABS(DATEDIFF(CURDATE(), recent_order_stats.first_recent_ordered))) * (ABS(DATEDIFF(CURDATE(), last_o.date_ordered)) + 7)) < 0)) ORDER BY i.description");
+				$query->execute();
+
+				while ($row = $query->fetch(PDO::FETCH_ASSOC))
+				{
+					$item = createItem($row);
+					$items[$item->getId()] = $item;
+				}
+
+				return $items;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
+		public function getUpcomingMealItems(DateTimeInterface $dateFrom, DateTimeInterface $dateTo) : ?array
+		{
+			try
+			{
+				$items = [];
+
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, mi.id AS meal_item_id, mi.meal_id, mi.quantity AS meal_item_quantity, mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.order_item_status FROM meal_items AS mi INNER JOIN meal_plan_days AS mpd ON (mpd.meal_id = mi.meal_id) INNER JOIN items AS i ON (i.item_id = mi.item_id) WHERE mpd.date IS NOT NULL AND mpd.date >= :date_from AND mpd.date <= :date_to ORDER BY i.description, mpd.date");
+				$query->execute(
+				[
+					':date_from' => $dateFrom->format('Y-m-d'),
+					':date_to'   => $dateTo->format('Y-m-d'),
+				]);
+
+				while ($row = $query->fetch(PDO::FETCH_ASSOC))
+				{
+					if (!array_key_exists($row['item_id'], $items))
 					{
-						if (!array_key_exists($row['item_id'], $items))
-						{
-							$item = createItem($row);
-							$items[$item->getId()] = $item;
-						}
-
-						if (!is_null($row['order_id']))
-						{
-							if (!$items[$row['item_id']]->hasOrder($row['order_id']))
-							{
-								$order = createOrder($row);
-								$items[$row['item_id']]->addOrder($order);
-							}
-
-							$orderItem = createOrderItem($row);
-							$items[$row['item_id']]->getOrders()[$row['order_id']]->addOrderItem($orderItem);
-						}
-
-						if (!is_null($row['meal_plan_date']))
-						{
-							if (!$item->hasMealItem($row['meal_plan_date']))
-							{
-								$mealItem = createMealItem($row);
-								$items[$row['item_id']]->addMealItem($row['meal_plan_date'], $mealItem);
-							}
-						}
+						$item = createItem($row);
+						$items[$item->getId()] = $item;
 					}
+
+					$mealItem = createMealItem($row);
+					$items[$row['item_id']]->addMealItem($row['meal_plan_date'], $mealItem);
 				}
 
 				return $items;
@@ -324,6 +357,42 @@
 				$items = null;
 
 				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM items AS i WHERE i.mute_temp = 1 OR i.mute_perm = 1 ORDER BY i.description");
+				$query->execute();
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if (is_array($rows))
+				{
+					$items = [];
+
+					foreach ($rows as $row)
+					{
+						if (!array_key_exists($row['item_id'], $items))
+						{
+							$item = createItem($row);
+							$items[$item->getId()] = $item;
+						}
+					}
+				}
+
+				return $items;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
+		public function getAllTemporarilyMutedSuggestedItems() : ?array
+		{
+			try
+			{
+				$items = null;
+
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check FROM items AS i WHERE i.mute_temp = 1 AND i.mute_perm = 0 ORDER BY i.description");
 				$query->execute();
 				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
 

@@ -17,6 +17,7 @@
 		}
 		else
 		{
+			$order_has_items = is_array($order->getOrderItems()) && sizeof($order->getOrderItems()) > 0;
 ?>
 			<div class="row">
 				<div class="form order-container col-xs-12" data-order_id="<?= $order->getId(); ?>">
@@ -58,11 +59,25 @@
 				</div>
 			</div>
 
+<?php
+			if ($order_has_items)
+			{
+?>
+				<div class="row">
+					<div class="col-xs-12 text-right order-items-bulk-actions">
+						<button class="btn btn-success btn-sm js-check-all-order-items" data-order_id="<?= $order->getId(); ?>" data-check="check">Check All Items</button>
+						<button class="btn btn-danger btn-sm js-check-all-order-items" data-order_id="<?= $order->getId(); ?>" data-check="uncheck">Uncheck All Items</button>
+					</div>
+				</div>
+<?php
+			}
+?>
+
 			<div class="row">
 				<div class="col-xs-12">
 					<div class="results-container previous-order striped">
 <?php
-						if (is_array($order->getOrderItems()) && sizeof($order->getOrderItems()) > 0)
+						if ($order_has_items)
 						{
 							$current_dept = null;
 							$i = 0;

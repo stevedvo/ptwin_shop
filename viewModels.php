@@ -5,3 +5,4 @@
 	require_once('viewmodels/Meals/MealPlanViewModel.php');
 	require_once('viewmodels/Meals/EditMealPlanDayViewModel.php');
 	require_once('viewmodels/Meals/MealsViewModelBuilder.php');
+	require_once('viewmodels/Tags/TagsViewModelBuilder.php');

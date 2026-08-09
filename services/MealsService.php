@@ -5,6 +5,7 @@
 	{
 		private $items_service;
 		private $dal;
+		private $items_service;
 
 		public function __construct()
 		{
@@ -160,8 +161,21 @@
 				}
 
 				$meal->setName($mealUpdate->getName());
+				$meal->setFrequency($mealUpdate->getFrequency());
 
 				return $this->dal->updateMeal($meal);
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function getMealPlanDaysByMealId(int $mealId) : array
+		{
+			try
+			{
+				return $this->dal->getMealPlanDaysByMealId($mealId);
 			}
 			catch (Exception $e)
 			{

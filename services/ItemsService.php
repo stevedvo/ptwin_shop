@@ -98,28 +98,33 @@
 		{
 			try
 			{
-				$suggestedItems = [];
-
-				$allItems = $this->dal->getAllSuggestedItems();
+				$allItems = $this->dal->getAllSuggestedItems($interval, $period);
 
 				if (!is_array($allItems))
 				{
 					throw new Exception("Suggested Items not found.");
 				}
 
-				foreach ($allItems as $itemId => $item)
-				{
-					$item->calculateRecentOrders($interval, $period);
-					$estOverall = $item->getStockLevelPrediction(7, 'overall');
-					$estRecent = $item->getStockLevelPrediction(7, 'recent');
+				return $allItems;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
 
-					if ($item->hasUpcomingMealItems() || (is_int($estOverall) && $estOverall < 0) || (is_int($estRecent) && $estRecent < 0))
-					{
-						$suggestedItems[$item->getId()] = $item;
-					}
+		public function getUpcomingMealItems(DateTimeInterface $dateFrom, DateTimeInterface $dateTo) : array
+		{
+			try
+			{
+				$allItems = $this->dal->getUpcomingMealItems($dateFrom, $dateTo);
+
+				if (!is_array($allItems))
+				{
+					throw new Exception("Upcoming Meal Items not found.");
 				}
 
-				return $suggestedItems;
+				return $allItems;
 			}
 			catch (Exception $e)
 			{
@@ -136,6 +141,25 @@
 				if (!is_array($mutedItems))
 				{
 					throw new Exception("Muted Suggestions not found");
+				}
+
+				return $mutedItems;
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
+		public function getAllTemporarilyMutedSuggestedItems() : array
+		{
+			try
+			{
+				$mutedItems = $this->dal->getAllTemporarilyMutedSuggestedItems();
+
+				if (!is_array($mutedItems))
+				{
+					throw new Exception("Temporarily Muted Suggestions not found");
 				}
 
 				return $mutedItems;

@@ -16,6 +16,7 @@ $(function()
 	adminFuncs();
 	updateRecentConsumptionParameters();
 	modalFuncs();
+	manageTags();
 });
 
 function getURLQueryStringAsObject(queryString)
@@ -79,6 +80,24 @@ function globalFuncs()
 	$(document).on("click", ".js-unselect-item", function()
 	{
 		$(this).closest(".row").removeClass("selected");
+	});
+}
+
+function removeResultItem(form)
+{
+	let resultsContainer = form.closest(".results-container");
+	let resultsBody = form.closest(".results-body");
+
+	form.fadeOut(function()
+	{
+		form.remove();
+
+		if (resultsBody.length > 0 && resultsBody.find(".result-item").length == 0)
+		{
+			resultsContainer.find(".results-header").remove();
+			resultsBody.remove();
+			resultsContainer.append('<p class="no-results">No Items can be found</p>');
+		}
 	});
 }
 
@@ -655,12 +674,9 @@ function manageItems()
 
 			toastr.success("Item suggestion successfully muted");
 
-			if (form.hasClass("fade-on-mute"))
+			if (form.hasClass("fade-on-mute") || (form.hasClass("temp-muted-suggestions-filter") && muteBasis == "perm"))
 			{
-				form.fadeOut(function()
-				{
-					form.remove();
-				});
+				removeResultItem(form);
 			}
 			else
 			{
@@ -727,8 +743,15 @@ function manageItems()
 
 			toastr.success("Item successfully unmuted");
 
-			form.removeClass("muted-"+muteBasis);
-			form.addClass("unmuted-"+muteBasis);
+			if (form.hasClass("temp-muted-suggestions-filter") && muteBasis == "temp")
+			{
+				removeResultItem(form);
+			}
+			else
+			{
+				form.removeClass("muted-"+muteBasis);
+				form.addClass("unmuted-"+muteBasis);
+			}
 
 			return true;
 		}).fail(function(data)
@@ -2021,6 +2044,34 @@ function quickAdd()
 
 function manageOrders()
 {
+	function setOrderItemsChecked(orderItems, checked)
+	{
+		orderItems.removeClass("checked unchecked");
+
+		if (checked == 1)
+		{
+			orderItems.addClass("checked");
+		}
+		else if (checked == 0)
+		{
+			orderItems.addClass("unchecked");
+		}
+	}
+
+	function applyCheckedItemsVisibility()
+	{
+		$(".results-container.previous-order .result-item.unchecked").show();
+
+		if ($(".js-toggle-checked-items-visibility").hasClass("checked-on"))
+		{
+			$(".results-container.previous-order .result-item.checked").show();
+		}
+		else
+		{
+			$(".results-container.previous-order .result-item.checked").hide();
+		}
+	}
+
 	$(document).on("click", ".js-update-order-item, .js-update-suggested-order-item", function()
 	{
 		let form = $(this).closest(".form");
@@ -2209,17 +2260,8 @@ function manageOrders()
 						}
 						else
 						{
-							form.removeClass("checked unchecked");
-
-							if (check == 1)
-							{
-								form.addClass("checked");
-							}
-							else if (check == 0)
-							{
-								form.addClass("unchecked");
-							}
-
+							setOrderItemsChecked(form, check);
+							applyCheckedItemsVisibility();
 							toastr.success("Order Item successfully updated");
 						}
 					}
@@ -2235,6 +2277,88 @@ function manageOrders()
 				console.log(data);
 			});
 		}
+	});
+
+	$(document).on("click", ".js-check-all-order-items", function()
+	{
+		var $this = $(this);
+		var orderID = parseInt($this.data("order_id"));
+		var check = $this.data("check") == "check" ? 1 : $this.data("check") == "uncheck" ? 0 : null;
+		var bulkActionButtons = $(".js-check-all-order-items");
+
+		if (isNaN(orderID) || check == null)
+		{
+			toastr.error("Could not update Order Items");
+
+			return false;
+		}
+
+		bulkActionButtons.prop("disabled", true);
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Orders",
+				action     : "checkAllOrderItems",
+				request    :
+				{
+					'order_id' : orderID,
+					'checked'  : check,
+				},
+			},
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not update Order Items: Unspecified error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				let exceptionMessage = data.exceptionMessage || data.exception.message || "Unspecified error";
+
+				toastr.error(`Could not update Order Items: ${exceptionMessage}`);
+				console.log(data.exception);
+
+				return false;
+			}
+
+			if (!data.result)
+			{
+				toastr.error("Could not update Order Items: Unspecified error");
+				console.log(data);
+
+				return false;
+			}
+
+			setOrderItemsChecked($(".results-container.previous-order .result-item"), check);
+			applyCheckedItemsVisibility();
+
+			if (check == 1)
+			{
+				toastr.success("All Order Items successfully checked");
+			}
+			else
+			{
+				toastr.success("All Order Items successfully unchecked");
+			}
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		}).always(function()
+		{
+			bulkActionButtons.prop("disabled", false);
+		});
 	});
 
 	$(document).on("click", ".js-toggle-checked-items-visibility", function()
@@ -3141,6 +3265,7 @@ function manageMeals()
 		else
 		{
 			var mealName = form.find("[name='meal_name']").val().trim();
+			var mealFrequency = parseInt(form.find("[name='meal_frequency']").val());
 
 			$.ajax(
 			{
@@ -3151,7 +3276,11 @@ function manageMeals()
 				{
 					controller : "Meals",
 					action     : "addMeal",
-					request    : {'meal_name' : mealName}
+					request    :
+					{
+						'meal_name'      : mealName,
+						'meal_frequency' : mealFrequency,
+					},
 				}
 			}).done(function(data)
 			{
@@ -3166,6 +3295,7 @@ function manageMeals()
 					$("#mealsListItems").html(html);
 					form.find(".input-error").removeClass("input-error");
 					form.find("[name='meal_name']").val("");
+					form.find("[name='meal_frequency']").val(14);
 
 					toastr.success("New Meal successfully added");
 				}
@@ -3177,7 +3307,7 @@ function manageMeals()
 		}
 	});
 
-	$(document).on("click", ".js-update-meal-name", function()
+	$(document).on("click", ".js-update-meal", function()
 	{
 		var form = $(this).closest(".form");
 
@@ -3199,6 +3329,7 @@ function manageMeals()
 		{
 			var mealID = parseInt(form.find("[name='meal_id']").val());
 			var mealName = form.find("[name='meal_name']").val();
+			var mealFrequency = parseInt(form.find("[name='meal_frequency']").val());
 
 			$.ajax(
 			{
@@ -3211,9 +3342,10 @@ function manageMeals()
 					action     : "editMeal",
 					request    :
 					{
-						'meal_id'   : mealID,
-						'meal_name' : mealName
-					}
+						'meal_id'        : mealID,
+						'meal_name'      : mealName,
+						'meal_frequency' : mealFrequency,
+					},
 				}
 			}).done(function(data)
 			{
@@ -3297,6 +3429,73 @@ function manageMeals()
 			selectedOption.remove();
 
 			toastr.success("Item successfully added to Meal");
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+
+	$(document).on("click", ".js-add-tag-to-meal", function()
+	{
+		let form = $(this).closest(".form");
+		let selectedOption = form.find("select option:selected");
+		let tagID = parseInt(selectedOption.val());
+		let mealID = parseInt(form.find("[name='meal_id']").val());
+
+		if (isNaN(tagID) || tagID == -1)
+		{
+			toastr.error("No Tag selected");
+			return false;
+		}
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Meals",
+				action     : "addTagToMeal",
+				request    :
+				{
+					'tag_id'  : tagID,
+					'meal_id' : mealID,
+				},
+			},
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not add Tag to Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not add Tag to Meal: ${data.exceptionMessage}`);
+				console.log(data);
+
+				return false;
+			}
+
+			if (!data.partial_view || !data.result || !data.result.tagSelection)
+			{
+				toastr.error("Could not add Tag to Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$("#mealTagListItems").html(data.partial_view);
+			$("#mealTagSelection").html(data.result.tagSelection);
+
+			toastr.success("Tag successfully added to Meal");
 
 			return true;
 		}).fail(function(data)
@@ -3447,6 +3646,66 @@ function manageMeals()
 		});
 	});
 
+	$(document).on("click", ".js-remove-tag-from-meal", function()
+	{
+		let form = $(this).closest(".form");
+		let tagID = parseInt(form.data("tag_id"));
+		let mealID = parseInt($(".meal-tags-container").data("meal_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Meals",
+				action     : "removeTagFromMeal",
+				request    :
+				{
+					'tag_id'  : tagID,
+					'meal_id' : mealID,
+				},
+			},
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not remove Tag from Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not remove Tag from Meal: ${data.exceptionMessage}`);
+				console.log(data);
+
+				return false;
+			}
+
+			if (!data.partial_view || !data.result || !data.result.tagSelection)
+			{
+				toastr.error("Could not remove Tag from Meal: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$("#mealTagListItems").html(data.partial_view);
+			$("#mealTagSelection").html(data.result.tagSelection);
+
+			toastr.success("Tag successfully removed from Meal");
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+		});
+	});
+
 	$(document).on("click", ".js-remove-meal", function()
 	{
 		var mealID = parseInt($(this).closest(".meal-items-container").data("meal_id"));
@@ -3561,6 +3820,188 @@ function manageMeals()
 		});
 	});
 
+	function getSelectedMealPlanIncludeTagIds()
+	{
+		let tagIds = $("select#mealIncludeTagsFilter").val();
+
+		if (!Array.isArray(tagIds))
+		{
+			return [];
+		}
+
+		return tagIds.map(function(tagId)
+		{
+			return tagId.toString();
+		});
+	}
+
+	function getSelectedMealPlanExcludeTagIds()
+	{
+		let tagIds = $("select#mealExcludeTagsFilter").val();
+
+		if (!Array.isArray(tagIds))
+		{
+			return [];
+		}
+
+		return tagIds.map(function(tagId)
+		{
+			return tagId.toString();
+		});
+	}
+
+	function getMealPlanOptionTagIds(option)
+	{
+		let tagIdsString = $(option).attr("data-tagids") || "";
+
+		if (tagIdsString.length == 0)
+		{
+			return [];
+		}
+
+		return tagIdsString.split(",").filter(function(tagId)
+		{
+			return tagId.length > 0;
+		});
+	}
+
+	function mealPlanOptionMatchesIncludeTagFilters(option)
+	{
+		let selectedTagIds = getSelectedMealPlanIncludeTagIds();
+
+		if (selectedTagIds.length == 0)
+		{
+			return true;
+		}
+
+		let mealTagIds = getMealPlanOptionTagIds(option);
+
+		return selectedTagIds.every(function(tagId)
+		{
+			return mealTagIds.indexOf(tagId) != -1;
+		});
+	}
+
+	function mealPlanOptionMatchesExcludeTagFilters(option)
+	{
+		let selectedTagIds = getSelectedMealPlanExcludeTagIds();
+
+		if (selectedTagIds.length == 0)
+		{
+			return true;
+		}
+
+		let mealTagIds = getMealPlanOptionTagIds(option);
+
+		return !selectedTagIds.some(function(tagId)
+		{
+			return mealTagIds.indexOf(tagId) != -1;
+		});
+	}
+
+	function mealPlanOptionMatchesTagFilters(option)
+	{
+		return mealPlanOptionMatchesIncludeTagFilters(option) && mealPlanOptionMatchesExcludeTagFilters(option);
+	}
+
+	function mealPlanOptionIsVisible(option)
+	{
+		let optionValue = $(option).attr("value");
+
+		if (optionValue == "-1")
+		{
+			return true;
+		}
+
+		if ($(option).data("hadrecently") == 1)
+		{
+			return false;
+		}
+
+		return mealPlanOptionMatchesTagFilters(option);
+	}
+
+	function mealPlanMealMatcher(params, data)
+	{
+		if (!data.element)
+		{
+			return data;
+		}
+
+		if (!mealPlanOptionIsVisible(data.element))
+		{
+			return null;
+		}
+
+		if ($.trim(params.term) == "")
+		{
+			return data;
+		}
+
+		if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1)
+		{
+			return data;
+		}
+
+		return null;
+	}
+
+	function filterSelectedMealPlanMeal()
+	{
+		let selector = $("select#mealId");
+		let selectedOption = selector.find("option:selected");
+
+		if (selectedOption.length == 0)
+		{
+			return;
+		}
+
+		if (selectedOption.attr("value") != "-1" && !mealPlanOptionMatchesTagFilters(selectedOption[0]))
+		{
+			selector.val("-1").trigger("change");
+		}
+	}
+
+	function initMealPlanDayModal(modal)
+	{
+		modal.find("select#mealIncludeTagsFilter").select2(
+		{
+			placeholder :
+			{
+				id   : "",
+				text : "Include Tags",
+			},
+			allowClear : true,
+		});
+
+		modal.find("select#mealExcludeTagsFilter").select2(
+		{
+			placeholder :
+			{
+				id   : "",
+				text : "Exclude Tags",
+			},
+			allowClear : true,
+		});
+
+		modal.find("select#mealId").select2(
+		{
+			placeholder :
+			{
+				id   : "-1",
+				text : "Select a meal",
+			},
+			allowClear : true,
+			matcher    : mealPlanMealMatcher,
+		});
+
+	}
+
+	$(document).on("change", "#mealIncludeTagsFilter, #mealExcludeTagsFilter", function()
+	{
+		filterSelectedMealPlanMeal();
+	});
+
 	$(document).on("click", ".calendar-box .edit-btn", function()
 	{
 		let calendarBox = $(this).closest(".calendar-box");
@@ -3617,16 +4058,7 @@ function manageMeals()
 				let modal = $("#modal");
 
 				modal.find(".modal-body").html(html);
-
-				$("select#mealId").select2(
-				{
-					placeholder :
-					{
-						id   : "-1",
-						text : "Select a meal",
-					},
-					allowClear  : true,
-				});
+				initMealPlanDayModal(modal);
 
 				modal.modal();
 
@@ -3652,7 +4084,7 @@ function manageMeals()
 
 		$.each(allOptions, function()
 		{
-			if ($(this).data("hadrecently") != 1)
+			if ($(this).attr("value") != "-1" && mealPlanOptionIsVisible(this))
 			{
 				validOptions.push($(this).attr("value"));
 			}
@@ -3660,7 +4092,7 @@ function manageMeals()
 
 		if (validOptions.length == 0)
 		{
-			toastr.error("No Meals not in last 14 days");
+			toastr.error("No matching Meals available");
 
 			return false;
 		}
@@ -3882,6 +4314,285 @@ function modalFuncs()
 
 				return false;
 			},
+		});
+	});
+}
+
+function manageTags()
+{
+	$(document).on("click", ".js-add-tag", function()
+	{
+		let form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		let validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+
+			return false;
+		}
+		else
+		{
+			let tagName = form.find("[name='tagName']").val();
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Tags",
+					action     : "addTag",
+					request    : {'tag_name' : tagName},
+				},
+			}).done(function(data)
+			{
+				if (data.exception != null)
+				{
+					toastr.error(`Could not add Tag: ${data.exceptionMessage}`);
+					console.log(data.exception);
+
+					return false;
+				}
+				else
+				{
+					toastr.success("New Tag successfully added");
+
+					if (data.partial_view != null)
+					{
+						$("#tagsListItems").html(data.partial_view);
+					}
+
+					return true;
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+
+				return false;
+			});
+		}
+	});
+
+	$(document).on("click", ".js-update-tag-name", function()
+	{
+		let form = $(this).closest(".form");
+
+		form.find("p.error-message").remove();
+		form.find(".input-error").removeClass("input-error");
+
+		let validation = validateForm(form);
+
+		if (Object.keys(validation).length > 0)
+		{
+			$.each(validation, function(field, errMsg)
+			{
+				form.find("[name='"+field+"']").addClass("input-error").after("<p class='error-message'>"+errMsg+"</p>");
+			});
+
+			toastr.error("There were validation failures");
+
+			return false;
+		}
+		else
+		{
+			let tagId = parseInt(form.find("[name='tag_id']").val());
+			let tagName = form.find("[name='tag_name']").val();
+			let isDefaultInclude = form.find("[name='tag_isDefaultInclude']").prop("checked") ? 1 : 0;
+			let isDefaultExclude = form.find("[name='tag_isDefaultExclude']").prop("checked") ? 1 : 0;
+
+			$.ajax(
+			{
+				type     : "POST",
+				url      : constants.SITEURL+"/ajax.php",
+				dataType : "json",
+				data     :
+				{
+					controller : "Tags",
+					action     : "editTag",
+					request    :
+					{
+						'tag_id'               : tagId,
+						'tag_name'             : tagName,
+						'tag_isDefaultInclude' : isDefaultInclude,
+						'tag_isDefaultExclude' : isDefaultExclude,
+					},
+				},
+			}).done(function(data)
+			{
+				if (data.exception != null)
+				{
+					toastr.error(`Could not update Tag: ${data.exceptionMessage}`);
+					console.log(data);
+
+					return false;
+				}
+				else if (!data.result)
+				{
+					toastr.error(`Could not update Tag: unknown error`);
+					console.log(data);
+
+					return false;
+				}
+				else
+				{
+					toastr.success("Tag successfully updated");
+
+					return true;
+				}
+			}).fail(function(data)
+			{
+				toastr.error("Could not perform request");
+				console.log(data);
+
+				return false;
+			});
+		}
+	});
+
+	$(document).on("click", ".js-add-meal-to-tag", function()
+	{
+		let form = $(this).closest(".form");
+		let selectedOption = form.find("select option:selected");
+		let mealId = parseInt(selectedOption.val());
+		let tagId = parseInt(form.find("[name='tag_id']").val());
+
+		if (isNaN(mealId) || mealId == -1)
+		{
+			toastr.error("No Meal selected");
+			return false;
+		}
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Tags",
+				action     : "addTagToMeal",
+				request    :
+				{
+					'tag_id'  : tagId,
+					'meal_id' : mealId,
+				},
+			},
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not add Meal to Tag: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not add Meal to Tag: ${data.exceptionMessage}`);
+				console.log(data);
+
+				return false;
+			}
+
+			let html = data.partial_view;
+
+			if (!html)
+			{
+				toastr.error("Could not add Meal to Tag: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			$("#tagMealListItems").html(html);
+			selectedOption.remove();
+
+			toastr.success("Meal successfully added to Tag");
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+
+			return false;
+		});
+	});
+
+	$(document).on("click", ".js-remove-meal-from-tag", function()
+	{
+		let form = $(this).closest(".form");
+		let mealId = parseInt(form.data("meal_id"));
+		let tagId = parseInt($(".tag-meals-container").data("tag_id"));
+
+		$.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Tags",
+				action     : "removeTagFromMeal",
+				request    :
+				{
+					'tag_id'  : tagId,
+					'meal_id' : mealId,
+				},
+			},
+		}).done(function(data)
+		{
+			if (!data)
+			{
+				toastr.error("Could not remove Meal from Tag: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			if (data.exception != null)
+			{
+				toastr.error(`Could not remove Meal from Tag: ${data.exceptionMessage}`);
+				console.log(data);
+
+				return false;
+			}
+
+			let html = data.partial_view;
+
+			if (!html)
+			{
+				toastr.error("Could not remove Meal from Tag: unknown error");
+				console.log(data);
+
+				return false;
+			}
+
+			form.remove();
+			$("#tagMealSelection").html(html);
+
+			toastr.success("Meal successfully removed from Tag");
+
+			return true;
+		}).fail(function(data)
+		{
+			toastr.error("Could not perform request");
+			console.log(data);
+
+			return false;
 		});
 	});
 }

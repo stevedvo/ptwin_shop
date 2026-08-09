@@ -8,15 +8,21 @@
 		private ?int $orderItemStatus;
 		private ?int $mealId;
 		private array $meals;
+		private array $tags;
+		private array $defaultIncludeTagIds;
+		private array $defaultExcludeTagIds;
 		private array $validation;
 
-		public function __construct(DateTimeInterface $date, ?int $id = null, ?int $orderItemStatus = null, ?int $mealId = null, array $meals = [])
+		public function __construct(DateTimeInterface $date, ?int $id = null, ?int $orderItemStatus = null, ?int $mealId = null, array $meals = [], array $tags = [], array $defaultIncludeTagIds = [], array $defaultExcludeTagIds = [])
 		{
 			$this->date = $date;
 			$this->id = $id;
 			$this->orderItemStatus = $orderItemStatus;
 			$this->mealId = $mealId;
 			$this->meals = $meals;
+			$this->tags = $tags;
+			$this->defaultIncludeTagIds = $defaultIncludeTagIds;
+			$this->defaultExcludeTagIds = $defaultExcludeTagIds;
 			$this->validation = [];
 		}
 
@@ -85,12 +91,57 @@
 			$this->meals[] = $meal;
 		}
 
+		public function getTags() : array
+		{
+			return $this->tags;
+		}
+
+		public function setTags(array $tags) : void
+		{
+			$this->tags = $tags;
+		}
+
+		public function addTag(SelectListItem $tag) : void
+		{
+			$this->tags[] = $tag;
+		}
+
+		public function getDefaultIncludeTagIds() : array
+		{
+			return $this->defaultIncludeTagIds;
+		}
+
+		public function setDefaultIncludeTagIds(array $defaultIncludeTagIds) : void
+		{
+			$this->defaultIncludeTagIds = $defaultIncludeTagIds;
+		}
+
+		public function addDefaultIncludeTagId(int $tagId) : void
+		{
+			$this->defaultIncludeTagIds[] = $tagId;
+		}
+
+		public function getDefaultExcludeTagIds() : array
+		{
+			return $this->defaultExcludeTagIds;
+		}
+
+		public function setDefaultExcludeTagIds(array $defaultExcludeTagIds) : void
+		{
+			$this->defaultExcludeTagIds = $defaultExcludeTagIds;
+		}
+
+		public function addDefaultExcludeTagId(int $tagId) : void
+		{
+			$this->defaultExcludeTagIds[] = $tagId;
+		}
+
 		public function getAllValidation() : array
 		{
 			return $this->validation;
 		}
 
-		public function getValidation(string $property = null) : string
+		public function getValidation(?string $property = null) : string
 		{
 			$validationString = "";
 

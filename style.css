@@ -467,7 +467,8 @@ ul.ui-autocomplete li.ui-state-focus
 
 .recent-consumption-form .consumption-interval-container,
 .recent-consumption-form .consumption-period-container,
-.recent-consumption-form .submit-container
+.recent-consumption-form .submit-container,
+.meal-items-date-range-form>div
 {
 	margin-bottom: 5px;
 }
@@ -485,6 +486,19 @@ ul.ui-autocomplete li.ui-state-focus
 {
 	height: 25px;
 	width: calc(100% - 68px);
+}
+
+.meal-items-date-range-form label
+{
+	margin: 0px;
+	line-height: 25px;
+	width: 75px;
+}
+
+.meal-items-date-range-form input
+{
+	height: 25px;
+	width: calc(100% - 83px);
 }
 
 .calendar-box

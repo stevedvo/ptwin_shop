@@ -3,21 +3,35 @@
 
 	class Meal implements JsonSerializable
 	{
+		private const DEFAULT_FREQUENCY = 14;
+
 		private ?int $id;
 		private ?string $name;
 		private bool $isDeleted;
+		private int $frequency;
 		private array $mealItems;
 		private array $mealPlanDays;
+		private array $tags;
 		private array $validation;
 
-		public function __construct(?int $id = null, ?string $name = null, bool $isDeleted = false, array $mealItems = [])
+		public function __construct(?int $id = null, ?string $name = null, bool $isDeleted = false, ?int $frequency = self::DEFAULT_FREQUENCY, array $mealItems = [])
 		{
 			$this->id = $id;
 			$this->name = $name;
 			$this->isDeleted = $isDeleted;
+			$this->frequency = $frequency ?? self::DEFAULT_FREQUENCY;
 			$this->mealItems = $mealItems;
 			$this->mealPlanDays = [];
-			$this->validation = ['Name' => ['required' => true]];
+			$this->tags = [];
+			$this->validation =
+			[
+				'Name'      => ['required' => true],
+				'Frequency' =>
+				[
+					'required'  => true,
+					'min-value' => 1,
+				],
+			];
 		}
 
 		public function jsonSerialize() : array
@@ -27,6 +41,7 @@
 				'id'        => $this->getId(),
 				'name'      => $this->getName(),
 				'isDeleted' => $this->getIsDeleted(),
+				'frequency' => $this->getFrequency(),
 				'mealItems' => $this->getMealItems(),
 			];
 
@@ -63,6 +78,16 @@
 			$this->isDeleted = $isDeleted;
 		}
 
+		public function getFrequency() : int
+		{
+			return $this->frequency;
+		}
+
+		public function setFrequency(int $frequency) : void
+		{
+			$this->frequency = $frequency;
+		}
+
 		public function getMealItems(bool $reSort = false) : array
 		{
 			if (!$reSort)
@@ -95,6 +120,11 @@
 		public function removeMealItem(MealItem $mealItem) : void
 		{
 			unset($this->mealItems[$mealItem->getId()]);
+		}
+
+		public function hasMealItem(int $mealItemId) : bool
+		{
+			return array_key_exists($mealItemId, $this->mealItems);
 		}
 
 		public function getMealItemByItemId(int $itemId) : ?MealItem
@@ -142,6 +172,45 @@
 			}
 
 			return null;
+		}
+
+		public function getTags(bool $reSort = false) : array
+		{
+			if (!$reSort)
+			{
+				return $this->tags;
+			}
+
+			$sortedTags = [];
+
+			foreach ($this->tags as $key => $tag)
+			{
+				$sortedTags[$tag->getName()] = $tag;
+			}
+
+			ksort($sortedTags);
+
+			return $sortedTags;
+		}
+
+		public function setTags(array $tags) : void
+		{
+			$this->tags = $tags;
+		}
+
+		public function addTag(Tag $tag) : void
+		{
+			$this->tags[$tag->getId()] = $tag;
+		}
+
+		public function removeTag(Tag $tag) : void
+		{
+			unset($this->tags[$tag->getId()]);
+		}
+
+		public function hasTag(int $tagId) : bool
+		{
+			return array_key_exists($tagId, $this->tags);
 		}
 
 		public function getValidation($property = null)

@@ -34,7 +34,7 @@
 			return $this->exception;
 		}
 
-		public function setException($exception)
+		public function setException($exception) : void
 		{
 			$this->exception = $exception;
 
