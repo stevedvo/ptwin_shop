@@ -640,6 +640,17 @@ ul.ui-autocomplete li.ui-state-focus
 		width: calc(2 / 12 * 100%);
 	}
 
+	.results-container.suggestions.consumption-suggestions .description-container
+	{
+		width: calc(3 / 12 * 100%);
+	}
+
+	.results-container.suggestions.consumption-suggestions .estimated-stock-container,
+	.results-container.suggestions.consumption-suggestions .quantity-container
+	{
+		width: calc(1.5 / 12 * 100%);
+	}
+
 	.results-container.suggestions.muted .description-container
 	{
 		width: calc(5 / 12 * 100%);

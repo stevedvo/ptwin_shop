@@ -21,6 +21,7 @@
 		private $dailyConsumptionOverall;
 		private $dailyConsumptionRecent;
 		private $mealItems;
+		private $estimatedQuantityInStock;
 
 		public function __construct($id = null, $description = null, $comments = null, $defaultQty = null, $listId = null, $link = null, $primaryDept = null, $muteTemp = null, $mutePerm = null, $packSizeId = null, $luckyDipId = null, $mealPlanCheck = null, $departments = null, $orders = null, $recentOrders = null, $packSize = null, $dailyConsumptionOverall = null, $dailyConsumptionRecent = null, $mealItems = [])
 		{
@@ -54,6 +55,7 @@
 			$this->dailyConsumptionOverall = $dailyConsumptionOverall;
 			$this->dailyConsumptionRecent = $dailyConsumptionRecent;
 			$this->mealItems = $mealItems;
+			$this->estimatedQuantityInStock = null;
 		}
 
 		public function jsonSerialize()
@@ -577,6 +579,16 @@
 			$stockLevel = $lastOrderQuantity - $estConsumption;
 
 			return $stockLevel;
+		}
+
+		public function getEstimatedQuantityInStock() : ?int
+		{
+			return $this->estimatedQuantityInStock;
+		}
+
+		public function setEstimatedQuantityInStock(?int $estimatedQuantityInStock) : void
+		{
+			$this->estimatedQuantityInStock = $estimatedQuantityInStock;
 		}
 
 		public function getMealItems() : array

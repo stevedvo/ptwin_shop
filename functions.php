@@ -41,8 +41,10 @@
 		$packSizeId = isset($request['packsize_id']) ? intval($request['packsize_id']) : null;
 		$luckyDipId = isset($request['luckydip_id']) ? intval($request['luckydip_id']) : null;
 		$mealPlanCheck = isset($request['meal_plan_check']) ? intval($request['meal_plan_check']) : null;
+		$estimatedQuantityInStock = isset($request['estimated_quantity_in_stock']) ? intval($request['estimated_quantity_in_stock']) : null;
 
 		$item = new Item($id, $description, $comments, $defaultQty, $listId, $link, $primaryDept, $muteTemp, $mutePerm, $packSizeId, $luckyDipId, $mealPlanCheck);
+		$item->setEstimatedQuantityInStock($estimatedQuantityInStock);
 
 		return $item;
 	}

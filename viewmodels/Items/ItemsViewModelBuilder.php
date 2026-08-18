@@ -61,6 +61,6 @@
 				$suggestedItemQuantity = max($suggestedItemQuantity, $minimumQuantity);
 			}
 
-			return new SuggestionsViewModel($item->getId(), $item->getDescription(), $suggestedItemQuantity, $inCurrentOrder, $orderItemId);
+			return new SuggestionsViewModel($item->getId(), $item->getDescription(), $suggestedItemQuantity, $inCurrentOrder, $orderItemId, $item->getEstimatedQuantityInStock());
 		}
 	}
