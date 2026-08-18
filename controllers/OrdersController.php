@@ -321,6 +321,51 @@
 			}
 		}
 
+		public function Unchecked($request = null) : void
+		{
+			$pageData =
+			[
+				'page_title' => 'Not Found',
+				'template'   => 'views/404.php',
+				'page_data'  => []
+			];
+
+			try
+			{
+				$uncheckedOrderItems = $this->orders_service->getUncheckedOrderItems();
+
+				$this->orders_service->closeConnexion();
+
+				$pageData =
+				[
+					'page_title' => 'Unchecked Order Items',
+					'breadcrumb' =>
+					[
+						[
+							'link' => '/orders/',
+							'text' => 'Orders'
+						],
+						[
+							'text' => 'Unchecked Items'
+						]
+					],
+					'template'   => 'views/orders/unchecked.php',
+					'page_data'  =>
+					[
+						'unchecked_order_items' => $uncheckedOrderItems
+					]
+				];
+
+				renderPage($pageData);
+			}
+			catch (Exception $e)
+			{
+				$pageData['page_data'] = ['message' => $e->getMessage()];
+
+				renderPage($pageData);
+			}
+		}
+
 		public function Print(?int $request = null) : void
 		{
 			$pageData =

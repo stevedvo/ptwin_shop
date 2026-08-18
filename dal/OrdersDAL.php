@@ -157,6 +157,50 @@
 			}
 		}
 
+		public function getUncheckedOrderItems() : array
+		{
+			try
+			{
+				$uncheckedOrderItems = [];
+
+				$query = $this->ShopDb->conn->prepare("SELECT o.id AS order_id, o.date_ordered, oi.id AS order_item_id, oi.order_id, oi.item_id, oi.quantity, oi.checked, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, ps.name AS packsize_name, ps.short_name AS packsize_short_name FROM order_items AS oi INNER JOIN orders AS o ON (o.id = oi.order_id) LEFT JOIN items AS i ON (i.item_id = oi.item_id) LEFT JOIN pack_sizes AS ps ON (ps.id = i.packsize_id) WHERE oi.checked = 0 ORDER BY ISNULL(o.date_ordered) DESC, o.date_ordered DESC, o.id DESC, i.description");
+				$query->execute();
+				$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+
+				if (is_array($rows))
+				{
+					foreach ($rows as $row)
+					{
+						$order = createOrder($row);
+						$orderItem = createOrderItem($row);
+						$item = createItem($row);
+						$packsize = createPackSize($row);
+						$item->setPackSize($packsize);
+						$orderItem->setItem($item);
+
+						if (entityIsValid($orderItem))
+						{
+							$uncheckedOrderItems[] =
+							[
+								'order'      => $order,
+								'order_item' => $orderItem
+							];
+						}
+					}
+				}
+
+				return $uncheckedOrderItems;
+			}
+			catch(PDOException $PdoException)
+			{
+				throw $PdoException;
+			}
+			catch(Exception $exception)
+			{
+				throw $exception;
+			}
+		}
+
 		public function getOrdersByItem(Item $item) : ?array
 		{
 			try

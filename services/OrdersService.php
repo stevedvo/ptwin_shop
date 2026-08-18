@@ -164,6 +164,18 @@
 			}
 		}
 
+		public function getUncheckedOrderItems() : array
+		{
+			try
+			{
+				return $this->dal->getUncheckedOrderItems();
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+
 		public function updateOrderItem(OrderItem $orderItem) : bool
 		{
 			try

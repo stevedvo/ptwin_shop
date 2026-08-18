@@ -3,6 +3,16 @@
 ?>
 <main class="wrapper">
 	<div class="container">
+		<div class="row">
+			<div class="col-xs-6">
+				<h3>Orders</h3>
+			</div>
+
+			<div class="col-xs-6 text-right">
+				<a href="<?= SITEURL; ?>/orders/unchecked/" class="btn btn-sm btn-primary">Unchecked Items</a>
+			</div>
+		</div>
+
 <?php
 		if (!is_array($orders) || sizeof($orders) == 0)
 		{
@@ -19,7 +29,6 @@
 ?>
 			<div class="row">
 				<div class="col-xs-12">
-					<h3>Orders</h3>
 					<div class="results-container striped">
 <?php
 						foreach ($orders as $order_id => $order)

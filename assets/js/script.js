@@ -2072,6 +2072,28 @@ function manageOrders()
 		}
 	}
 
+	function removeCheckedItemFromUncheckedList(form)
+	{
+		let resultsContainer = form.closest(".results-container.unchecked-order-items");
+
+		if (resultsContainer.length == 0)
+		{
+			return false;
+		}
+
+		form.fadeOut(function()
+		{
+			form.remove();
+
+			if (resultsContainer.find(".result-item").length == 0)
+			{
+				resultsContainer.append('<p class="no-results">No unchecked OrderItems can be found</p>');
+			}
+		});
+
+		return true;
+	}
+
 	$(document).on("click", ".js-update-order-item, .js-update-suggested-order-item", function()
 	{
 		let form = $(this).closest(".form");
@@ -2260,6 +2282,13 @@ function manageOrders()
 						}
 						else
 						{
+							if (check == 1 && removeCheckedItemFromUncheckedList(form))
+							{
+								toastr.success("Order Item successfully updated");
+
+								return true;
+							}
+
 							setOrderItemsChecked(form, check);
 							applyCheckedItemsVisibility();
 							toastr.success("Order Item successfully updated");
