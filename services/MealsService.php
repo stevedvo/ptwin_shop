@@ -3,8 +3,8 @@
 
 	class MealsService
 	{
-		private $dal;
 		private $items_service;
+		private $dal;
 
 		public function __construct()
 		{

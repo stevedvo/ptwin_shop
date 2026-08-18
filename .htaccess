@@ -4,17 +4,15 @@
 	RewriteRule ^index\.php$ - [L]
 
 	# If ACCESSSING VIA IP
-	# RewriteCond %{HTTP_HOST} ^192.168.0.12
-	RewriteCond %{HTTP_HOST} ^192.168.0.143
+	RewriteCond %{HTTP_HOST} ^192.168.0.12
 	# don't rewrite if the resource already exists
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
 	# rewrite
-	RewriteRule ^.*$ /ptwin_shop_dev/index.php [L]
+	RewriteRule ^.*$ /ptwin_shop/index.php [L]
 
 	# If ACCESSSING VIA LOCAL HOSTNAME
-	# RewriteCond %{HTTP_HOST} !^192.168.0.12
-	RewriteCond %{HTTP_HOST} !^192.168.0.143
+	RewriteCond %{HTTP_HOST} !^192.168.0.12
 	# don't rewrite if the resource already exists
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
