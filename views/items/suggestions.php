@@ -9,7 +9,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-12">
-				<div class="results-container suggestions striped">
+				<div class="results-container suggestions consumption-suggestions striped">
 <?php
 					if (count($suggested_items) == 0)
 					{
@@ -25,8 +25,12 @@
 ?>
 						<div class="results-header">
 							<div class="row">
-								<div class="col-xs-9 results-header-item description-container">
+								<div class="col-xs-6 results-header-item description-container">
 									<p><strong>Description</strong></p>
+								</div>
+
+								<div class="col-xs-3 results-header-item estimated-stock-container">
+									<p><strong>Est. Stock</strong></p>
 								</div>
 
 								<div class="col-xs-3 results-header-item quantity-container">
@@ -41,8 +45,12 @@
 							{
 ?>
 								<div class="row form fade-on-mute result-item <?= $item->isInCurrentOrder() ? 'selected' : ''; ?>" data-item_id="<?= $item->getId(); ?>" data-order_item_id="<?= $item->getOrderItemId(); ?>">
-									<div class="col-xs-9 description-container">
+									<div class="col-xs-6 description-container">
 										<a href="<?= SITEURL; ?>/items/edit/<?= $item->getId(); ?>/"><p><?= $item->getDescription(); ?></p></a>
+									</div>
+
+									<div class="col-xs-3 estimated-stock-container">
+										<p><?= is_null($item->getEstimatedQuantityInStock()) ? 'N/A' : $item->getEstimatedQuantityInStock(); ?></p>
 									</div>
 
 									<div class="col-xs-3 quantity-container">
