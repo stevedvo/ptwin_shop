@@ -5,7 +5,6 @@
 	{
 		private $items_service;
 		private $dal;
-		private $items_service;
 
 		public function __construct()
 		{
