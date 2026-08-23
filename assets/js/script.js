@@ -3294,7 +3294,6 @@ function manageMeals()
 		else
 		{
 			var mealName = form.find("[name='meal_name']").val().trim();
-			var mealFrequency = parseInt(form.find("[name='meal_frequency']").val());
 
 			$.ajax(
 			{
@@ -3307,8 +3306,7 @@ function manageMeals()
 					action     : "addMeal",
 					request    :
 					{
-						'meal_name'      : mealName,
-						'meal_frequency' : mealFrequency,
+						'meal_name' : mealName,
 					},
 				}
 			}).done(function(data)
@@ -3324,7 +3322,6 @@ function manageMeals()
 					$("#mealsListItems").html(html);
 					form.find(".input-error").removeClass("input-error");
 					form.find("[name='meal_name']").val("");
-					form.find("[name='meal_frequency']").val(14);
 
 					toastr.success("New Meal successfully added");
 				}
@@ -3358,7 +3355,6 @@ function manageMeals()
 		{
 			var mealID = parseInt(form.find("[name='meal_id']").val());
 			var mealName = form.find("[name='meal_name']").val();
-			var mealFrequency = parseInt(form.find("[name='meal_frequency']").val());
 
 			$.ajax(
 			{
@@ -3371,9 +3367,8 @@ function manageMeals()
 					action     : "editMeal",
 					request    :
 					{
-						'meal_id'        : mealID,
-						'meal_name'      : mealName,
-						'meal_frequency' : mealFrequency,
+						'meal_id'   : mealID,
+						'meal_name' : mealName,
 					},
 				}
 			}).done(function(data)
@@ -3854,6 +3849,39 @@ function manageMeals()
 		return $("#mealPlanChooseAnyMeal").prop("checked") === true;
 	}
 
+	function getMealPlanPreviousMealDays()
+	{
+		let days = parseInt($("#mealPlanPreviousMealDays").val());
+
+		if (isNaN(days) || days < 0)
+		{
+			return 28;
+		}
+
+		return days;
+	}
+
+	function mealPlanOptionHadWithinPreviousDays(option)
+	{
+		let previousDateString = $(option).data("previousdatestring") || "";
+		let mealPlanDateString = $("[name='meal_plan_date']").val() || "";
+
+		if (previousDateString == "" || mealPlanDateString == "")
+		{
+			return false;
+		}
+
+		let previousDate = moment(previousDateString, "YYYY-MM-DD", true);
+		let mealPlanDate = moment(mealPlanDateString, "YYYY-MM-DD", true);
+
+		if (!previousDate.isValid() || !mealPlanDate.isValid())
+		{
+			return false;
+		}
+
+		return mealPlanDate.diff(previousDate, "days") <= getMealPlanPreviousMealDays();
+	}
+
 	function getSelectedMealPlanIncludeTagIds()
 	{
 		let tagIds = $("select#mealIncludeTagsFilter").val();
@@ -3952,7 +3980,7 @@ function manageMeals()
 			return true;
 		}
 
-		if ($(option).data("hadrecently") == 1)
+		if (mealPlanOptionHadWithinPreviousDays(option))
 		{
 			return false;
 		}
@@ -4004,9 +4032,11 @@ function manageMeals()
 	function updateMealPlanTagFilterState()
 	{
 		let tagFilters = $("select#mealIncludeTagsFilter, select#mealExcludeTagsFilter");
+		let previousMealDaysFilter = $("input#mealPlanPreviousMealDays");
 
 		tagFilters.prop("disabled", mealPlanChooseAnyMeal());
 		tagFilters.trigger("change.select2");
+		previousMealDaysFilter.prop("disabled", mealPlanChooseAnyMeal());
 	}
 
 	function initMealPlanDayModal(modal)
@@ -4054,6 +4084,11 @@ function manageMeals()
 	{
 		updateMealPlanTagFilterState();
 		filterSelectedMealPlanMeal();
+		$("select#mealId").trigger("change.select2");
+	});
+
+	$(document).on("change keyup", "#mealPlanPreviousMealDays", function()
+	{
 		$("select#mealId").trigger("change.select2");
 	});
 

@@ -12,9 +12,6 @@
 						<label for="meal_name">Meal Name:</label>
 						<input id="meal_name" type="text" name="meal_name" placeholder="Required" data-validation="<?= getValidationString($mealPrototype, "Name"); ?>" />
 						<br/><br/>
-						<label for="meal_frequency">Frequency:</label>
-						<input id="meal_frequency" type="number" min="1" name="meal_frequency" placeholder="Required" data-validation="<?= getValidationString($mealPrototype, "Frequency"); ?>" value="<?= $mealPrototype->getFrequency(); ?>" />
-						<br/><br/>
 						<input type="submit" class="btn btn-primary js-add-meal" value="Add Meal" />
 					</fieldset><br/>
 				</div>

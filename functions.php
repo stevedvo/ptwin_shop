@@ -101,9 +101,8 @@
 			$id = isset($request['meal_id']) ? intval($request['meal_id']) : null;
 			$name = isset($request['meal_name']) ? trim($request['meal_name']) : null;
 			$isDeleted = isset($request['meal_isDeleted']) && $request['meal_isDeleted'];
-			$frequency = isset($request['meal_frequency']) && $request['meal_frequency'] !== "" ? intval($request['meal_frequency']) : null;
 
-			$meal = new Meal($id, $name, $isDeleted, $frequency);
+			$meal = new Meal($id, $name, $isDeleted);
 
 			return $meal;
 		}
