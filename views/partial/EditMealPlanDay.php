@@ -41,11 +41,14 @@
 
 <div class="form-group">
 	<div class="row">
-		<div class="col-xs-12">
-			<label for="mealPlanChooseAnyMeal">
-				<input type="checkbox" id="mealPlanChooseAnyMeal" name="meal_plan_choose_any_meal" value="1" />
-				Choose from all meals
-			</label>
+		<label class="col-xs-4" for="mealPlanPreviousMealDays">Meal Repeat (Days)</label>
+		<div class="col-xs-3">
+			<input type="number" class="form-control" id="mealPlanPreviousMealDays" name="meal_plan_previous_meal_days" min="0" value="28" />
+		</div>
+
+		<label class="col-xs-3" for="mealPlanChooseAnyMeal">All meals</label>
+		<div class="col-xs-2">
+			<input type="checkbox" id="mealPlanChooseAnyMeal" name="meal_plan_choose_any_meal" value="1" />
 		</div>
 	</div>
 </div>

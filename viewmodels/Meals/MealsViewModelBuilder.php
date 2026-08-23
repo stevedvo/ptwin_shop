@@ -84,7 +84,6 @@
 			foreach ($meals as $mealId => $meal)
 			{
 				$previousDateString = "";
-				$hadRecently = false;
 				$mealTagIds = [];
 
 				$previousMealPlanDay = $meal->getLastMealPlanDayBeforeDate($mealPlan->getDate());
@@ -93,11 +92,6 @@
 				{
 					$previousDateString = $previousMealPlanDay->getDateString();
 
-					$previousMealPlanDate = DateTimeImmutable::createFromMutable($previousMealPlanDay->getDate());
-					$currentMealPlanDate = DateTimeImmutable::createFromMutable($mealPlan->getDate());
-					$previousLimit = $currentMealPlanDate->modify("-".$meal->getFrequency()." day");
-
-					$hadRecently = $previousMealPlanDate->format("Y-m-d") >= $previousLimit->format("Y-m-d");
 				}
 
 				foreach ($meal->getTags() as $tag)
@@ -112,10 +106,6 @@
 					[
 						'key'   => "previousDateString",
 						'value' => $previousDateString,
-					],
-					[
-						'key'   => "hadRecently",
-						'value' => $hadRecently,
 					],
 					[
 						'key'   => "tagids",
