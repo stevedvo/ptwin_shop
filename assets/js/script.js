@@ -3849,6 +3849,11 @@ function manageMeals()
 		});
 	});
 
+	function mealPlanChooseAnyMeal()
+	{
+		return $("#mealPlanChooseAnyMeal").prop("checked") === true;
+	}
+
 	function getSelectedMealPlanIncludeTagIds()
 	{
 		let tagIds = $("select#mealIncludeTagsFilter").val();
@@ -3942,6 +3947,11 @@ function manageMeals()
 			return true;
 		}
 
+		if (mealPlanChooseAnyMeal())
+		{
+			return true;
+		}
+
 		if ($(option).data("hadrecently") == 1)
 		{
 			return false;
@@ -3985,10 +3995,18 @@ function manageMeals()
 			return;
 		}
 
-		if (selectedOption.attr("value") != "-1" && !mealPlanOptionMatchesTagFilters(selectedOption[0]))
+		if (!mealPlanChooseAnyMeal() && selectedOption.attr("value") != "-1" && !mealPlanOptionMatchesTagFilters(selectedOption[0]))
 		{
 			selector.val("-1").trigger("change");
 		}
+	}
+
+	function updateMealPlanTagFilterState()
+	{
+		let tagFilters = $("select#mealIncludeTagsFilter, select#mealExcludeTagsFilter");
+
+		tagFilters.prop("disabled", mealPlanChooseAnyMeal());
+		tagFilters.trigger("change.select2");
 	}
 
 	function initMealPlanDayModal(modal)
@@ -4024,11 +4042,19 @@ function manageMeals()
 			matcher    : mealPlanMealMatcher,
 		});
 
+		updateMealPlanTagFilterState();
 	}
 
 	$(document).on("change", "#mealIncludeTagsFilter, #mealExcludeTagsFilter", function()
 	{
 		filterSelectedMealPlanMeal();
+	});
+
+	$(document).on("change", "#mealPlanChooseAnyMeal", function()
+	{
+		updateMealPlanTagFilterState();
+		filterSelectedMealPlanMeal();
+		$("select#mealId").trigger("change.select2");
 	});
 
 	$(document).on("click", ".calendar-box .edit-btn", function()
@@ -4121,7 +4147,7 @@ function manageMeals()
 
 		if (validOptions.length == 0)
 		{
-			toastr.error("No matching Meals available");
+			toastr.error(mealPlanChooseAnyMeal() ? "No Meals available" : "No matching Meals available");
 
 			return false;
 		}

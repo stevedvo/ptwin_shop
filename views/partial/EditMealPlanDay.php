@@ -41,6 +41,17 @@
 
 <div class="form-group">
 	<div class="row">
+		<div class="col-xs-12">
+			<label for="mealPlanChooseAnyMeal">
+				<input type="checkbox" id="mealPlanChooseAnyMeal" name="meal_plan_choose_any_meal" value="1" />
+				Choose from all meals
+			</label>
+		</div>
+	</div>
+</div>
+
+<div class="form-group">
+	<div class="row">
 		<label class="col-xs-12" for="mealId">Meal</label>
 		<div class="col-xs-12">
 			<select class="form-control" id="mealId" name="meal_id" style="width: 100%;">
