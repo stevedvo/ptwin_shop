@@ -425,7 +425,9 @@
 				}
 
 				$origDate = DateTimeImmutable::createFromMutable($date);
-				$calendarStart = $origDate->modify("-".($date->format("N") - 1)." day")->modify("-4 day");
+				$previousMonday = $origDate->modify("previous Monday");
+				$previousFriday = $origDate->modify("previous Friday");
+				$calendarStart = $previousMonday > $previousFriday ? $previousMonday : $previousFriday;
 
 				$dateArray = [];
 
