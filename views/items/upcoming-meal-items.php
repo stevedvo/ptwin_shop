@@ -4,6 +4,7 @@
 	$items_in_order = $response['items_in_order'];
 	$date_from = $response['date_from'];
 	$date_to = $response['date_to'];
+	$today = new DateTimeImmutable('today');
 ?>
 <main class="wrapper">
 	<div class="container">
@@ -12,6 +13,19 @@
 				<div class="results-container suggestions striped">
 					<form method="get" action="<?= SITEURL; ?>/items/" class="row meal-items-date-range-form">
 						<input type="hidden" name="view-by" value="upcoming-meal-items" />
+
+						<div class="col-xs-12 meal-items-quick-days" role="group" aria-label="Filter by meal day">
+<?php
+							for ($offset = 0; $offset <= 4; $offset++)
+							{
+								$day = $today->modify('+'.$offset.' days');
+								$label = $offset === 0 ? 'Today' : ($offset === 1 ? 'Tomorrow' : $day->format('l'));
+?>
+								<button type="button" class="btn btn-default btn-sm js-meal-items-day" data-day-offset="<?= $offset; ?>" aria-pressed="false" title="<?= $day->format('l j F Y'); ?>"><?= $label; ?> <span class="meal-items-day-date"><?= $day->format('j M'); ?></span></button>
+<?php
+							}
+?>
+						</div>
 
 						<div class="col-xs-6">
 							<label for="date_from">From Date:</label>&nbsp;
@@ -29,55 +43,9 @@
 						</div>
 					</form>
 
-<?php
-					if (count($suggested_items) == 0)
-					{
-?>
-						<p class="no-results">No Items can be found</p>
-<?php
-					}
-					else
-					{
-?>
-						<div class="results-header">
-							<div class="row">
-								<div class="col-xs-9 results-header-item description-container">
-									<p><strong>Description</strong></p>
-								</div>
-
-								<div class="col-xs-3 results-header-item quantity-container">
-									<p><strong>Quantity</strong></p>
-								</div>
-							</div>
-						</div>
-
-						<div class="results-body">
-<?php
-							foreach ($suggested_items as $item_id => $item)
-							{
-?>
-								<div class="row form result-item <?= $item->isInCurrentOrder() ? 'selected' : ''; ?>" data-item_id="<?= $item->getId(); ?>" data-order_item_id="<?= $item->getOrderItemId(); ?>">
-									<div class="col-xs-9 description-container">
-										<a href="<?= SITEURL; ?>/items/edit/<?= $item->getId(); ?>/"><p><?= $item->getDescription(); ?></p></a>
-									</div>
-
-									<div class="col-xs-3 quantity-container">
-										<input type="number" name="quantity" data-validation="<?= $item->getValidation("Quantity"); ?>" value="<?= $item->getQuantity(); ?>" />
-									</div>
-
-									<div class="col-xs-12 button-container">
-										<button class="btn btn-sm btn-primary pull-left js-add-item-to-current-order">&plus;</button>
-										<button class="btn btn-sm btn-primary pull-left js-update-suggested-order-item"><i class="far fa-edit"></i></button>
-										<button class="btn btn-sm btn-danger pull-right js-remove-item-from-current-order">&times;</button>
-									</div>
-								</div>
-<?php
-							}
-?>
-						</div>
-<?php
-					}
-?>
+					<div id="upcomingMealItemsResults" aria-live="polite" aria-busy="false">
+						<?= getPartialView('UpcomingMealItemListItems', ['suggested_items' => $suggested_items]); ?>
+					</div>
 				</div>
 			</div>
 		</div>

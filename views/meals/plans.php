@@ -5,8 +5,6 @@
 	<div class="container">
 		<div class="row">
 <?php
-			$i = 0;
-
 			foreach ($mealPlans as $dateString => $mealPlan)
 			{
 ?>
@@ -16,14 +14,12 @@
 ?>
 				</div>
 <?php
-				if ($i > 3 && $mealPlan->getWeekdayNumber() == "0")
+				if ($mealPlan->getWeekdayNumber() == "0")
 				{
 ?>
 					<div class="col-xs-6 col-sm-3 calendar-box"></div>
 <?php
 				}
-
-				$i++;
 			}
 ?>
 		</div>

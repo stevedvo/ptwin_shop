@@ -501,6 +501,16 @@ ul.ui-autocomplete li.ui-state-focus
 	width: calc(100% - 83px);
 }
 
+.meal-items-quick-days .btn
+{
+	margin: 0 4px 5px 0;
+}
+
+.meal-items-day-date
+{
+	font-size: 0.9em;
+}
+
 .calendar-box
 {
 	padding: 5px;

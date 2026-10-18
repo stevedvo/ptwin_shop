@@ -185,6 +185,45 @@
 			}
 		}
 
+		public function getUpcomingMealItemsForDays(array $request) : array
+		{
+			$dalResult = new DalResult();
+
+			try
+			{
+				$dayOffsets = $request['day_offsets'] ?? null;
+
+				if (!is_string($dayOffsets) || !preg_match('/^(?:[0-4](?:,[0-4])*)?$/D', $dayOffsets))
+				{
+					throw new Exception("Invalid day selection");
+				}
+
+				$today = new DateTimeImmutable('today');
+				$selectedDates = [];
+
+				foreach ($dayOffsets === '' ? [] : array_unique(explode(',', $dayOffsets)) as $offset)
+				{
+					$selectedDates[] = $today->modify('+'.$offset.' days')->format('Y-m-d');
+				}
+
+				$order = $this->orders_service->getCurrentOrder();
+				$items = $this->items_service->getUpcomingMealItems($today, $today->modify('+4 days'), $selectedDates);
+				$suggestions = $this->itemsViewModelBuilder->createMealItemSuggestionsViewModels($items, $order);
+				$dalResult->setPartialView(getPartialView('UpcomingMealItemListItems', ['suggested_items' => $suggestions]));
+			}
+			catch (Exception $e)
+			{
+				$dalResult->setException($e);
+			}
+			finally
+			{
+				$this->items_service->closeConnexion();
+				$this->orders_service->closeConnexion();
+			}
+
+			return $dalResult->jsonSerialize();
+		}
+
 		private function getUpcomingMealItemsDateRange(array $request) : array
 		{
 			$today = new DateTimeImmutable('today');
