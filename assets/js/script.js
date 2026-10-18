@@ -6,6 +6,7 @@ $(function()
 	initToastr();
 	globalFuncs();
 	manageItems();
+	manageUpcomingMealItems();
 	manageLists();
 	manageDepts();
 	manageOrders();
@@ -18,6 +19,77 @@ $(function()
 	modalFuncs();
 	manageTags();
 });
+
+function manageUpcomingMealItems()
+{
+	let pendingRequest = null;
+	let requestVersion = 0;
+
+	$(document).on("click", ".js-meal-items-day", function()
+	{
+		let button = $(this);
+		let selected = button.attr("aria-pressed") !== "true";
+		button.attr("aria-pressed", selected ? "true" : "false").toggleClass("btn-primary", selected).toggleClass("btn-default", !selected);
+
+		let offsets = button.closest(".meal-items-quick-days").find('[aria-pressed="true"]').map(function()
+		{
+			return $(this).attr("data-day-offset");
+		}).get();
+
+		let results = $("#upcomingMealItemsResults");
+		let version = ++requestVersion;
+
+		if (pendingRequest)
+		{
+			pendingRequest.abort();
+		}
+
+		results.attr("aria-busy", "true").html('<p class="no-results">Loading Items...</p>');
+
+		pendingRequest = $.ajax(
+		{
+			type     : "POST",
+			url      : constants.SITEURL+"/ajax.php",
+			dataType : "json",
+			data     :
+			{
+				controller : "Items",
+				action     : "getUpcomingMealItemsForDays",
+				request    : { day_offsets: offsets.join(",") },
+			},
+		}).done(function(data)
+		{
+			if (version !== requestVersion)
+			{
+				return;
+			}
+
+			if (!data || data.exception != null || typeof data.partial_view !== "string")
+			{
+				results.html('<p class="no-results">Could not load Items. Toggle a day to retry or click Refresh.</p>');
+				toastr.error("Could not load Upcoming Meal Items");
+
+				return;
+			}
+
+			results.html(data.partial_view);
+		}).fail(function(xhr, status)
+		{
+			if (version === requestVersion && status !== "abort")
+			{
+				results.html('<p class="no-results">Could not load Items. Toggle a day to retry or click Refresh.</p>');
+				toastr.error("Could not load Upcoming Meal Items");
+			}
+		}).always(function()
+		{
+			if (version === requestVersion)
+			{
+				results.attr("aria-busy", "false");
+				pendingRequest = null;
+			}
+		});
+	});
+}
 
 function getURLQueryStringAsObject(queryString)
 {

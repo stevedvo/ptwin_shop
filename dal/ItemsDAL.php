@@ -318,18 +318,32 @@
 			}
 		}
 
-		public function getUpcomingMealItems(DateTimeInterface $dateFrom, DateTimeInterface $dateTo) : ?array
+		public function getUpcomingMealItems(DateTimeInterface $dateFrom, DateTimeInterface $dateTo, ?array $selectedDates = null) : ?array
 		{
 			try
 			{
 				$items = [];
 
-				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, mi.id AS meal_item_id, mi.meal_id, mi.quantity AS meal_item_quantity, mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.order_item_status FROM meal_items AS mi INNER JOIN meal_plan_days AS mpd ON (mpd.meal_id = mi.meal_id) INNER JOIN items AS i ON (i.item_id = mi.item_id) WHERE mpd.date IS NOT NULL AND mpd.date >= :date_from AND mpd.date <= :date_to ORDER BY i.description, mpd.date");
-				$query->execute(
+				if ($selectedDates === [])
+				{
+					return $items;
+				}
+
+				$dateFilter = 'mpd.date >= :date_from AND mpd.date <= :date_to';
+				$dateParams =
 				[
 					':date_from' => $dateFrom->format('Y-m-d'),
 					':date_to'   => $dateTo->format('Y-m-d'),
-				]);
+				];
+
+				if ($selectedDates !== null)
+				{
+					$dateFilter = 'mpd.date IN ('.implode(',', array_fill(0, count($selectedDates), '?')).')';
+					$dateParams = array_values($selectedDates);
+				}
+
+				$query = $this->ShopDb->conn->prepare("SELECT i.item_id, i.description, i.comments, i.default_qty, i.list_id, i.link, i.primary_dept, i.mute_temp, i.mute_perm, i.packsize_id, i.luckydip_id, i.meal_plan_check, mi.id AS meal_item_id, mi.meal_id, mi.quantity AS meal_item_quantity, mpd.id AS meal_plan_day_id, mpd.date AS meal_plan_date, mpd.order_item_status FROM meal_items AS mi INNER JOIN meal_plan_days AS mpd ON (mpd.meal_id = mi.meal_id) INNER JOIN items AS i ON (i.item_id = mi.item_id) WHERE mpd.date IS NOT NULL AND ".$dateFilter." ORDER BY i.description, mpd.date");
+				$query->execute($dateParams);
 
 				while ($row = $query->fetch(PDO::FETCH_ASSOC))
 				{

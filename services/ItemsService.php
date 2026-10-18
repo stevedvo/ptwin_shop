@@ -113,11 +113,11 @@
 			}
 		}
 
-		public function getUpcomingMealItems(DateTimeInterface $dateFrom, DateTimeInterface $dateTo) : array
+		public function getUpcomingMealItems(DateTimeInterface $dateFrom, DateTimeInterface $dateTo, ?array $selectedDates = null) : array
 		{
 			try
 			{
-				$allItems = $this->dal->getUpcomingMealItems($dateFrom, $dateTo);
+				$allItems = $this->dal->getUpcomingMealItems($dateFrom, $dateTo, $selectedDates);
 
 				if (!is_array($allItems))
 				{
